@@ -8,36 +8,40 @@
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f7f4; color: #333; padding-bottom: 70px; }
+        body { background-color: #f4f7f4; color: #333; padding-bottom: 80px; }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         
-        .header { background: #ffffff; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        /* আপনার প্রিয় হালকা সবুজ থিম ডিজাইন */
+        .header { background: #ffffff; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid #2ecc71; }
         .header h1 { color: #2ecc71; font-size: 24px; margin-bottom: 5px; }
-        .card { background: #fff; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .balance-title { font-size: 16px; color: #777; margin-bottom: 10px; }
-        .balance-amount { font-size: 32px; font-weight: bold; color: #2ecc71; background: #ebfaee; padding: 10px; border-radius: 10px; display: inline-block; width: 100%; }
+        .card { background: #fff; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #ebfaee; }
+        .balance-title { font-size: 16px; color: #666; margin-bottom: 10px; }
+        .balance-amount { font-size: 32px; font-weight: bold; color: #2ecc71; background: #ebfaee; padding: 10px; border-radius: 10px; display: inline-block; width: 100%; border: 1px solid #d4f5dd; }
         
-        .rules { background: #fff; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .rules { background: #fff; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #e74c3c; }
         .rules h3 { color: #e74c3c; margin-bottom: 10px; }
         .rules ul { list-style: none; }
         .rules li { margin-bottom: 8px; font-size: 14px; line-height: 1.4; }
-        .task-btn { background: #2ecc71; color: #fff; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; }
+        .task-btn { background: #2ecc71; color: #fff; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2); }
         
-        .spin-container { margin-top: 20px; padding: 20px; background: #fff; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .spin-wheel { width: 120px; height: 120px; border: 6px solid #2ecc71; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #2ecc71; transition: transform 2s ease-out; }
+        .spin-container { margin-top: 20px; padding: 20px; background: #fff; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #ebfaee; }
+        .spin-wheel { width: 120px; height: 120px; border: 6px solid #2ecc71; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #2ecc71; transition: transform 2s ease-out; background: #ebfaee; }
         
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-        .nav-item { text-align: center; color: #777; cursor: pointer; flex: 1; font-size: 12px; }
-        .nav-item i { font-size: 20px; margin-bottom: 3px; display: block; }
+        /* ইমোজি বাটন যুক্ত নেভিগেশন বার */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e8f5e9; box-shadow: 0 -4px 12 rgba(0,0,0,0.04); }
+        .nav-item { text-align: center; color: #777; cursor: pointer; flex: 1; font-size: 13px; font-weight: 500; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; display: block; }
         .nav-item.active { color: #2ecc71; font-weight: bold; }
         
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-        .submit-btn { background: #e67e22; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #fcfdfc; }
+        input:focus, select:focus { border-color: #2ecc71; outline: none; }
+        .submit-btn { background: #2ecc71; color: #fff; border: none; width: 100%; padding: 13px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: block; text-align: center; text-decoration: none; box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2); }
     </style>
 </head>
 <body>
 
+    <!-- ১. হোম পেজ -->
     <div id="home" class="page active">
         <div class="header">
             <h1>🚀 Mega Income bot</h1>
@@ -55,28 +59,31 @@
                 <li>৩. নিয়ম না মানলে ব্যালেন্স যোগ হবে না।</li>
             </ul>
             <br>
-            <button class="submit-btn" style="background:#3498db;" onclick="openLink('https://t.me')">📢 জয়েন অফিশিয়াল চ্যানেল</button>
+            <button class="submit-btn" style="background:#3498db; box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);" onclick="openLink('https://t.me')">📢 জয়েন অফিশিয়াল চ্যানেল</button>
         </div>
     </div>
 
+    <!-- ২. টাস্ক পেজ -->
     <div id="tasks" class="page">
         <div class="header"><h2>📺 দৈনিক কাজ সমূহ</h2><p>নিচের বাটনগুলোতে ক্লিক করে টাস্ক সম্পন্ন করুন</p></div>
         <div class="spin-container">
             <div class="spin-wheel" id="wheel">🎰</div>
-            <button class="submit-btn" style="background:#2ecc71;" onclick="spinNow()">🎡 লাকি স্পিন (১০ সেকেন্ড)</button>
+            <button class="submit-btn" onclick="spinNow()">🎡 লাকি স্পিন (১০ সেকেন্ড)</button>
         </div>
         <div class="task-btn" style="margin-top:20px;" onclick="watchVideo()"><span>📺 ভিডিও টাস্ক (১৫ সেকেন্ড)</span> <i class="fas fa-chevron-right"></i></div>
     </div>
 
+    <!-- ৩. আমন্ত্রণ (Refer) পেজ -->
     <div id="invite" class="page">
         <div class="header"><h2>👥 বন্ধুদের আমন্ত্রণ জানান</h2></div>
         <div class="card">
             <p style="font-size: 15px; margin-bottom: 10px;">আপনার বন্ধুদের আমন্ত্রণ জানালে তাদের আয়ের <b>৪০% আজীবন কমিশন</b> পাবেন।</p>
             <input type="text" id="ref-link-input" readonly value="লিংক লোড হচ্ছে...">
-            <button class="submit-btn" style="background:#2ecc71;" onclick="copyRef()">লিংক কপি করুন</button>
+            <button class="submit-btn" onclick="copyRef()">লিংক কপি করুন</button>
         </div>
     </div>
 
+    <!-- ৪. উইথড্র পেজ -->
     <div id="withdraw" class="page">
         <div class="header"><h2>💰 Withdraw</h2></div>
         <div class="card">
@@ -88,15 +95,19 @@
             </select>
             <input type="number" id="amount" placeholder="উইথড্রর পরিমাণ (BDT)">
             <input type="text" id="wallet" placeholder="ওয়ালেট নম্বর দিন">
-            <button class="submit-btn" onclick="submitWithdraw()">অনুরোধ জমা দিন</button>
+            <input type="button" class="submit-btn" style="background: #e67e22; box-shadow: 0 4px 6px rgba(230, 126, 34, 0.2);" value="অনুরোধ জমা দিন" onclick="submitWithdraw()">
+            <br>
+            <!-- ছোট হাতের h দিয়ে আপনার লাইভ সাপোর্ট লিংক -->
+            <button class="submit-btn" style="background:#34495e; box-shadow: 0 4px 6px rgba(52, 73, 94, 0.2);" onclick="openLink('https://t.me')">👨‍💻 অ্যাডমিন লাইভ সাপোর্ট</button>
         </div>
     </div>
 
+    <!-- নিচের ফিক্সড নেভিগেশন বার (সবুজ কালার অ্যাক্টিভ ও ইমোজি সহ) -->
     <div class="nav-bar">
-        <div class="nav-item active" onclick="switchPage('home', this)"><i class="fas fa-home"></i><br>হোম</div>
-        <div class="nav-item" onclick="switchPage('tasks', this)"><i class="fas fa-tasks"></i><br>টাস্ক</div>
-        <div class="nav-item" onclick="switchPage('invite', this)"><i class="fas fa-user-plus"></i><br>আমন্ত্রণ</div>
-        <div class="nav-item" onclick="switchPage('withdraw', this)"><i class="fas fa-wallet"></i><br>Withdraw</div>
+        <div class="nav-item active" onclick="switchPage('home', this)"><i class="fas fa-home"></i>🏠 হোম</div>
+        <div class="nav-item" onclick="switchPage('tasks', this)"><i class="fas fa-tasks"></i>📺 টাস্ক</div>
+        <div class="nav-item" onclick="switchPage('invite', this)"><i class="fas fa-user-plus"></i>👥 আমন্ত্রণ</div>
+        <div class="nav-item" onclick="switchPage('withdraw', this)"><i class="fas fa-wallet"></i>💰 Withdraw</div>
     </div>
 
     <script>
@@ -114,6 +125,7 @@
             });
         }
 
+        // বাটন ক্লিকে পেজ পরিবর্তন করার ১টি ফিক্সড ফাংশন
         function switchPage(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -162,11 +174,3 @@
         function submitWithdraw() {
             const method = document.getElementById('method').value;
             const amount = document.getElementById('amount').value;
-            const wallet = document.getElementById('wallet').value;
-            if(!amount || !wallet) { alert('⚠️ দয়া করে সব তথ্য সঠিকভাবে পূরণ করুন!'); return; }
-            if(parseInt(amount) < 150) { alert('⚠️ নূন্যতম উইথড্র ১৫০ টাকা!'); return; }
-            alert(`✅ সফল হয়েছে! আপনার ৳${amount} উইথড্র অনুরোধটি (${method}) অ্যাডমিন প্যানেলে পাঠানো হয়েছে।`);
-        }
-    </script>
-</body>
-</html>
