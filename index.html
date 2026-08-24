@@ -1,160 +1,89 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mega Income Bot</title>
-    <script src="https://telegram.org"></script>
-    <link rel="stylesheet" href="https://cloudflare.com">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+import logging
+import sqlite3
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
+
+API_TOKEN = "8644824917:AAFqadE5jeWDs967YMGqbPYzioz5d5YGn0M"
+CHANNEL_LINK = "https://t.me"
+ADMIN_ID = 8049465500
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+def init_db():
+    conn = sqlite3.connect("mega_income.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            user_id INTEGER PRIMARY KEY,
+            balance REAL DEFAULT 0.0,
+            referred_by INTEGER,
+            referrals_count INTEGER DEFAULT 0
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+init_db()
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    user_id = user.id
+    
+    conn = sqlite3.connect("mega_income.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
+    existing_user = cursor.fetchone()
+    
+    if not existing_user:
+        referred_by = None
+        if context.args and context.args.isdigit():
+            ref_id = int(context.args)
+            if ref_id != user_id:
+                referred_by = ref_id
+                cursor.execute("UPDATE users SET referrals_count = referrals_count + 1 WHERE user_id = ?", (ref_id,))
         
-        body { background-color: #1e5631; color: #ffffff; padding-bottom: 110px; }
-        .page { display: none; padding: 15px; }
-        .page.active { display: block; }
-        
-        .header { background: #2e7d32; padding: 22px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; border-bottom: 4px solid #4caf50; }
-        .header h1 { color: #ffffff; font-size: 26px; margin-bottom: 5px; font-weight: bold; }
-        .card { background: #2e7d32; padding: 22px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; border: 1px solid #4caf50; }
-        .balance-title { font-size: 18px; color: #e8f5e9; margin-bottom: 10px; font-weight: 600; }
-        .balance-amount { font-size: 36px; font-weight: 900; color: #ffffff; background: #1b5e20; padding: 12px; border-radius: 10px; display: inline-block; width: 100%; border: 1px solid #4caf50; }
-        
-        .rules { background: #2e7d32; color: #ffffff; padding: 18px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-left: 6px solid #ffeb3b; border: 1px solid #4caf50; }
-        .rules h3 { color: #ffeb3b; margin-bottom: 12px; font-size: 18px; }
-        .rules ul { list-style: none; }
-        .rules li { margin-bottom: 10px; font-size: 15px; line-height: 1.5; font-weight: bold; }
-        
-        /* লাল রঙের গুরুত্বপূর্ণ লেখার জন্য বিশেষ স্টাইল */
-        .important-red { color: #ff4d4d; font-weight: 900; background: rgba(255, 77, 77, 0.1); padding: 2px 6px; border-radius: 4px; }
-        
-        .task-btn { background: #4caf50; color: #fff; padding: 18px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 18px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        
-        .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #4caf50; }
-        .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: #ffffff; transition: transform 2s ease-out; background: #1b5e20; }
-        
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 12px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
-        .nav-item { text-align: center; color: #444; cursor: pointer; flex: 1; font-size: 16px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; height: 65px; }
-        .nav-item i { font-size: 24px; display: block; margin-bottom: 2px; }
-        .nav-item.active { color: #ffffff; background: #2e7d32; font-weight: 900; }
-        
-        input, select { width: 100%; padding: 14px; margin: 12px 0; border: 2px solid #4caf50; border-radius: 10px; font-size: 16px; background: #fafdfa; font-weight: bold; color: #2c3e50; }
-        .submit-btn { background: #ff9800; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; display: block; text-align: center; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px; }
-    </style>
-</head>
-<body>
+        cursor.execute("INSERT INTO users (user_id, referred_by) VALUES (?, ?)", (user_id, referred_by))
+        conn.commit()
+    conn.close()
 
-    <!-- ১. হোম পেজ -->
-    <div id="home" class="page active">
-        <div class="header">
-            <h1>🚀 Mega Income bot</h1>
-            <p>সহজ কাজ করে প্রতিদিন নিশ্চিত আনলিমিটেড আয় করুন।</p>
-        </div>
-        <div class="card">
-            <div class="balance-title">আপনার মোট ব্যালেন্স</div>
-            <div class="balance-amount">৳ <span class="current-user-balance">0.00</span></div>
-        </div>
-        <div class="rules">
-            <h3>⚠️ কাজের নিয়ম:</h3>
-            <ul>
-                <!-- গুরুত্বপূর্ণ কথাগুলো লাল করা হলো -->
-                <li>১. অবশ্যই ফোনে <span class="important-red">USA বা UK VPN</span> (যেমন: Turbo VPN / SuperVPN) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
-                <li>২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে <span class="important-red">৫-১০ সেকেন্ড দেখুন</span>।</li>
-                <li>৩. <span class="important-red">নিয়ম না মানলে ব্যালেন্স যোগ হবে না</span>।</li>
-            </ul>
-            <br>
-            <button class="submit-btn" style="background:#2196f3;" onclick="openLink('https://t.me')">📢 জয়েন অফিশিয়াল চ্যানেল</button>
-        </div>
-    </div>
+    # আপনার বটের বাটনগুলো এক ক্লিকে অন করার ডাইরেক্ট সচল Vercel লিংক
+    web_app_url = "https://vercel.app"
+    
+    keyboard = [
+        [InlineKeyboardButton("🚀 Open Mega Income WebApp", web_app=WebAppInfo(url=web_app_url))],
+        [InlineKeyboardButton("📢 জয়েন অফিশিয়াল চ্যানেল", url=CHANNEL_LINK)]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await update.message.reply_text(
+        f"👋 হ্যালো {user.first_name}!\n\n"
+        "✨ **Mega Income bot**-এ আপনাকে स्वागतম।\n"
+        "নিচের বাটনে ক্লিক করে অ্যাপটি ওপেন করুন এবং নিশ্চিত আনলিমিটেড আয় করুন।\n\n"
+        f"🔗 আপনার রেফারেল লিংক: `https://t.me{user_id}`",
+        reply_markup=reply_markup,
+        parse_mode="Markdown"
+    )
 
-    <!-- ২. টাস্ক পেজ -->
-    <div id="tasks" class="page">
-        <div class="header"><h2>📺 দৈনিক কাজ সমূহ</h2><p style="color:#e8f5e9; margin-top:5px;">নিচের বাটনগুলোতে ক্লিক করে টাস্ক সম্পন্ন করুন</p></div>
-        <div class="spin-container">
-            <div class="spin-wheel" id="wheel">🎰</div>
-            <button class="submit-btn" style="background:#4caf50;" onclick="spinNow()">🎡 লাকি স্পিন (১০ সেকেন্ড)</button>
-        </div>
-        <div class="task-btn" style="margin-top:20px; background:#4caf50;" onclick="watchVideo()"><span>📺 ভিডিও টাস্ক (১৫ সেকেন্ড)</span> <i class="fas fa-chevron-right"></i></div>
-    </div>
+async def admin_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    data = query.data.split("_")
+    action = data
+    target_user_id = int(data)
+    amount = float(data)
+    
+    if action == "accept":
+        await query.edit_message_text(text=f"✅ ৳{amount} উইথड्र রিকোয়েস্টটি আপনি **Accept** করেছেন।")
+        await context.bot.send_message(chat_id=target_user_id, text=f"🎉 অভিনন্দন! আপনার ৳{amount} এর উইথড্র রিকোয়েস্টটি অ্যাডমিন সফলভাবে সম্পূর্ণ করেছে।")
+    elif action == "reject":
+        await query.edit_message_text(text=f"❌ ৳{amount} উইথড্র রিকোয়েস্টটি আপনি **Reject** করেছেন।")
+        await context.bot.send_message(chat_id=target_user_id, text=f"⚠️ দুঃখিত! আপনার ৳{amount} এর উইথড্র রিকোয়েস্টটি অ্যাডমিন বাতিল করেছে। বিস্তারিত জানতে সাপোর্টে কথা বলুন।")
 
-    <!-- ৩. আমন্ত্রণ (Refer) পেজ -->
-    <div id="invite" class="page">
-        <div class="header"><h2>👥 বন্ধুদের আমন্ত্রণ জানান</h2></div>
-        <div class="card">
-            <p style="font-size: 17px; margin-bottom: 12px; line-height: 1.4;">আপনার বন্ধুদের আমন্ত্রণ জানালে তাদের আয়ের <b style="color:#ffeb3b;"><span class="important-red">৩৫% আজীবন কমিশন</span></b> পাবেন।</p>
-            <input type="text" id="ref-link-input" readonly value="লিংক লোড হচ্ছে...">
-            <button class="submit-btn" style="background:#4caf50;" onclick="copyRef()">🔗 লিংক কপি করুন</button>
-        </div>
-    </div>
+def main():
+    application = Application.builder().token(API_TOKEN).build()
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(admin_buttons))
+    application.run_polling()
 
-    <!-- ৪. উইথড্র পেজ -->
-    <div id="withdraw" class="page">
-        <div class="header"><h2>💰 Withdraw</h2></div>
-        <div class="card">
-            <div class="balance-title">উত্তোলনযোগ্য ব্যালেন্স: ৳ <span class="current-user-balance">0.00</span></div>
-            <p style="color: #ffeb3b; font-size: 16px; margin: 3px 0; font-weight: bold;">নূন্যতম উইথড্র ১৫০ টাকা</p>
-            <p style="color: #ff9800; font-size: 15px; margin-bottom: 8px; font-weight: bold;">⚠️ প্রতিটি উত্তোলনে <span class="important-red">৫% অ্যাডমিন ফি</span> প্রযোজ্য</p>
-            <select id="method">
-                <option value="bKash">বিকাশ (bKash)</option>
-                <option value="Nagad">নগদ (Nagad)</option>
-            </select>
-            <input type="number" id="amount" placeholder="উইথড্রর পরিমাণ (BDT)">
-            <input type="text" id="wallet" placeholder="ওয়ালেট নম্বর দিন">
-            <button class="submit-btn" onclick="submitWithdraw()">📤 অনুরোধ জমা দিন</button>
-            <br>
-            <button class="submit-btn" style="background:#455a64;" onclick="openLink('https://t.me')">👨‍💻 অ্যাডমিন লাইভ সাপোর্ট</button>
-        </div>
-    </div>
-
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="switchPage('home', this)"><i class="fas fa-home"></i>🏠 হোম</div>
-        <div class="nav-item" onclick="switchPage('tasks', this)"><i class="fas fa-tasks"></i>📺 টাস্ক</div>
-        <div class="nav-item" onclick="switchPage('invite', this)"><i class="fas fa-user-plus"></i>👥 আমন্ত্রণ</div>
-        <div class="nav-item" onclick="switchPage('withdraw', this)"><i class="fas fa-wallet"></i>💰 Withdraw</div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "8049465500";
-        document.getElementById('ref-link-input').value = `https://t.me{userId}`;
-
-        let userBalance = 0.00;
-
-        function updateBalanceUI() {
-            document.querySelectorAll('.current-user-balance').forEach(el => { el.innerText = userBalance.toFixed(2); });
-        }
-
-        function switchPage(pageId, element) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            element.classList.add('active');
-            window.scrollTo(0, 0);
-        }
-
-        function openLink(url) {
-            tg.openTelegramLink(url);
-        }
-
-        function spinNow() {
-            const wheel = document.getElementById('wheel');
-            wheel.style.transform = 'rotate(' + (Math.random() * 360 + 1440) + 'deg)';
-            setTimeout(() => {
-                const prizes = [0.10, 0.20, 0.50, 1.00, 2.00, 5.00];
-                const weights =; 
-                let randomNum = Math.random() * 100;
-                let selectedPrize = 0.10;
-                let sum = 0;
-                for (let i = 0; i < prizes.length; i++) {
-                    sum += weights[i];
-                    if (randomNum <= sum) { selectedPrize = prizes[i]; break; }
-                }
-                userBalance += selectedPrize;
-                updateBalanceUI();
-                alert(`🎉 অভিনন্দন! আপনি লাকি স্পিন থেকে ৳${selectedPrize.toFixed(2)} জিতেছেন।`);
-                wheel.style.transform = 'rotate(0deg)';
-            }, 2000);
-        }
-
-        function watchVideo() {
+if __name__ == '__main__':
+    main()
