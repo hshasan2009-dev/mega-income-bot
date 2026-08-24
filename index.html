@@ -9,30 +9,29 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* পুরো স্ক্রিনের মূল ব্যাকগ্রাউন্ড এবং বডি গাঢ় সবুজ */
         body { background-color: #1e5631; color: #ffffff; padding-bottom: 110px; }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         
-        /* বক্স ও হেডার ডিজাইন */
         .header { background: #2e7d32; padding: 22px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; border-bottom: 4px solid #4caf50; }
         .header h1 { color: #ffffff; font-size: 26px; margin-bottom: 5px; font-weight: bold; }
         .card { background: #2e7d32; padding: 22px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; border: 1px solid #4caf50; }
         .balance-title { font-size: 18px; color: #e8f5e9; margin-bottom: 10px; font-weight: 600; }
         .balance-amount { font-size: 36px; font-weight: 900; color: #ffffff; background: #1b5e20; padding: 12px; border-radius: 10px; display: inline-block; width: 100%; border: 1px solid #4caf50; }
         
-        /* কাজের নিয়মের বক্সটিও সবুজ ও লেখার ফন্ট স্পষ্ট */
         .rules { background: #2e7d32; color: #ffffff; padding: 18px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-left: 6px solid #ffeb3b; border: 1px solid #4caf50; }
         .rules h3 { color: #ffeb3b; margin-bottom: 12px; font-size: 18px; }
         .rules ul { list-style: none; }
         .rules li { margin-bottom: 10px; font-size: 15px; line-height: 1.5; font-weight: bold; }
+        
+        /* লাল রঙের গুরুত্বপূর্ণ লেখার জন্য বিশেষ স্টাইল */
+        .important-red { color: #ff4d4d; font-weight: 900; background: rgba(255, 77, 77, 0.1); padding: 2px 6px; border-radius: 4px; }
         
         .task-btn { background: #4caf50; color: #fff; padding: 18px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 18px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         
         .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #4caf50; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: #ffffff; transition: transform 2s ease-out; background: #1b5e20; }
         
-        /* একদম সমান সাইজের বড় প্রফেশনাল নেভিগেশন বার */
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 12px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
         .nav-item { text-align: center; color: #444; cursor: pointer; flex: 1; font-size: 16px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; height: 65px; }
         .nav-item i { font-size: 24px; display: block; margin-bottom: 2px; }
@@ -57,9 +56,10 @@
         <div class="rules">
             <h3>⚠️ কাজের নিয়ম:</h3>
             <ul>
-                <li>১. অবশ্যই ফোনে USA বা UK VPN (যেমন: Turbo VPN / SuperVPN) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
-                <li>২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে ৫-১০ সেকেন্ড দেখুন।</li>
-                <li>৩. নিয়ম না মানলে ব্যালেন্স যোগ হবে না।</li>
+                <!-- গুরুত্বপূর্ণ কথাগুলো লাল করা হলো -->
+                <li>১. অবশ্যই ফোনে <span class="important-red">USA বা UK VPN</span> (যেমন: Turbo VPN / SuperVPN) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
+                <li>২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে <span class="important-red">৫-১০ সেকেন্ড দেখুন</span>।</li>
+                <li>৩. <span class="important-red">নিয়ম না মানলে ব্যালেন্স যোগ হবে না</span>।</li>
             </ul>
             <br>
             <button class="submit-btn" style="background:#2196f3;" onclick="openLink('https://t.me')">📢 জয়েন অফিশিয়াল চ্যানেল</button>
@@ -80,7 +80,7 @@
     <div id="invite" class="page">
         <div class="header"><h2>👥 বন্ধুদের আমন্ত্রণ জানান</h2></div>
         <div class="card">
-            <p style="font-size: 17px; margin-bottom: 12px; line-height: 1.4;">আপনার বন্ধুদের আমন্ত্রণ জানালে তাদের আয়ের <b style="color:#ffeb3b;">৩৫% আজীবন কমিশন</b> পাবেন।</p>
+            <p style="font-size: 17px; margin-bottom: 12px; line-height: 1.4;">আপনার বন্ধুদের আমন্ত্রণ জানালে তাদের আয়ের <b style="color:#ffeb3b;"><span class="important-red">৩৫% আজীবন কমিশন</span></b> পাবেন।</p>
             <input type="text" id="ref-link-input" readonly value="লিংক লোড হচ্ছে...">
             <button class="submit-btn" style="background:#4caf50;" onclick="copyRef()">🔗 লিংক কপি করুন</button>
         </div>
@@ -92,7 +92,7 @@
         <div class="card">
             <div class="balance-title">উত্তোলনযোগ্য ব্যালেন্স: ৳ <span class="current-user-balance">0.00</span></div>
             <p style="color: #ffeb3b; font-size: 16px; margin: 3px 0; font-weight: bold;">নূন্যতম উইথড্র ১৫০ টাকা</p>
-            <p style="color: #ff9800; font-size: 15px; margin-bottom: 8px; font-weight: bold;">⚠️ প্রতিটি উত্তোলনে ৫% অ্যাডমিন ফি প্রযোজ্য</p>
+            <p style="color: #ff9800; font-size: 15px; margin-bottom: 8px; font-weight: bold;">⚠️ প্রতিটি উত্তোলনে <span class="important-red">৫% অ্যাডমিন ফি</span> প্রযোজ্য</p>
             <select id="method">
                 <option value="bKash">বিকাশ (bKash)</option>
                 <option value="Nagad">নগদ (Nagad)</option>
@@ -105,7 +105,6 @@
         </div>
     </div>
 
-    <!-- সমান বড় সাইজের ও ইমোজি বাটন যুক্ত নেভিগেশন বার -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchPage('home', this)"><i class="fas fa-home"></i>🏠 হোম</div>
         <div class="nav-item" onclick="switchPage('tasks', this)"><i class="fas fa-tasks"></i>📺 টাস্ক</div>
@@ -134,7 +133,7 @@
             window.scrollTo(0, 0);
         }
 
-        fnction openLink(url) {
+        function openLink(url) {
             tg.openTelegramLink(url);
         }
 
@@ -158,6 +157,4 @@
             }, 2000);
         }
 
-        // আপনার রিয়েল-টাইম লাইভ বিজ্ঞাপনের ৫০% ইনকাম স্প্লিট লজিক
-        function watchVideo() { 
-            // অ্যাড নেটওয়ার্কের ডাইনামিক লাইভ ইনকাম থেকে ইউজারের অংশ ঠিক ৫০% (অর্ধেক) স্বয়ংক্রিয়ভাবে যোগ হবে
+        function watchVideo() {
