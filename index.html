@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mega Income Bot</title>
+    <!-- টেলিগ্রাম ওয়েব অ্যাপের প্রধান সচল লাইব্রেরি -->
     <script src="https://telegram.org"></script>
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
@@ -12,6 +13,7 @@
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         
+        /* প্রফেশনাল হালকা সবুজ থিম */
         .header { background: #ffffff; padding: 22px; border-radius: 15px; text-align: center; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.1); margin-bottom: 15px; border-top: 5px solid #2ecc71; }
         .header h1 { color: #2ecc71; font-size: 26px; margin-bottom: 5px; font-weight: bold; }
         .card { background: #fff; padding: 22px; border-radius: 15px; text-align: center; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.1); margin-bottom: 15px; border: 1px solid #d4f5dd; }
@@ -27,6 +29,7 @@
         .spin-container { margin-top: 20px; padding: 25px; background: #fff; border-radius: 15px; text-align: center; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.1); border: 1px solid #d4f5dd; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #2ecc71; border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: #2ecc71; transition: transform 2s ease-out; background: #ebfaee; box-shadow: inset 0 0 10px rgba(46,204,113,0.2); }
         
+        /* একদম সমান সাইজের বড় ও স্পষ্ট নেভিগেশন বার */
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid #2ecc71; box-shadow: 0 -5px 20px rgba(46,204,113,0.15); z-index: 9999; }
         .nav-item { text-align: center; color: #666; cursor: pointer; flex: 1; font-size: 16px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; height: 65px; border-right: 1px solid #f0f0f0; }
         .nav-item:last-child { border-right: none; }
@@ -53,7 +56,6 @@
         <div class="rules">
             <h3>⚠️ কাজের নিয়ম:</h3>
             <ul>
-                <!-- সঠিক ভিপিএন গাইড যুক্ত করা হয়েছে -->
                 <li>১. অবশ্যই ফোনে USA বা UK VPN (যেমন: Turbo VPN / SuperVPN) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
                 <li>২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে ৫-১০ সেকেন্ড দেখুন।</li>
                 <li>৩. নিয়ম না মানলে ব্যালেন্স যোগ হবে না।</li>
@@ -70,7 +72,7 @@
             <div class="spin-wheel" id="wheel">🎰</div>
             <button class="submit-btn" onclick="spinNow()">🎡 লাকি স্পিন (১০ সেকেন্ড)</button>
         </div>
-        <div class="task-btn" style="margin-top:20px;" onclick="watchVideo()"><span>📺 ভিডিও টাস্ক (১৫ সেকেন্ড)</span> <i class="fas fa-chevron-right"></i></div>
+        <div class="task-btn" style="margin-top:20px;" onclick="watchVideo()"><span>📺 Video টাস্ক (১৫ সেকেন্ড)</span> <i class="fas fa-chevron-right"></i></div>
     </div>
 
     <!-- ৩. আমন্ত্রণ (Refer) পেজ -->
@@ -89,7 +91,6 @@
         <div class="card">
             <div class="balance-title">উত্তোলনযোগ্য ব্যালেন্স: ৳ <span class="current-user-balance">0.00</span></div>
             <p style="color: #e74c3c; font-size: 15px; margin: 3px 0; font-weight: bold;">নূন্যতম উইথড্র ১৫০ টাকা</p>
-            <!-- ৫% উইথড্র ফি এর ঘোষণা যুক্ত -->
             <p style="color: #e67e22; font-size: 14px; margin-bottom: 8px; font-weight: bold;">⚠️ প্রতিটি উত্তোলনে ৫% অ্যাডমিন ফি প্রযোজ্য</p>
             <select id="method">
                 <option value="bKash">বিকাশ (bKash)</option>
@@ -103,6 +104,7 @@
         </div>
     </div>
 
+    <!-- সমান সাইজের ও বড় টেক্সটের ফিক্সড নেভিগেশন বার -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchPage('home', this)"><i class="fas fa-home"></i>🏠 হোম</div>
         <div class="nav-item" onclick="switchPage('tasks', this)"><i class="fas fa-tasks"></i>📺 টাস্ক</div>
@@ -114,6 +116,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        // ইউজারের আইডি ডায়নামিক করার মূল জাভাস্ক্রিপ্ট কোড
         const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "8049465500";
         document.getElementById('ref-link-input').value = `https://t.me{userId}`;
 
@@ -125,9 +128,11 @@
             });
         }
 
+        // বাটন চাপলে ১ সেকেন্ডে পেজ পরিবর্তন করার নিখুঁত লজিক
         function switchPage(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            
             document.getElementById(pageId).classList.add('active');
             element.classList.add('active');
             window.scrollTo(0, 0);
@@ -152,10 +157,3 @@
                 }
                 userBalance += selectedPrize;
                 updateBalanceUI();
-                alert(`🎉 অভিনন্দন! আপনি লাকি স্পিন থেকে ৳${selectedPrize.toFixed(2)} জিতেছেন।`);
-                wheel.style.transform = 'rotate(0deg)';
-            }, 2000);
-        }
-
-        function watchVideo() { 
-            const totalAdRevenue = 4.00; 
