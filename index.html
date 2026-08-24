@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f7f4; color: #333; padding-bottom: 80px; }
+        body { background-color: #f4f7f4; color: #333; padding-bottom: 85px; }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         
@@ -28,11 +28,11 @@
         .spin-container { margin-top: 20px; padding: 20px; background: #fff; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #ebfaee; }
         .spin-wheel { width: 120px; height: 120px; border: 6px solid #2ecc71; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #2ecc71; transition: transform 2s ease-out; background: #ebfaee; }
         
-        /* ইমোজি বাটন যুক্ত নেভিগেশন বার */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e8f5e9; box-shadow: 0 -4px 12 rgba(0,0,0,0.04); }
-        .nav-item { text-align: center; color: #777; cursor: pointer; flex: 1; font-size: 13px; font-weight: 500; }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; display: block; }
-        .nav-item.active { color: #2ecc71; font-weight: bold; }
+        /* ইমোজি বাটন ও সাইজ বড় করা ফিক্সড নেভিগেশন বার */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 16px 0; border-top: 1px solid #e8f5e9; box-shadow: 0 -4px 12px rgba(0,0,0,0.06); }
+        .nav-item { text-align: center; color: #555; cursor: pointer; flex: 1; font-size: 15px; font-weight: bold; }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; display: block; }
+        .nav-item.active { color: #2ecc71; }
         
         input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #fcfdfc; }
         input:focus, select:focus { border-color: #2ecc71; outline: none; }
@@ -83,7 +83,7 @@
         </div>
     </div>
 
-    <!-- ৪. উইথড্র পেজ -->
+    <!-- ۴. উইথড্র পেজ -->
     <div id="withdraw" class="page">
         <div class="header"><h2>💰 Withdraw</h2></div>
         <div class="card">
@@ -97,12 +97,12 @@
             <input type="text" id="wallet" placeholder="ওয়ালেট নম্বর দিন">
             <input type="button" class="submit-btn" style="background: #e67e22; box-shadow: 0 4px 6px rgba(230, 126, 34, 0.2);" value="অনুরোধ জমা দিন" onclick="submitWithdraw()">
             <br>
-            <!-- ছোট হাতের h দিয়ে আপনার লাইভ সাপোর্ট লিংক -->
+            <!-- আপনার সঠিক ছোট হাতের ইউজারনেম সহ সাপোর্ট বাটন -->
             <button class="submit-btn" style="background:#34495e; box-shadow: 0 4px 6px rgba(52, 73, 94, 0.2);" onclick="openLink('https://t.me')">👨‍💻 অ্যাডমিন লাইভ সাপোর্ট</button>
         </div>
     </div>
 
-    <!-- নিচের ফিক্সড নেভিগেশন বার (সবুজ কালার অ্যাক্টিভ ও ইমোজি সহ) -->
+    <!-- নিচের ফিক্সড নেভিগেশন বার (সবুজ কালার অ্যাক্টিভ, বড় সাইজ ও ইমোজি সহ) -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchPage('home', this)"><i class="fas fa-home"></i>🏠 হোম</div>
         <div class="nav-item" onclick="switchPage('tasks', this)"><i class="fas fa-tasks"></i>📺 টাস্ক</div>
@@ -125,7 +125,6 @@
             });
         }
 
-        // বাটন ক্লিকে পেজ পরিবর্তন করার ১টি ফিক্সড ফাংশন
         function switchPage(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
