@@ -8,11 +8,10 @@
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f7f4; color: #333; padding-bottom: 85px; }
+        body { background-color: #f4f7f4; color: #333; padding-bottom: 90px; }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         
-        /* আপনার প্রিয় হালকা সবুজ থিম ডিজাইন */
         .header { background: #ffffff; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border-top: 5px solid #2ecc71; }
         .header h1 { color: #2ecc71; font-size: 24px; margin-bottom: 5px; }
         .card { background: #fff; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #ebfaee; }
@@ -28,11 +27,11 @@
         .spin-container { margin-top: 20px; padding: 20px; background: #fff; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #ebfaee; }
         .spin-wheel { width: 120px; height: 120px; border: 6px solid #2ecc71; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #2ecc71; transition: transform 2s ease-out; background: #ebfaee; }
         
-        /* ইমোজি বাটন ও সাইজ বড় করা ফিক্সড নেভিগেশন বার */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 16px 0; border-top: 1px solid #e8f5e9; box-shadow: 0 -4px 12px rgba(0,0,0,0.06); }
-        .nav-item { text-align: center; color: #555; cursor: pointer; flex: 1; font-size: 15px; font-weight: bold; }
-        .nav-item i { font-size: 22px; margin-bottom: 4px; display: block; }
-        .nav-item.active { color: #2ecc71; }
+        /* আপনার অনুরোধ অনুযায়ী নিচের বার ও টেক্সট সাইজ আরও বড় করা হয়েছে */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 18px 0; border-top: 2px solid #e8f5e9; box-shadow: 0 -4px 15px rgba(0,0,0,0.08); }
+        .nav-item { text-align: center; color: #444; cursor: pointer; flex: 1; font-size: 18px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .nav-item i { font-size: 26px; display: block; }
+        .nav-item.active { color: #2ecc71; font-weight: 900; }
         
         input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #fcfdfc; }
         input:focus, select:focus { border-color: #2ecc71; outline: none; }
@@ -83,7 +82,7 @@
         </div>
     </div>
 
-    <!-- ۴. উইথড্র পেজ -->
+    <!-- ৪. উইথড্র পেজ -->
     <div id="withdraw" class="page">
         <div class="header"><h2>💰 Withdraw</h2></div>
         <div class="card">
@@ -97,12 +96,11 @@
             <input type="text" id="wallet" placeholder="ওয়ালেট নম্বর দিন">
             <input type="button" class="submit-btn" style="background: #e67e22; box-shadow: 0 4px 6px rgba(230, 126, 34, 0.2);" value="অনুরোধ জমা দিন" onclick="submitWithdraw()">
             <br>
-            <!-- আপনার সঠিক ছোট হাতের ইউজারনেম সহ সাপোর্ট বাটন -->
             <button class="submit-btn" style="background:#34495e; box-shadow: 0 4px 6px rgba(52, 73, 94, 0.2);" onclick="openLink('https://t.me')">👨‍💻 অ্যাডমিন লাইভ সাপোর্ট</button>
         </div>
     </div>
 
-    <!-- নিচের ফিক্সড নেভিগেশন বার (সবুজ কালার অ্যাক্টিভ, বড় সাইজ ও ইমোজি সহ) -->
+    <!-- ফন্ট সাইজ বড় করা ইমোজি মেনু বার -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchPage('home', this)"><i class="fas fa-home"></i>🏠 হোম</div>
         <div class="nav-item" onclick="switchPage('tasks', this)"><i class="fas fa-tasks"></i>📺 টাস্ক</div>
@@ -173,3 +171,4 @@
         function submitWithdraw() {
             const method = document.getElementById('method').value;
             const amount = document.getElementById('amount').value;
+            const wallet = document.getElementById('wallet').value;
