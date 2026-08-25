@@ -57,9 +57,9 @@
         .status-pending { color: #ffeb3b; font-weight: bold; }
         .no-data { color: #b0bec5; font-style: italic; padding: 15px !important; }
 
-        /* লাকি স্পিন */
+        /* লাকি স্পিন চাকা */
         .wheel-container { position: relative; width: 260px; height: 260px; margin: 20px auto; }
-        #canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.5); border: 5px solid #ffeb3b; }
+        #canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.5); border: 5px solid #ffeb3b; transform: rotate(0deg); }
         .wheel-arrow { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff5252; z-index: 10; }
         .spin-count { font-size: 14px; margin-top: 10px; color: #ffeb3b; font-weight: bold; }
 
@@ -93,14 +93,15 @@
 
             <div class="rules-card">
                 <div class="rules-title">⚠️ কাজের নিয়ম:</div>
-                <div class="rule-item">১. অবশ্যই ফোনে <span class="highlight-red">USA বা UK VPN</span> (যেমন: Turbo VPN / SuperVPN) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</div>
+                <div class="rule-item">১. অবশ্যই ফোনে <span class="highlight-red">USA বা UK VPN</span> কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</div>
                 <div class="rule-item"><span class="highlight-yellow">⚠️ ২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে ৫-১০ সেকেন্ড দেখুন।</span></div>
                 <div class="rule-item"><span class="highlight-yellow">⚠️ ৩. নিয়ম না মানলে ব্যালেন্স যোগ হবে না।</span></div>
                 <div class="rule-item">৪. কোনো অসদুপায় অবলম্বন করলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।</div>
             </div>
 
-            <button onclick="Telegram.WebApp.openLink('https://t.me')" class="action-btn btn-channel">📬 জয়েন অফিসিয়াল চ্যানেল</button>
-            <button onclick="Telegram.WebApp.openLink('https://t.me')" class="action-btn btn-support">🤝 লাইভ সাপোর্ট (যোগাযোগ)</button>
+            <!-- চ্যানেল এবং সাপোর্ট ওপেনিং ফিক্স -->
+            <button onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')" class="action-btn btn-channel">📬 জয়েন অফিসিয়াল চ্যানেল</button>
+            <button onclick="openTelegramLink('https://t.me/hshasan2009')" class="action-btn btn-support">🤝 লাইভ সাপোর্ট (যোগাযোগ)</button>
         </div>
 
         <!-- ২. টাস্ক ও লাকি স্পিন -->
@@ -130,7 +131,7 @@
             <div class="task-box">
                 <h2>বন্ধুদের আমন্ত্রণ জানান</h2>
                 <p style="margin-top: 10px;">আপনার রেফারেল লিংকটি শেয়ার করে আনলিমিটেড আয় করুন।</p>
-                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(বন্ধুদের রেফারেল থেকে আজীবন বাড়তি ইনকাম পাবেন! 🎁)</p>
+                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(বন্ধুদের রেফারেল থেকে আজীবন বাড়তি  ইনকাম পাবেন! 🎁)</p>
                 
                 <div class="refer-stats-grid">
                     <div class="refer-stat-card">
@@ -138,7 +139,6 @@
                         <h3 id="total-ref-count">০ টি</h3>
                     </div>
                     <div class="refer-stat-card">
-                        <p>রেফার ইনকাম</p>
                     </div>
                 </div>
 
@@ -229,6 +229,14 @@
             window.scrollTo(0, 0);
         }
 
+        function openTelegramLink(url) {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.openLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const rewards = ["৳০.২০", "৳১.০০", "৳০.৫০", "৳৫.০০", "৳২.০০", "৳০.৩০", "৳৩.০০", "৳০.৪০"];
@@ -260,7 +268,7 @@
 
         let currentRotation = 0;
         function spinWheel() {
-            Telegram.WebApp.openLink('https://profitableratecpmnetwork.com'); 
+            openTelegramLink('https://profitableratecpmnetwork.com'); 
 
             const popup = document.getElementById('ad-popup');
             const timerSpan = document.getElementById('ad-timer');
@@ -277,14 +285,29 @@
                     
                     const btn = document.getElementById('spin-btn');
                     btn.disabled = true;
-                    const randomSpin = Math.floor(Math.random() * 360) + 1440;
+
+                    let targetIndex;
+                    let chance = Math.random();
+                    if (chance < 0.70) {
+                        let lowRewards =; 
+                        targetIndex = lowRewards[Math.floor(Math.random() * lowRewards.length)];
+                    } else {
+                        let highRewards =;
+                        targetIndex = highRewards[Math.floor(Math.random() * highRewards.length)];
+                    }
+
+                    let segmentAngle = 360 / rewards.length;
+                    let stopAngle = 360 - (targetIndex * segmentAngle) - (segmentAngle / 2);
+                    let randomSpin = 1440 + stopAngle; 
+                    
                     currentRotation += randomSpin;
                     canvas.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
                     canvas.style.transform = `rotate(${currentRotation}deg)`;
                     
                     setTimeout(() => { 
                         btn.disabled = false; 
-                        let randomAmount = parseFloat((Math.random() * (2.50 - 0.20) + 0.20).toFixed(2));
+                        let amountStr = rewards[targetIndex].replace('৳', '');
+                        let randomAmount = parseFloat(amountStr);
                         
                         let currentBal = parseFloat(document.getElementById('current-user-balance').textContent);
                         document.getElementById('current-user-balance').textContent = (currentBal + randomAmount).toFixed(2);
@@ -296,14 +319,14 @@
                         let currentRefCount = parseInt(document.getElementById('total-ref-count').innerText);
                         document.getElementById('total-ref-count').innerText = (currentRefCount + 1) + " টি";
 
-                        alert(`🎰 अभिनंदन! विज्ञापन এবং স্পিন সফল হয়েছে। ৳${randomAmount.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে এবং রেফারেল বোনাস হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`); 
+                        alert(`🎰 अभिनंदन! বিজ্ঞাপন এবং স্পিন সফল হয়েছে। আপনার একাউন্টে ৳${randomAmount.toFixed(2)} যোগ হয়েছে এবং রেফারেল বোনাস হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`); 
                     }, 4000);
                 }
             }, 1000);
         }
 
         function showFakeAd() {
-            Telegram.WebApp.openLink('https://profitableratecpmnetwork.com');
+            openTelegramLink('https://profitableratecpmnetwork.com');
 
             const popup = document.getElementById('ad-popup');
             const timerSpan = document.getElementById('ad-timer');
@@ -328,9 +351,10 @@
                     document.getElementById('total-ref-earn').textContent = (currentRefEarn + refBonus).toFixed(2);
                     
                     let currentRefCount = parseInt(document.getElementById('total-ref-count').innerText);
+                    let currentRefCount = parseInt(document.getElementById('total-ref-count').innerText);
                     document.getElementById('total-ref-count').innerText = (currentRefCount + 1) + " টি";
 
-                    alert(`✅   সম্পूर्ण দেখা হয়েছে! আপনার একাউন্টে ৳${earnedAmount.toFixed(2)} মেইন ব্যালেন্সে যোগ হয়েছে এবং রেফারেল বোনাস হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`);
+                    alert(`✅ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়েছে! আপনার একাউন্টে ৳${earnedAmount.toFixed(2)} মেইন ব্যালেন্সে যোগ হয়েছে এবং রেফারেল বোনাস হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`);
                 }
             }, 1000);
         }
@@ -345,6 +369,8 @@
             let currentBalance = parseFloat(document.getElementById('current-user-balance').textContent);
             let inputAmount = parseFloat(document.getElementById('withdraw-amount').value);
             let inputNumber = document.getElementById('withdraw-number').value;
+            let method = document.getElementById('withdraw-method').value;
+
             if(!inputNumber || !inputAmount) {
                 alert("⚠️ অনুগ্রহ করে আপনার নম্বর এবং টাকার পরিমাণ লিখুন।");
                 return;
