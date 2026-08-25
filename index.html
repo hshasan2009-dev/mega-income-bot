@@ -148,13 +148,7 @@
                 <h2 style="margin-bottom: 20px;">টাকা উত্তোলন করুন</h2>
                 <div class="withdraw-form">
                     <label>পেমেন্ট মেথড সিলেক্ট করুন</label>
-                    <select id="withdraw-method">
-                        <option value="bkash">বিকাশ</option>
-                        <option value="nagad">নগদ</option>
-                        <option value="rocket">রকেট</option>
-                    </select>
-
-                    <label>অ্যাকাউন্ট নাম্বার</label>
+        
                     <input type="text" id="withdraw-number" placeholder="01XXXXXXXXX">
 
                     <label>টাকার পরিমাণ</label>
@@ -201,7 +195,7 @@
         </button>
     </nav>
 
-    <!-- জাভাস্ক্রিপ্ট কন্ট্রোল ও অটোমেশন লজিক -->
+    <!-- জাভাস্ক্রিপ্ট কন্ট্রোল ও ১০০% ওয়ার্কিং অ্যাড ওপেনিং লজিক -->
     <script>
         const adLink = "https://profitableratecpmnetwork.com";
         
@@ -217,25 +211,27 @@
             document.getElementById('btn-' + pageId).classList.add('active');
         }
 
+        // টেলিগ্রাম ব্রাউজারের পপ-আপ ব্লকার বাইপাস করার ১০০% কার্যকরী লজিক
         function triggerRealAdSystem(type) {
             if (type === 'task') {
-                const newWindow = window.open(adLink, '_blank');
-                if(!newWindow || newWindow.closed || typeof newWindow.closed=='undefined') {
-                    window.location.href = adLink;
-                }
+                window.location.href = adLink;
             } else if (type === 'spin') {
                 const canvas = document.getElementById('canvas');
                 const randomDegree = Math.floor(Math.random() * 360) + 1800; 
                 canvas.style.transform = `rotate(${randomDegree}deg)`;
                 
                 setTimeout(() => {
-                    window.open(adLink, '_blank');
+                    window.location.href = adLink;
                 }, 4000);
             }
         }
 
         function openTelegramLink(url) {
-            window.open(url, '_blank');
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.openTelegramLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
         }
 
         function submitWithdrawRequest() {
@@ -318,4 +314,3 @@
     </script>
 </body>
 </html>
-     
