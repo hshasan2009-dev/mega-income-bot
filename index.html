@@ -21,14 +21,13 @@
         .rules li { margin-bottom: 10px; font-size: 15px; line-height: 1.5; font-weight: bold; }
         .important-red { color: #ff4d4d; font-weight: 900; background: rgba(255, 77, 77, 0.1); padding: 2px 6px; border-radius: 4px; }
         
-        /* ⚠️ ৩ নং নিয়মটি সম্পূর্ণ লাল রঙে দেখানোর বিশেষ স্টাইল */
+        /* ⚠️ ২ ও ৩ নং নিয়ম লাল রঙে দেখানোর জন্য সিএসএস স্টাইল */
         .full-red-line { color: #ff4d4d !important; font-weight: 900 !important; background: rgba(255, 77, 77, 0.15); padding: 6px; border-radius: 6px; display: block; }
         
         .task-btn { background: #4caf50; color: #fff; padding: 18px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 18px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid #4caf50; }
         .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; border: 1px solid #4caf50; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; transition: transform 2s ease-out; background: #1b5e20; }
         
-        /* 📱 নেভিগেশন বার ডিজাইন */
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 12px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
         .nav-item { text-align: center; color: #444444; cursor: pointer; flex: 1; font-size: 16px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; height: 65px; }
         .nav-item-emoji { font-size: 24px; display: block; margin-bottom: 2px; }
@@ -53,10 +52,10 @@
         <div class="rules">
             <h3>⚠️ কাজের নিয়ম:</h3>
             <ul>
-                <!-- ⚠️ এখানে ২টি ভিপিএন এর নাম যোগ করা হয়েছে -->
-                <li>১. অবশ্যই ফোনে <span class="important-red">USA বা UK VPN</span> (যেমন: *Turbo VPN / SuperVPN*) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
-                <li>২. কাজ চালু হলে विज्ञापनটি কমপক্ষে <span class="important-red">৫-১০ সেকেন্ড</span> দেখুন।</li>
-                <!-- ⚠️ এই ৩ নং লাইনটি ইমোজি সহ সম্পূর্ণ লাল রঙে হাইলাইট করা হয়েছে -->
+                <li>১. অবশ্যই ফোনে <span class="important-red">USA বা UK VPN</span> (যেমন: Turbo VPN / SuperVPN) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
+                <!-- ⚠️ ২ নম্বর লাইনটি সতর্ক ইমোজি সহ সম্পূর্ণ লাল করা হয়েছে এবং বানান ফিক্স করা হয়েছে -->
+                <li class="full-red-line" style="margin-bottom: 10px;">⚠️ ২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে ৫-১০ সেকেন্ড দেখুন।</li>
+                <!-- ⚠️ ৩ নম্বর লাইন -->
                 <li class="full-red-line">⚠️ ৩. নিয়ম না মানলে ব্যালেন্স যোগ হবে না।</li>
                 <li>৪. কোনো অসদুপায় অবলম্বন করলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।</li>
             </ul>
@@ -170,3 +169,5 @@
             } else {
                 window.open(url, '_blank');
             }
+        }
+
