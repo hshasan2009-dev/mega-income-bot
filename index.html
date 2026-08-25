@@ -24,9 +24,9 @@
         .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; border: 1px solid #4caf50; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; transition: transform 2s ease-out; background: #1b5e20; }
         
-        /* 📱 নেভিগেশন বার ডিজাইন */
+        /* 📱 বাটন প্যানেল স্টাইল */
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 12px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
-        .nav-item { text-align: center; color: #444; cursor: pointer; flex: 1; font-size: 16px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; height: 65px; }
+        .nav-item { text-align: center; color: #444444; cursor: pointer; flex: 1; font-size: 16px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; height: 65px; }
         .nav-item-emoji { font-size: 24px; display: block; margin-bottom: 2px; }
         .nav-item.active { color: #ffffff; background: #2e7d32; font-weight: 900; border-radius: 8px; margin: 0 4px; }
         
@@ -110,7 +110,7 @@
         </div>
     </div>
 
-    <!-- ৪টি কালারফুল বাটন নেভিগেশন বার -->
+    <!-- ৪টি মেইন নেভিগেশন বাটন বার -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchPage('home', this)"><span class="nav-item-emoji">🏡</span>হোম</div>
         <div class="nav-item" onclick="switchPage('tasks', this)"><span class="nav-item-emoji">📺</span>টাস্ক</div>
@@ -140,14 +140,23 @@
             });
         }
 
+        // 🔒 পেজ পরিবর্তন করার ফিক্সড জাভাস্ক্রিপ্ট ফাংশন
         function switchPage(pageId, element) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-bar .nav-item').forEach(i => i.classList.remove('active'));
+            // প্রথমে সব পেজ হাইড করা
+            document.querySelectorAll('.page').forEach(p => {
+                p.style.display = 'none';
+            });
+            // সব বাটনের একটিভ কালার রিমুভ করা
+            document.querySelectorAll('.nav-bar .nav-item').forEach(i => {
+                i.classList.remove('active');
+            });
             
+            // নির্দিষ্ট পেজটি শো করা
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
-                targetPage.classList.add('active');
+                targetPage.style.display = 'block';
             }
+            // ক্লিক করা বাটনটি একটিভ করা
             if (element) {
                 element.classList.add('active');
             }
@@ -167,9 +176,3 @@
             if (!wheel) return;
             
             wheel.style.transition = 'transform 2s ease-out';
-            wheel.style.transform = 'rotate(' + (Math.random() * 360 + 1440) + 'deg)';
-            
-            setTimeout(() => {
-                const prizes = [0.10, 0.20, 0.50, 1.00, 2.00, 5.00];
-                const weights = [0.5, 0.3, 0.1, 0.05, 0.03, 0.02];
-                
