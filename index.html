@@ -8,8 +8,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* ⚠️ নিচের প্যাডিং ১০০ পিক্সেল করা হয়েছে যাতে বাটন স্ক্রিনের নিচে ঢাকা না পড়ে */
-        body { background-color: #1e5631; color: #ffffff; padding-bottom: 100px; min-height: 100vh; overflow-x: hidden; }
+        body { background-color: #1e5631; color: #ffffff; padding-bottom: 120px; min-height: 100vh; overflow-x: hidden; position: relative; }
         
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
@@ -27,23 +26,23 @@
         .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; border: 1px solid #4caf50; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; transition: transform 2s ease-out; background: #1b5e20; }
         
-        /* 📱 নেভিগেশন বার ফিক্সড পজিশন এবং স্টাইল */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 8px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
-        .nav-item { text-align: center; color: #444444; cursor: pointer; flex: 1; font-size: 14px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 55px; text-decoration: none; }
-        .nav-item-emoji { font-size: 22px; display: block; }
+        /* 📱 নিচের ফিক্সড নেভিগেশন বার */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 10px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 999999; }
+        .nav-item { text-align: center; color: #444444; cursor: pointer; flex: 1; font-size: 14px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 60px; text-decoration: none; }
+        .nav-item-emoji { font-size: 24px; display: block; }
         .nav-item.active { color: #ffffff; background: #2e7d32; font-weight: 900; border-radius: 8px; margin: 0 4px; }
         
         input, select { width: 100%; padding: 14px; margin: 12px 0; border: 2px solid #4caf50; border-radius: 10px; font-size: 16px; background: #fafdfa; font-weight: bold; color: #2c3e50; }
         .submit-btn { background: #ff9800; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 18px; font-weight: bold; transition: transform 0.2s; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px; display: block; cursor: pointer; }
         
-        /* প্রফাইল পেজ স্টাইল */
+        /* 👤 প্রফাইল বা ড্যাশবোর্ড পেজের বিশেষ স্টাইল */
         .profile-user-info { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #e8f5e9; text-align: center; width: 100%; padding-top: 10px; }
         .profile-stats-grid { display: flex; justify-content: space-around; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .stat-box { text-align: center; }
         .stat-box h3 { font-size: 28px; font-weight: 900; }
         .stat-box p { font-size: 13px; color: #e8f5e9; margin-top: 4px; }
         
-        .profile-menu-card { background: #ffffff; color: #333333; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .profile-menu-card { background: #ffffff; color: #333333; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: left; }
         .profile-menu-title { font-size: 18px; font-weight: bold; color: #1e5631; margin-bottom: 15px; border-bottom: 2px solid #e8f5e9; padding-bottom: 5px; }
         .asset-buttons { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 5px; }
         .asset-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; border: 1px solid #eeeeee; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: bold; color: #444444; transition: 0.2s; text-align: center; }
@@ -54,7 +53,7 @@
         .list-item-link:last-child { border-bottom: none; }
         .list-item-link span.arrow { color: #cccccc; font-size: 18px; }
 
-        .history-list { margin-top: 15px; max-height: 300px; overflow-y: auto; }
+        .history-list { margin-top: 15px; max-height: 300px; overflow-y: auto; text-align: left; }
         .history-item { background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #ffeb3b; color: #ffffff; }
         .history-item.withdraw { border-left-color: #ff4d4d; }
         .status-badge { padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
@@ -79,7 +78,7 @@
         <div class="rules">
             <h3>⚠️ কাজের নিয়ম:</h3>
             <ul>
-                <li>১. অবশ্যই ফোনে <span class="important-red">USA বা UK VPN</span> (যেমন: Turbo VPN / SuperVPN) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
+                <li>১. অবশ্যই ফোনে <span class="important-red">USA বা UK VPN</span> কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
                 <li>২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে <span class="important-red">৫-১০ সেকেন্ড</span> দেখুন।</li>
                 <li>৩. <span class="important-red">নিয়ম না মানলে</span> ব্যালেন্স যোগ হবে না।</li>
                 <li>৪. কোনো অসদুপায় অবলম্বন করলে অ্যাকাউন্ট ব্যান হবে।</li>
@@ -109,13 +108,14 @@
             <h2>👥 বন্ধুদের আমন্ত্রণ জানান</h2>
         </div>
         <div class="card">
-            <p style="font-size: 16px; margin-bottom: 12px; line-height: 1.4;">আপনার বন্ধুদের আমন্ত্রণ জানালে তাদের আয়ের <b class="important-red">২০% আজীবন কমিশন</b> পাবেন।</p>
+            <!-- ⚠️ এখানে ২০% থেকে বাড়িয়ে ৩০% করা হয়েছে -->
+            <p style="font-size: 16px; margin-bottom: 12px; line-height: 1.4;">আপনার বন্ধুদের আমন্ত্রণ জানালে তাদের আয়ের <b class="important-red">৩০% আজীবন কমিশন</b> পাবেন।</p>
             <input type="text" id="ref-link-input" readonly value="লিংক লোড হচ্ছে...">
             <button class="submit-btn" style="background:#4caf50;" onclick="copyRef()">🔗 লিংক কপি করুন</button>
         </div>
     </div>
 
-    <!-- ৪. 👤 প্রফাইল পেজ -->
+    <!-- ৪. 👤 প্রফাইল পেজ (আমার সম্পদ) -->
     <div id="profile" class="page">
         <div class="profile-user-info">
             <span>🆔 ID: <span id="display-user-id">8049465500</span></span>
@@ -138,4 +138,3 @@
                 <div class="asset-btn" onclick="switchPage('inner-withdraw')">
                     <div class="icon-circle">↗️</div>
                     <div>উত্তোলন<br>অনুরোধ</div>
-                </div>
