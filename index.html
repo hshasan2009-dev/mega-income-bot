@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #1a4329; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-bottom: 100px; }
+        body { background-color: #1a4329; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-bottom: 150px; }
         
         .header { background: #1e5233; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; border-bottom: 2px solid #2e7d32; }
         .container { padding: 15px; max-width: 500px; margin: 0 auto; }
@@ -58,8 +58,8 @@
         #ad-frame { width: 100%; height: 90%; border: none; }
         .timer-overlay { height: 10%; background: #1e5233; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #ffeb3b; }
 
-        /* নিচের ফিক্সড ৪টি নেভিগেশন বার - ৩ডি ইমোজি থিম */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #e0e0e0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 999; }
+        /* নিচের ফিক্সড ৪টি নেভিগেশন বার - ৩ডি ইমোজি থিম (১০০% দৃশ্যমানতা ফিক্সড করা হয়েছে) */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 12px rgba(0,0,0,0.15); z-index: 99999; box-sizing: border-box; }
         .nav-item { color: #555555; text-decoration: none; font-size: 12px; display: flex; flex-direction: column; align-items: center; cursor: pointer; background: none; border: none; font-weight: bold; width: 22%; transition: 0.2s; }
         .nav-item img { width: 32px; height: 32px; margin-bottom: 2px; object-fit: contain; }
         .nav-item span { font-size: 12px; color: #333333; }
@@ -103,7 +103,7 @@
             </div>
 
             <div class="task-box">
-                <h2>লাকি স্পিন হুইল 🎉</h2>
+                <h2>لاکی স্পিন হুইল 🎉</h2>
                 <p style="font-size: 13px; margin-top: 5px; color: #ffd700;">সর্বনিম্ন ৳০.২০ থেকে সর্বোচ্চ ৳৫.০০ জিতুন!</p>
                 <div class="wheel-container">
                     <div class="wheel-arrow"></div>
@@ -125,11 +125,10 @@
             </div>
         </div>
 
-        <!-- ৪. উইথড্র পেজ সেকশন -->
+        <!-- ۴. উইথড্র পেজ সেকশন -->
         <div id="withdraw-page" class="page">
             <div class="task-box">
                 <h2>টাকা উত্তোলন করুন</h2>
                 <p style="margin-top: 5px;">নূন্যতম উইথড্র সীমা: ৳১৫০ (ফি: ৫% চার্জ প্রযোজ্য)</p>
                 
                 <div class="withdraw-form">
-                    <label>পেমেন্ট মেথড সিলেক্ট করুন:</label>
