@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mega Income Bot</title>
+    <!-- টেলিগ্রামের মূল ফাইলটি একদম শুরুতে রাখা হলো -->
     <script src="https://telegram.org"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -27,6 +28,7 @@
         .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; border: 1px solid #4caf50; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; transition: transform 2s ease-out; background: #1b5e20; }
         
+        /* 📱 নেভিগেশন বার ডিজাইন */
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 12px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
         .nav-item { text-align: center; color: #444444; cursor: pointer; flex: 1; font-size: 16px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; height: 65px; }
         .nav-item-emoji { font-size: 24px; display: block; margin-bottom: 2px; }
@@ -112,7 +114,7 @@
         </div>
     </div>
 
-    <!-- ৪টি কালারফুল বাটন নেভিগেশন বার -->
+    <!-- ৪টি বাটন বার -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchPage('home', this)"><span class="nav-item-emoji">🏡</span>হোম</div>
         <div class="nav-item" onclick="switchPage('tasks', this)"><span class="nav-item-emoji">📺</span>টাস্ক</div>
@@ -121,18 +123,19 @@
     </div>
 
     <script>
-        const tg = window.Telegram ? window.Telegram.WebApp : null;
-        if (tg) {
-            tg.expand();
-        }
+        // বাটন লোড নিশ্চিত করার গ্লোবাল লজিক
+        window.addEventListener('DOMContentLoaded', () => {
+            const tg = window.Telegram ? window.Telegram.WebApp : null;
+            if (tg) {
+                tg.expand();
+            }
 
-        const userId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "8049465500";
-        const userName = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? (tg.initDataUnsafe.user.first_name || "ইউজার") : "টেস্ট ইউজার";
-        
-        const refLinkInput = document.getElementById('ref-link-input');
-        if (refLinkInput) {
-            refLinkInput.value = 'https://t.me' + userId;
-        }
+            const userId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "8049465500";
+            const refLinkInput = document.getElementById('ref-link-input');
+            if (refLinkInput) {
+                refLinkInput.value = 'https://t.me' + userId;
+            }
+        });
 
         let userBalance = 0.00;
 
@@ -142,13 +145,17 @@
             });
         }
 
+        // পেজ পরিবর্তন করার একদম ডাইরেক্ট ও সলিড ফাংশন
         function switchPage(pageId, element) {
-            document.querySelectorAll('.page').forEach(p => {
-                p.style.display = 'none';
-            });
-            document.querySelectorAll('.nav-bar .nav-item').forEach(i => {
-                i.classList.remove('active');
-            });
+            const pages = document.querySelectorAll('.page');
+            for(let i = 0; i < pages.length; i++) {
+                pages[i].style.display = 'none';
+            }
+            
+            const navItems = document.querySelectorAll('.nav-bar .nav-item');
+            for(let j = 0; j < navItems.length; j++) {
+                navItems[j].classList.remove('active');
+            }
             
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
@@ -161,15 +168,5 @@
         }
 
         function openLink(url) {
+            const tg = window.Telegram ? window.Telegram.WebApp : null;
             if (tg && tg.openTelegramLink) {
-                tg.openTelegramLink(url);
-            } else {
-                window.open(url, '_blank');
-            }
-        }
-
-        function spinNow() {
-            const wheel = document.getElementById('wheel');
-            if (!wheel) return;
-            
-            wheel.style.transition = 'transform 2s ease-out';
