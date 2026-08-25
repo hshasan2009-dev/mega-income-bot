@@ -4,21 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mega Income Bot</title>
-    <!-- আইকন দেখার জন্য নিচের লিংকটি জরুরি -->
-    <link rel="stylesheet" href="https://cloudflare.com">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #1a4329; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-bottom: 100px; }
+        body { background-color: #1a4329; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-bottom: 120px; }
 
         .header { background: #1e5233; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; border-bottom: 2px solid #2e7d32; }
         .container { padding: 15px; max-width: 500px; margin: 0 auto; }
         
-        /* পেজ কন্ট্রোল থিম (লুকানো এবং দেখানোর জন্য) */
         .page { display: none; }
         .page.active { display: block; }
 
-        /* ব্যালেন্স বক্স ডিজাইন */
+        /* ব্যালেন্স বক্স */
         .balance-card { background: #23693e; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 20px; }
         .balance-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #e0f2f1; }
         .balance-box { background: #174428; border-radius: 10px; padding: 15px; font-size: 32px; font-weight: bold; color: white; display: inline-flex; align-items: center; justify-content: center; min-width: 200px; border: 1px solid #2e7d32; font-family: 'Courier New', Courier, monospace; }
@@ -30,14 +27,14 @@
         .highlight-red { color: #ff5252; font-weight: bold; }
         .highlight-yellow { color: #ffeb3b; font-weight: bold; }
 
-        /* অফিশিয়াল ও লাইভ সাপোর্ট বাটন */
+        /* সাপোর্ট বাটন */
         .action-btn { background: #1e88e5; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 10px; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-decoration: none; }
         .btn-support { background: #ff9800; }
         .task-box { background: #23693e; border-radius: 15px; padding: 25px; text-align: center; border: 1px solid #2e7d32; margin-bottom: 20px; }
         .ad-start-btn { background: #ffeb3b; color: #1a4329; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; margin-top: 15px; width: 100%; transition: 0.2s; }
         .ad-start-btn:disabled { background: #cccccc; color: #666666; cursor: not-allowed; }
 
-        /* উইথড্র ফর্ম ডিজাইন */
+        /* উইথড্র ফর্ম */
         .withdraw-form { text-align: left; margin-top: 15px; }
         .withdraw-form label { font-size: 14px; font-weight: bold; display: block; margin-bottom: 5px; color: #e0f2f1; }
         .withdraw-form select, .withdraw-form input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2e7d32; background: #174428; color: white; font-size: 16px; margin-bottom: 15px; outline: none; }
@@ -48,28 +45,24 @@
         .history-table th, .history-table td { padding: 10px; border: 1px solid #2e7d32; text-align: center; }
         .history-table th { background: #174428; color: #ffd700; }
         .status-pending { color: #ffeb3b; }
-        .status-success { color: #4caf50; font-weight: bold; }
 
-        /* লাকি স্পিন হুইল গ্রাফিক্স */
+        /* লাকি স্পিন */
         .wheel-container { position: relative; width: 260px; height: 260px; margin: 20px auto; }
-        #canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.5); border: 5px solid #ffeb3b; transform: rotate(0deg); transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1); }
+        #canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.5); border: 5px solid #ffeb3b; }
         .wheel-arrow { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff5252; z-index: 10; }
         .spin-count { font-size: 14px; margin-top: 10px; color: #ffeb3b; font-weight: bold; }
 
-        /* ইন-অ্যাপ অ্যাড পপ-আপ উইন্ডো */
-        #ad-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; }
-        #ad-frame { width: 100%; height: 90%; border: none; }
-        .timer-overlay { height: 10%; background: #1e5233; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #ffeb3b; }
+        /* অ্যাড পপ-আপ উইন্ডো */
+        #ad-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; }
+        .timer-overlay { font-size: 24px; font-weight: bold; color: #ffeb3b; margin-bottom: 20px; }
 
-        /* নিচের ফিক্সড ৪টি নেভিগেশন বার */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 12px rgba(0,0,0,0.15); z-index: 9999; }
-        .nav-item { color: #555555; text-decoration: none; font-size: 12px; display: flex; flex-direction: column; align-items: center; cursor: pointer; background: none; border: none; font-weight: bold; width: 22%; padding: 6px 0; }
-        .nav-item i { font-size: 20px; margin-bottom: 3px; color: #555555; }
-        .nav-item span { font-size: 12px; color: #333333; }
-        
-        /* বাটন একটিভ হলে এই কালার হবে */
-        .nav-item.active { background: #e8f5e9; border-radius: 10px; }
-        .nav-item.active i, .nav-item.active span { color: #2e7d32; font-weight: bold; }
+        /* ⚠️ বাটনগুলো বড় করার নতুন ডিজাইন */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 12px rgba(0,0,0,0.15); z-index: 9999; }
+        .nav-item { color: #555555; text-decoration: none; display: flex; flex-direction: column; align-items: center; cursor: pointer; background: none; border: none; width: 22%; padding: 10px 0; transition: 0.2s; }
+        .nav-item .emoji { font-size: 24px; margin-bottom: 5px; }
+        .nav-item span { font-size: 14px; color: #333333; font-weight: bold; }
+        .nav-item.active { background: #e8f5e9; border-radius: 12px; }
+        .nav-item.active span { color: #2e7d32; }
     </style>
 </head>
 <body>
@@ -78,7 +71,7 @@
 
     <div class="container">
         
-        <!-- ১. হোম পেজ সেকশন -->
+        <!-- ১. হোম পেজ -->
         <div id="home-page" class="page active">
             <p style="text-align: center; font-weight: bold; margin-bottom: 15px; color: #ffeb3b;">আনলিমিটেড আয় করুন।</p>
             
@@ -88,8 +81,8 @@
             </div>
 
             <div class="rules-card">
-                <div class="rules-title"><i class="fa-solid fa-triangle-exclamation"></i> কাজের নিয়ম:</div>
-                <div class="rule-item">১. অবশ্যই ফোনে <span class="highlight-red">USA বা UK VPN</span> (যেমন: Turbo VPN / SuperVPN) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</div>
+                <div class="rules-title">⚠️ কাজের নিয়ম:</div>
+                <div class="rule-item">১. অবশ্যই ফোনে <span class="highlight-red">USA বা UK VPN</span> কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</div>
                 <div class="rule-item"><span class="highlight-yellow">⚠️ ২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে ৫-১০ সেকেন্ড দেখুন।</span></div>
                 <div class="rule-item"><span class="highlight-yellow">⚠️ ৩. নিয়ম না মানলে ব্যালেন্স যোগ হবে না।</span></div>
                 <div class="rule-item">৪. কোনো অসদুপায় অবলম্বন করলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।</div>
@@ -99,13 +92,13 @@
             <a href="https://t.me" target="_blank" class="action-btn btn-support">🤝 লাইভ সাপোর্ট (যোগাযোগ)</a>
         </div>
 
-        <!-- ২. টাস্ক ও লাকি স্পিন পেজ সেকশন -->
+        <!-- ২. টাস্ক ও লাকি স্পিন -->
         <div id="task-page" class="page">
             <div class="task-box">
                 <h2 style="margin-bottom: 10px;">ভিдео বিজ্ঞাপন টাস্ক</h2>
                 <p>একটি অ্যাড সম্পূর্ণ দেখলে আপনার ব্যালেন্সে টাকা যোগ হবে।</p>
                 <p style="color: #ffeb3b; font-weight: bold; font-size: 20px; margin-top: 10px;">পুরস্কার: ৳২.০০</p>
-                <button id="start-ad-btn" class="ad-start-btn">বিজ্ঞাপন দেখুন</button>
+                <button id="start-ad-btn" class="ad-start-btn" onclick="showFakeAd()">বিজ্ঞাপন দেখুন</button>
             </div>
 
             <div class="task-box">
@@ -113,75 +106,46 @@
                 <p style="font-size: 13px; margin-top: 5px; color: #ffd700;">সর্বনিম্ন ৳০.২০ থেকে সর্বোচ্চ ৳৫.০০ জিতুন!</p>
                 <div class="wheel-container">
                     <div class="wheel-arrow"></div>
-                    <canvas id="canvas" width="300" height="300"></canvas>
+                    <canvas id="canvas" width="260" height="260"></canvas>
                 </div>
-                <button id="spin-btn" class="ad-start-btn" style="background: #ff9800; color: white;" disabled>চাকা ঘুরান (টিকিট নেই)</button>
+                <button id="spin-btn" class="ad-start-btn" style="background: #ff9800; color: white;" onclick="spinWheel()">চাকা ঘুরান</button>
                 <div class="spin-count">আজকের বাকি স্পিন: <span id="rem-spin">২০</span>/২০</div>
-                <div class="spin-count" style="color: #a5d6a7;">আপনার স্পিন টিকিট: <span id="spin-tickets">০</span> টি</div>
+                <div class="spin-count" style="color: #a5d6a7;">আপনার স্পিন টিকিট: <span id="spin-tickets">৫</span> টি</div>
             </div>
         </div>
 
-        <!-- ৩. আমন্ত্রণ পেজ সেকশন -->
+        <!-- ৩. আমন্ত্রণ পেজ -->
         <div id="invite-page" class="page">
             <div class="task-box">
                 <h2>বন্ধুদের আমন্ত্রণ জানান</h2>
                 <p style="margin-top: 10px;">আপনার রেফারেল লিংকটি শেয়ার করে আনলিমিটেড আয় করুন।</p>
-                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(আপনার বন্ধুরা কাজ করলে প্রতিটি কাজ থেকে আপনি পাবেন ৩০% লাইভ বোনাস! 🎁)</p>
-                <div style="background: #174428; padding: 12px; border-radius: 10px; margin-top: 15px; word-break: break-all; color: #ffeb3b;" id="ref-link">লোড হচ্ছে...</div>
+                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(৩০% লাইভ বোনাস! 🎁)</p>
+                <div style="background: #174428; padding: 12px; border-radius: 10px; margin-top: 15px; word-break: break-all; color: #ffeb3b; font-weight: bold;" id="ref-link">https://t.me</div>
             </div>
         </div>
 
-        <!-- ৪. উইথড্র পেজ সেকশন -->
+        <!-- ৪. উইথড্র পেজ -->
         <div id="withdraw-page" class="page">
             <div class="task-box">
                 <h2>টাকা উত্তোলন করুন</h2>
-                <p style="margin-top: 5px;">নূন্যতম উইথড্র সীমা: ৳১৫০ (ফি: ৫% চার্জ প্রযোজ্য)</p>
-            </div>
-        </div>
+                <p style="margin-top: 5px; margin-bottom: 15px;">নূন্যতম উইথড্র সীমা: ৳১৫০ (ফি: ৫% চার্জ)</p>
+                
+                <div class="withdraw-form">
+                    <label>মেথড সিলেক্ট করুন</label>
+                    <select>
+                        <option>বিকাশ (Bkash)</option>
+                        <option>নগদ (Nagad)</option>
+                        <option>রকেট (Rocket)</option>
+                    </select>
+                    
+                    <label>আপনার অ্যাকাউন্ট নম্বর</label>
+                    <input type="number" placeholder="017XXXXXXXX">
+                    
+                    <label>টাকার পরিমাণ (Amount)</label>
+                    <input type="number" placeholder="৳ ১৫০">
+                    
+                    <button class="ad-start-btn" style="margin-top: 5px;">উইথড্র রিকোয়েস্ট পাঠান</button>
+                </div>
 
-    </div>
-
-    <!-- ⚠️ নিচের ফিক্সড নেভিগেশন বার (ক্লিক ফাংশন সহ বাটন) -->
-<div class="nav-bar">
-    <button class="nav-item active" onclick="switchPage('home-page', this)">
-        <i class="fa-solid fa-house"></i>
-        <span>হোম</span>
-    </button>
-    <button class="nav-item" onclick="switchPage('task-page', this)">
-        <i class="fa-solid fa-tasks"></i>
-        <span>টাস্ক</span>
-    </button>
-    <button class="nav-item" onclick="switchPage('invite-page', this)">
-        <i class="fa-solid fa-user-plus"></i>
-        <span>রেফার</span>
-    </button>
-    <button class="nav-item" onclick="switchPage('withdraw-page', this)">
-        <i class="fa-solid fa-wallet"></i>
-        <span>উইথড্র</span>
-    </button>
-</div>
-
-<!-- ⚠️ বাটন ক্লিক করলে পেজ পরিবর্তনের মূল জাভাস্ক্রিপ্ট কোড -->
-<script>
-    function switchPage(pageId, btnElement) {
-        // ১. সব পেজ লুকিয়ে ফেলা
-        const pages = document.querySelectorAll('.page');
-        pages.forEach(p => p.classList.remove('active'));
-
-        // ২. ক্লিক করা নির্দিষ্ট পেজটি দেখানো
-        const targetPage = document.getElementById(pageId);
-        if (targetPage) {
-            targetPage.classList.add('active');
-        }
-
-        // ৩. সব বাটন থেকে একটিভ কালার সরানো
-        const buttons = document.querySelectorAll('.nav-item');
-        buttons.forEach(b => b.classList.remove('active'));
-
-        // ৪. ক্লিক করা বাটনে একটিভ কালার দেওয়া
-        btnElement.classList.add('active');
-    }
-</script>
-
-</body>
-</html>
+                <div class="history-title">উইথড্র হিস্ট্রি</div>
+                <table class="history-table">
