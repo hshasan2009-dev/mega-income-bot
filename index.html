@@ -72,3 +72,63 @@
             <h3 style="color:#ffc107; margin-bottom:15px;">টাকা উত্তোলন করুন</h3>
             <div class="form-group"><label>পেমেন্ট মেথড</label><select id="withdraw-method"><option value="bKash">বিকাশ (bKash)</option><option value="Nagad">নগদ (Nagad)</option><option value="Rocket">রকেট (Rocket)</option></select></div>
             <div class="form-group"><label>অ্যাকাউন্ট নাম্বার</label><input type="number" id="withdraw-number" placeholder="017XXXXXXXX"></div>
+<!-- 2. TASK PAGE -->
+    <div id="task" class="page">
+        <div class="card"><h3 style="color:#ffc107; margin-bottom:5px;">ভিডিও বিজ্ঞাপন টাস্ক</h3><p style="font-size:12px; color:#ccc; margin-bottom:10px;">বিজ্ঞপ্তিটি সম্পূর্ণ দেখলে সরাসরি মূল একাউন্টে বোনাস যুক্ত হবে।</p><button class="btn-main" id="btn-watch-ad" onclick="showAdsgramAd('video')">📺 বিজ্ঞাপন দেখুন</button></div>
+        <div class="card"><h3 style="color:#ffc107; margin-bottom:5px;">🎰 লাকি স্পিন হুইল</h3><p style="font-size:12px; color:#ccc; margin-bottom:10px;">প্রথমে একটি বিজ্ঞাপন দেখতে হবে, তারপর চাকা ঘুরবে!</p><div class="wheel-outer" id="wheel"><div class="wheel-pointer"></div></div><button class="btn-main" id="btn-spin" onclick="showAdsgramAd('spin')">🌀 স্পিন করুন</button></div>
+    </div>
+
+    <!-- 3. REFER PAGE -->
+    <div id="refer" class="page">
+        <div class="refer-notice">বন্ধুদের রেফার করে আজীবন ৩০% বাড়তি ইনকাম বা কমিশন পাবেন! 🎁</div>
+        <div class="stats-grid">
+            <div class="stat-box"><span>মোট রেফার</span><strong id="total-refers">0</strong></div>
+            <div class="stat-box"><span>মোট রেফার কমিশন</span><strong id="refer-commissions">৳0.00</strong></div>
+        </div>
+        <div class="card" style="text-align: left;">
+            <h3 style="color:#ffc107;">আপনার ইনভাইট লিংক:</h3>
+            <div class="link-box" id="refer-link">Generating link...</div>
+            <button class="btn-main" style="padding:10px; font-size:13px;" onclick="copyReferLink()">📋 লিংক কপি করুন</button>
+        </div>
+    </div>
+
+    <!-- 4. WITHDRAW PAGE -->
+    <div id="withdraw" class="page">
+        <div class="card">
+            <h3 style="color:#ffc107; margin-bottom:15px;">টাকা উত্তোলন করুন</h3>
+            <div class="form-group"><label>পেমেন্ট মেথড</label><select id="withdraw-method"><option value="bKash">বিকাশ (bKash)</option><option value="Nagad">নগদ (Nagad)</option><option value="Rocket">রকেট (Rocket)</option></select></div>
+            <div class="form-group"><label>অ্যাকাউন্ট নাম্বার</label><input type="number" id="withdraw-number" placeholder="017XXXXXXXX"></div>
+            <div class="form-group"><label>টাকার পরিমাণ (সর্বনিম্ন ৳১৫০)</label><input type="number" id="withdraw-amount" placeholder="150"></div>
+            <button class="btn-main" onclick="handleWithdraw()">💸 সাবমিট রিকোয়েস্ট</button>
+        </div>
+        <h3 style="color:#ffc107; margin-top:15px; width:90%; max-width:400px; text-align:left;">পেমেন্ট হিস্ট্রি</h3>
+        <table class="history-table"><thead><tr><th>মেথড</th><th>পরিমাণ (৫% বাদে)</th><th>স্ট্যাটাস</th></tr></thead><tbody id="history-rows"></tbody></table>
+    </div>
+
+    <div class="modal" id="custom-popup"><p id="popup-text"></p><button onclick="closePopup()">OK</button></div>
+
+    <!-- Bottom Navigation Bar - একদম ফিক্সড ও সচল -->
+    <div class="navbar">
+        <div class="nav-item active" onclick="switchPage('home', this)"><span class="nav-icon">🏠</span><span>হোম</span></div>
+        <div class="nav-item" onclick="switchPage('task', this)"><span class="nav-icon">💼</span><span>টাস্ক</span></div>
+        <div class="nav-item" onclick="switchPage('refer', this)"><span class="nav-icon">👥</span><span>রেফার</span></div>
+        <div class="nav-item" onclick="switchPage('withdraw', this)"><span class="nav-icon">💳</span><span>উইথড্র</span></div>
+    </div>
+
+    <script>
+        const adsgramBlockId = "44575", adminChatId = "8049465500";
+        const botToken = "8644824917:YOUR_ACTUAL_BOT_TOKEN"; // ⚠️ এখানে আপনার বটের টোকেনটি বসিয়ে দিন
+        let balance = 0.00, userId = "123456"; const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) { userId = tg.initDataUnsafe.user.id; }
+        document.getElementById('refer-link').innerText = `https://t.me{userId}`;
+        function switchPage(pageId, element) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); document.getElementById(pageId).classList.add('active'); element.classList.add('active'); }
+        function showAlert(msg) { document.getElementById('popup-text').innerText = msg; document.getElementById('custom-popup').style.display = 'block'; }
+        function closePopup() { document.getElementById('custom-popup').style.display = 'none'; }
+        function copyReferLink() { navigator.clipboard.writeText(document.getElementById('refer-link').innerText); showAlert("🎉 ইনভাইট লিংক কপি হয়েছে!"); }
+        function showAdsgramAd(type) { if(!window.Adsgram) { processAdReward(type, (Math.random()*(6-2)+2)); return; } window.Adsgram.init({ blockId: adsgramBlockId }).show().then(() => { processAdReward(type, (Math.random()*(6-2)+2)); }).catch(() => { showAlert("❌ সম্পূর্ণ বিজ্ঞাপন না দেখলে ১ পয়সাও পাবেন না!"); }); }
+        function processAdReward(type, amt) { let userShare = amt * 0.5; balance += userShare; document.getElementById('user-balance').innerText = balance.toFixed(2); if (type === 'video') { showAlert(` must সম্পূর্ণ বোনাস ৳${userShare.toFixed(2)} পেয়েছেন! 🎉`); } else { const wheel = document.getElementById('wheel'); const btn = document.getElementById('btn-spin'); btn.disabled = true; let deg = Math.floor(Math.random() * 360) + 1440; wheel.style.transform = `rotate(${deg}deg)`; setTimeout(() => { btn.disabled = false; showAlert(`🎰 স্পিন করে আপনি ৳${userShare.toFixed(2)} বোনাস জিতেছেন!`); }, 4000); } }
+        function handleWithdraw() { const method = document.getElementById('withdraw-method').value, number = document.getElementById('withdraw-number').value, amount = parseFloat(document.getElementById('withdraw-amount').value); if (!number || isNaN(amount)) { showAlert("❌ সব তথ্য পূরণ করুন!"); return; } if (amount < 150) { showAlert("❌ সর্বনিম্ন উইথড্র ৳১৫ۆ হতে হবে!"); return; } if (amount > balance) { showAlert("❌ পর্যাপ্ত ব্যালেন্স নেই!"); return; } let fee = amount * 0.05, final = amount - fee; balance -= amount; document.getElementById('user-balance').innerText = balance.toFixed(2); document.getElementById('history-rows').innerHTML += `<tr><td>${method} (${number})</td><td>৳${final.toFixed(2)}</td><td style="color:#ffc107;font-weight:bold;">Pending</td></tr>`; sendAdminNotification(method, number, amount, fee, final); showAlert(`✅ সফল! ৫% ফি বাদে ৳${final.toFixed(2)} পেন্ডিংয়ে যুক্ত হয়েছে।`); }
+        function sendAdminNotification(m, n, t, f, fi) { if(botToken.includes("YOUR_ACTUAL_BOT_TOKEN")) return; const msg = `🚨 *নতুন উইথড্র রিকোয়েস্ট*\n\n👤 আইডি: \`${userId}\`\n💳 মেথড: ${m}\n📱 নাম্বার: \`${n}\`\n💰 মোট: ৳${t}\n⚡ ফি: ৳${f}\n💵 চূড়ান্ত: *৳${fi}*`; const kb = { inline_keyboard: [[{ text: "✅ Approve", callback_data: `approve_${userId}_${fi}` }, { text: "❌ Reject", callback_data: `reject_${userId}` }], [{ text: "🚫 Ban User", callback_data: `ban_${userId}` }]] }; fetch(`https://telegram.org{botToken}/sendMessage?chat_id=${adminChatId}&text=${encodeURIComponent(msg)}&parse_mode=Markdown&reply_markup=${encodeURIComponent(JSON.stringify(kb))}`).catch(e => console.log(e)); }
+    </script>
+</body>
+                                                                                                                                                                                                                   </html>
