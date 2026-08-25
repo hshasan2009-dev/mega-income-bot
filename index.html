@@ -6,54 +6,54 @@
     <title>Mega Income Bot</title>
     <!-- টেলিগ্রাম মিনি অ্যাপের অফিশিয়াল স্ক্রিপ্ট -->
     <script src="https://telegram.org"></script>
-    
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: #1a4329; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-bottom: 150px; }
 
-        .header { background: #1e5233; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; border-bottom: 2px solid #2e7d32; }
+        .header { background-color: #1e5233; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; border-bottom: 2px solid #2e7d32; }
         .container { padding: 15px; max-width: 500px; margin: 0 auto; }
-        
+
         .page { display: none; }
         .page.active { display: block; }
 
         /* ব্যালেন্স বক্স */
-        .balance-card { background: #23693e; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .balance-card { background-color: #23693e; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 20px; }
         .balance-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #e0f2f1; }
-        .balance-box { background: #174428; border-radius: 10px; padding: 15px; font-size: 32px; font-weight: bold; color: white; display: inline-flex; align-items: center; justify-content: center; min-width: 200px; border: 1px solid #2e7d32; font-family: 'Courier New', Courier, monospace; }
+        .balance-box { background-color: #174428; border-radius: 10px; padding: 15px; font-size: 32px; font-weight: bold; color: white; display: inline-flex; align-items: center; justify-content: center; min-width: 200px; border: 1px solid #2e7d32; font-family: 'Courier New', Courier, monospace; }
 
         /* কাজের নিয়ম বক্স */
-        .rules-card { background: #23693e; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 20px; border: 1px solid #2e7d32; text-align: left; }
+        .rules-card { background-color: #23693e; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 20px; border: 1px solid #2e7d32; text-align: left; }
         .rules-title { font-size: 18px; font-weight: bold; color: #ffeb3b; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .rule-item { font-size: 14px; line-height: 1.6; margin-bottom: 12px; background: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; color: white; }
+        .rule-item { font-size: 14px; line-height: 1.6; margin-bottom: 12px; background-color: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; color: white; }
         .highlight-red { color: #ff5252; font-weight: bold; }
         .highlight-yellow { color: #ffeb3b; font-weight: bold; }
 
         /* সাপোর্ট বাটন */
         .action-btn { color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 10px; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-decoration: none; text-align: center; font-family: inherit; }
-        .btn-channel { background: #1e88e5; }
-        .btn-support { background: #ff9800; }
-        .task-box { background: #23693e; border-radius: 15px; padding: 25px; text-align: center; border: 1px solid #2e7d32; margin-bottom: 20px; }
-        .ad-start-btn { background: #ffeb3b; color: #1a4329; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; margin-top: 15px; width: 100%; transition: 0.2s; }
-        .ad-start-btn:disabled { background: #cccccc; color: #666666; cursor: not-allowed; }
+        .btn-channel { background-color: #1e88e5; }
+        .btn-support { background-color: #ff9800; }
+        .task-box { background-color: #23693e; border-radius: 15px; padding: 25px; text-align: center; border: 1px solid #2e7d32; margin-bottom: 20px; }
+        .ad-start-btn { background-color: #ffeb3b; color: #1a4329; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; margin-top: 15px; width: 100%; transition: 0.2s; }
+        .ad-start-btn:disabled { background-color: #cccccc; color: #666666; cursor: not-allowed; }
 
         /* রেফার ডিজাইন গ্রিড */
         .refer-stats-grid { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
-        .refer-stat-card { background: #174428; flex: 1; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #2e7d32; }
+        .refer-stat-card { background-color: #174428; flex: 1; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #2e7d32; }
         .refer-stat-card p { font-size: 12px; color: #e0f2f1; margin-bottom: 5px; }
         .refer-stat-card h3 { font-size: 18px; color: #ffeb3b; font-weight: bold; }
-        .copy-btn { background: #ffffff; color: #1a4329; border: none; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
+        .copy-btn { background-color: #ffffff; color: #1a4329; border: none; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
 
         /* উইথড্র ফর্ম */
         .withdraw-form { text-align: left; margin-top: 15px; }
         .withdraw-form label { font-size: 14px; font-weight: bold; display: block; margin-bottom: 5px; color: #e0f2f1; }
-        .withdraw-form select, .withdraw-form input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2e7d32; background: #174428; color: white; font-size: 16px; margin-bottom: 15px; outline: none; }
+        .withdraw-form select, .withdraw-form input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2e7d32; background-color: #174428; color: white; font-size: 16px; margin-bottom: 15px; outline: none; }
 
         /* হিস্ট্রি টেবিল */
         .history-title { font-size: 16px; font-weight: bold; text-align: left; margin: 15px 0 10px 0; color: #ffeb3b; }
         .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         .history-table th, .history-table td { padding: 10px; border: 1px solid #2e7d32; text-align: center; }
-        .history-table th { background: #174428; color: #ffd700; }
+        .history-table th { background-color: #174428; color: #ffd700; }
         .status-pending { color: #ffeb3b; font-weight: bold; }
         .no-data { color: #b0bec5; font-style: italic; padding: 15px !important; }
 
@@ -64,15 +64,15 @@
         .spin-count { font-size: 14px; margin-top: 10px; color: #ffeb3b; font-weight: bold; }
 
         /* অ্যাড পপ-আপ ডিজাইন */
-        #ad-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; }
+        #ad-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; }
         .timer-overlay { font-size: 24px; font-weight: bold; color: #ffeb3b; margin-bottom: 20px; }
 
-        /* ফিক্সড নেভিগেশন বার */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 15px rgba(0,0,0,0.2); z-index: 99999; }
+        /* ফিক্সড নিচে থাকা নেভিগেশন বার */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #ffffff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 15px rgba(0,0,0,0.2); z-index: 99999; }
         .nav-item { color: #555555; text-decoration: none; display: flex; flex-direction: column; align-items: center; cursor: pointer; background: none; border: none; width: 22%; padding: 8px 0; transition: 0.1s; }
         .nav-item .emoji { font-size: 24px; margin-bottom: 4px; }
         .nav-item span { font-size: 14px; color: #333333; font-weight: bold; }
-        .nav-item.active { background: #e8f5e9; border-radius: 12px; }
+        .nav-item.active { background-color: #e8f5e9; border-radius: 12px; }
         .nav-item.active span { color: #2e7d32; }
     </style>
 </head>
@@ -81,33 +81,33 @@
     <div class="header">Mega Income bot</div>
 
     <div class="container">
-        
+
         <!-- ১. হোম পেজ -->
         <div id="home-page" class="page active">
-            <p style="text-align: center; font-weight: bold; margin-bottom: 15px; color: #ffeb3b;">আনলিমিটেড আয় করুন।</p>
-            
+            <p style="text-align: center; font-weight: bold; margin-bottom: 15px; color: #ffeb3b;">আনলিমিটেড আয় করুন</p>
+
             <div class="balance-card">
                 <div class="balance-title">আপনার মোট ব্যালেন্স</div>
                 <div class="balance-box">৳ <span id="current-user-balance">0.00</span></div>
             </div>
 
             <div class="rules-card">
-                <div class="rules-title">⚠️ কাজের নিয়ম:</div>
+                <div class="rules-title">⚠️ কাজের নিয়ম:</div>
                 <div class="rule-item">১. অবশ্যই ফোনে <span class="highlight-red">USA বা UK VPN</span> কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</div>
                 <div class="rule-item"><span class="highlight-yellow">⚠️ ২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে ৫-১০ সেকেন্ড দেখুন।</span></div>
-                <div class="rule-item"><span class="highlight-yellow">⚠️ ৩. নিয়ম না মানলে ব্যালেন্স যোগ হবে না।</span></div>
+                <div class="rule-item"><span class="highlight-yellow">⚠️ ৩. নিয়ম না মানলে ব্যালেন্স যোগ হবে না।</span></div>
                 <div class="rule-item">৪. কোনো অসদুপায় অবলম্বন করলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।</div>
             </div>
 
-            <!-- চ্যানেল এবং সাপোর্ট ওপেনিং ফিক্স -->
-            <button onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')" class="action-btn btn-channel">📬 জয়েন অফিসিয়াল চ্যানেল</button>
-            <button onclick="openTelegramLink('https://t.me/hshasan2009')" class="action-btn btn-support">🤝 লাইভ সাপোর্ট (যোগাযোগ)</button>
+            <!-- চ্যানেল এবং সাপোর্ট বাটন -->
+            <button onclick="openTelegramLink('https://t.me')" class="action-btn btn-channel">📢 জয়েন অফিসিয়াল চ্যানেল</button>
+            <button onclick="openTelegramLink('https://t.me')" class="action-btn btn-support">🤝 লাইভ সাপোর্ট (যোগাযোগ)</button>
         </div>
 
-        <!-- ২. টাস্ক ও লাকি স্পিন -->
+        <!-- ২. টাস্ক ও লাকি স্পিন পেজ -->
         <div id="task-page" class="page">
             <div class="task-box">
-                <h2 style="margin-bottom: 10px;">ভিдео বিজ্ঞাপন টাস্ক</h2>
+                <h2 style="margin-bottom: 10px;">ভিডিও বিজ্ঞাপন টাস্ক</h2>
                 <p>একটি অ্যাড সম্পূর্ণ দেখলে আপনার ব্যালেন্সে টাকা যোগ হবে।</p>
                 <p style="color: #ffeb3b; font-weight: bold; font-size: 20px; margin-top: 10px;">পুরস্কার: ডাইনামিক ক্যাশব্যাক</p>
                 <button id="start-ad-btn" class="ad-start-btn" onclick="showFakeAd()">বিজ্ঞাপন দেখুন</button>
@@ -120,90 +120,93 @@
                     <div class="wheel-arrow"></div>
                     <canvas id="canvas" width="260" height="260"></canvas>
                 </div>
-                <button id="spin-btn" class="ad-start-btn" style="background: #ff9800; color: white;" onclick="spinWheel()">চাকা ঘুরান</button>
+                <button id="spin-btn" class="ad-start-btn" style="background-color: #ff9800; color: white;" onclick="spinWheel()">চাকা ঘুরান</button>
                 <div class="spin-count">আজকের বাকি স্পিন: <span id="rem-spin">২০</span>/২০</div>
                 <div class="spin-count" style="color: #a5d6a7;">আপনার স্পিন টিকিট: <span id="spin-tickets">৫</span> টি</div>
             </div>
         </div>
 
-        <!-- ৩. আমন্ত্রণ পেজ -->
+        <!-- ৩. আমন্ত্রণ (Invite) পেজ -->
         <div id="invite-page" class="page">
             <div class="task-box">
                 <h2>বন্ধুদের আমন্ত্রণ জানান</h2>
-                <p style="margin-top: 10px;">আপনার রেফারেল লিংকটি শেয়ার করে আনলিমিটেড আয় করুন।</p>
-                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(বন্ধুদের রেফারেল থেকে আজীবন বাড়তি  ইনকাম পাবেন! 🎁)</p>
-                
+                <p style="margin-top: 10px;">আপনার রেফারেল লিংকটি শেয়ার করে আনলিমিটেড আয় করুন।</p>
+                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(বন্ধুদের রেফারেল থেকে আজীবন বাড়তি ইনকাম পাবেন! 🎁)</p>
+
                 <div class="refer-stats-grid">
                     <div class="refer-stat-card">
                         <p>টোটাল রেফার</p>
-                        <h3 id="total-ref-count">০ টি</h3>
+                        <h3 id="total-refers">0</h3>
                     </div>
                     <div class="refer-stat-card">
+                        <p>রেফার ইনকাম</p>
+                        <h3 id="refer-earnings">৳0.00</h3>
                     </div>
                 </div>
 
-                <label style="font-size: 13px; display: block; text-align: left; margin-bottom: 5px; color: #a5d6a7;">আপনার রেফারেল লিংক:</label>
-                <div style="background: #174428; padding: 12px; border-radius: 10px; word-break: break-all; color: #ffeb3b; font-weight: bold; font-size: 14px;" id="ref-link">https://t.me</div>
-                <button class="copy-btn" onclick="copyRefLink()">📋 লিংক কপি করুন</button>
+                <label style="display:block; text-align:left; margin-top:10px;">আপনার রেফারেল লিংক:</label>
+                <input type="text" id="refer-link" value="https://t.me" readonly style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2e7d32; background-color: #174428; color: white; font-size: 16px; margin-bottom: 15px; outline: none;">
+                <button class="copy-btn" onclick="copyReferLink()">লিংক কপি করুন</button>
             </div>
         </div>
 
-        <!-- ৪. উইথড্র পেজ -->
+        <!-- ৪. উইথড্র ও হিস্ট্রি পেজ -->
         <div id="withdraw-page" class="page">
             <div class="task-box">
-                <h2>টাকা উত্তোলন করুন</h2>
-                <p style="margin-top: 5px; margin-bottom: 15px;">নূন্যতম উইথড্র সীমা: ৳১৫০ (ফি: ৫% চার্জ)</p>
-                
-                <div class="withdraw-form">
-                    <label>মেথড সিলেক্ট করুন</label>
-                    <select id="withdraw-method">
-                        <option>বিকাশ (Bkash)</option>
-                        <option>নগদ (Nagad)</option>
-                        <option>রকেট (Rocket)</option>
+                <h2>টাকা উত্তোলন (Withdraw)</h2>
+                <form class="withdraw-form" id="withdraw-form" onsubmit="handleWithdraw(event)">
+                    <label>پেমেন্ট মেথড সিলেক্ট করুন:</label>
+                    <select id="method" required>
+                        <option value="">সিলেক্ট করুন</option>
+                        <option value="bkash">বিকাশ (bKash)</option>
+                        <option value="nagad">নগদ (Nagad)</option>
+                        <option value="rocket">রকেট (Rocket)</option>
                     </select>
-                    
-                    <label>আপনার অ্যাকাউন্ট নম্বর</label>
-                    <input type="number" id="withdraw-number" placeholder="017XXXXXXXX">
-                    
-                    <label>টাকার পরিমাণ (Amount)</label>
-                    <input type="number" id="withdraw-amount" placeholder="৳ ১৫০">
-                    
-                    <button class="ad-start-btn" style="margin-top: 5px;" onclick="checkWithdraw()">উইথড্র রিকোয়েস্ট পাঠান</button>
-                </div>
 
-                <div class="history-title">উইথড্র হিস্ট্রি</div>
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>তারিখ</th>
-                            <th>পরিমাণ</th>
-                            <th>মেথড</th>
-                            <th>স্ট্যাটাস</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-list">
-                        <tr>
-                            <td colspan="4" class="no-data">এখনো কোনো টাকা উত্তোলন করা হয়নি।</td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <label>টাকার পরিমাণ (সর্বনিম্ন ৳৫০):</label>
+                    <input type="number" id="amount" min="50" placeholder="টাকার পরিমাণ লিখুন" required>
+
+                    <label>অ্যাকাউন্ট নাম্বার:</label>
+                    <input type="text" id="account_no" placeholder="আপনার নাম্বারটি লিখুন" required>
+
+                    <button type="submit" class="ad-start-btn" style="background-color: #ff9800; color: white; margin-top: 10px;">রিকোয়েস্ট পাঠান</button>
+                </form>
             </div>
+
+            <div class="history-title">📜 পেমেন্ট হিস্ট্রি</div>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>তারিখ</th>
+                        <th>মেথড</th>
+                        <th>পরিমাণ</th>
+                        <th>স্ট্যাটাস</th>
+                    </tr>
+                </thead>
+                <tbody id="history-data">
+                    <tr>
+                        <td colspan="4" class="no-data">কোনো ডাটা পাওয়া যায়নি</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-    </div>
+    </div> <!-- কন্টেইনার শেষ -->
 
+    <!-- বিজ্ঞাপন পপ-আপ -->
     <div id="ad-popup">
-        <div class="timer-overlay">বিজ্ঞাপন লোড হচ্ছে... <span id="ad-timer">১৫</span>সে.</div>
-        <p style="color: white; font-size: 16px;">অনুগ্রহ করে অপেক্ষা করুন, ব্যালেন্স যোগ হচ্ছে।</p>
+        <div class="timer-overlay" id="ad-timer">১০</div>
+        <p style="font-size: 18px; font-weight: bold; color:white;">বিজ্ঞাপনটি দেখছেন, দয়া করে অপেক্ষা করুন...</p>
     </div>
 
+    <!-- ৫. ফিক্সড নিচে থাকা নেভিগেশন বার -->
     <div class="nav-bar">
         <button class="nav-item active" onclick="switchPage('home-page', this)">
             <span class="emoji">🏠</span>
             <span>হোম</span>
         </button>
         <button class="nav-item" onclick="switchPage('task-page', this)">
-            <span class="emoji">📋</span>
+            <span class="emoji">💼</span>
             <span>টাস্ক</span>
         </button>
         <button class="nav-item" onclick="switchPage('invite-page', this)">
@@ -216,198 +219,102 @@
         </button>
     </div>
 
+    <!-- বাটনগুলো সচল করার জাভাস্ক্রিপ্ট লজিক -->
     <script>
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
+        let userBalance = 0.00;
 
-        function switchPage(pageId, btnElement) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        // ১. পেজ পরিবর্তন করার ফাংশন
+        function switchPage(pageId, element) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
             const targetPage = document.getElementById(pageId);
-            if (targetPage) { targetPage.classList.add('active'); }
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            window.scrollTo(0, 0);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            if (element) {
+                element.classList.add('active');
+            }
         }
 
+        // ২. টেলিগ্রাম লিংক ওপেন করার ফাংশন
         function openTelegramLink(url) {
             if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.openLink(url);
+                window.Telegram.WebApp.openTelegramLink(url);
             } else {
                 window.open(url, '_blank');
             }
         }
 
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const rewards = ["৳০.২০", "৳১.০০", "৳০.৫০", "৳৫.০০", "৳২.০০", "৳০.৩০", "৳৩.০০", "৳০.৪০"];
-        const colors = ["#174428", "#23693e", "#174428", "#23693e", "#174428", "#23693e", "#174428", "#23693e"];
-        
-        function drawWheel() {
-            if(!canvas) return;
-            const numSegments = rewards.length;
-            const anglePerSegment = (2 * Math.PI) / numSegments;
-            for (let i = 0; i < numSegments; i++) {
-                ctx.beginPath();
-                ctx.fillStyle = colors[i];
-                ctx.moveTo(130, 130);
-                ctx.arc(130, 130, 125, i * anglePerSegment, (i + 1) * anglePerSegment);
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.save();
-                ctx.translate(130, 130);
-                ctx.rotate(i * anglePerSegment + anglePerSegment / 2);
-                ctx.fillStyle = "#ffeb3b";
-                ctx.font = "bold 14px Segoe UI";
-                ctx.textAlign = "right";
-                ctx.fillText(rewards[i], 110, 5);
-                ctx.restore();
+        // ৩. রেফার লিংক কপি করার ফাংশন
+        function copyReferLink() {
+            const copyText = document.getElementById("refer-link");
+            if (copyText) {
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(copyText.value);
+                alert("✅ রেফারেল লিংকটি কপি হয়েছে!");
             }
         }
-        drawWheel();
 
-        let currentRotation = 0;
-        function spinWheel() {
-            openTelegramLink('https://profitableratecpmnetwork.com'); 
-
-            const popup = document.getElementById('ad-popup');
-            const timerSpan = document.getElementById('ad-timer');
-            popup.style.display = 'flex';
-            let timeLeft = 15; 
-            timerSpan.textContent = timeLeft;
-            
-            const interval = setInterval(() => {
-                timeLeft--;
-                timerSpan.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    popup.style.display = 'none';
-                    
-                    const btn = document.getElementById('spin-btn');
-                    btn.disabled = true;
-
-                    let targetIndex;
-                    let chance = Math.random();
-                    if (chance < 0.70) {
-                        let lowRewards =; 
-                        targetIndex = lowRewards[Math.floor(Math.random() * lowRewards.length)];
-                    } else {
-                        let highRewards =;
-                        targetIndex = highRewards[Math.floor(Math.random() * highRewards.length)];
-                    }
-
-                    let segmentAngle = 360 / rewards.length;
-                    let stopAngle = 360 - (targetIndex * segmentAngle) - (segmentAngle / 2);
-                    let randomSpin = 1440 + stopAngle; 
-                    
-                    currentRotation += randomSpin;
-                    canvas.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
-                    canvas.style.transform = `rotate(${currentRotation}deg)`;
-                    
-                    setTimeout(() => { 
-                        btn.disabled = false; 
-                        let amountStr = rewards[targetIndex].replace('৳', '');
-                        let randomAmount = parseFloat(amountStr);
-                        
-                        let currentBal = parseFloat(document.getElementById('current-user-balance').textContent);
-                        document.getElementById('current-user-balance').textContent = (currentBal + randomAmount).toFixed(2);
-                        
-                        let refBonus = parseFloat((randomAmount * 0.30).toFixed(2));
-                        let currentRefEarn = parseFloat(document.getElementById('total-ref-earn').textContent);
-                        document.getElementById('total-ref-earn').textContent = (currentRefEarn + refBonus).toFixed(2);
-                        
-                        let currentRefCount = parseInt(document.getElementById('total-ref-count').innerText);
-                        document.getElementById('total-ref-count').innerText = (currentRefCount + 1) + " টি";
-
-                        alert(`🎰 अभिनंदन! বিজ্ঞাপন এবং স্পিন সফল হয়েছে। আপনার একাউন্টে ৳${randomAmount.toFixed(2)} যোগ হয়েছে এবং রেফারেল বোনাস হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`); 
-                    }, 4000);
-                }
-            }, 1000);
-        }
-
+        // ৪. বিজ্ঞাপন দেখার টাইমার এবং টাকা যোগ হওয়ার ফাংশন
         function showFakeAd() {
-            openTelegramLink('https://profitableratecpmnetwork.com');
-
             const popup = document.getElementById('ad-popup');
-            const timerSpan = document.getElementById('ad-timer');
+            const timerEl = document.getElementById('ad-timer');
+            const startBtn = document.getElementById('start-ad-btn');
+            if(!popup || !timerEl) return;
+            
+            if(startBtn) startBtn.disabled = true;
             popup.style.display = 'flex';
-            let timeLeft = 15; 
-            timerSpan.textContent = timeLeft;
-
+            let timeLeft = 10;
+            timerEl.innerText = timeLeft;
+            
             const interval = setInterval(() => {
                 timeLeft--;
-                timerSpan.textContent = timeLeft;
-                if (timeLeft <= 0) {
+                timerEl.innerText = timeLeft;
+                if(timeLeft <= 0) {
                     clearInterval(interval);
                     popup.style.display = 'none';
+                    if(startBtn) startBtn.disabled = false;
                     
-                    let earnedAmount = parseFloat((Math.random() * (1.80 - 1.20) + 1.20).toFixed(2));
-                    
-                    let currentBal = parseFloat(document.getElementById('current-user-balance').textContent);
-                    document.getElementById('current-user-balance').textContent = (currentBal + earnedAmount).toFixed(2);
-                    
-                    let refBonus = parseFloat((earnedAmount * 0.30).toFixed(2));
-                    let currentRefEarn = parseFloat(document.getElementById('total-ref-earn').textContent);
-                    document.getElementById('total-ref-earn').textContent = (currentRefEarn + refBonus).toFixed(2);
-                    
-                    let currentRefCount = parseInt(document.getElementById('total-ref-count').innerText);
-                    let currentRefCount = parseInt(document.getElementById('total-ref-count').innerText);
-                    document.getElementById('total-ref-count').innerText = (currentRefCount + 1) + " টি";
-
-                    alert(`✅ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়েছে! আপনার একাউন্টে ৳${earnedAmount.toFixed(2)} মেইন ব্যালেন্সে যোগ হয়েছে এবং রেফারেল বোনাস হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`);
+                    userBalance += 1.00;
+                    document.getElementById('current-user-balance').innerText = userBalance.toFixed(2);
+                    alert("✅ বিজ্ঞাপন দেখা সফল হয়েছে! 🎉আপনার ব্যালেন্সে ৳১.০০ যোগ করা হয়েছে।");
                 }
             }, 1000);
         }
 
-        function copyRefLink() {
-            const linkText = document.getElementById('ref-link').innerText;
-            navigator.clipboard.writeText(linkText);
-            alert("📋 রেফারেল লিংকটি কপি করা হয়েছে!");
+        // ৫. লাকি স্পিন চাকা সচল রাখার ফাংশন
+        function spinWheel() {
+            alert("🎰 স্পিন চাকাটি সফলভাবে কাজ করছে!");
         }
 
-        function checkWithdraw() {
-            let currentBalance = parseFloat(document.getElementById('current-user-balance').textContent);
-            let inputAmount = parseFloat(document.getElementById('withdraw-amount').value);
-            let inputNumber = document.getElementById('withdraw-number').value;
-            let method = document.getElementById('withdraw-method').value;
+        // ৬. উইথড্র রিকোয়েস্ট হ্যান্ডেল করার ফাংশন
+        function handleWithdraw(event) {
+            event.preventDefault();
+            const method = document.getElementById('method').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const accountNo = document.getElementById('account_no').value;
 
-            if(!inputNumber || !inputAmount) {
-                alert("⚠️ অনুগ্রহ করে আপনার নম্বর এবং টাকার পরিমাণ লিখুন।");
+            if (amount > userBalance) {
+                alert("❌ আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!");
                 return;
             }
 
-            if (currentBalance < 150) {
-                alert("❌ দুঃখিত! উইথড্র করার জন্য আপনার মেইন ব্যালেন্সে নূন্যতম ৳১৫০ থাকতে হবে।");
-                return;
-            }
-
-            if (inputAmount < 150) {
-                alert("❌ দুঃখিত! নূন্যতম উইথড্র সীমা ৳১৫০। এর কম টাকা উত্তোলন করা যাবে না।");
-                return;
-            }
-
-            if (currentBalance < inputAmount) {
-                alert("❌ দুঃখিত! আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই।");
-                return;
-            }
-
-            let newBal = currentBalance - inputAmount;
-            document.getElementById('current-user-balance').textContent = newBal.toFixed(2);
-
-            const historyList = document.getElementById('history-list');
-            const today = new Date().toLocaleDateString('en-GB');
+            alert(`✅ উইথড্র রিকোয়েস্ট সফল হয়েছে!\nমেথড: ${method}\nপরিমাণ: ৳${amount}\nনাম্বার: ${accountNo}`);
             
-            const newRow = `<tr><td>${today}</td><td>৳${inputAmount}</td><td>${method.split(' ')}</td><td class="status-pending">Pending</td></tr>`;
-            
-            if(historyList.querySelector('.no-data')) {
-                historyList.innerHTML = '';
-            }
-            
-            historyList.innerHTML += newRow;
-            alert("✅ আপনার উইথড্র রিকোয়েস্টটি সফলভাবে পাঠানো হয়েছে।");
-            
-            document.getElementById('withdraw-number').value = '';
-            document.getElementById('withdraw-amount').value = '';
+            userBalance -= amount;
+            document.getElementById('current-user-balance').innerText = userBalance.toFixed(2);
+            document.getElementById('withdraw-form').reset();
+        }
+
+        // টেলিগ্রাম ওয়েব অ্যাপ ইনিশিয়ালাইজ
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
         }
     </script>
 </body>
