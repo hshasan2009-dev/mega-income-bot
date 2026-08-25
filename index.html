@@ -108,7 +108,7 @@
             <div class="task-box">
                 <h2 style="margin-bottom: 10px;">ভিдео বিজ্ঞাপন টাস্ক</h2>
                 <p>একটি অ্যাড সম্পূর্ণ দেখলে আপনার ব্যালেন্সে টাকা যোগ হবে।</p>
-                <p style="color: #ffeb3b; font-weight: bold; font-size: 20px; margin-top: 10px;">পুরস্কার: ডাইনামিক আয়ের অর্ধেক</p>
+                <p style="color: #ffeb3b; font-weight: bold; font-size: 20px; margin-top: 10px;">পুরস্কার: ডাইনামিক ক্যাশব্যাক</p>
                 <button id="start-ad-btn" class="ad-start-btn" onclick="showFakeAd()">বিজ্ঞাপন দেখুন</button>
             </div>
 
@@ -130,16 +130,16 @@
             <div class="task-box">
                 <h2>বন্ধুদের আমন্ত্রণ জানান</h2>
                 <p style="margin-top: 10px;">আপনার রেফারেল লিংকটি শেয়ার করে আনলিমিটেড আয় করুন।</p>
-                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(বন্ধুদের আয়ের ৩০% লাইভ বোনাস পাবেন! 🎁)</p>
+                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(বন্ধুদের রেফারেল থেকে আজীবন বাড়তি ইনকাম পাবেন! 🎁)</p>
                 
                 <div class="refer-stats-grid">
                     <div class="refer-stat-card">
                         <p>টোটাল রেফার</p>
-                        <h3 id="total-ref-count">৫ টি</h3>
+                        <h3 id="total-ref-count">০ টি</h3>
                     </div>
                     <div class="refer-stat-card">
                         <p>রেফার ইনকাম</p>
-                                            </div>
+                    </div>
                 </div>
 
                 <label style="font-size: 13px; display: block; text-align: left; margin-bottom: 5px; color: #a5d6a7;">আপনার রেফারেল লিংক:</label>
@@ -190,14 +190,13 @@
             </div>
         </div>
 
-    </div> <!-- কনটেইনার শেষ -->
+    </div>
 
     <div id="ad-popup">
         <div class="timer-overlay">বিজ্ঞাপন লোড হচ্ছে... <span id="ad-timer">১৫</span>সে.</div>
         <p style="color: white; font-size: 16px;">অনুগ্রহ করে অপেক্ষা করুন, ব্যালেন্স যোগ হচ্ছে।</p>
     </div>
 
-    <!-- ফিক্সড নেভিগেশন বার -->
     <div class="nav-bar">
         <button class="nav-item active" onclick="switchPage('home-page', this)">
             <span class="emoji">🏠</span>
@@ -297,7 +296,7 @@
                         let currentRefCount = parseInt(document.getElementById('total-ref-count').innerText);
                         document.getElementById('total-ref-count').innerText = (currentRefCount + 1) + " টি";
 
-                        alert(`🎰 अभिनंदन! বিজ্ঞাপন এবং স্পিন সফল হয়েছে। ৳${randomAmount.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে এবং ৩০% রেফারেল কমিশন হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`); 
+                        alert(`🎰 अभिनंदन! विज्ञापन এবং স্পিন সফল হয়েছে। ৳${randomAmount.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে এবং রেফারেল বোনাস হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`); 
                     }, 4000);
                 }
             }, 1000);
@@ -331,7 +330,7 @@
                     let currentRefCount = parseInt(document.getElementById('total-ref-count').innerText);
                     document.getElementById('total-ref-count').innerText = (currentRefCount + 1) + " টি";
 
-                    alert(`✅   সম্পূর্ণ দেখা হয়েছে! আপনার একাউন্টে ৳${earnedAmount.toFixed(2)} মেইন ব্যালেন্সে যোগ হয়েছে এবং ৩০% রেফারেল কমিশন হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`);
+                    alert(`✅   সম্পूर्ण দেখা হয়েছে! আপনার একাউন্টে ৳${earnedAmount.toFixed(2)} মেইন ব্যালেন্সে যোগ হয়েছে এবং রেফারেল বোনাস হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`);
                 }
             }, 1000);
         }
@@ -346,8 +345,6 @@
             let currentBalance = parseFloat(document.getElementById('current-user-balance').textContent);
             let inputAmount = parseFloat(document.getElementById('withdraw-amount').value);
             let inputNumber = document.getElementById('withdraw-number').value;
-            let method = document.getElementById('withdraw-method').value;
-
             if(!inputNumber || !inputAmount) {
                 alert("⚠️ অনুগ্রহ করে আপনার নম্বর এবং টাকার পরিমাণ লিখুন।");
                 return;
