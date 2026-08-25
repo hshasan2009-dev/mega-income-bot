@@ -145,7 +145,7 @@
         // --- LIVE CONFIGURATIONS ---
         const adsgramBlockId = "44575"; // আপনার AdsGram Block ID
         const adminChatId = "8049465500"; // আপনার এডমিন চ্যাট আইডি
-        const botToken = "8644824917:YOUR_ACTUAL_BOT_TOKEN"; // ⚠️ এখানে আপনার বটের পুরো টোকেনটি বসিয়ে দিন
+        const botToken = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg"; // ⚠️ এখানে আপনার বটের পুরো টোকেনটি বসিয়ে দিন
 
         let balance = 0.00;
         let userId = "123456";
@@ -272,6 +272,21 @@
             const url = `https://telegram.org{botToken}/sendMessage?chat_id=${adminChatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown&reply_markup=${encodeURIComponent(JSON.stringify(keyboard))}`;
             fetch(url).catch(err => console.log("Notice Error: ", err));
         }
-    </script>
+    <!-- Bottom Navigation Bar - আগের হুবহু বাটন ও বিন্যাস -->
+    <div class="navbar">
+        <div class="nav-item active" onclick="switchPage('home', this)">
+            <span class="nav-icon">🏠</span><span>হোম</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('task', this)">
+            <span class="nav-icon">💼</span><span>টাস্ক</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('refer', this)">
+            <span class="nav-icon">👥</span><span>রেফার</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('withdraw', this)">
+            <span class="nav-icon">💳</span><span>উইথড্র</span>
+        </div>
+    </div>
+            </script>
 </body>
 </html>
