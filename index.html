@@ -331,7 +331,6 @@
         function spinWheel() {
             const popup = document.getElementById('ad-popup');
             const timerEl = document.getElementById('ad-timer');
-            const spinBtn = document.getElementById('spin-btn');
             const remSpinEl = document.getElementById('rem-spin');
             
             let currentSpins = parseInt(remSpinEl.innerText);
@@ -367,6 +366,7 @@
                         alert(`🎰 অভিনন্দন!\nআপনি স্পিন করে জিতেছেন: ৳${prize.toFixed(2)}`);
                     }, 3000);
                 }
+            }, 1000);
         }
 
         // ৬. উইথড্র রিকোয়েস্ট হ্যান্ডেল ও সরাসরি আপনার টেলিগ্রামে নোটিফিকেশন পাঠানো
