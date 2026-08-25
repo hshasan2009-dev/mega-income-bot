@@ -158,3 +158,11 @@
             for (let i = 0; i < pages.length; i++) {
                 pages[i].classList.remove('active');
             }
+  // বাটনগুলোর সাথে পেজ পরিবর্তনের কানেকশন
+  document.getElementById('home-btn')?.addEventListener('click', (e) => switchPage('home-page', e.currentTarget));
+  document.getElementById('task-btn')?.addEventListener('click', (e) => switchPage('task-page', e.currentTarget));
+  document.getElementById('invite-btn')?.addEventListener('click', (e) => switchPage('invite-page', e.currentTarget));
+  document.getElementById('withdraw-btn')?.addEventListener('click', (e) => switchPage('withdraw-page', e.currentTarget));
+</script>
+</html>
+<!-- pages -->
