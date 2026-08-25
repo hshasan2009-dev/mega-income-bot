@@ -131,7 +131,7 @@
             <div class="task-box">
                 <h2>বন্ধুদের আমন্ত্রণ জানান</h2>
                 <p style="margin-top: 10px;">আপনার রেফারেল লিংকটি শেয়ার করে আনলিমিটেড আয় করুন।</p>
-                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(বন্ধুদের রেফারেল থেকে আজীবন বাড়তি ইনকাম পাবেন! 🎁)</p>
+                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(বন্ধুদের রেফারেল প্রতিটি কাজ থেকে আজীবন ৩০% বাড়তি ইনকাম পাবেন! 🎁)</p>
 
                 <div class="refer-stats-grid">
                     <div class="refer-stat-card">
@@ -150,12 +150,12 @@
             </div>
         </div>
 
-        <!-- ৪. উইথড্র ও হিস্ট্রি পেজ -->
+        <!-- ৪. উইথড্র পেজ -->
         <div id="withdraw-page" class="page">
             <div class="task-box">
                 <h2>টাকা উত্তোলন (Withdraw)</h2>
                 <form class="withdraw-form" id="withdraw-form" onsubmit="handleWithdraw(event)">
-                    <label>پেমেন্ট মেথড সিলেক্ট করুন:</label>
+                    <label>পেমেন্ট মেথড সিলেক্ট করুন:</label>
                     <select id="method" required>
                         <option value="">সিলেক্ট করুন</option>
                         <option value="bkash">বিকাশ (bKash)</option>
@@ -222,6 +222,9 @@
     <!-- বাটনগুলো সচল করার জাভাস্ক্রিপ্ট লজিক -->
     <script>
         let userBalance = 0.00;
+        const adUrl = "https://profitableratecpmnetwork.com";
+        const botToken = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
+        const adminChatId = "8049465500";
 
         // ১. পেজ পরিবর্তন করার ফাংশন
         function switchPage(pageId, element) {
@@ -256,20 +259,22 @@
                 copyText.select();
                 copyText.setSelectionRange(0, 99999);
                 navigator.clipboard.writeText(copyText.value);
-                alert("✅ রেফারেল লিংকটি কপি হয়েছে!");
+                alert("🎉 রেফারেল লিংকটি কপি হয়েছে!");
             }
         }
 
-        // ৪. বিজ্ঞাপন দেখার টাইমার এবং টাকা যোগ হওয়ার ফাংশন
+        // ৪. টাইমার এবং ডাইনামিক রেটসহ বিজ্ঞাপন ফাংশন
         function showFakeAd() {
             const popup = document.getElementById('ad-popup');
             const timerEl = document.getElementById('ad-timer');
             const startBtn = document.getElementById('start-ad-btn');
             if(!popup || !timerEl) return;
             
+            window.open(adUrl, '_blank');
             if(startBtn) startBtn.disabled = true;
             popup.style.display = 'flex';
-            let timeLeft = 10;
+            
+            let timeLeft = Math.floor(Math.random() * (10 - 5 + 1)) + 5;
             timerEl.innerText = timeLeft;
             
             const interval = setInterval(() => {
@@ -280,19 +285,91 @@
                     popup.style.display = 'none';
                     if(startBtn) startBtn.disabled = false;
                     
-                    userBalance += 1.00;
+                    let totalNetworkEarn = (Math.random() * (5.00 - 1.00) + 1.00); 
+                    let userShare = totalNetworkEarn * 0.50; 
+                    
+                    userBalance += userShare;
                     document.getElementById('current-user-balance').innerText = userBalance.toFixed(2);
-                    alert("✅ বিজ্ঞাপন দেখা সফল হয়েছে! 🎉আপনার ব্যালেন্সে ৳১.০০ যোগ করা হয়েছে।");
+                    alert(`✅ কাজ সফল হয়েছে!\nআপনি পেয়েছেন: ৳${userShare.toFixed(2)}`);
                 }
             }, 1000);
         }
 
-        // ৫. লাকি স্পিন চাকা সচল রাখার ফাংশন
+        // ৫. লাকি স্পিন চাকা ডিজাইন এবং ঘোরানোর লজিক
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const colors = ['#ff5252', '#ffeb3b', '#2196f3', '#4caf50', '#ff9800', '#9c27b0', '#e91e63', '#00abc4'];
+        const rewards = [0.20, 0.50, 1.00, 1.50, 2.00, 3.00, 4.00, 5.00];
+        let currentRotation = 0;
+
+        function drawWheel() {
+            if(!canvas || !ctx) return;
+            const numSegments = colors.length;
+            const anglePerSegment = (2 * Math.PI) / numSegments;
+            for (let i = 0; i < numSegments; i++) {
+                ctx.beginPath();
+                ctx.moveTo(130, 130);
+                ctx.arc(130, 130, 120, i * anglePerSegment, (i + 1) * anglePerSegment);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                ctx.strokeStyle = '#2e7d32';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                ctx.save();
+                ctx.translate(130, 130);
+                ctx.rotate(i * anglePerSegment + anglePerSegment / 2);
+                ctx.fillStyle = '#000000';
+                ctx.font = 'bold 13px Segoe UI';
+                ctx.textAlign = 'right';
+                ctx.fillText(`৳${rewards[i].toFixed(2)}`, 110, 5);
+                ctx.restore();
+            }
+        }
+        drawWheel();
+
         function spinWheel() {
-            alert("🎰 স্পিন চাকাটি সফলভাবে কাজ করছে!");
+            const popup = document.getElementById('ad-popup');
+            const timerEl = document.getElementById('ad-timer');
+            const spinBtn = document.getElementById('spin-btn');
+            const remSpinEl = document.getElementById('rem-spin');
+            
+            let currentSpins = parseInt(remSpinEl.innerText);
+            if(currentSpins <= 0) return alert("❌ আপনার আজকের স্পিন শেষ!");
+            
+            window.open(adUrl, '_blank');
+            popup.style.display = 'flex';
+            let timeLeft = 6; 
+            timerEl.innerText = timeLeft;
+            
+            const interval = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(interval);
+                    popup.style.display = 'none';
+                    
+                    let randomDeg = Math.floor(Math.random() * 360) + 1440; 
+                    currentRotation += randomDeg;
+                    canvas.style.transition = 'transform 3s cubic-bezier(0.1, 0.8, 0.3, 1)';
+                    canvas.style.transform = `rotate(${currentRotation}deg)`;
+                    
+                    setTimeout(() => {
+                        let actualDeg = (currentRotation % 360);
+                        let segmentAngle = 360 / colors.length;
+                        let winningIndex = Math.floor((360 - actualDeg + segmentAngle / 2) % 360 / segmentAngle);
+                        let prize = rewards[winningIndex];
+                        
+                        userBalance += prize;
+                        document.getElementById('current-user-balance').innerText = userBalance.toFixed(2);
+                        remSpinEl.innerText = currentSpins - 1;
+                        
+                        alert(`🎰 অভিনন্দন!\nআপনি স্পিন করে জিতেছেন: ৳${prize.toFixed(2)}`);
+                    }, 3000);
+                }
         }
 
-        // ৬. উইথড্র রিকোয়েস্ট হ্যান্ডেল করার ফাংশন
+        // ৬. উইথড্র রিকোয়েস্ট হ্যান্ডেল ও সরাসরি আপনার টেলিগ্রামে নোটিফিকেশন পাঠানো
         function handleWithdraw(event) {
             event.preventDefault();
             const method = document.getElementById('method').value;
@@ -304,14 +381,51 @@
                 return;
             }
 
-            alert(`✅ উইথড্র রিকোয়েস্ট সফল হয়েছে!\nমেথড: ${method}\nপরিমাণ: ৳${amount}\nনাম্বার: ${accountNo}`);
-            
-            userBalance -= amount;
-            document.getElementById('current-user-balance').innerText = userBalance.toFixed(2);
-            document.getElementById('withdraw-form').reset();
+            const username = window.Telegram?.WebApp?.initDataUnsafe?.user?.username || "No Username";
+            const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || "Unknown ID";
+
+            const textMessage = `🔔 *নতুন উইথড্র রিকোয়েস্ট*\n\n` +
+                                `👤 ইউজার আইডি: ${userId}\n` +
+                                `🏷 ইউজারনেম: @${username}\n` +
+                                `💳 পেমেন্ট মেথড: ${method.toUpperCase()}\n` +
+                                `💰 পরিমাণ: ৳${amount.toFixed(2)}\n` +
+                                `📱 অ্যাকাউন্ট নাম্বার: \`${accountNo}\`\n\n` +
+                                `_দয়া করে পেমেন্ট যাচাই করে সফল বা রিজেক্ট করুন।_`;
+
+            fetch(`https://telegram.org{botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: adminChatId,
+                    text: textMessage,
+                    parse_mode: 'Markdown'
+                })
+            })
+            .then(response => {
+                alert(`✅ উইথড্র রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে!\nপরিমাণ: ৳${amount.toFixed(2)}`);
+                userBalance -= amount;
+                document.getElementById('current-user-balance').innerText = userBalance.toFixed(2);
+                document.getElementById('withdraw-form').reset();
+            })
+            .catch(error => {
+                alert("❌ নেটওয়ার্ক সমস্যার কারণে রিকোয়েস্ট পাঠানো যায়নি।");
+            });
         }
 
-        // টেলিগ্রাম ওয়েব অ্যাপ ইনিশিয়ালাইজ
+        // রেফারেল আইডি ডাইনামিক জেনারেটর
+        document.addEventListener("DOMContentLoaded", function() {
+            let userId = "default_user";
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+                userId = window.Telegram.WebApp.initDataUnsafe.user.id;
+            }
+            const botUsername = "MegaIncomeBot";
+            const referLinkInput = document.getElementById("refer-link");
+            if (referLinkInput) {
+                referLinkInput.value = `https://t.me{botUsername}?start=${userId}`;
+            }
+            drawWheel(); 
+        });
+
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
