@@ -2,12 +2,15 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mega Income Bot</title>
     <script src="https://telegram.org"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #1e5631; color: #ffffff; padding-bottom: 110px; }
+        
+        /* ⚠️ নিচের প্যাডিং ১০০ পিক্সেল করা হয়েছে যাতে বাটন স্ক্রিনের নিচে ঢাকা না পড়ে */
+        body { background-color: #1e5631; color: #ffffff; padding-bottom: 100px; min-height: 100vh; overflow-x: hidden; }
+        
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         .header { background: #2e7d32; padding: 22px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; }
@@ -24,17 +27,17 @@
         .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; border: 1px solid #4caf50; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; transition: transform 2s ease-out; background: #1b5e20; }
         
-        /* 📱 নিচের নেভিগেশন বার - উইথড্রল এবং হিস্ট্রি বাটন ছাড়া ৪টি বাটন */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 10px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
-        .nav-item { text-align: center; color: #444; cursor: pointer; flex: 1; font-size: 14px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 65px; text-decoration: none; }
-        .nav-item img, .nav-item-emoji { font-size: 24px; display: block; margin-bottom: 2px; width: 26px; height: 26px; object-fit: contain; }
-        .nav-item.active { color: #ffffff; background: #2e7d32; font-weight: 900; border-radius: 8px; margin: 0 3px; }
+        /* 📱 নেভিগেশন বার ফিক্সড পজিশন এবং স্টাইল */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 8px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
+        .nav-item { text-align: center; color: #444444; cursor: pointer; flex: 1; font-size: 14px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 55px; text-decoration: none; }
+        .nav-item-emoji { font-size: 22px; display: block; }
+        .nav-item.active { color: #ffffff; background: #2e7d32; font-weight: 900; border-radius: 8px; margin: 0 4px; }
         
         input, select { width: 100%; padding: 14px; margin: 12px 0; border: 2px solid #4caf50; border-radius: 10px; font-size: 16px; background: #fafdfa; font-weight: bold; color: #2c3e50; }
         .submit-btn { background: #ff9800; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 18px; font-weight: bold; transition: transform 0.2s; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px; display: block; cursor: pointer; }
         
-        /* 👤 প্রফাইল বা ড্যাশবোর্ড পেজের বিশেষ স্টাইল (১ নং স্ক্রিনশট অনুযায়ী) */
-        .profile-user-info { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #e8f5e9; }
+        /* প্রফাইল পেজ স্টাইল */
+        .profile-user-info { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #e8f5e9; text-align: center; width: 100%; padding-top: 10px; }
         .profile-stats-grid { display: flex; justify-content: space-around; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .stat-box { text-align: center; }
         .stat-box h3 { font-size: 28px; font-weight: 900; }
@@ -51,7 +54,6 @@
         .list-item-link:last-child { border-bottom: none; }
         .list-item-link span.arrow { color: #cccccc; font-size: 18px; }
 
-        /* হিস্ট্রি লিস্ট স্টাইল */
         .history-list { margin-top: 15px; max-height: 300px; overflow-y: auto; }
         .history-item { background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #ffeb3b; color: #ffffff; }
         .history-item.withdraw { border-left-color: #ff4d4d; }
@@ -113,7 +115,7 @@
         </div>
     </div>
 
-    <!-- ৪. 👤 প্রফাইল পেজ (আপনার স্ক্রিনশট ১ অনুযায়ী ডিজাইন করা) -->
+    <!-- ৪. 👤 প্রফাইল পেজ -->
     <div id="profile" class="page">
         <div class="profile-user-info">
             <span>🆔 ID: <span id="display-user-id">8049465500</span></span>
@@ -136,4 +138,4 @@
                 <div class="asset-btn" onclick="switchPage('inner-withdraw')">
                     <div class="icon-circle">↗️</div>
                     <div>উত্তোলন<br>অনুরোধ</div>
-    </div>
+                </div>
