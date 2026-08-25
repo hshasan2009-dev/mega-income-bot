@@ -21,7 +21,6 @@
         .rules li { margin-bottom: 10px; font-size: 15px; line-height: 1.5; font-weight: bold; }
         .important-red { color: #ff4d4d; font-weight: 900; background: rgba(255, 77, 77, 0.1); padding: 2px 6px; border-radius: 4px; }
         
-        /* ⚠️ ২ ও ৩ নং নিয়ম লাল রঙে দেখানোর জন্য সিএসএস স্টাইল */
         .full-red-line { color: #ff4d4d !important; font-weight: 900 !important; background: rgba(255, 77, 77, 0.15); padding: 6px; border-radius: 6px; display: block; }
         
         .task-btn { background: #4caf50; color: #fff; padding: 18px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 18px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid #4caf50; }
@@ -53,9 +52,7 @@
             <h3>⚠️ কাজের নিয়ম:</h3>
             <ul>
                 <li>১. অবশ্যই ফোনে <span class="important-red">USA বা UK VPN</span> (যেমন: Turbo VPN / SuperVPN) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
-                <!-- ⚠️ ২ নম্বর লাইনটি সতর্ক ইমোজি সহ সম্পূর্ণ লাল করা হয়েছে এবং বানান ফিক্স করা হয়েছে -->
                 <li class="full-red-line" style="margin-bottom: 10px;">⚠️ ২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে ৫-১০ সেকেন্ড দেখুন।</li>
-                <!-- ⚠️ ৩ নম্বর লাইন -->
                 <li class="full-red-line">⚠️ ৩. নিয়ম না মানলে ব্যালেন্স যোগ হবে না।</li>
                 <li>৪. কোনো অসদুপায় অবলম্বন করলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।</li>
             </ul>
@@ -74,7 +71,7 @@
             <button class="submit-btn" style="background:#4caf50;" onclick="spinNow()">🎰 লাকি স্পিন (১০ সেকেন্ড)</button>
         </div>
         <div class="task-btn" style="margin-top:20px; background:#4caf50;" onclick="watchVideo()">
-            <span>🎬 ভিডিও টাস্ক (১৫ সেকেন্ড)</span>
+            <span>🎬 வீடியோ টাস্ক (১৫ সেকেন্ড)</span>
             <span>➡️</span>
         </div>
     </div>
@@ -171,3 +168,8 @@
             }
         }
 
+        function spinNow() {
+            const wheel = document.getElementById('wheel');
+            if (!wheel) return;
+            
+            wheel.style.transition = 'transform 2s ease-out';
