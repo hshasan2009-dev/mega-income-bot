@@ -24,8 +24,7 @@
         .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; border: 1px solid #4caf50; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; transition: transform 2s ease-out; background: #1b5e20; }
         
-        /* 📱 আপনার মূল কালারফুল আইকন যুক্ত নিচের নেভিগেশন বার */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 10px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 999999; }
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 10px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 999999 !important; }
         .nav-item { text-align: center; color: #444444; cursor: pointer; flex: 1; font-size: 14px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 60px; text-decoration: none; }
         .nav-item-emoji { font-size: 24px; display: block; }
         .nav-item.active { color: #ffffff; background: #2e7d32; font-weight: 900; border-radius: 8px; margin: 0 4px; }
@@ -33,7 +32,6 @@
         input, select { width: 100%; padding: 14px; margin: 12px 0; border: 2px solid #4caf50; border-radius: 10px; font-size: 16px; background: #fafdfa; font-weight: bold; color: #2c3e50; }
         .submit-btn { background: #ff9800; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 18px; font-weight: bold; transition: transform 0.2s; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px; display: block; cursor: pointer; }
         
-        /* 👤 প্রোফাইল / আমার সম্পদ পেজ স্টাইল */
         .profile-user-info { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #e8f5e9; text-align: center; width: 100%; padding-top: 10px; }
         .profile-stats-grid { display: flex; justify-content: space-around; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .stat-box { text-align: center; }
@@ -96,7 +94,7 @@
             <button class="submit-btn" style="background:#4caf50;" onclick="spinNow()">🎰 লাকি স্পিন (১০ সেকেন্ড)</button>
         </div>
         <div class="task-btn" style="margin-top:20px; background:#4caf50;" onclick="watchVideo()">
-            <span>🎬 வீடியோ টাস্ক (১৫ সেকেন্ড)</span>
+            <span>🎬 ভিডিও টাস্ক (১৫ সেকেন্ড)</span>
             <span>➡️</span>
         </div>
     </div>
@@ -135,3 +133,5 @@
             <div class="asset-buttons">
                 <div class="asset-btn" onclick="switchPage('inner-withdraw')">
                     <div class="icon-circle">↗️</div>
+                    <div>উত্তোলন<br>অনুরোধ</div>
+                </div>
