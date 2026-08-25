@@ -2,15 +2,18 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mega Income Bot</title>
-    <!-- টেলিগ্রামের মূল ফাইলটি একদম শুরুতে রাখা হলো -->
+    <!-- টেলিগ্রামের স্ক্রিপ্ট সবার প্রথমে লোড নিশ্চিত করা হলো -->
     <script src="https://telegram.org"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #1e5631; color: #ffffff; padding-bottom: 110px; }
-        .page { display: none; padding: 15px; }
-        .page.active { display: block; }
+        body { background-color: #1e5631; color: #ffffff; padding-bottom: 120px; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+        
+        /* 🔒 পেজ ডিসপ্লের শক্তিশালী রুলস */
+        .page { display: none !important; padding: 15px; }
+        .page.active { display: block !important; }
+        
         .header { background: #2e7d32; padding: 22px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; }
         .header h1, .header h2 { color: #ffffff; font-size: 26px; margin-bottom: 5px; font-weight: bold; }
         .card { background: #2e7d32; padding: 22px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; }
@@ -28,14 +31,14 @@
         .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; border: 1px solid #4caf50; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; transition: transform 2s ease-out; background: #1b5e20; }
         
-        /* 📱 নেভিগেশন বার ডিজাইন */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 12px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
-        .nav-item { text-align: center; color: #444444; cursor: pointer; flex: 1; font-size: 16px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; height: 65px; }
-        .nav-item-emoji { font-size: 24px; display: block; margin-bottom: 2px; }
-        .nav-item.active { color: #ffffff; background: #2e7d32; font-weight: 900; border-radius: 8px; margin: 0 4px; }
+        /* 📱 নেভিগেশন বার - সর্বোচ্চ ক্লিকের অগ্রাধিকার নিশ্চিত করা হলো */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 10px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999999 !important; pointer-events: auto !important; }
+        .nav-item { text-align: center; color: #444444; cursor: pointer; flex: 1; font-size: 16px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; height: 65px; z-index: 999999999 !important; pointer-events: auto !important; }
+        .nav-item-emoji { font-size: 24px; display: block; margin-bottom: 2px; pointer-events: none; }
+        .nav-item.active { color: #ffffff !important; background: #2e7d32 !important; border-radius: 8px; margin: 0 4px; }
         
         input, select { width: 100%; padding: 14px; margin: 12px 0; border: 2px solid #4caf50; border-radius: 10px; font-size: 16px; background: #fafdfa; font-weight: bold; color: #2c3e50; }
-        .submit-btn { background: #ff9800; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 18px; font-weight: bold; color: #ffffff; transition: transform 0.2s; text-align: center; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px; display: block; cursor: pointer; }
+        .submit-btn { background: #ff9800; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 18px; font-weight: bold; transition: transform 0.2s; text-align: center; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px; display: block; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -73,7 +76,7 @@
             <button class="submit-btn" style="background:#4caf50;" onclick="spinNow()">🎰 লাকি স্পিন (১০ সেকেন্ড)</button>
         </div>
         <div class="task-btn" style="margin-top:20px; background:#4caf50;" onclick="watchVideo()">
-            <span>🎬 வீடியோ টাস্ক (১৫ সেকেন্ড)</span>
+            <span>🎬 ভিডিও টাস্ক (১৫ সেকেন্ড)</span>
             <span>➡️</span>
         </div>
     </div>
@@ -114,7 +117,7 @@
         </div>
     </div>
 
-    <!-- ৪টি বাটন বার -->
+    <!-- 📱 ৪টি হাই-রেসপন্স বাটন প্যানেল -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchPage('home', this)"><span class="nav-item-emoji">🏡</span>হোম</div>
         <div class="nav-item" onclick="switchPage('tasks', this)"><span class="nav-item-emoji">📺</span>টাস্ক</div>
@@ -123,19 +126,20 @@
     </div>
 
     <script>
-        // বাটন লোড নিশ্চিত করার গ্লোবাল লজিক
-        window.addEventListener('DOMContentLoaded', () => {
-            const tg = window.Telegram ? window.Telegram.WebApp : null;
-            if (tg) {
-                tg.expand();
-            }
+        // টেলিগ্রাম অবজেক্ট ইনিশিয়ালাইজেশন ও রেডি কলব্যাক নিশ্চিত করা
+        const tg = window.Telegram ? window.Telegram.WebApp : null;
+        if (tg) {
+            tg.expand();
+            tg.ready(); // 🔒 এটি টেলিগ্রাম স্ক্রিন ফ্রিজিং প্রতিরোধ করবে
+        }
 
-            const userId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "8049465500";
-            const refLinkInput = document.getElementById('ref-link-input');
-            if (refLinkInput) {
-                refLinkInput.value = 'https://t.me' + userId;
-            }
-        });
+        const userId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "8049465500";
+        const userName = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? (tg.initDataUnsafe.user.first_name || "ইউজার") : "টেস্ট ইউজার";
+        
+        const refLinkInput = document.getElementById('ref-link-input');
+        if (refLinkInput) {
+            refLinkInput.value = 'https://t.me' + userId;
+        }
 
         let userBalance = 0.00;
 
@@ -145,28 +149,12 @@
             });
         }
 
-        // পেজ পরিবর্তন করার একদম ডাইরেক্ট ও সলিড ফাংশন
+        // 🔒 ওভারল্যাপ ও ফ্রিজিং মুক্ত শক্তিশালী পেজ পরিবর্তনের মেথড
         function switchPage(pageId, element) {
-            const pages = document.querySelectorAll('.page');
-            for(let i = 0; i < pages.length; i++) {
-                pages[i].style.display = 'none';
-            }
+            // জাভাস্ক্রিপ্ট ইভেন্ট ব্লকার এড়াতেpreventDefault ট্র্যাকিং
+            if(window.event) { window.event.stopPropagation(); }
             
-            const navItems = document.querySelectorAll('.nav-bar .nav-item');
-            for(let j = 0; j < navItems.length; j++) {
-                navItems[j].classList.remove('active');
+            const pages = document.getElementsByClassName('page');
+            for (let i = 0; i < pages.length; i++) {
+                pages[i].classList.remove('active');
             }
-            
-            const targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.style.display = 'block';
-            }
-            if (element) {
-                element.classList.add('active');
-            }
-            window.scrollTo(0, 0);
-        }
-
-        function openLink(url) {
-            const tg = window.Telegram ? window.Telegram.WebApp : null;
-            if (tg && tg.openTelegramLink) {
