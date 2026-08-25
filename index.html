@@ -57,7 +57,7 @@
         .status-pending { color: #ffeb3b; font-weight: bold; }
         .no-data { color: #b0bec5; font-style: italic; padding: 15px !important; }
 
-        /* লাকি স্পিন চাকা */
+        /* লাকি眷 স্পিন চাকা */
         .wheel-container { position: relative; width: 260px; height: 260px; margin: 20px auto; }
         #canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.5); border: 5px solid #ffeb3b; transform: rotate(0deg); }
         .wheel-arrow { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff5252; z-index: 10; }
@@ -107,7 +107,7 @@
         <!-- ২. টাস্ক ও লাকি স্পিন পেজ -->
         <div id="task-page" class="page">
             <div class="task-box">
-                <h2 style="margin-bottom: 10px;">ভিডিও বিজ্ঞাপন টাস্ক</h2>
+                <h2 style="margin-bottom: 10px;">ভিдио বিজ্ঞাপন টাস্ক</h2>
                 <p>একটি অ্যাড সম্পূর্ণ দেখলে আপনার ব্যালেন্সে টাকা যোগ হবে।</p>
                 <p style="color: #ffeb3b; font-weight: bold; font-size: 20px; margin-top: 10px;">পুরস্কার: ডাইনামিক ক্যাশব্যাক</p>
                 <button id="start-ad-btn" class="ad-start-btn" onclick="showFakeAd('task')">বিজ্ঞাপন দেখুন</button>
@@ -136,7 +136,7 @@
                 <div class="refer-stats-grid">
                     <div class="refer-stat-card">
                         <p>টোটাল রেফার</p>
-                    <div class="refer-stat-card">
+                                            <div class="refer-stat-card">
                         <p>রেফার ইনকাম</p>
                         <h3 id="refer-earnings">৳0.00</h3>
                     </div>
@@ -370,10 +370,6 @@
                 document.getElementById('current-user-balance').innerText = userBalance.toFixed(2);
                 
                 let remSpinEl = document.getElementById('rem-spin');
-                let prize = rewards[winningIndex];
-                userBalance += prize;
-                document.getElementById('current-user-balance').innerText = userBalance.toFixed(2);
-                
                 let remSpinEl = document.getElementById('rem-spin');
                 remSpinEl.innerText = parseInt(remSpinEl.innerText) - 1;
                 
