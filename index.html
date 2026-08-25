@@ -7,7 +7,8 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #1a4329; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-bottom: 120px; }
+        /* ⚠️ নিচের প্যাডিং বাড়িয়ে ১৫০ পিক্সেল করা হয়েছে যাতে বাটন পেজকে ঢেকে না দেয় */
+        body { background-color: #1a4329; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-bottom: 150px; }
 
         .header { background: #1e5233; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; border-bottom: 2px solid #2e7d32; }
         .container { padding: 15px; max-width: 500px; margin: 0 auto; }
@@ -56,10 +57,10 @@
         #ad-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; }
         .timer-overlay { font-size: 24px; font-weight: bold; color: #ffeb3b; margin-bottom: 20px; }
 
-        /* ⚠️ বাটনগুলো বড় করার নতুন ডিজাইন */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 12px rgba(0,0,0,0.15); z-index: 9999; }
-        .nav-item { color: #555555; text-decoration: none; display: flex; flex-direction: column; align-items: center; cursor: pointer; background: none; border: none; width: 22%; padding: 10px 0; transition: 0.2s; }
-        .nav-item .emoji { font-size: 24px; margin-bottom: 5px; }
+        /* ⚠️ নিচে স্থায়ীভাবে ভেসে থাকার জন্য ফিক্সড নেভিগেশন বার ডিজাইন */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 15px rgba(0,0,0,0.2); z-index: 99999; }
+        .nav-item { color: #555555; text-decoration: none; display: flex; flex-direction: column; align-items: center; cursor: pointer; background: none; border: none; width: 22%; padding: 8px 0; transition: 0.1s; }
+        .nav-item .emoji { font-size: 24px; margin-bottom: 4px; }
         .nav-item span { font-size: 14px; color: #333333; font-weight: bold; }
         .nav-item.active { background: #e8f5e9; border-radius: 12px; }
         .nav-item.active span { color: #2e7d32; }
@@ -109,7 +110,7 @@
                     <canvas id="canvas" width="260" height="260"></canvas>
                 </div>
                 <button id="spin-btn" class="ad-start-btn" style="background: #ff9800; color: white;" onclick="spinWheel()">চাকা ঘুরান</button>
-                <div class="spin-count">আজকের বাকি স্পিন: <span id="rem-spin">২০</span>/২০</div>
+                <div class="spin-count">আজকের باقی স্পিন: <span id="rem-spin">২০</span>/২০</div>
                 <div class="spin-count" style="color: #a5d6a7;">আপনার স্পিন টিকিট: <span id="spin-tickets">৫</span> টি</div>
             </div>
         </div>
@@ -119,33 +120,156 @@
             <div class="task-box">
                 <h2>বন্ধুদের আমন্ত্রণ জানান</h2>
                 <p style="margin-top: 10px;">আপনার রেফারেল লিংকটি শেয়ার করে আনলিমিটেড আয় করুন।</p>
-                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(৩০% লাইভ বোনাস! 🎁)</p>
-                <div style="background: #174428; padding: 12px; border-radius: 10px; margin-top: 15px; word-break: break-all; color: #ffeb3b; font-weight: bold;" id="ref-link">https://t.me</div>
-            </div>
+            <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(৩০% লাইভ বোনাস! 🎁)</p>
+            <div style="background: #174428; padding: 12px; border-radius: 10px; margin-top: 15px; word-break: break-all; color: #ffeb3b; font-weight: bold;" id="ref-link">https://t.me</div>
         </div>
+    </div>
 
-        <!-- ৪. উইথড্র পেজ -->
-        <div id="withdraw-page" class="page">
-            <div class="task-box">
-                <h2>টাকা উত্তোলন করুন</h2>
-                <p style="margin-top: 5px; margin-bottom: 15px;">নূন্যতম উইথড্র সীমা: ৳১৫০ (ফি: ৫% চার্জ)</p>
+    <!-- ৪. উইথড্র পেজ -->
+    <div id="withdraw-page" class="page">
+        <div class="task-box">
+            <h2>টাকা উত্তোলন করুন</h2>
+            <p style="margin-top: 5px; margin-bottom: 15px;">নূন্যতম উইথড্র সীমা: ৳১৫০ (ফি: ৫% চার্জ)</p>
+            
+            <div class="withdraw-form">
+                <label>মেথড সিলেক্ট করুন</label>
+                <select>
+                    <option>বিকাশ (Bkash)</option>
+                    <option>নগদ (Nagad)</option>
+                    <option>রকেট (Rocket)</option>
+                </select>
                 
-                <div class="withdraw-form">
-                    <label>মেথড সিলেক্ট করুন</label>
-                    <select>
-                        <option>বিকাশ (Bkash)</option>
-                        <option>নগদ (Nagad)</option>
-                        <option>রকেট (Rocket)</option>
-                    </select>
-                    
-                    <label>আপনার অ্যাকাউন্ট নম্বর</label>
-                    <input type="number" placeholder="017XXXXXXXX">
-                    
-                    <label>টাকার পরিমাণ (Amount)</label>
-                    <input type="number" placeholder="৳ ১৫০">
-                    
-                    <button class="ad-start-btn" style="margin-top: 5px;">উইথড্র রিকোয়েস্ট পাঠান</button>
-                </div>
+                <label>আপনার অ্যাকাউন্ট নম্বর</label>
+                <input type="number" placeholder="017XXXXXXXX">
+                
+                <label>টাকার পরিমাণ (Amount)</label>
+                <input type="number" placeholder="৳ ১৫০">
+                
+                <button class="ad-start-btn" style="margin-top: 5px;">উইথড্র রিকোয়েস্ট পাঠান</button>
+            </div>
 
-                <div class="history-title">উইথড্র হিস্ট্রি</div>
-                <table class="history-table">
+            <div class="history-title">উইথড্র হিস্ট্রি</div>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>তারিখ</th>
+                        <th>পরিমাণ</th>
+                        <th>মেথড</th>
+                        <th>স্ট্যাটাস</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>25/08/2026</td>
+                        <td>৳১৫০</td>
+                        <td>বিকাশ</td>
+                        <td class="status-pending">Pending</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    </div> <!-- কনটেইনার শেষ -->
+
+    <!-- ডেমো অ্যাড পপ-আপ স্ক্রিন -->
+    <div id="ad-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; justify-content: center; align-items: center;">
+        <div class="timer-overlay" style="font-size: 24px; font-weight: bold; color: #ffeb3b; margin-bottom: 20px;">বিজ্ঞাপন লোড হচ্ছে... <span id="ad-timer">৫</span>সে.</div>
+        <p style="color: white; font-size: 16px;">অনুগ্রহ করে অপেক্ষা করুন, ব্যালেন্স যোগ হচ্ছে।</p>
+    </div>
+
+    <!-- ⚠️ বড় সাইজ ও ইমোজি সহ আপডেট করা ফিক্সড নেভিগেশন বার -->
+    <div class="nav-bar">
+        <button class="nav-item active" onclick="switchPage('home-page', this)">
+            <span class="emoji">🏠</span>
+            <span>হোম</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('task-page', this)">
+            <span class="emoji">📋</span>
+            <span>টাস্ক</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('invite-page', this)">
+            <span class="emoji">👥</span>
+            <span>রেফার</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('withdraw-page', this)">
+            <span class="emoji">💳</span>
+            <span>উইথড্র</span>
+        </button>
+    </div>
+
+    <script>
+        function switchPage(pageId, btnElement) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) { targetPage.classList.add('active'); }
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // চাকার ভেতরের সংখ্যা আঁকা
+        const canvas = document.getElementById('canvas');
+        if(canvas) {
+            const ctx = canvas.getContext('2d');
+            const rewards = ["৳০.২০", "৳১.০০", "৳০.৫০", "৳৫.০০", "৳২.০০", "৳০.৩০", "৳৩.০০", "৳০.৪০"];
+            const colors = ["#174428", "#23693e", "#174428", "#23693e", "#174428", "#23693e", "#174428", "#23693e"];
+            
+            function drawWheel() {
+                const numSegments = rewards.length;
+                const anglePerSegment = (2 * Math.PI) / numSegments;
+                for (let i = 0; i < numSegments; i++) {
+                    ctx.beginPath();
+                    ctx.fillStyle = colors[i];
+                    ctx.moveTo(130, 130);
+                    ctx.arc(130, 130, 125, i * anglePerSegment, (i + 1) * anglePerSegment);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.save();
+                    ctx.translate(130, 130);
+                    ctx.rotate(i * anglePerSegment + anglePerSegment / 2);
+                    ctx.fillStyle = "#ffeb3b";
+                    ctx.font = "bold 14px Segoe UI";
+                    ctx.textAlign = "right";
+                    ctx.fillText(rewards[i], 110, 5);
+                    ctx.restore();
+                }
+            }
+            drawWheel();
+        }
+
+        // স্পিন হুইল অ্যানিমেশন
+        let currentRotation = 0;
+        function spinWheel() {
+            const btn = document.getElementById('spin-btn');
+            btn.disabled = true;
+            const randomSpin = Math.floor(Math.random() * 360) + 1440;
+            currentRotation += randomSpin;
+            canvas.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
+            setTimeout(() => { btn.disabled = false; alert("🎰 অভিনন্দন! আপনি পুরস্কার জিতেছেন।"); }, 4000);
+        }
+
+        // ডেমো বিজ্ঞাপন
+        function showFakeAd() {
+            const popup = document.getElementById('ad-popup');
+            const timerSpan = document.getElementById('ad-timer');
+            popup.style.display = 'flex';
+            let timeLeft = 5;
+            const interval = setInterval(() => {
+                timeLeft--;
+                timerSpan.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    popup.style.display = 'none';
+                    let currentBal = parseFloat(document.getElementById('current-user-balance').textContent);
+                    document.getElementById('current-user-balance').textContent = (currentBal + 2.00).toFixed(2);
+                    alert("🎉 বিজ্ঞাপন সফলভাবে দেখা হয়েছে! ৳২.০০ যোগ হয়েছে✅।");
+                }
+            }, 1000);
+        }
+    </script>
+
+</body>
+                        </html>
