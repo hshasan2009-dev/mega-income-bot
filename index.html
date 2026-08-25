@@ -2,12 +2,12 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mega Income Bot</title>
     <script src="https://telegram.org"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #1e5631; color: #ffffff; padding-bottom: 120px; min-height: 100vh; }
+        body { background-color: #1e5631; color: #ffffff; padding-bottom: 110px; }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         .header { background: #2e7d32; padding: 22px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; }
@@ -24,39 +24,14 @@
         .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; border: 1px solid #4caf50; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; transition: transform 2s ease-out; background: #1b5e20; }
         
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 10px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 999999 !important; }
-        .nav-item { text-align: center; color: #444444; cursor: pointer; flex: 1; font-size: 14px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 60px; text-decoration: none; }
-        .nav-item-emoji { font-size: 24px; display: block; }
+        /* 📱 আপনার মূল কালারফুল আইকন যুক্ত নিচের নেভিগেশন বার */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 12px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
+        .nav-item { text-align: center; color: #444; cursor: pointer; flex: 1; font-size: 16px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; height: 65px; }
+        .nav-item-emoji { font-size: 24px; display: block; margin-bottom: 2px; }
         .nav-item.active { color: #ffffff; background: #2e7d32; font-weight: 900; border-radius: 8px; margin: 0 4px; }
         
         input, select { width: 100%; padding: 14px; margin: 12px 0; border: 2px solid #4caf50; border-radius: 10px; font-size: 16px; background: #fafdfa; font-weight: bold; color: #2c3e50; }
-        .submit-btn { background: #ff9800; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 18px; font-weight: bold; transition: transform 0.2s; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px; display: block; cursor: pointer; }
-        
-        .profile-user-info { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #e8f5e9; text-align: center; width: 100%; padding-top: 10px; }
-        .profile-stats-grid { display: flex; justify-content: space-around; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-        .stat-box { text-align: center; }
-        .stat-box h3 { font-size: 28px; font-weight: 900; }
-        .stat-box p { font-size: 13px; color: #e8f5e9; margin-top: 4px; }
-        
-        .profile-menu-card { background: #ffffff; color: #333333; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: left; }
-        .profile-menu-title { font-size: 18px; font-weight: bold; color: #1e5631; margin-bottom: 15px; border-bottom: 2px solid #e8f5e9; padding-bottom: 5px; }
-        .asset-buttons { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 5px; }
-        .asset-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; border: 1px solid #eeeeee; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: bold; color: #444444; transition: 0.2s; text-align: center; }
-        .asset-btn:active { background: #f0f0f0; }
-        .asset-btn .icon-circle { width: 42px; height: 42px; border-radius: 50%; background: #e8f5e9; color: #2e7d32; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 8px; }
-        
-        .list-item-link { display: flex; justify-content: space-between; align-items: center; padding: 14px 5px; border-bottom: 1px solid #f5f5f5; color: #444444; font-weight: bold; cursor: pointer; font-size: 15px; }
-        .list-item-link:last-child { border-bottom: none; }
-        .list-item-link span.arrow { color: #cccccc; font-size: 18px; }
-
-        .history-list { margin-top: 15px; max-height: 300px; overflow-y: auto; text-align: left; }
-        .history-item { background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #ffeb3b; color: #ffffff; }
-        .history-item.withdraw { border-left-color: #ff4d4d; }
-        .status-badge { padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .status-pending { background: #ff9800; color: #fff; }
-        .status-success { background: #4caf50; color: #fff; }
-        .status-rejected { background: #e53935; color: #fff; }
-        .back-to-profile { background: #ff9800; color: white; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 15px; cursor: pointer; display: inline-block; font-size: 14px; }
+        .submit-btn { background: #ff9800; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 18px; font-weight: bold; color: #ffffff; transition: transform 0.2s; text-align: center; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px; display: block; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -74,7 +49,7 @@
         <div class="rules">
             <h3>⚠️ কাজের নিয়ম:</h3>
             <ul>
-                <li>১. অবশ্যই ফোনে <span class="important-red">USA বা UK VPN</span> কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
+                <li>১. অবশ্যই ফোনে <span class="important-red">USA বা UK VPN</span> কনেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</li>
                 <li>২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে <span class="important-red">৫-১০ সেকেন্ড</span> দেখুন।</li>
                 <li>৩. <span class="important-red">নিয়ম না মানলে</span> ব্যালেন্স যোগ হবে না।</li>
                 <li>৪. কোনো অসদুপায় অবলম্বন করলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।</li>
@@ -111,27 +86,88 @@
         </div>
     </div>
 
-    <!-- ৪. 👤 প্রোফাইল পেজ (আমার সম্পদ ড্যাশবোর্ড) -->
-    <div id="profile" class="page">
-        <div class="profile-user-info">
-            <span>🆔 ID: <span id="display-user-id">8049465500</span></span>
+    <!-- ৪. উইথড্র পেজ (আগের মতো সরাসরি মেইন মেনুতেই ফিক্সড) -->
+    <div id="withdraw" class="page">
+        <div class="header">
+            <h2>💰 Withdraw</h2>
         </div>
-        
-        <div class="profile-stats-grid">
-            <div class="stat-box">
-                <h3>৳<span class="current-user-balance">0.00</span></h3>
-                <p>ওয়ালেট ব্যালেন্স</p>
-            </div>
-            <div class="stat-box">
-                <h3>৳<span id="today-income">0.00</span></h3>
-                <p>আজকের আয়</p>
-            </div>
+        <div class="card">
+            <div class="balance-title">উত্তোলনযোগ্য ব্যালেন্স: ৳ <span class="current-user-balance">0.00</span></div>
+            <p style="color: #ffeb3b; font-size: 16px; margin: 3px 0; font-weight: bold;">নূন্যতম উইথড্র ১৫০ টাকা।</p>
+            <p style="color: #ff9800; font-size: 15px; margin-bottom: 8px; font-weight: bold;">⚠️ প্রতিটি উত্তোলনে <span class="important-red">৫% অ্যাডমিন ফি</span> প্রযোজ্য।</p>
+            
+            <select id="method">
+                <option value="বিকাশ (bKash)">বিকাশ (bKash)</option>
+                <option value="নগদ (Nagad)">নগদ (Nagad)</option>
+            </select>
+            
+            <input type="number" id="amount" placeholder="উইথড্র পরিমাণ (BDT)">
+            <input type="text" id="wallet" placeholder="অ্যাকাউন্ট নম্বর দিন">
+            
+            <button class="submit-btn" id="withdraw-btn" onclick="submitWithdraw()">📤 অনুরোধ জমা দিন</button>
+            <br>
+            <button class="submit-btn" style="background:#455a64;" onclick="openLink('https://t.me')">💬 এডমিন লাইভ সাপোর্ট</button>
         </div>
+    </div>
 
-        <div class="profile-menu-card">
-            <div class="profile-menu-title">আমার সম্পদ</div>
-            <div class="asset-buttons">
-                <div class="asset-btn" onclick="switchPage('inner-withdraw')">
-                    <div class="icon-circle">↗️</div>
-                    <div>উত্তোলন<br>অনুরোধ</div>
-                </div>
+    <!-- 📱 ৪টি কালারফুল আইকন বাটন নেভিগেশন বার -->
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="switchPage('home', this)"><span class="nav-item-emoji">🏡</span>হোম</div>
+        <div class="nav-item" onclick="switchPage('tasks', this)"><span class="nav-item-emoji">📺</span>টাস্ক</div>
+        <div class="nav-item" onclick="switchPage('invite', this)"><span class="nav-item-emoji">👥</span>আমন্ত্রণ</div>
+        <div class="nav-item" onclick="switchPage('withdraw', this)"><span class="nav-item-emoji">💰</span>Withdraw</div>
+    </div>
+
+    <script>
+        const tg = window.Telegram ? window.Telegram.WebApp : null;
+        if (tg) {
+            tg.expand();
+        }
+
+        const userId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "8049465500";
+        const userName = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? (tg.initDataUnsafe.user.first_name || "ইউজার") : "টেস্ট ইউজার";
+        
+        const refLinkInput = document.getElementById('ref-link-input');
+        if (refLinkInput) {
+            refLinkInput.value = 'https://t.me' + userId;
+        }
+
+        let userBalance = 0.00;
+
+        function updateBalanceUI() {
+            document.querySelectorAll('.current-user-balance').forEach(el => {
+                el.innerText = userBalance.toFixed(2);
+            });
+        }
+
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-bar .nav-item').forEach(i => i.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            if (element) {
+                element.classList.add('active');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function openLink(url) {
+            if (tg && tg.openTelegramLink) {
+                tg.openTelegramLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        function spinNow() {
+            const wheel = document.getElementById('wheel');
+            if (!wheel) return;
+            
+            wheel.style.transition = 'transform 2s ease-out';
+            wheel.style.transform = 'rotate(' + (Math.random() * 360 + 1440) + 'deg)';
+            
+            setTimeout(() => {
+                const prizes = [0.10, 0.20, 0.50, 1.00, 2.00, 5.00];
