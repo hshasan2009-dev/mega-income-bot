@@ -280,13 +280,22 @@
         <div class="nav-item" onclick="switchPage('task', this)">
             <span class="nav-icon">💼</span><span>টাস্ক</span>
         </div>
-        <div class="nav-item" onclick="switchPage('refer', this)">
-            <span class="nav-icon">👥</span><span>রেফার</span>
+        <!-- Bottom Navigation Bar - ভাসমান ও ফিক্সড বাটন স্টাইল -->
+    <div class="navbar" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -3px 10px rgba(0,0,0,0.3); z-index: 9999;">
+        <div class="nav-item active" onclick="switchPage('home', this)" style="text-align: center; color: #28a745; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center;">
+            <span class="nav-icon" style="font-size: 22px; margin-bottom: 2px;">🏠</span><span>হোম</span>
         </div>
-        <div class="nav-item" onclick="switchPage('withdraw', this)">
-            <span class="nav-icon">💳</span><span>উইথড্র</span>
+        <div class="nav-item" onclick="switchPage('task', this)" style="text-align: center; color: #555; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center;">
+            <span class="nav-icon" style="font-size: 22px; margin-bottom: 2px;">💼</span><span>টাস্ক</span>
         </div>
+        <div class="nav-item" onclick="switchPage('refer', this)" style="text-align: center; color: #555; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center;">
+            <span class="nav-icon" style="font-size: 22px; margin-bottom: 2px;">👥</span><span>রেফার</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('withdraw', this)" style="text-align: center; color: #555; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center;">
+            <span class="nav-icon" style="font-size: 22px; margin-bottom: 2px;">💳</span><span>উইথড্র</span>
+        </div>
+    </div> </div>
     </div>
-            </script>
+     </script>
 </body>
 </html>
