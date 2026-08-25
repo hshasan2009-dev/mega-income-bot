@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mega Income Bot</title>
     <script src="https://telegram.org"></script>
-    <!-- আইকন ফেরত আনার জন্য ফিক্সড করা সিডিএন লিংক -->
-    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #1e5631; color: #ffffff; padding-bottom: 110px; }
@@ -26,20 +24,12 @@
         .spin-container { margin-top: 20px; padding: 25px; background: #2e7d32; border-radius: 15px; text-align: center; border: 1px solid #4caf50; }
         .spin-wheel { width: 130px; height: 130px; border: 6px solid #ffffff; border-radius: 50%; margin: 0 auto 18px; transition: transform 2s ease-out; background: #1b5e20; }
         
-        /* আপনার আগের কালারফুল নিচের নেভিগেশন বার ডিজাইন */
+        /* 📱 ফিক্সড করা নিচের স্টাইলিশ নেভিগেশন বার */
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-between; padding: 10px 0; border-top: 4px solid #2e7d32; box-shadow: 0 -5px 25px rgba(0,0,0,0.3); z-index: 99999; }
-        .nav-item { text-align: center; color: #444; cursor: pointer; flex: 1; font-size: 15px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 65px; }
-        .nav-item i { font-size: 24px; display: block; }
-        .nav-item.active { color: #ffffff; background: #2e7d32; font-weight: 900; border-radius: 8px; margin: 0 2px; }
+        .nav-item { text-align: center; color: #444; cursor: pointer; flex: 1; font-size: 14px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 65px; text-decoration: none; }
+        .nav-item-emoji { font-size: 22px; display: block; margin-bottom: 2px; }
+        .nav-item.active { color: #ffffff; background: #2e7d32; font-weight: 900; border-radius: 8px; margin: 0 3px; }
         
-        /* আইকনের স্পেসিফিক কালার (আগের স্ক্রিনশট অনুযায়ী) */
-        .nav-item .fa-home { color: #ff9800; }
-        .nav-item .fa-tasks { color: #e91e63; }
-        .nav-item .fa-user-plus { color: #2196f3; }
-        .nav-item .fa-wallet { color: #4caf50; }
-        .nav-item .fa-history { color: #9c27b0; }
-        .nav-item.active i { color: #ffffff !important; }
-
         input, select { width: 100%; padding: 14px; margin: 12px 0; border: 2px solid #4caf50; border-radius: 10px; font-size: 16px; background: #fafdfa; font-weight: bold; color: #2c3e50; }
         .submit-btn { background: #ff9800; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 18px; font-weight: bold; transition: transform 0.2s; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px; display: block; cursor: pointer; }
         
@@ -87,7 +77,7 @@
         </div>
         <div class="task-btn" style="margin-top:20px; background:#4caf50;" onclick="watchVideo()">
             <span>🎬 ভিডিও টাস্ক (১৫ সেকেন্ড)</span>
-            <i class="fas fa-chevron-right"></i>
+            <span>➡️</span>
         </div>
     </div>
 
@@ -114,7 +104,7 @@
             
             <select id="method">
                 <option value="বিকাশ (bKash)">বিকাশ (bKash)</option>
-                <option value="নগদ (Nagad)">নგদ (Nagad)</option>
+                <option value="নগদ (Nagad)">নগদ (Nagad)</option>
             </select>
             
             <input type="number" id="amount" placeholder="উইথড্র পরিমাণ (BDT)">
@@ -137,13 +127,13 @@
         </div>
     </div>
 
-    <!-- 📱 আপনার স্ক্রিনশট ২ অনুযায়ী কালারফুল আইকন বাটন নেভিগেশন বার -->
+    <!-- 📱 আপনার স্ক্রিনশট অনুযায়ী হুবহু সঠিক ইমোজি যুক্ত বাটন সমূহ -->
     <div class="nav-bar">
-        <div class="nav-item active" onclick="switchPage('home', this)"><i class="fas fa-home"></i>হোম</div>
-        <div class="nav-item" onclick="switchPage('tasks', this)"><i class="fas fa-tasks"></i>টাস্ক</div>
-        <div class="nav-item" onclick="switchPage('invite', this)"><i class="fas fa-user-plus"></i>আমন্ত্রণ</div>
-        <div class="nav-item" onclick="switchPage('withdraw', this)"><i class="fas fa-wallet"></i>Withdraw</div>
-        <div class="nav-item" onclick="switchPage('history', this)"><i class="fas fa-history"></i>হিস্ট্রি</div>
+        <div class="nav-item active" onclick="switchPage('home', this)"><span class="nav-item-emoji">🏡</span>হোম</div>
+        <div class="nav-item" onclick="switchPage('tasks', this)"><span class="nav-item-emoji">📺</span>টাস্ক</div>
+        <div class="nav-item" onclick="switchPage('invite', this)"><i class="nav-item-emoji">👥</i>আমন্ত্রণ</div>
+        <div class="nav-item" onclick="switchPage('withdraw', this)"><span class="nav-item-emoji">💰</span>Withdraw</div>
+        <div class="nav-item" onclick="switchPage('history', this)"><span class="nav-item-emoji">📜</span>হিস্ট্রি</div>
     </div>
 
     <script>
@@ -159,3 +149,10 @@
         let historyData = JSON.parse(localStorage.getItem(`hist_${userId}`)) || [];
 
         function updateBalanceUI() {
+            document.querySelectorAll('.current-user-balance').forEach(el => el.innerText = userBalance.toFixed(2));
+            localStorage.setItem(`bal_${userId}`, userBalance);
+        }
+        
+        function addHistory(type, amount, details, status='success') {
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            historyData.unshift({type, amount, details, status, time});
