@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mega Income Bot</title>
-    <!--  টেলিগ্রাম মিনি অ্যাপের অফিশিয়াল স্ক্রিপ্ট -->
+    <!-- টেলিগ্রাম মিনি অ্যাপের অফিশিয়াল স্ক্রিপ্ট -->
     <script src="https://telegram.org"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #1a4329; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-bottom: 80px; position: relative; }
+        body { background-color: #1a4329; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-bottom: 100px; position: relative; }
 
         .header { background-color: #1e5233; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; border-bottom: 2px solid #2e7d32; }
         .container { padding: 15px; max-width: 500px; margin: 0 auto; margin-bottom: 70px; }
@@ -29,15 +29,15 @@
         .highlight-red { color: #ff5252; font-weight: bold; }
         .highlight-yellow { color: #ffeb3b; font-weight: bold; }
 
-        /* সাপোর্ট বাটন */
+        /* বাটন ও ফর্ম স্টাইল */
         .action-btn { color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 10px; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-decoration: none; text-align: center; font-family: inherit; }
         .btn-channel { background-color: #1e88e5; }
         .btn-support { background-color: #ff9800; }
         .task-box { background-color: #23693e; border-radius: 15px; padding: 25px; text-align: center; border: 1px solid #2e7d32; margin-bottom: 20px; }
-        .ad-start-btn { background-color: #ffeb3b; color: #1a4329; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; margin-top: 15px; width: 100%; transition: 0.2s; }
-        .ad-start-btn:disabled { background-color: #cccccc; color: #666666; cursor: not-allowed; }
+        
+        .ad-start-btn { background-color: #ffeb3b; color: #1a4329; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; margin-top: 15px; width: 100%; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
-        /* রেফার পেজ ফিক্সড গ্রিড ডিজাইন */
+        /* রেফার পেজ গ্রিড */
         .refer-stats-grid { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; margin-bottom: 15px; width: 100%; }
         .refer-stat-card { background-color: #174428; flex: 1; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #2e7d32; }
         .refer-stat-card p { font-size: 13px; color: #e0f2f1; margin-bottom: 5px; }
@@ -46,12 +46,20 @@
 
         /* উইথড্র ফর্ম */
         .withdraw-form { text-align: left; margin-top: 15px; }
-        .withdraw-form label { font-size: 14px; font-weight: bold; display: block; margin-bottom: 5px; color: #e0f2f1; }
-        .withdraw-form select, .withdraw-form input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2e7d32; background-color: #174428; color: white; font-size: 16px; margin-bottom: 15px; outline: none; }
+        .withdraw-form label { font-size: 16px; font-weight: 500; display: block; margin-bottom: 10px; color: #white; }
+        .withdraw-form select, .withdraw-form input { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #2e7d32; background-color: #174428; color: white; font-size: 16px; margin-bottom: 20px; outline: none; }
+        .withdraw-form select option { background-color: #1a4329; color: white; }
+
+        /* হিস্ট্রি টেবিল */
+        .history-title { font-size: 18px; font-weight: bold; text-align: left; margin: 25px 0 12px 0; color: #ffeb3b; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; background-color: #174428; border-radius: 10px; overflow: hidden; }
+        .history-table th, .history-table td { padding: 12px; border: 1px solid #2e7d32; text-align: center; }
+        .history-table th { background-color: #1e5233; color: #ffd700; font-weight: bold; }
+        .no-data { color: #b0bec5; font-style: italic; padding: 20px !important; }
 
         /* লাকি স্পিন চাকা */
         .wheel-container { position: relative; width: 260px; height: 260px; margin: 20px auto; }
-        #canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.5); border: 5px solid #ffeb3b; }
+        #canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.5); border: 5px solid #ffeb3b; transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1); transform: rotate(0deg); }
         .wheel-arrow { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff5252; z-index: 10; }
         .spin-count { font-size: 14px; margin-top: 10px; color: #ffeb3b; font-weight: bold; }
 
@@ -127,17 +135,17 @@
                     <h3 id="total-refers">0</h3>
                 </div>
                 <div class="refer-stat-card">
-                    <p>রেফার ইনকাম</p>
+                                   <p>রেফার ইনকাম</p>
                     <h3 id="refer-earnings">৳0.00</h3>
                 </div>
             </div>
             <button class="copy-btn" onclick="alert('লিংক কপি হয়েছে')">🔗 লিংক কপি করুন</button>
         </div>
 
-        <!-- ৪. উইথড্র ফর্ম -->
+        <!-- ৪. উইথড্র ফর্ম এবং পেমেন্ট হিস্ট্রি -->
         <div id="withdraw-page" class="page">
             <div class="task-box">
-                <h2 style="margin-bottom: 10px;">টাকা উত্তোলন করুন</h2>
+                <h2 style="margin-bottom: 20px;">টাকা উত্তোলন করুন</h2>
                 <div class="withdraw-form">
                     <label>পেমেন্ট মেথড সিলেক্ট করুন</label>
                     <select id="withdraw-method">
@@ -145,6 +153,7 @@
                         <option value="nagad">নগদ</option>
                         <option value="rocket">রকেট</option>
                     </select>
+
                     <label>অ্যাকাউন্ট নাম্বার</label>
                     <input type="text" id="withdraw-number" placeholder="01XXXXXXXXX">
 
@@ -153,6 +162,24 @@
 
                     <button type="button" class="ad-start-btn" onclick="submitWithdrawRequest()">উইথড্র রিকোয়েস্ট পাঠান</button>
                 </div>
+
+                <!-- পেমেন্ট হিস্ট্রি টেবিল -->
+                <h2 class="history-title">পেমেন্ট হিস্ট্রি</h2>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>তারিখ</th>
+                            <th>মেথড</th>
+                            <th>পরিমাণ</th>
+                            <th>স্ট্যাটাস</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-data">
+                        <tr>
+                            <td colspan="4" class="no-data">কোনো ডাটা পাওয়া যায়নি।</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -178,7 +205,7 @@
     <script>
         const adLink = "https://profitableratecpmnetwork.com";
         
-        // আপনার দেওয়া বটের টোকেন এবং আইডি এখানে সেট করা হয়েছে
+        let currentBalance = 0.00; 
         const botToken = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg"; 
         const adminChatId = "8049465500";
 
@@ -191,7 +218,20 @@
         }
 
         function triggerRealAdSystem(type) {
-            window.open(adLink, '_blank');
+            if (type === 'task') {
+                const newWindow = window.open(adLink, '_blank');
+                if(!newWindow || newWindow.closed || typeof newWindow.closed=='undefined') {
+                    window.location.href = adLink;
+                }
+            } else if (type === 'spin') {
+                const canvas = document.getElementById('canvas');
+                const randomDegree = Math.floor(Math.random() * 360) + 1800; 
+                canvas.style.transform = `rotate(${randomDegree}deg)`;
+                
+                setTimeout(() => {
+                    window.open(adLink, '_blank');
+                }, 4000);
+            }
         }
 
         function openTelegramLink(url) {
@@ -207,6 +247,12 @@
                 alert("সবগুলো ঘর সঠিকভাবে পূরণ করুন!");
                 return;
             }
+
+            if (currentBalance < 150) {
+                alert("আপনার পর্যাপ্ত ব্যালেন্স নেই!");
+                return;
+            }
+
             if(parseInt(amount) < 150) {
                 alert("সর্বনিম্ন উইথড্র পরিমাণ ১৫০ টাকা!");
                 return;
@@ -238,11 +284,38 @@
                 if(data.ok) {
                     alert("উইথড্র রিকোয়েস্ট অ্যাডমিনের কাছে পাঠানো হয়েছে!");
                 } else {
-                    alert("রিকোয়েস্ট পাঠানো যায়নি। নেট ত্রুটি বটের তথ্য চেক করুন।");
+                    alert("কোডের তথ্য ভুল।");
                 }
             });
         }
+
+        function drawSpinWheel() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const prizes = ["৳০.৩০", "৳১.০০", "৳০.৫০", "৳২.০০", "৳০.৮০", "৳৫.০০", "৳০.৪০", "৳১.৫০"];
+            const colors = ["#1e5233", "#23693e", "#1e5233", "#23693e", "#1e5233", "#23693e", "#1e5233", "#23693e"];
+            const numSlices = prizes.length;
+            const sliceAngle = (2 * Math.PI) / numSlices;
+
+            for (let i = 0; i < numSlices; i++) {
+                ctx.beginPath();
+                ctx.fillStyle = colors[i];
+                ctx.moveTo(130, 130);
+                ctx.arc(130, 130, 125, i * sliceAngle, (i + 1) * sliceAngle);
+                ctx.fill();
+
+                ctx.save();
+                ctx.fillStyle = "#ffeb3b";
+                ctx.font = "bold 14px Segoe UI";
+                ctx.translate(130, 130);
+                ctx.rotate(i * sliceAngle + sliceAngle / 2);
+                ctx.fillText(prizes[i], 50, 5);
+                ctx.restore();
+            }
+        }
+        
+        window.onload = drawSpinWheel;
     </script>
 </body>
 </html>
-
+     
