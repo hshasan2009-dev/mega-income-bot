@@ -345,3 +345,47 @@
         function checkWithdraw() {
             let currentBalance = parseFloat(document.getElementById('current-user-balance').textContent);
             let inputAmount = parseFloat(document.getElementById('withdraw-amount').value);
+            let inputNumber = document.getElementById('withdraw-number').value;
+            let method = document.getElementById('withdraw-method').value;
+
+            if(!inputNumber || !inputAmount) {
+                alert("⚠️ অনুগ্রহ করে আপনার নম্বর এবং টাকার পরিমাণ লিখুন।");
+                return;
+            }
+
+            if (currentBalance < 150) {
+                alert("❌ দুঃখিত! উইথড্র করার জন্য আপনার মেইন ব্যালেন্সে নূন্যতম ৳১৫০ থাকতে হবে।");
+                return;
+            }
+
+            if (inputAmount < 150) {
+                alert("❌ দুঃখিত! নূন্যতম উইথড্র সীমা ৳১৫০। এর কম টাকা উত্তোলন করা যাবে না।");
+                return;
+            }
+
+            if (currentBalance < inputAmount) {
+                alert("❌ দুঃখিত! আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই।");
+                return;
+            }
+
+            let newBal = currentBalance - inputAmount;
+            document.getElementById('current-user-balance').textContent = newBal.toFixed(2);
+
+            const historyList = document.getElementById('history-list');
+            const today = new Date().toLocaleDateString('en-GB');
+            
+            const newRow = `<tr><td>${today}</td><td>৳${inputAmount}</td><td>${method.split(' ')}</td><td class="status-pending">Pending</td></tr>`;
+            
+            if(historyList.querySelector('.no-data')) {
+                historyList.innerHTML = '';
+            }
+            
+            historyList.innerHTML += newRow;
+            alert("✅ আপনার উইথড্র রিকোয়েস্টটি সফলভাবে পাঠানো হয়েছে।");
+            
+            document.getElementById('withdraw-number').value = '';
+            document.getElementById('withdraw-amount').value = '';
+        }
+    </script>
+</body>
+</html>
