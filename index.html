@@ -1,376 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mega Income Bot</title>
-    <!-- Telegram Web App SDK -->
-    <script src="https://telegram.org"></script>
-    <!-- AdsGram Official Script -->
-    <script src="https://adsgram.ai"></script>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Mega Income Bot</title>
+    <script src="https://telegram.org"></script><script src="https://adsgram.ai"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #0b2e13;
-            color: white;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-bottom: 90px; /* বাটনগুলোর জন্য নিচে পর্যাপ্ত জায়গা রাখা */
-        }
-        .header {
-            background-color: #19692c;
-            width: 100%;
-            padding: 15px 0;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #ffc107;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            border-bottom: 2px solid #28a745;
-        }
-        .balance-container {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 2px solid #28a745;
-            border-radius: 15px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            margin-top: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-        .balance-label {
-            font-size: 14px;
-            color: #ffc107;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .balance-amount {
-            font-size: 36px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .btn-container {
-            display: flex;
-            justify-content: space-between;
-            width: 90%;
-            max-width: 400px;
-            margin-top: 20px;
-            gap: 10px;
-        }
-        .button-link {
-            flex: 1;
-            padding: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-        .btn-official { background-color: #0088cc; }
-        .btn-support { background-color: #dc3545; }
+        body { font-family: Arial, sans-serif; background-color: #0b2e13; color: white; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; padding-bottom: 90px; }
+        .header { background-color: #19692c; width: 100%; padding: 15px 0; text-align: center; font-size: 24px; font-weight: bold; color: #ffc107; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border-bottom: 2px solid #28a745; }
+        .balance-container { background-color: rgba(255, 255, 255, 0.1); border: 2px solid #28a745; border-radius: 15px; padding: 20px; width: 90%; max-width: 400px; text-align: center; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .balance-label { font-size: 14px; color: #ffc107; text-transform: uppercase; letter-spacing: 1px; }
+        .balance-amount { font-size: 36px; font-weight: bold; margin-top: 10px; }
+        .btn-container { display: flex; justify-content: space-between; width: 90%; max-width: 400px; margin-top: 20px; gap: 10px; }
+        .button-link { flex: 1; padding: 12px; font-size: 14px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .btn-official { background-color: #0088cc; } .btn-support { background-color: #dc3545; }
         
-        .rules-container {
-            background-color: rgba(0, 0, 0, 0.4);
-            border-left: 5px solid #ffc107;
-            border-radius: 5px;
-            padding: 15px;
-            width: 90%;
-            max-width: 400px;
-            margin-top: 20px;
-            box-sizing: border-box;
-        }
-        .rules-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #ffc107;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .rules-text {
-            font-size: 13px;
-            line-height: 1.6;
-            color: #e0e0e0;
-        }
-        .page {
-            display: none;
-            width: 100%;
-            flex-direction: column;
-            align-items: center;
-        }
-        .page.active { display: flex; }
-
-        /* Task & Spin Layout */
-        .card {
-            background-color: rgba(255,255,255,0.06);
-            border: 1px solid #28a745;
-            border-radius: 12px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            margin-top: 15px;
-            box-sizing: border-box;
-        }
-        .btn-main {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #28a745, #1e7e34);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            margin-top: 10px;
-        }
-        .btn-main:disabled { background: #555; cursor: not-allowed; }
-
-        .wheel-outer {
-            width: 180px;
-            height: 180px;
-            border: 5px solid #ffc107;
-            border-radius: 50%;
-            margin: 15px auto;
-            position: relative;
-            background: repeating-conic-gradient(#28a745 0deg 45deg, #19692c 45deg 90deg);
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-        }
-        .wheel-pointer {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 18px solid #ffc107;
-            z-index: 10;
-        }
-
-        /* Refer Layout */
-        .refer-notice {
-            background: rgba(255, 193, 7, 0.15);
-            border: 1px dashed #ffc107;
-            padding: 12px;
-            border-radius: 8px;
-            color: #ffc107;
-            font-weight: bold;
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-        .stats-grid {
-            display: flex;
-            gap: 10px;
-            width: 90%;
-            max-width: 400px;
-            margin-top: 15px;
-        }
-        .stat-box {
-            flex: 1;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 12px;
-            text-align: center;
-            border-radius: 8px;
-        }
-        .stat-box span { font-size: 11px; color: #aaa; display: block; margin-bottom: 4px;}
-        .stat-box strong { font-size: 16px; color: #fff; }
-        .link-box {
-            background: rgba(0,0,0,0.3);
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            word-break: break-all;
-            margin: 10px 0;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        /* Withdraw Form */
-        .form-group {
-            text-align: left;
-            margin-bottom: 12px;
-            width: 100%;
-        }
-        .form-group label { display: block; font-size: 12px; color: #ccc; margin-bottom: 5px; }
-        .form-group select, .form-group input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 6px;
-            color: white;
-            box-sizing: border-box;
-        }
-        .history-table {
-            width: 90%;
-            max-width: 400px;
-            margin-top: 15px;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-        .history-table th, .history-table td {
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px;
-            text-align: left;
-        }
-        .history-table th { background: rgba(255,255,255,0.1); color: #ffc107; }
-
-        /* Bottom Fixed Navigation Bar Styler */
-        .navbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            box-shadow: 0 -3px 10px rgba(0,0,0,0.3);
-            z-index: 9999;
-        }
-        .nav-item {
-            text-align: center;
-            color: #555;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .nav-item.active { color: #28a745; }
-        .nav-icon { font-size: 20px; margin-bottom: 2px; }
-
-        /* Custom Modal Box */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #1c1c1e;
-            border: 1px solid #ffc107;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            z-index: 2000;
-            width: 80%;
-            max-width: 320px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-        }
-        .modal p { margin-bottom: 15px; font-size: 14px; line-height: 1.4; color: white; }
-        .modal button {
-            padding: 8px 25px;
-            background: #ffc107;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            color: black;
-        }
+        /* মডিফাইড কাজের নিয়মাবলী সেকশন (বড় লেখা ও কালার) */
+        .rules-container { background-color: rgba(0, 0, 0, 0.6); border: 2px solid #ffc107; border-radius: 12px; padding: 18px; width: 92%; max-width: 400px; margin-top: 25px; box-sizing: border-box; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .rules-title { font-size: 20px; font-weight: bold; color: #ffc107; margin-bottom: 15px; text-align: center; text-transform: uppercase; }
+        .rule-item { font-size: 16px; font-weight: 500; line-height: 1.6; margin-bottom: 12px; }
+        .rule-danger { color: #ff4d4d; font-weight: bold; background: rgba(255, 77, 77, 0.1); padding: 6px; border-radius: 5px; border: 1px solid rgba(255, 77, 77, 0.3); }
+        .rule-info { color: #75dbcd; }
+        .rule-success { color: #69ff70; }
+        
+        .page { display: none; width: 100%; flex-direction: column; align-items: center; } .page.active { display: flex; }
+        .card { background-color: rgba(255,255,255,0.06); border: 1px solid #28a745; border-radius: 12px; padding: 20px; width: 90%; max-width: 400px; text-align: center; margin-top: 15px; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 14px; background: linear-gradient(135deg, #28a745, #1e7e34); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin-top: 10px; } .btn-main:disabled { background: #555; cursor: not-allowed; }
+        .wheel-outer { width: 200px; height: 200px; border: 6px solid #ffc107; border-radius: 50%; margin: 15px auto; position: relative; background: conic-gradient(#e74c3c 0deg 45deg, #3498db 45deg 90deg, #2ecc71 90deg 135deg, #f1c40f 135deg 180deg, #9b59b6 180deg 225deg, #e67e22 225deg 270deg, #1abc9c 270deg 315deg, #34495e 315deg 360deg); transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: 0 4px 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; }
+        .wheel-outer::before { content: '🎁'; font-size: 26px; z-index: 5; background: #fff; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border: 3px solid #ffc107; }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 22px solid #ffc107; z-index: 10; }
+        .refer-notice { background: rgba(255, 193, 7, 0.15); border: 1px dashed #ffc107; padding: 12px; border-radius: 8px; color: #ffc107; font-weight: bold; text-align: center; width: 90%; max-width: 400px; margin-top: 15px; font-size: 14px; }
+        .stats-grid { display: flex; gap: 10px; width: 90%; max-width: 400px; margin-top: 15px; }
+        .stat-box { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; text-align: center; border-radius: 8px; }
+        .stat-box span { font-size: 11px; color: #aaa; display: block; margin-bottom: 4px;} .stat-box strong { font-size: 16px; color: #fff; }
+        .link-box { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; font-size: 12px; word-break: break-all; margin: 10px 0; border: 1px solid rgba(255,255,255,0.2); color: #ffc107; font-weight: bold; text-align: center; }
+        .form-group { text-align: left; margin-bottom: 12px; width: 100%; } .form-group label { display: block; font-size: 12px; color: #ccc; margin-bottom: 5px; }
+        .form-group select, .form-group input { width: 100%; padding: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; box-sizing: border-box; }
+        .history-table { width: 90%; max-width: 400px; margin-top: 15px; border-collapse: collapse; font-size: 13px; border: 2px solid #28a745; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .history-table th, .history-table td { border: 1px solid #28a745; padding: 10px; text-align: center; }
+        .history-table th { background: #19692c; color: #ffc107; font-weight: bold; } .history-table td { background: rgba(0,0,0,0.2); }
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -3px 10px rgba(0,0,0,0.3); z-index: 9999; }
+        .nav-item { text-align: center; color: #555; font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center; }
+        .nav-item.active { color: #28a745; } .nav-icon { font-size: 20px; margin-bottom: 2px; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1c1c1e; border: 1px solid #ffc107; padding: 20px; border-radius: 12px; text-align: center; z-index: 2000; width: 80%; max-width: 320px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+        .modal p { margin-bottom: 15px; font-size: 14px; line-height: 1.4; color: white; } .modal button { padding: 8px 25px; background: #ffc107; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: black; }
     </style>
 </head>
 <body>
-
-    <!-- সবার ওপরে আপনার দেওয়া ইমোজি সহ নাম -->
     <div class="header">🚀 Mega Income Bot</div>
-
-    <!-- 1. HOME PAGE -->
     <div id="home" class="page active">
-        <div class="balance-container">
-            <div class="balance-label">TOTAL BALANCE</div>
-            <div class="balance-amount">৳ <span id="user-balance">0.00</span></div>
-        </div>
+        <div class="balance-container"><div class="balance-label">TOTAL BALANCE</div><div class="balance-amount">৳ <span id="user-balance">0.00</span></div></div>
+        <div class="btn-container"><a href="https://t.me" target="_blank" class="button-link btn-official">📢 অফিশিয়াল চ্যানেল</a><a href="https://t.me" target="_blank" class="button-link btn-support">🛠️ লাইভ সাপোর্ট</a></div>
         
-        <div class="btn-container">
-            <a href="https://t.me" target="_blank" class="button-link btn-official">📢 অফিশিয়াল চ্যানেল</a>
-            <a href="https://t.me" target="_blank" class="button-link btn-support">🛠️ লাইভ সাপোর্ট</a>
-        </div>
-
+        <!-- পরিমার্জিত সুন্দর কালারফুল ও বড় টেক্সটের নিয়মাবলী বক্স -->
         <div class="rules-container">
-            <div class="rules-title">⚠️ কাজের নিয়মাবলী:</div>
-            <div class="rules-text">
-                ১. ভিপিএন (VPN) ব্যবহার করে কোনো প্রকার অসদুপায় অবলম্বন করলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।<br>
-                ২. প্রতিটি কাজের জন্য বিজ্ঞাপনের রেট অনুযায়ী ব্যালেন্স যুক্ত হবে।<br>
-                ৩. টাকা সরাসরি বিকাশ, নগদ বা রকেটের মাধ্যমে তুলতে পারবেন।
-            </div>
+            <div class="rules-title">⚠️ কাজের নিয়মাবলী</div>
+            <div class="rule-item rule-danger">❌ ১. VPN অন করে কাজ করলে আপনার অ্যাকাউন্ট চিরতরে ব্যান হতে পারে!</div>
+            <div class="rule-item rule-info">📺 ২. প্রতিটি কাজের জন্য বিজ্ঞাপনের রেট অনুযায়ী মূল ব্যালেন্স যুক্ত হবে।</div>
+            <div class="rule-item rule-success">💵 ৩. উপার্জিত টাকা সরাসরি বিকাশ, নগদ বা রকেটের মাধ্যমে তুলতে পারবেন।</div>
         </div>
     </div>
-
-        <!-- 2. TASK PAGE -->
     <div id="task" class="page">
         <div class="card"><h3 style="color:#ffc107; margin-bottom:5px;">ভিডিও বিজ্ঞাপন টাস্ক</h3><p style="font-size:12px; color:#ccc; margin-bottom:10px;">বিজ্ঞপ্তিটি সম্পূর্ণ দেখলে সরাসরি মূল একাউন্টে বোনাস যুক্ত হবে।</p><button class="btn-main" id="btn-watch-ad" onclick="showAdsgramAd('video')">📺 বিজ্ঞাপন দেখুন</button></div>
         <div class="card"><h3 style="color:#ffc107; margin-bottom:5px;">🎰 লাকি স্পিন হুইল</h3><p style="font-size:12px; color:#ccc; margin-bottom:10px;">প্রথমে একটি বিজ্ঞাপন দেখতে হবে, তারপর চাকা ঘুরবে!</p><div class="wheel-outer" id="wheel"><div class="wheel-pointer"></div></div><button class="btn-main" id="btn-spin" onclick="showAdsgramAd('spin')">🌀 স্পিন করুন</button></div>
     </div>
-
-    <!-- 3. REFER PAGE -->
     <div id="refer" class="page">
         <div class="refer-notice">বন্ধুদের রেফার করে আজীবন ৩০% বাড়তি ইনকাম বা কমিশন পাবেন! 🎁</div>
-        <div class="stats-grid">
-            <div class="stat-box"><span>মোট রেফার</span><strong id="total-refers">0</strong></div>
-            <div class="stat-box"><span>মোট রেফার কমিশন</span><strong id="refer-commissions">৳0.00</strong></div>
-        </div>
-        <div class="card" style="text-align: left;">
-            <h3 style="color:#ffc107;">আপনার ইনভাইট লিংক:</h3>
-            <div class="link-box" id="refer-link">Generating link...</div>
-            <button class="btn-main" style="padding:10px; font-size:13px;" onclick="copyReferLink()">📋 লিংক কপি করুন</button>
-        </div>
+        <div class="stats-grid"><div class="stat-box"><span>মোট রেফার</span><strong id="total-refers">0</strong></div><div class="stat-box"><span>মোট রেফার কমিশন</span><strong id="refer-commissions">৳0.00</strong></div></div>
+        <div class="card" style="text-align: left;"><h3 style="color:#ffc107;">আপনার ইনভাইট লিংক:</h3><div class="link-box" id="refer-link">Loading...</div><button class="btn-main" style="padding:10px; font-size:13px;" onclick="copyReferLink()">📋 লিংক কপি করুন</button></div>
     </div>
-
-    <!-- 4. WITHDRAW PAGE -->
     <div id="withdraw" class="page">
         <div class="card">
             <h3 style="color:#ffc107; margin-bottom:15px;">টাকা উত্তোলন করুন</h3>
             <div class="form-group"><label>পেমেন্ট মেথড</label><select id="withdraw-method"><option value="bKash">বিকাশ (bKash)</option><option value="Nagad">নগদ (Nagad)</option><option value="Rocket">রকেট (Rocket)</option></select></div>
             <div class="form-group"><label>অ্যাকাউন্ট নাম্বার</label><input type="number" id="withdraw-number" placeholder="017XXXXXXXX"></div>
-            <div class="form-group"><label>টাকার পরিমাণ (সর্বনিম্ন ৳১৫০)</label><input type="number" id="withdraw-amount" placeholder="150"></div>
-            <button class="btn-main" onclick="handleWithdraw()">💸 সাবমিট রিকোয়েস্ট</button>
-        </div>
-        <h3 style="color:#ffc107; margin-top:15px; width:90%; max-width:400px; text-align:left;">পেমেন্ট হিস্ট্রি</h3>
-        <table class="history-table"><thead><tr><th>মেথড</th><th>পরিমাণ (৫% বাদে)</th><th>স্ট্যাটাস</th></tr></thead><tbody id="history-rows"></tbody></table>
-    </div>
-
-    <div class="modal" id="custom-popup"><p id="popup-text"></p><button onclick="closePopup()">OK</button></div>
-
-    <!-- Bottom Navigation Bar - একদম ফিক্সড ও সচল -->
-    <div class="navbar">
-        <div class="nav-item active" onclick="switchPage('home', this)"><span class="nav-icon">🏠</span><span>হোম</span></div>
-        <div class="nav-item" onclick="switchPage('task', this)"><span class="nav-icon">💼</span><span>টাস্ক</span></div>
-        <div class="nav-item" onclick="switchPage('refer', this)"><span class="nav-icon">👥</span><span>রেফার</span></div>
-        <div class="nav-item" onclick="switchPage('withdraw', this)"><span class="nav-icon">💳</span><span>উইথড্র</span></div>
-    </div>
-
-    <script>
-        const adsgramBlockId = "44575", adminChatId = "8049465500";
-        const botToken = "8644824917:YOUR_ACTUAL_BOT_TOKEN"; // ⚠️ এখানে আপনার বটের টোকেনটি বসিয়ে দিন
-        let balance = 0.00, userId = "123456"; const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) { userId = tg.initDataUnsafe.user.id; }
-        document.getElementById('refer-link').innerText = `https://t.me{userId}`;
-        function switchPage(pageId, element) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); document.getElementById(pageId).classList.add('active'); element.classList.add('active'); }
-        function showAlert(msg) { document.getElementById('popup-text').innerText = msg; document.getElementById('custom-popup').style.display = 'block'; }
-        function closePopup() { document.getElementById('custom-popup').style.display = 'none'; }
-        function copyReferLink() { navigator.clipboard.writeText(document.getElementById('refer-link').innerText); showAlert("🎉 ইনভাইট লিংক কপি হয়েছে!"); }
-        function showAdsgramAd(type) { if(!window.Adsgram) { processAdReward(type, (Math.random()*(6-2)+2)); return; } window.Adsgram.init({ blockId: adsgramBlockId }).show().then(() => { processAdReward(type, (Math.random()*(6-2)+2)); }).catch(() => { showAlert("❌ সম্পূর্ণ বিজ্ঞাপন না দেখলে ১ পয়সাও পাবেন না!"); }); }
-        function processAdReward(type, amt) { let userShare = amt * 0.5; balance += userShare; document.getElementById('user-balance').innerText = balance.toFixed(2); if (type === 'video') { showAlert(` must সম্পূর্ণ বোনাস ৳${userShare.toFixed(2)} পেয়েছেন! 🎉`); } else { const wheel = document.getElementById('wheel'); const btn = document.getElementById('btn-spin'); btn.disabled = true; let deg = Math.floor(Math.random() * 360) + 1440; wheel.style.transform = `rotate(${deg}deg)`; setTimeout(() => { btn.disabled = false; showAlert(`🎰 স্পিন করে আপনি ৳${userShare.toFixed(2)} বোনাস জিতেছেন!`); }, 4000); } }
-        function handleWithdraw() { const method = document.getElementById('withdraw-method').value, number = document.getElementById('withdraw-number').value, amount = parseFloat(document.getElementById('withdraw-amount').value); if (!number || isNaN(amount)) { showAlert("❌ সব তথ্য পূরণ করুন!"); return; } if (amount < 150) { showAlert("❌ সর্বনিম্ন উইথড্র ৳১৫ۆ হতে হবে!"); return; } if (amount > balance) { showAlert("❌ পর্যাপ্ত ব্যালেন্স নেই!"); return; } let fee = amount * 0.05, final = amount - fee; balance -= amount; document.getElementById('user-balance').innerText = balance.toFixed(2); document.getElementById('history-rows').innerHTML += `<tr><td>${method} (${number})</td><td>৳${final.toFixed(2)}</td><td style="color:#ffc107;font-weight:bold;">Pending</td></tr>`; sendAdminNotification(method, number, amount, fee, final); showAlert(`✅ সফল! ৫% ফি বাদে ৳${final.toFixed(2)} পেন্ডিংয়ে যুক্ত হয়েছে।`); }
-        function sendAdminNotification(m, n, t, f, fi) { if(botToken.includes("YOUR_ACTUAL_BOT_TOKEN")) return; const msg = `🚨 *নতুন উইথড্র রিকোয়েস্ট*\n\n👤 আইডি: \`${userId}\`\n💳 মেথড: ${m}\n📱 নাম্বার: \`${n}\`\n💰 মোট: ৳${t}\n⚡ ফি: ৳${f}\n💵 চূড়ান্ত: *৳${fi}*`; const kb = { inline_keyboard: [[{ text: "✅ Approve", callback_data: `approve_${userId}_${fi}` }, { text: "❌ Reject", callback_data: `reject_${userId}` }], [{ text: "🚫 Ban User", callback_data: `ban_${userId}` }]] }; fetch(`https://telegram.org{botToken}/sendMessage?chat_id=${adminChatId}&text=${encodeURIComponent(msg)}&parse_mode=Markdown&reply_markup=${encodeURIComponent(JSON.stringify(kb))}`).catch(e => console.log(e)); }
-    </script>
-</body>
-</html>
-
