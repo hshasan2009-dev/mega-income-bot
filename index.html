@@ -39,9 +39,9 @@
 
         /* রেফার ডিজাইন গ্রিড */
         .refer-stats-grid { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
-        .refer-stats-grid .refer-stat-card { background: #174428; flex: 1; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #2e7d32; }
-        .refer-stats-grid .refer-stat-card p { font-size: 12px; color: #e0f2f1; margin-bottom: 5px; }
-        .refer-stats-grid .refer-stat-card h3 { font-size: 18px; color: #ffeb3b; font-weight: bold; }
+        .refer-stat-card { background: #174428; flex: 1; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #2e7d32; }
+        .refer-stat-card p { font-size: 12px; color: #e0f2f1; margin-bottom: 5px; }
+        .refer-stat-card h3 { font-size: 18px; color: #ffeb3b; font-weight: bold; }
         .copy-btn { background: #ffffff; color: #1a4329; border: none; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
 
         /* উইথড্র ফর্ম */
@@ -139,8 +139,7 @@
                     </div>
                     <div class="refer-stat-card">
                         <p>রেফার ইনকাম</p>
-                        <h3>৳ <span id="total-ref-earn">0.00</span></h3>
-                    </div>
+                                            </div>
                 </div>
 
                 <label style="font-size: 13px; display: block; text-align: left; margin-bottom: 5px; color: #a5d6a7;">আপনার রেফারেল লিংক:</label>
@@ -298,7 +297,7 @@
                         let currentRefCount = parseInt(document.getElementById('total-ref-count').innerText);
                         document.getElementById('total-ref-count').innerText = (currentRefCount + 1) + " টি";
 
-                        alert(`🎰 অভিনন্দন!   এবং স্পিন সফল হয়েছে। ৳${randomAmount.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে এবং ৩০% রেফারেল কমিশন হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`); 
+                        alert(`🎰 अभिनंदन! বিজ্ঞাপন এবং স্পিন সফল হয়েছে। ৳${randomAmount.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে এবং ৩০% রেফারেল কমিশন হিসেবে ৳${refBonus.toFixed(2)} রেফার ইনকামে জমা হয়েছে।`); 
                     }, 4000);
                 }
             }, 1000);
@@ -345,3 +344,4 @@
 
         function checkWithdraw() {
             let currentBalance = parseFloat(document.getElementById('current-user-balance').textContent);
+            let inputAmount = parseFloat(document.getElementById('withdraw-amount').value);
