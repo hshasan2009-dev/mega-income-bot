@@ -7,7 +7,6 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        /* ⚠️ নিচের প্যাডিং বাড়িয়ে ১৫০ পিক্সেল করা হয়েছে যাতে বাটন পেজকে ঢেকে না দেয় */
         body { background-color: #1a4329; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-bottom: 150px; }
 
         .header { background: #1e5233; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; border-bottom: 2px solid #2e7d32; }
@@ -29,7 +28,8 @@
         .highlight-yellow { color: #ffeb3b; font-weight: bold; }
 
         /* সাপোর্ট বাটন */
-        .action-btn { background: #1e88e5; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 10px; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-decoration: none; }
+        .action-btn { color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 10px; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-decoration: none; text-align: center; }
+        .btn-channel { background: #1e88e5; }
         .btn-support { background: #ff9800; }
         .task-box { background: #23693e; border-radius: 15px; padding: 25px; text-align: center; border: 1px solid #2e7d32; margin-bottom: 20px; }
         .ad-start-btn { background: #ffeb3b; color: #1a4329; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; margin-top: 15px; width: 100%; transition: 0.2s; }
@@ -53,11 +53,11 @@
         .wheel-arrow { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff5252; z-index: 10; }
         .spin-count { font-size: 14px; margin-top: 10px; color: #ffeb3b; font-weight: bold; }
 
-        /* অ্যাড পপ-আপ উইন্ডো */
+        /* অ্যাড পপ-আপ ডিজাইন */
         #ad-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; }
         .timer-overlay { font-size: 24px; font-weight: bold; color: #ffeb3b; margin-bottom: 20px; }
 
-        /* ⚠️ নিচে স্থায়ীভাবে ভেসে থাকার জন্য ফিক্সড নেভিগেশন বার ডিজাইন */
+        /* ফিক্সড নেভিগেশন বার */
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 15px rgba(0,0,0,0.2); z-index: 99999; }
         .nav-item { color: #555555; text-decoration: none; display: flex; flex-direction: column; align-items: center; cursor: pointer; background: none; border: none; width: 22%; padding: 8px 0; transition: 0.1s; }
         .nav-item .emoji { font-size: 24px; margin-bottom: 4px; }
@@ -83,13 +83,13 @@
 
             <div class="rules-card">
                 <div class="rules-title">⚠️ কাজের নিয়ম:</div>
-                <div class="rule-item">১. অবশ্যই ফোনে <span class="highlight-red">USA বা UK VPN</span> কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</div>
+                <div class="rule-item">১. অবশ্যই ফোনে <span class="highlight-red">USA বা UK VPN</span> (যেমন: Turbo VPN / SuperVPN) কানেক্ট করে কাজ করুন। বেশি ইনকাম পাবেন।</div>
                 <div class="rule-item"><span class="highlight-yellow">⚠️ ২. কাজ চালু হলে বিজ্ঞাপনটি কমপক্ষে ৫-১০ সেকেন্ড দেখুন।</span></div>
                 <div class="rule-item"><span class="highlight-yellow">⚠️ ৩. নিয়ম না মানলে ব্যালেন্স যোগ হবে না।</span></div>
                 <div class="rule-item">৪. কোনো অসদুপায় অবলম্বন করলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।</div>
             </div>
 
-            <a href="https://t.me" target="_blank" class="action-btn">📬 জয়েন অফিসিয়াল চ্যানেল</a>
+            <a href="https://t.me" target="_blank" class="action-btn btn-channel">📬 জয়েন অফিসিয়াল চ্যানেল</a>
             <a href="https://t.me" target="_blank" class="action-btn btn-support">🤝 লাইভ সাপোর্ট (যোগাযোগ)</a>
         </div>
 
@@ -98,7 +98,7 @@
             <div class="task-box">
                 <h2 style="margin-bottom: 10px;">ভিдео বিজ্ঞাপন টাস্ক</h2>
                 <p>একটি অ্যাড সম্পূর্ণ দেখলে আপনার ব্যালেন্সে টাকা যোগ হবে।</p>
-                <p style="color: #ffeb3b; font-weight: bold; font-size: 20px; margin-top: 10px;">পুরস্কার: ৳২.০০</p>
+                <p style="color: #ffeb3b; font-weight: bold; font-size: 20px; margin-top: 10px;">পুরস্কার: ডাইনামিক ৫০%</p>
                 <button id="start-ad-btn" class="ad-start-btn" onclick="showFakeAd()">বিজ্ঞাপন দেখুন</button>
             </div>
 
@@ -110,7 +110,7 @@
                     <canvas id="canvas" width="260" height="260"></canvas>
                 </div>
                 <button id="spin-btn" class="ad-start-btn" style="background: #ff9800; color: white;" onclick="spinWheel()">চাকা ঘুরান</button>
-                <div class="spin-count">আজকের باقی স্পিন: <span id="rem-spin">২০</span>/২০</div>
+                <div class="spin-count">আজকের বাকি স্পিন: <span id="rem-spin">২০</span>/২০</div>
                 <div class="spin-count" style="color: #a5d6a7;">আপনার স্পিন টিকিট: <span id="spin-tickets">৫</span> টি</div>
             </div>
         </div>
@@ -120,8 +120,8 @@
             <div class="task-box">
                 <h2>বন্ধুদের আমন্ত্রণ জানান</h2>
                 <p style="margin-top: 10px;">আপনার রেফারেল লিংকটি শেয়ার করে আনলিমিটেড আয় করুন।</p>
-            <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(৩০% লাইভ বোনাস! 🎁)</p>
-            <div style="background: #174428; padding: 12px; border-radius: 10px; margin-top: 15px; word-break: break-all; color: #ffeb3b; font-weight: bold;" id="ref-link">https://t.me</div>
+                <p style="font-size: 13px; color: #ffeb3b; margin-top: 5px;">(৩০% লাইভ বোনাস! 🎁)</p>
+                <div style="background: #174428; padding: 12px; border-radius: 10px; margin-top: 15px; word-break: break-all; color: #ffeb3b; font-weight: bold;" id="ref-link">https://t.me</div>
         </div>
     </div>
 
@@ -145,7 +145,7 @@
                 <label>টাকার পরিমাণ (Amount)</label>
                 <input type="number" placeholder="৳ ১৫০">
                 
-                <button class="ad-start-btn" style="margin-top: 5px;">উইথড্র রিকোয়েস্ট পাঠান</button>
+                <button class="ad-start-btn" style="margin-top: 5px;" onclick="checkWithdraw()">উইথড্র রিকোয়েস্ট পাঠান</button>
             </div>
 
             <div class="history-title">উইথড্র হিস্ট্রি</div>
@@ -174,11 +174,11 @@
 
     <!-- ডেমো অ্যাড পপ-আপ স্ক্রিন -->
     <div id="ad-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; justify-content: center; align-items: center;">
-        <div class="timer-overlay" style="font-size: 24px; font-weight: bold; color: #ffeb3b; margin-bottom: 20px;">বিজ্ঞাপন লোড হচ্ছে... <span id="ad-timer">৫</span>সে.</div>
+        <div class="timer-overlay" style="font-size: 24px; font-weight: bold; color: #ffeb3b; margin-bottom: 20px;">বিজ্ঞাপন লোড হচ্ছে... <span id="ad-timer">১৫</span>সে.</div>
         <p style="color: white; font-size: 16px;">অনুগ্রহ করে অপেক্ষা করুন, ব্যালেন্স যোগ হচ্ছে।</p>
     </div>
 
-    <!-- ⚠️ বড় সাইজ ও ইমোজি সহ আপডেট করা ফিক্সড নেভিগেশন বার -->
+    <!-- বড় সাইজ ও ইমোজি সহ আপডেট করা ফিক্সড নেভিগেশন বার -->
     <div class="nav-bar">
         <button class="nav-item active" onclick="switchPage('home-page', this)">
             <span class="emoji">🏠</span>
@@ -208,7 +208,6 @@
             window.scrollTo(0, 0);
         }
 
-        // চাকার ভেতরের সংখ্যা আঁকা
         const canvas = document.getElementById('canvas');
         if(canvas) {
             const ctx = canvas.getContext('2d');
@@ -239,37 +238,72 @@
             drawWheel();
         }
 
-        // স্পিন হুইল অ্যানিমেশন
         let currentRotation = 0;
         function spinWheel() {
-            const btn = document.getElementById('spin-btn');
-            btn.disabled = true;
-            const randomSpin = Math.floor(Math.random() * 360) + 1440;
-            currentRotation += randomSpin;
-            canvas.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
-            canvas.style.transform = `rotate(${currentRotation}deg)`;
-            setTimeout(() => { btn.disabled = false; alert("🎰 অভিনন্দন! আপনি পুরস্কার জিতেছেন।"); }, 4000);
-        }
+            window.open('https://profitableratecpmnetwork.com', '_blank'); 
 
-        // ডেমো বিজ্ঞাপন
-        function showFakeAd() {
             const popup = document.getElementById('ad-popup');
             const timerSpan = document.getElementById('ad-timer');
             popup.style.display = 'flex';
-            let timeLeft = 5;
+            let timeLeft = 15; 
+            timerSpan.textContent = timeLeft;
+            
             const interval = setInterval(() => {
                 timeLeft--;
                 timerSpan.textContent = timeLeft;
                 if (timeLeft <= 0) {
                     clearInterval(interval);
                     popup.style.display = 'none';
-                    let currentBal = parseFloat(document.getElementById('current-user-balance').textContent);
-                    document.getElementById('current-user-balance').textContent = (currentBal + 2.00).toFixed(2);
-                    alert("🎉 বিজ্ঞাপন সফলভাবে দেখা হয়েছে! ৳২.০০ যোগ হয়েছে✅।");
+                    
+                    const btn = document.getElementById('spin-btn');
+                    btn.disabled = true;
+                    const randomSpin = Math.floor(Math.random() * 360) + 1440;
+                    currentRotation += randomSpin;
+                    canvas.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
+                    canvas.style.transform = `rotate(${currentRotation}deg)`;
+                    
+                    setTimeout(() => { 
+                        btn.disabled = false; 
+                        let randomAmount = (Math.random() * (2.50 - 0.20) + 0.20).toFixed(2);
+                        let currentBal = parseFloat(document.getElementById('current-user-balance').textContent);
+                        document.getElementById('current-user-balance').textContent = (currentBal + parseFloat(randomAmount)).toFixed(2);
+                        alert(`🎰 অভিনন্দন! বিজ্ঞাপন এবং স্পিন সফল হয়েছে। আয়ের ৫০% হিসেবে ৳${randomAmount} আপনার ব্যালেন্সে যোগ হয়েছে।`); 
+                    }, 4000);
                 }
             }, 1000);
         }
-    </script>
 
+        function showFakeAd() {
+            window.open('https://profitableratecpmnetwork.com', '_blank');
+
+            const popup = document.getElementById('ad-popup');
+            const timerSpan = document.getElementById('ad-timer');
+            popup.style.display = 'flex';
+            let timeLeft = 15; 
+            timerSpan.textContent = timeLeft;
+
+            const interval = setInterval(() => {
+                timeLeft--;
+                timerSpan.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    popup.style.display = 'none';
+                    let earnedAmount = (Math.random() * (1.80 - 1.20) + 1.20).toFixed(2);
+                    let currentBal = parseFloat(document.getElementById('current-user-balance').textContent);
+                    document.getElementById('current-user-balance').textContent = (currentBal + parseFloat(earnedAmount)).toFixed(2);
+                    alert(`✅ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়েছে! এই ক্লিকের আয়ের ৫০% হিসেবে ৳${earnedAmount} আপনার মেইন ব্যালেন্সে যোগ হয়েছে।`);
+                }
+            }, 1000);
+        }
+
+        function checkWithdraw() {
+            let currentBalance = parseFloat(document.getElementById('current-user-balance').textContent);
+            if (currentBalance < 150) {
+                alert("❌ দুঃখিত! আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই। নূন্যতম উইথড্র সীমা ৳১৫০।");
+            } else {
+                alert("✅ আপনার উইথড্র রিকোয়েস্টটি সফলভাবে পাঠানো হয়েছে। অনুগ্রহ করে অপেক্ষা করুন।");
+            }
+        }
+    </script>
 </body>
-                        </html>
+    </html>
