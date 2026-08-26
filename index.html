@@ -433,7 +433,7 @@
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "44608";
         
-        // CPX Research-এর ডাইরেক্ট ইউজার সার্ভে অফারওয়াল লিঙ্ক (আপনার আইডি বসিয়ে নিতে পারেন, বর্তমানে ডিফল্ট ওয়েবলিংক দেওয়া হলো যাতে ডাইরেক্ট সার্ভে পেজ খোলে)
+        // CPX Research ডাইরেক্ট অফারওয়াল লিংক
         const CPX_OFFERWALL_URL = "https://offers.cpx-research.com/index.php?app_id=YOUR_APP_ID&ext_user_id="; 
 
         let tg = window.Telegram?.WebApp;
@@ -453,7 +453,7 @@
         let completedTasksCount = parseInt(localStorage.getItem(`tasksCount_${user.id}`)) || 0;
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
 
-        // স্পিন প্রাইজ: সবসময় ১ টাকা বা তার নিচের অ্যামাউন্টগুলোতে বাঁধার জন্য প্রিসেট
+        // স্পিন প্রাইজ: সবসময় ১ টাকা বা তার নিচের অ্যামাউন্টগুলোর জন্য প্রিসেট
         const spinPrizes = [
             { amount: 0.10, label: "৳০.১০", weight: 35 },
             { amount: 0.25, label: "৳০.২৫", weight: 30 },
@@ -524,7 +524,6 @@
         }
 
         function openCPXSurvey() {
-            // ইউজারের নিজস্ব আইডি সহ ডাইরেক্ট সার্ভে অফারওয়াল লিংক ওপেন হবে
             let finalCPXUrl = CPX_OFFERWALL_URL + user.id;
             window.open(finalCPXUrl, '_blank');
         }
@@ -689,7 +688,6 @@
                 let tr = document.getElementById(item.id) || document.createElement("tr");
                 tr.id = item.id;
                 tr.innerHTML = `
-                    :` + `
                     <td>${item.date}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount.toFixed(2)}</td>
                     <td>${item.method}</td>
