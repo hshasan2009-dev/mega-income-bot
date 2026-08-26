@@ -174,19 +174,53 @@
             outline: none;
         }
 
-        /* Spin Wheel */
+        /* Enhanced Visual Spin Wheel */
+        .wheel-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 15px auto;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid #e74c3c;
+            z-index: 20;
+        }
+
         .wheel-box {
-            width: 180px;
-            height: 180px;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             border: 6px solid #f1c40f;
-            margin: 15px auto;
+            position: relative;
+            overflow: hidden;
+            background: #113626;
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
+        }
+
+        .wheel-slice {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            left: 0;
+            top: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            background: radial-gradient(circle, #1b4d3e, #0c2317);
-            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            font-size: 11px;
+            font-weight: bold;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         /* Refer & Stats Boxes */
@@ -251,7 +285,7 @@
             font-weight: bold;
         }
 
-        /* Bottom Navbar with direct Emoji Icons */
+        /* Bottom Navbar */
         .navbar {
             position: fixed;
             bottom: 0;
@@ -342,8 +376,16 @@
             <div class="card">
                 <h3>🌀 লকি স্পিন</h3>
                 <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">স্পিন করতে আগে এড দেখতে হবে</p>
-                <div class="wheel-box" id="spin-wheel">🎯</div>
-                <button class="btn btn-main" onclick="playSpinTask()">🌀 স্পিন করুন</button>
+                
+                <!-- স্পিন হুইল উইথ প্রাইস সেকশন -->
+                <div class="wheel-container">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel-box" id="spin-wheel">
+                        <!-- slices added dynamically via JS -->
+                    </div>
+                </div>
+
+                <button class="btn btn-main" onclick="playSpinTask()" style="margin-top: 15px;">🌀 স্পিন করুন</button>
             </div>
         </div>
 
@@ -355,7 +397,6 @@
                     আপনার রেফারেল লিংকের মাধ্যমে বন্ধু যুক্ত করুন। প্রতি টাস্ক থেকে পাবেন কমিশন!
                 </p>
 
-                <!-- দুইটি বক্স ডিজাইন -->
                 <div class="stats-container">
                     <div class="stat-box">
                         <div class="stat-num" id="ref-count">0</div>
@@ -404,7 +445,7 @@
                 <button class="btn btn-main" onclick="submitWithdrawal()">উইথড্র রিকোয়েস্ট পাঠান</button>
             </div>
 
-            <!-- উইথড্র হিস্টরি টেবিল (তারিখ সহ) -->
+            <!-- উইথড্র হিস্টরি টেবিল -->
             <div class="card">
                 <h3>📜 উইথড্র হিস্টরি</h3>
                 <table class="history-table">
@@ -425,7 +466,7 @@
 
     </div>
 
-    <!-- বটম নেভিগেশন বার (সঠিক ইমোজি সহ) -->
+    <!-- বটম নেভিগেশন বার -->
     <div class="navbar">
         <button class="nav-item active" onclick="switchTab('home', this)">
             <span class="icon">🏠</span>
@@ -464,13 +505,44 @@
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
         let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
 
-        // যদি আগের হিস্টরিতে তারিখ না থাকে, তবে বর্তমান তারিখ বা ডিফল্ট বসিয়ে দেওয়া
-        historyData.forEach(item => {
-            if (!item.date) {
-                item.date = "25/08/2026";
-            }
-        });
-        localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
+        // Spin prizes array with higher weight for small amounts (90% chance for 0.30, 0.60, 1.00)
+        const spinPrizes = [
+            { amount: 0.30, label: "৳০.৩০", weight: 45 },
+            { amount: 0.60, label: "৳০.৬০", weight: 30 },
+            { amount: 1.00, label: "৳১.০০", weight: 15 },
+            { amount: 1.50, label: "৳১.৫০", weight: 4 },
+            { amount: 1.80, label: "৳১.৮০", weight: 2 },
+            { amount: 2.00, label: "৳২.০০", weight: 1 },
+            { amount: 3.00, label: "৳৩.০০", weight: 1 },
+            { amount: 4.00, label: "৳৪.০০", weight: 1 },
+            { amount: 5.00, label: "৳৫.০০", weight: 1 }
+        ];
+
+        // Initialize Wheel visual slices
+        function initWheel() {
+            let wheelBox = document.getElementById("spin-wheel");
+            let totalSlices = spinPrizes.length;
+            let angleStep = 360 / totalSlices;
+
+            spinPrizes.forEach((prize, index) => {
+                let slice = document.createElement("div");
+                slice.className = "wheel-slice";
+                let rotateAngle = index * angleStep;
+                slice.style.transform = `rotate(${rotateAngle}deg) skewY(-${90 - angleStep}deg)`;
+                slice.style.backgroundColor = index % 2 === 0 ? '#1b4d3e' : '#143d2c';
+                
+                let textSpan = document.createElement("span");
+                textSpan.style.transform = `skewY(${90 - angleStep}deg) rotate(${angleStep/2}deg)`;
+                textSpan.style.position = "absolute";
+                textSpan.style.right = "25px";
+                textSpan.style.bottom = "25px";
+                textSpan.innerText = prize.label;
+                
+                slice.appendChild(textSpan);
+                wheelBox.appendChild(slice);
+            });
+        }
+        initWheel();
 
         updateUI();
         renderHistory();
@@ -499,7 +571,7 @@
                     AdController.show().then((result) => {
                         addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস যোগ হয়েছে!");
                     }).catch((error) => {
-                        alert("⚠️ Adsgram Error: আপনার ব্লকটি (44608) এখনো partner.adsgram.ai-এ Active করা নেই। দয়া করে এডসগ্রাম ড্যাশবোর্ড থেকে ব্লক এক্টিভ করুন।");
+                        alert("⚠️ Adsgram Error: ব্লকটি এখনো সক্রিয় হতে সময় নিচ্ছে বা ড্যাশবোর্ডে স্ট্যাটাস চেক করুন।");
                     });
                 } else {
                     addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস পাওয়া গেছে!");
@@ -513,25 +585,41 @@
             try {
                 if (window.Adsgram) {
                     const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-                    AdController.show().then(() => runSpinLogic()).catch(() => {
-                        alert("⚠️ Adsgram Error: ব্লক 44608 একটিভ করা নেই!");
+                    AdController.show().then(() => runWeightedSpin()).catch(() => {
+                        alert("⚠️ Adsgram Error: বিজ্ঞাপন লোড করা যায়নি!");
                     });
                 } else {
-                    runSpinLogic();
+                    runWeightedSpin();
                 }
             } catch (e) {
-                runSpinLogic();
+                runWeightedSpin();
             }
         }
 
-        function runSpinLogic() {
+        function runWeightedSpin() {
+            // Weighted random selection (90% for small amounts)
+            let totalWeight = spinPrizes.reduce((sum, item) => sum + item.weight, 0);
+            let randomNum = Math.random() * totalWeight;
+            let currentWeightSum = 0;
+            let selectedIndex = 0;
+
+            for (let i = 0; i < spinPrizes.length; i++) {
+                currentWeightSum += spinPrizes[i].weight;
+                if (randomNum <= currentWeightSum) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
+            let chosenPrize = spinPrizes[selectedIndex];
+            let angleStep = 360 / spinPrizes.length;
+            let targetDegree = 1440 + (spinPrizes.length - selectedIndex) * angleStep - (angleStep / 2);
+
             let wheel = document.getElementById("spin-wheel");
-            let randomDegree = Math.floor(Math.random() * 360) + 1440;
-            wheel.style.transform = `rotate(${randomDegree}deg)`;
+            wheel.style.transform = `rotate(${targetDegree}deg)`;
             
             setTimeout(() => {
-                let prize = (Math.random() * 3 + 1).toFixed(2);
-                addReward(parseFloat(prize), `🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${prize}`);
+                addReward(chosenPrize.amount, `🎉 অভিনন্দন! স্পিন করে পেয়েছেন ${chosenPrize.label}`);
             }, 3000);
         }
 
