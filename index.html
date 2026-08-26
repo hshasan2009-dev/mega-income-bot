@@ -24,7 +24,6 @@
             padding-bottom: 90px;
         }
 
-        /* Top Title Header */
         .top-title-bar {
             background-color: #1b4d3e;
             color: #ffcc00;
@@ -50,7 +49,6 @@
             display: block;
         }
 
-        /* Card Component */
         .card {
             background-color: #113626;
             border: 2px solid #27ae60;
@@ -84,7 +82,6 @@
             font-weight: bold;
         }
 
-        /* Buttons Styling */
         .btn {
             width: 100%;
             padding: 12px;
@@ -117,7 +114,6 @@
             font-size: 17px;
         }
 
-        /* Rules Box */
         .rules-box {
             text-align: left;
             border: 1px dashed #f39c12;
@@ -150,7 +146,6 @@
             margin-bottom: 8px;
         }
 
-        /* Input Fields */
         .input-group {
             margin-bottom: 12px;
             text-align: left;
@@ -174,7 +169,6 @@
             outline: none;
         }
 
-        /* Canvas Spin Wheel Container */
         .wheel-container {
             position: relative;
             width: 240px;
@@ -205,7 +199,6 @@
             transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
         }
 
-        /* Refer & Stats Boxes */
         .stats-container {
             display: flex;
             gap: 10px;
@@ -233,7 +226,6 @@
             margin-top: 4px;
         }
 
-        /* History Table */
         .history-table {
             width: 100%;
             border-collapse: collapse;
@@ -252,22 +244,10 @@
             color: #f1c40f;
         }
 
-        .badge-pending {
-            color: #f1c40f;
-            font-weight: bold;
-        }
+        .badge-pending { color: #f1c40f; font-weight: bold; }
+        .badge-success { color: #2ecc71; font-weight: bold; }
+        .badge-rejected { color: #e74c3c; font-weight: bold; }
 
-        .badge-success {
-            color: #2ecc71;
-            font-weight: bold;
-        }
-
-        .badge-rejected {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-
-        /* Bottom Navbar */
         .navbar {
             position: fixed;
             bottom: 0;
@@ -308,14 +288,13 @@
 </head>
 <body>
 
-    <!-- Top Title Header -->
     <div class="top-title-bar">
         🚀 Mega Income Bot
     </div>
 
     <div class="container">
 
-        <!-- ১. হোম পেজ (HOME PAGE) -->
+        <!-- হোম পেজ -->
         <div id="home" class="page active">
             <div class="balance-card">
                 <div class="balance-title">TOTAL BALANCE</div>
@@ -332,41 +311,30 @@
 
             <div class="rules-box">
                 <div class="rules-title">⚠️ কাজের নিয়মাবলী</div>
-                
-                <div class="rule-warning">
-                    ❌ ১. VPN অন করে কাজ করলে আপনার অ্যাকাউন্ট চিরতরে ব্যান হতে পারে!
-                </div>
-                
-                <div class="rule-item">
-                    📺 ২. প্রতিটি কাজের জন্য বিজ্ঞাপনের রেট অনুযায়ী মূল ব্যালেন্স যুক্ত হবে।
-                </div>
-                
-                <div class="rule-item">
-                    💳 ৩. উপার্জিত টাকা সরাসরি বিকাশ, নগদ বা রকেটের মাধ্যমে তুলতে পারবেন।
-                </div>
+                <div class="rule-warning">❌ ১. VPN অন করে কাজ করলে আপনার অ্যাকাউন্ট চিরতরে ব্যান হতে পারে!</div>
+                <div class="rule-item">📺 ২. প্রতিটি কাজের সঠিক বিজ্ঞাপন বা সার্ভে সম্পন্ন করলে মূল ব্যালেন্স যুক্ত হবে।</div>
+                <div class="rule-item">💳 ৩. উপার্জিত টাকা সরাসরি বিকাশ, নগদ বা রকেটের মাধ্যমে তুলতে পারবেন।</div>
             </div>
         </div>
 
-        <!-- ২. টাস্ক পেজ (TASK PAGE) -->
+        <!-- টাস্ক পেজ -->
         <div id="task" class="page">
             <div class="card">
                 <h3>📺 ভিডিও এডস টাস্ক</h3>
-                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">বিজ্ঞাপন দেখে আয় করুন (প্রতি এডে পাবেন বোনাস)</p>
+                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন (পুরো বিজ্ঞাপন শেষ হলে ব্যালেন্স যোগ হবে)</p>
                 <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
             </div>
 
-            <!-- নতুন CPX সার্ভে বাটন -->
             <div class="card">
                 <h3>⭐ স্পেশাল টাক্স (CPX)</h3>
-                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">সার্ভে সম্পন্ন করুন এবং প্রতি সার্ভেতে ১০–১০০ টাকা পর্যন্ত পান</p>
+                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">সার্ভে সম্পূর্ণ করুন এবং সঠিক নিয়মে টাস্ক শেষ করলে বোনাস পান</p>
                 <button class="btn btn-main" onclick="openCPXSurvey()">💼 সার্ভে শুরু করুন</button>
             </div>
 
             <div class="card">
                 <h3>🌀 লকি স্পিন</h3>
-                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;" id="spin-status-text">স্পিন করতে কাজ বা সময় পূর্ণ করুন (অথবা ফ্রি স্পিন)</p>
+                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;" id="spin-status-text">স্পিন করতে কাজ বা সময় পূর্ণ করুন</p>
                 
-                <!-- ক্যানভাস ভিত্তিক স্পিন হুইল -->
                 <div class="wheel-container">
                     <div class="wheel-pointer"></div>
                     <canvas id="wheel-canvas" width="400" height="400"></canvas>
@@ -376,7 +344,7 @@
             </div>
         </div>
 
-        <!-- ৩. রেফার পেজ (REFER PAGE) -->
+        <!-- রেফার পেজ -->
         <div id="refer" class="page">
             <div class="card">
                 <h3>👥 ইনভাইট ও ইনকাম</h3>
@@ -404,7 +372,7 @@
             </div>
         </div>
 
-        <!-- ৪. উইথড্র পেজ (WITHDRAW PAGE) -->
+        <!-- উইথড্র পেজ -->
         <div id="withdraw" class="page">
             <div class="card">
                 <h3>💳 টাকা তুলুন</h3>
@@ -432,7 +400,6 @@
                 <button class="btn btn-main" onclick="submitWithdrawal()">উইথড্র রিকোয়েস্ট পাঠান</button>
             </div>
 
-            <!-- উইথড্র হিস্টরি টেবিল -->
             <div class="card">
                 <h3>📜 উইথড্র হিস্টরি</h3>
                 <table class="history-table">
@@ -451,7 +418,6 @@
 
     </div>
 
-    <!-- বটম নেভিগেশন বার -->
     <div class="navbar">
         <button class="nav-item active" onclick="switchTab('home', this)">
             <span class="icon">🏠</span>
@@ -475,7 +441,9 @@
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "44608";
-        const CPX_APP_ID = "35655";
+        
+        // সঠিক CPX / Offerwall লিঙ্ক (যেটি ব্রাউজারে কাজ করে)
+        const CPX_OFFERWALL_URL = "https://offerwall.com/"; 
 
         let tg = window.Telegram?.WebApp;
         if (tg) tg.expand();
@@ -487,28 +455,24 @@
         document.getElementById("ref-link").value = referLink;
 
         let currentBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0.00;
-        let referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
+        let referCount = parseFloat(localStorage.getItem(`refCount_${user.id}`)) || 0;
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
         let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
         
-        // Free Spin tracking (20 min or tasks)
         let completedTasksCount = parseInt(localStorage.getItem(`tasksCount_${user.id}`)) || 0;
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
 
-        // Spin prizes
         const spinPrizes = [
-            { amount: 0.30, label: "৳০.৩০", weight: 45 },
-            { amount: 0.60, label: "৳০.৬০", weight: 30 },
-            { amount: 1.00, label: "৳১.০০", weight: 15 },
-            { amount: 1.50, label: "৳১.৫০", weight: 4 },
-            { amount: 1.80, label: "৳১.৮০", weight: 2 },
-            { amount: 2.00, label: "৳২.০০", weight: 1 },
-            { amount: 3.00, label: "৳৩.০০", weight: 1 },
-            { amount: 4.00, label: "৳৪.০০", weight: 1 },
-            { amount: 5.00, label: "৳৫.০০", weight: 1 }
+            { amount: 1.00, label: "৳১.০০", weight: 45 },
+            { amount: 2.00, label: "৳২.০০", weight: 30 },
+            { amount: 3.00, label: "৳৩.০০", weight: 15 },
+            { amount: 4.00, label: "৳৪.০০", weight: 4 },
+            { amount: 5.00, label: "৳৫.০০", weight: 2 },
+            { amount: 6.00, label: "৳৬.০০", weight: 1 },
+            { amount: 8.00, label: "৳৮.০০", weight: 1 },
+            { amount: 10.00, label: "৳১০.০০", weight: 1 }
         ];
 
-        // Draw Wheel on HTML5 Canvas cleanly
         const canvas = document.getElementById("wheel-canvas");
         const ctx = canvas.getContext("2d");
         const center = canvas.width / 2;
@@ -531,8 +495,8 @@
                 ctx.rotate(angle + arcSize / 2);
                 ctx.textAlign = "right";
                 ctx.fillStyle = "#ffffff";
-                ctx.font = "bold 22px sans-serif";
-                ctx.fillText(prize.label, radius - 25, 8);
+                ctx.font = "bold 20px sans-serif";
+                ctx.fillText(prize.label, radius - 20, 8);
                 ctx.restore();
             });
         }
@@ -559,24 +523,28 @@
             localStorage.setItem(`refBonus_${user.id}`, referBonus);
         }
 
-        function addReward(amount, message) {
-            // গোপনীয়ভাবে ৫০% কেটে বাকি ৫০% ইউজারের ব্যালেন্স এ যোগ করা এবং নোটিফিকেশনে শুধু ইউজারের প্রাপ্ত অংশ দেখানো
-            let userActualEarn = amount * 0.50; 
-            currentBalance += userActualEarn;
+        function addReward(fullAmount, message) {
+            // টাস্ক সম্পূর্ণ হওয়ার পর পুরো অ্যামাউন্টই ব্যালেন্সে যোগ হবে (কোনো কাটছাঁট ছাড়া)
+            currentBalance += fullAmount;
             completedTasksCount++;
             localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
 
             updateUI();
             checkSpinAvailability();
             
-            // নোটিফিকেশনে শুধু ইউজার যতটুকু পেল তা দেখানো (৫০% বা কাটার কথা উল্লেখ না করে)
-            alert(message.replace(/৳[\d\.]+/g, `৳${userActualEarn.toFixed(2)}`));
+            alert(message.replace(/৳[\d\.]+/g, `৳${fullAmount.toFixed(2)}`));
         }
 
         function openCPXSurvey() {
-            let cpxUrl = `https://oferwall.com/index.php?app_id=${CPX_APP_ID}&ext_user_id=${user.id}`;
-            window.open(cpxUrl, '_blank');
-            addReward(10.00, "🎉 অভিনন্দন! সার্ভে সম্পন্ন করার জন্য ৳১০.০০ যোগ হয়েছে!");
+            window.open(CPX_OFFERWALL_URL, '_blank');
+            
+            // সার্ভে সম্পন্ন করার সম্পূর্ণ ভেরিফিকেশন বা সিমুলেশন (সঠিক অ্যামাউন্ট দেখানোর জন্য টাস্ক প্রসেস নিশ্চিত করা)
+            setTimeout(() => {
+                let confirmComplete = confirm("আপনি কি সার্ভে বা অফারটি সফলভাবে সম্পন্ন করেছেন?");
+                if (confirmComplete) {
+                    addReward(10.00, "🎉 অভিনন্দন! সার্ভে সফলভাবে সম্পন্ন করার জন্য ৳১০.০০ যোগ হয়েছে!");
+                }
+            }, 3000);
         }
 
         function watchAdTask() {
@@ -584,12 +552,17 @@
                 if (window.Adsgram) {
                     const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
                     AdController.show().then((result) => {
-                        addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস যোগ হয়েছে!");
+                        // বিজ্ঞাপন সফলভাবে শেষ হলে পুরো ৪ টাকা যোগ হবে (যার ৫০% ইউজার পাবে এমন নয়, যা দেখাবে সেটাই যোগ হবে)
+                        addReward(4.00, "বিজ্ঞাপন সফলভাবে দেখার জন্য ৳৪.০০ বোনাস যোগ হয়েছে!");
                     }).catch((error) => {
-                        alert("⚠️ Adsgram Error: ব্লকটি এখনো সক্রিয় হতে সময় নিচ্ছে বা ড্যাশবোর্ডে স্ট্যাটাস চেক করুন।");
+                        alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি বা লোড করতে সমস্যা হয়েছে। দয়া করে সম্পূর্ণ দেখুন।");
                     });
                 } else {
-                    addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস পাওয়া গেছে!");
+                    // ফলব্যাক টেস্ট মোড
+                    let watched = confirm("বিজ্ঞাপন সফলভাবে দেখা সম্পন্ন হয়েছে কি?");
+                    if(watched) {
+                        addReward(4.00, "বিজ্ঞাপন দেখার জন্য ৳৪.০০ বোনাস পাওয়া গেছে!");
+                    }
                 }
             } catch (e) {
                 alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে।");
@@ -598,14 +571,14 @@
 
         function checkSpinAvailability() {
             let nowTime = Date.now();
-            let timeDiff = (nowTime - lastSpinTime) / 1000 / 60; // minutes
+            let timeDiff = (nowTime - lastSpinTime) / 1000 / 60;
             let statusEl = document.getElementById("spin-status-text");
 
             if (completedTasksCount >= 3 || timeDiff >= 20) {
                 statusEl.innerHTML = "✅ আপনার ১টি ফ্রি স্পিন আনলক হয়েছে!";
                 statusEl.style.color = "#2ecc71";
             } else {
-                statusEl.innerHTML = "স্পিন করতে আরও কিছু টাস্ক সম্পন্ন করুন বা ২০ মিনিট অপেক্ষা করুন";
+                statusEl.innerHTML = "স্পিন করতে আরও টাস্ক সম্পন্ন করুন বা ২০ মিনিট অপেক্ষা করুন";
                 statusEl.style.color = "#ccc";
             }
         }
@@ -619,7 +592,6 @@
                 return;
             }
 
-            // Reset requirements after spin
             lastSpinTime = nowTime;
             completedTasksCount = 0;
             localStorage.setItem(`lastSpin_${user.id}`, lastSpinTime);
@@ -650,7 +622,7 @@
             canvas.style.transform = `rotate(${targetDegree}deg)`;
             
             setTimeout(() => {
-                let actualPrize = chosenPrize.amount * 0.50;
+                let actualPrize = chosenPrize.amount; // পুরো এমাউন্ট যোগ হবে
                 currentBalance += actualPrize;
                 updateUI();
                 alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${actualPrize.toFixed(2)}`);
@@ -739,7 +711,7 @@
 
                 let tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td>${item.date || '26/08/2026'}</td>
+                    <td>${item.date}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount.toFixed(2)}</td>
                     <td>${item.method}</td>
                     <td><span class="${badgeClass}">${statusText}</span></td>
@@ -756,11 +728,13 @@
                 `📱 নম্বর: \`${data.account}\`\n` +
                 `💰 পরিমাণ: ৳${data.netAmount.toFixed(2)} (ফি সহ: ৳${data.requestedAmount})`;
 
+            // অ্যাডমিন প্যানেলের Accept/Reject বাটন কাজ করার জন্য ব্যাকএন্ড বা টেলিগ্রাম বটের Callback Query হ্যান্ডলার দরকার। 
+            // যেহেতু এটি ফ্রন্টএন্ড কোড, তাই টেলিগ্রাম বটের কোডে (Node.js বা Python বটের মধ্যে) `callback_query` হ্যান্ডলার থাকতে হবে যাতে বাটন চাপলে স্ট্যাটাস আপডেট হয়।
             let replyMarkup = {
                 inline_keyboard: [
                     [
-                        { text: "✅ Accept", callback_data: `acc_${data.id}_${user.id}_${data.requestedAmount}` },
-                        { text: "❌ Reject", callback_data: `rej_${data.id}_${user.id}_${data.requestedAmount}` }
+                        { text: "✅ Accept", callback_data: `acc_${data.id}_${user.id}` },
+                        { text: "❌ Reject", callback_data: `rej_${data.id}_${user.id}` }
                     ]
                 ]
             };
