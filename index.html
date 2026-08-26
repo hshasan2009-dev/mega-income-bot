@@ -355,9 +355,16 @@
                 <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
             </div>
 
+            <!-- নতুন CPX সার্ভে বাটন -->
+            <div class="card">
+                <h3>⭐ স্পেশাল টাক্স (CPX)</h3>
+                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">সার্ভে সম্পন্ন করুন এবং প্রতি সার্ভেতে ১০–১০০ টাকা পর্যন্ত পান</p>
+                <button class="btn btn-main" onclick="openCPXSurvey()">💼 সার্ভে শুরু করুন</button>
+            </div>
+
             <div class="card">
                 <h3>🌀 লকি স্পিন</h3>
-                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">স্পিন করতে আগে এড দেখতে হবে</p>
+                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;" id="spin-status-text">স্পিন করতে কাজ বা সময় পূর্ণ করুন (অথবা ফ্রি স্পিন)</p>
                 
                 <!-- ক্যানভাস ভিত্তিক স্পিন হুইল -->
                 <div class="wheel-container">
@@ -374,7 +381,7 @@
             <div class="card">
                 <h3>👥 ইনভাইট ও ইনকাম</h3>
                 <p style="color: #ccc; margin: 8px 0 15px; font-size: 13px;">
-                    আপনার রেফারেল লিংকের মাধ্যমে বন্ধু যুক্ত করুন। প্রতি টাস্ক থেকে পাবেন কমিশন!
+                    আপনার রেফারেল লিংকের মাধ্যমে বন্ধু যুক্ত করুন। প্রতি টাস্ক থেকে পাবেন ২৫% কমিশন!
                 </p>
 
                 <div class="stats-container">
@@ -468,6 +475,7 @@
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "44608";
+        const CPX_APP_ID = "35655";
 
         let tg = window.Telegram?.WebApp;
         if (tg) tg.expand();
@@ -482,8 +490,12 @@
         let referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
         let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
+        
+        // Free Spin tracking (20 min or tasks)
+        let completedTasksCount = parseInt(localStorage.getItem(`tasksCount_${user.id}`)) || 0;
+        let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
 
-        // Spin prizes with 90% weight for small amounts (0.30, 0.60, 1.00)
+        // Spin prizes
         const spinPrizes = [
             { amount: 0.30, label: "৳০.৩০", weight: 45 },
             { amount: 0.60, label: "৳০.৬০", weight: 30 },
@@ -528,6 +540,7 @@
 
         updateUI();
         renderHistory();
+        checkSpinAvailability();
 
         function switchTab(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -546,6 +559,26 @@
             localStorage.setItem(`refBonus_${user.id}`, referBonus);
         }
 
+        function addReward(amount, message) {
+            // গোপনীয়ভাবে ৫০% কেটে বাকি ৫০% ইউজারের ব্যালেন্স এ যোগ করা এবং নোটিফিকেশনে শুধু ইউজারের প্রাপ্ত অংশ দেখানো
+            let userActualEarn = amount * 0.50; 
+            currentBalance += userActualEarn;
+            completedTasksCount++;
+            localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
+
+            updateUI();
+            checkSpinAvailability();
+            
+            // নোটিফিকেশনে শুধু ইউজার যতটুকু পেল তা দেখানো (৫০% বা কাটার কথা উল্লেখ না করে)
+            alert(message.replace(/৳[\d\.]+/g, `৳${userActualEarn.toFixed(2)}`));
+        }
+
+        function openCPXSurvey() {
+            let cpxUrl = `https://oferwall.com/index.php?app_id=${CPX_APP_ID}&ext_user_id=${user.id}`;
+            window.open(cpxUrl, '_blank');
+            addReward(10.00, "🎉 অভিনন্দন! সার্ভে সম্পন্ন করার জন্য ৳১০.০০ যোগ হয়েছে!");
+        }
+
         function watchAdTask() {
             try {
                 if (window.Adsgram) {
@@ -553,29 +586,47 @@
                     AdController.show().then((result) => {
                         addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস যোগ হয়েছে!");
                     }).catch((error) => {
-                        alert("⚠️ Adsgram Error: ব্লকটি এখনো সক্রিয় হতে সময় নিচ্ছে বা ড্যাশবোর্ডে স্ট্যাটাস চেক করুন।");
+                        alert("⚠️ Adsgram Error: ব্লকটি এখনো সক্রিয় হতে সময় নিচ্ছে বা ড্যাশবোর্ডে স্ট্যাটাস চেক করুন।");
                     });
                 } else {
                     addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস পাওয়া গেছে!");
                 }
             } catch (e) {
-                alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে।");
+                alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে।");
+            }
+        }
+
+        function checkSpinAvailability() {
+            let nowTime = Date.now();
+            let timeDiff = (nowTime - lastSpinTime) / 1000 / 60; // minutes
+            let statusEl = document.getElementById("spin-status-text");
+
+            if (completedTasksCount >= 3 || timeDiff >= 20) {
+                statusEl.innerHTML = "✅ আপনার ১টি ফ্রি স্পিন আনলক হয়েছে!";
+                statusEl.style.color = "#2ecc71";
+            } else {
+                statusEl.innerHTML = "স্পিন করতে আরও কিছু টাস্ক সম্পন্ন করুন বা ২০ মিনিট অপেক্ষা করুন";
+                statusEl.style.color = "#ccc";
             }
         }
 
         function playSpinTask() {
-            try {
-                if (window.Adsgram) {
-                    const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-                    AdController.show().then(() => runWeightedSpin()).catch(() => {
-                        alert("⚠️ Adsgram Error: বিজ্ঞাপন লোড করা যায়নি!");
-                    });
-                } else {
-                    runWeightedSpin();
-                }
-            } catch (e) {
-                runWeightedSpin();
+            let nowTime = Date.now();
+            let timeDiff = (nowTime - lastSpinTime) / 1000 / 60;
+
+            if (completedTasksCount < 3 && timeDiff < 20) {
+                alert("⚠️ ২০ মিনিট সময় অথবা কমপক্ষে ৩টি টাস্ক সম্পন্ন করার পর ফ্রি স্পিন করতে পারবেন!");
+                return;
             }
+
+            // Reset requirements after spin
+            lastSpinTime = nowTime;
+            completedTasksCount = 0;
+            localStorage.setItem(`lastSpin_${user.id}`, lastSpinTime);
+            localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
+            checkSpinAvailability();
+
+            runWeightedSpin();
         }
 
         function runWeightedSpin() {
@@ -599,14 +650,11 @@
             canvas.style.transform = `rotate(${targetDegree}deg)`;
             
             setTimeout(() => {
-                addReward(chosenPrize.amount, `🎉 অভিনন্দন! স্পিন করে পেয়েছেন ${chosenPrize.label}`);
+                let actualPrize = chosenPrize.amount * 0.50;
+                currentBalance += actualPrize;
+                updateUI();
+                alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${actualPrize.toFixed(2)}`);
             }, 3000);
-        }
-
-        function addReward(amount, message) {
-            currentBalance += amount;
-            updateUI();
-            alert(message);
         }
 
         function copyReferLink() {
