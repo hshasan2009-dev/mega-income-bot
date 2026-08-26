@@ -100,19 +100,9 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        .btn-official {
-            background-color: #2980b9;
-        }
-
-        .btn-support {
-            background-color: #c0392b;
-        }
-
-        .btn-main {
-            background-color: #f1c40f;
-            color: #000;
-            font-size: 17px;
-        }
+        .btn-official { background-color: #2980b9; }
+        .btn-support { background-color: #c0392b; }
+        .btn-main { background-color: #f1c40f; color: #000; font-size: 17px; }
 
         .rules-box {
             text-align: left;
@@ -312,7 +302,7 @@
             <div class="rules-box">
                 <div class="rules-title">⚠️ কাজের নিয়মাবলী</div>
                 <div class="rule-warning">❌ ১. VPN অন করে কাজ করলে আপনার অ্যাকাউন্ট চিরতরে ব্যান হতে পারে!</div>
-                <div class="rule-item">📺 ২. প্রতিটি কাজের সঠিক বিজ্ঞাপন বা সার্ভে সম্পন্ন করলে মূল ব্যালেন্স যুক্ত হবে।</div>
+                <div class="rule-item">📺 ২. প্রতিটি কাজের সঠিক বিজ্ঞাপন বা সার্ভে সম্পূর্ণ করলে মূল ব্যালেন্স যুক্ত হবে।</div>
                 <div class="rule-item">💳 ৩. উপার্জিত টাকা সরাসরি বিকাশ, নগদ বা রকেটের মাধ্যমে তুলতে পারবেন।</div>
             </div>
         </div>
@@ -327,7 +317,8 @@
 
             <div class="card">
                 <h3>⭐ স্পেশাল টাক্স (CPX)</h3>
-                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">সার্ভে সম্পূর্ণ করুন এবং সঠিক নিয়মে টাস্ক শেষ করলে বোনাস পান</p>
+                <p style="color: #ffcc00; margin: 4px 0; font-size: 14px; font-weight: bold;">প্রতিটি সার্ভে সম্পন্ন করলে পাবেন ১০ থেকে ১০০ টাকা পর্যন্ত!</p>
+                <p style="color: #ccc; margin: 4px 0 12px; font-size: 12px;">লিংকে গিয়ে সার্ভে ফুল কমপ্লিট করুন, অন্যথায় ব্যালেন্স যোগ হবে না।</p>
                 <button class="btn btn-main" onclick="openCPXSurvey()">💼 সার্ভে শুরু করুন</button>
             </div>
 
@@ -442,8 +433,8 @@
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "44608";
         
-        // সঠিক CPX / Offerwall লিঙ্ক (যেটি ব্রাউজারে কাজ করে)
-        const CPX_OFFERWALL_URL = "https://offerwall.com/"; 
+        // সঠিক ও কার্যকর CPX Research Offerwall URL
+        const CPX_OFFERWALL_URL = "https://cpx-research.com/"; 
 
         let tg = window.Telegram?.WebApp;
         if (tg) tg.expand();
@@ -462,15 +453,13 @@
         let completedTasksCount = parseInt(localStorage.getItem(`tasksCount_${user.id}`)) || 0;
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
 
+        // স্পিন প্রাইজ: এখন সবগুলো মান ১ টাকা বা তার নিচে সেট করা হয়েছে এবং বেশি ও ভারী ওয়েট শুধু ছোট অ্যামাউন্টগুলোতে দেওয়া হয়েছে
         const spinPrizes = [
-            { amount: 1.00, label: "৳১.০০", weight: 45 },
-            { amount: 2.00, label: "৳২.০০", weight: 30 },
-            { amount: 3.00, label: "৳৩.০০", weight: 15 },
-            { amount: 4.00, label: "৳৪.০০", weight: 4 },
-            { amount: 5.00, label: "৳৫.০০", weight: 2 },
-            { amount: 6.00, label: "৳৬.০০", weight: 1 },
-            { amount: 8.00, label: "৳৮.০০", weight: 1 },
-            { amount: 10.00, label: "৳১০.০০", weight: 1 }
+            { amount: 0.10, label: "৳০.১০", weight: 35 },
+            { amount: 0.25, label: "৳০.২৫", weight: 30 },
+            { amount: 0.50, label: "৳০.৫০", weight: 20 },
+            { amount: 0.75, label: "৳০.৭৫", weight: 10 },
+            { amount: 1.00, label: "৳১.০০", weight: 5 }
         ];
 
         const canvas = document.getElementById("wheel-canvas");
@@ -495,7 +484,7 @@
                 ctx.rotate(angle + arcSize / 2);
                 ctx.textAlign = "right";
                 ctx.fillStyle = "#ffffff";
-                ctx.font = "bold 20px sans-serif";
+                ctx.font = "bold 18px sans-serif";
                 ctx.fillText(prize.label, radius - 20, 8);
                 ctx.restore();
             });
@@ -524,7 +513,6 @@
         }
 
         function addReward(fullAmount, message) {
-            // টাস্ক সম্পূর্ণ হওয়ার পর পুরো অ্যামাউন্টই ব্যালেন্সে যোগ হবে (কোনো কাটছাঁট ছাড়া)
             currentBalance += fullAmount;
             completedTasksCount++;
             localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
@@ -532,19 +520,11 @@
             updateUI();
             checkSpinAvailability();
             
-            alert(message.replace(/৳[\d\.]+/g, `৳${fullAmount.toFixed(2)}`));
+            alert(message);
         }
 
         function openCPXSurvey() {
             window.open(CPX_OFFERWALL_URL, '_blank');
-            
-            // সার্ভে সম্পন্ন করার সম্পূর্ণ ভেরিফিকেশন বা সিমুলেশন (সঠিক অ্যামাউন্ট দেখানোর জন্য টাস্ক প্রসেস নিশ্চিত করা)
-            setTimeout(() => {
-                let confirmComplete = confirm("আপনি কি সার্ভে বা অফারটি সফলভাবে সম্পন্ন করেছেন?");
-                if (confirmComplete) {
-                    addReward(10.00, "🎉 অভিনন্দন! সার্ভে সফলভাবে সম্পন্ন করার জন্য ৳১০.০০ যোগ হয়েছে!");
-                }
-            }, 3000);
         }
 
         function watchAdTask() {
@@ -552,17 +532,12 @@
                 if (window.Adsgram) {
                     const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
                     AdController.show().then((result) => {
-                        // বিজ্ঞাপন সফলভাবে শেষ হলে পুরো ৪ টাকা যোগ হবে (যার ৫০% ইউজার পাবে এমন নয়, যা দেখাবে সেটাই যোগ হবে)
-                        addReward(4.00, "বিজ্ঞাপন সফলভাবে দেখার জন্য ৳৪.০০ বোনাস যোগ হয়েছে!");
+                        addReward(4.00, "🎉 অভিনন্দন! বিজ্ঞাপন সম্পূর্ণ দেখার জন্য ৳৪.০০ বোনাস যোগ হয়েছে!");
                     }).catch((error) => {
-                        alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি বা লোড করতে সমস্যা হয়েছে। দয়া করে সম্পূর্ণ দেখুন।");
+                        alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি বা কেটে দেওয়া হয়েছে।");
                     });
                 } else {
-                    // ফলব্যাক টেস্ট মোড
-                    let watched = confirm("বিজ্ঞাপন সফলভাবে দেখা সম্পন্ন হয়েছে কি?");
-                    if(watched) {
-                        addReward(4.00, "বিজ্ঞাপন দেখার জন্য ৳৪.০০ বোনাস পাওয়া গেছে!");
-                    }
+                    alert("⚠️ বিজ্ঞাপন লোড হয়নি। দয়া করে কিছুক্ষণ পর আবার চেষ্টা করুন।");
                 }
             } catch (e) {
                 alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে।");
@@ -622,7 +597,7 @@
             canvas.style.transform = `rotate(${targetDegree}deg)`;
             
             setTimeout(() => {
-                let actualPrize = chosenPrize.amount; // পুরো এমাউন্ট যোগ হবে
+                let actualPrize = chosenPrize.amount;
                 currentBalance += actualPrize;
                 updateUI();
                 alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${actualPrize.toFixed(2)}`);
@@ -709,14 +684,15 @@
                 if (item.status === "Approved") { badgeClass = "badge-success"; statusText = "Success"; }
                 if (item.status === "Rejected") { badgeClass = "badge-rejected"; statusText = "Rejected"; }
 
-                let tr = document.createElement("tr");
+                let tr = document.getElementById(item.id) || document.createElement("tr");
+                tr.id = item.id;
                 tr.innerHTML = `
                     <td>${item.date}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount.toFixed(2)}</td>
                     <td>${item.method}</td>
                     <td><span class="${badgeClass}">${statusText}</span></td>
                 `;
-                tbody.appendChild(tr);
+                if (!document.getElementById(item.id)) tbody.appendChild(tr);
             });
         }
 
@@ -728,8 +704,6 @@
                 `📱 নম্বর: \`${data.account}\`\n` +
                 `💰 পরিমাণ: ৳${data.netAmount.toFixed(2)} (ফি সহ: ৳${data.requestedAmount})`;
 
-            // অ্যাডমিন প্যানেলের Accept/Reject বাটন কাজ করার জন্য ব্যাকএন্ড বা টেলিগ্রাম বটের Callback Query হ্যান্ডলার দরকার। 
-            // যেহেতু এটি ফ্রন্টএন্ড কোড, তাই টেলিগ্রাম বটের কোডে (Node.js বা Python বটের মধ্যে) `callback_query` হ্যান্ডলার থাকতে হবে যাতে বাটন চাপলে স্ট্যাটাস আপডেট হয়।
             let replyMarkup = {
                 inline_keyboard: [
                     [
