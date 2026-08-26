@@ -433,8 +433,9 @@
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "44608";
         
-        // CPX Research ডাইরেক্ট অফারওয়াল লিংক
-        const CPX_OFFERWALL_URL = "https://offers.cpx-research.com/index.php?app_id=YOUR_APP_ID&ext_user_id="; 
+        // এখানে আপনার সঠিক CPX App ID বসিয়ে দিন (যেমন: 12345 বা আপনার CPX আইডি)
+        const CPX_APP_ID = "12345"; 
+        const CPX_OFFERWALL_URL = `https://offers.cpx-research.com/index.php?app_id=${CPX_APP_ID}&ext_user_id=`;
 
         let tg = window.Telegram?.WebApp;
         if (tg) tg.expand();
@@ -445,15 +446,32 @@
         let referLink = `https://t.me/${botUsername}/myapp?start=${user.id}`;
         document.getElementById("ref-link").value = referLink;
 
+        // লোকালস্টোরেজ থেকে ডাটা লোড বা ইনিশিয়ালাইজ
         let currentBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0.00;
-        let referCount = parseFloat(localStorage.getItem(`refCount_${user.id}`)) || 0;
+        let referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
         let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
         
         let completedTasksCount = parseInt(localStorage.getItem(`tasksCount_${user.id}`)) || 0;
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
 
-        // স্পিন প্রাইজ: সবসময় ১ টাকা বা তার নিচের অ্যামাউন্টগুলোর জন্য প্রিসেট
+        // রেফার চেক (যদি টেলিগ্রাম স্টার্ট প্যারাম থাকে)
+        let initParams = tg?.initDataUnsafe?.start_param;
+        if (initParams && initParams != user.id) {
+            let referredFlag = localStorage.getItem(`ref_claimed_${user.id}`);
+            if (!referredFlag) {
+                localStorage.setItem(`ref_claimed_${user.id}`, "true");
+                let referrerBalance = parseFloat(localStorage.getItem(`balance_${initParams}`)) || 0;
+                let referrerRefCounts = parseInt(localStorage.getItem(`refCount_${initParams}`)) || 0;
+                let referrerBonus = parseFloat(localStorage.getItem(`refBonus_${initParams}`)) || 0;
+                
+                referrerRefCounts += 1;
+                localStorage.setItem(`refCount_${initParams}`, referrerRefCounts);
+                localStorage.setItem(`balance_${initParams}`, referrerBalance);
+            }
+        }
+
+        // স্পিন প্রাইজ: ১ টাকা বা তার নিচের অ্যামাউন্টগুলোর সঠিক বিন্যাস
         const spinPrizes = [
             { amount: 0.10, label: "৳০.১০", weight: 35 },
             { amount: 0.25, label: "৳০.২৫", weight: 30 },
@@ -495,6 +513,15 @@
         renderHistory();
         checkSpinAvailability();
 
+        // 주기적으로 লোকালস্টোরেজ স্ট্যাটাস চেক করা যাতে অ্যাডমিন অ্যাপ্রুভ করলে সাথে সাথে স্ট্যাটাস বদলে যায়
+        setInterval(() => {
+            let updatedHistory = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
+            if (JSON.stringify(updatedHistory) !== JSON.stringify(historyData)) {
+                historyData = updatedHistory;
+                renderHistory();
+            }
+        }, 3000);
+
         function switchTab(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -517,9 +544,18 @@
             completedTasksCount++;
             localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
 
+            // রেফার কমিশন হ্যান্ডলিং (যদি এই ইউজারের কোনো রেফারার থাকে)
+            let referrerId = localStorage.getItem(`referred_by_${user.id}`);
+            if (referrerId) {
+                let commission = fullAmount * 0.25;
+                let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
+                let refBon = parseFloat(localStorage.getItem(`refBonus_${referrerId}`)) || 0;
+                localStorage.setItem(`balance_${referrerId}`, refBal + commission);
+                localStorage.setItem(`refBonus_${referrerId}`, refBon + commission);
+            }
+
             updateUI();
             checkSpinAvailability();
-            
             alert(message);
         }
 
@@ -685,15 +721,14 @@
                 if (item.status === "Approved") { badgeClass = "badge-success"; statusText = "Success"; }
                 if (item.status === "Rejected") { badgeClass = "badge-rejected"; statusText = "Rejected"; }
 
-                let tr = document.getElementById(item.id) || document.createElement("tr");
-                tr.id = item.id;
+                let tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td>${item.date}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount.toFixed(2)}</td>
                     <td>${item.method}</td>
                     <td><span class="${badgeClass}">${statusText}</span></td>
                 `;
-                if (!document.getElementById(item.id)) tbody.appendChild(tr);
+                tbody.appendChild(tr);
             });
         }
 
