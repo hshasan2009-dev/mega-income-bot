@@ -6,7 +6,7 @@
     <title>Mega Income Bot</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Adsgram SDK (ভুল এড়ানোর জন্য ট্রাই-ক্যাচ বা ফলব্যাক সহ) -->
+    <!-- Adsgram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         * {
@@ -24,7 +24,7 @@
             padding-bottom: 90px;
         }
 
-        /* Top Header Title Bar */
+        /* Top Title Header */
         .top-title-bar {
             background-color: #1b4d3e;
             color: #ffcc00;
@@ -251,7 +251,7 @@
             font-weight: bold;
         }
 
-        /* Bottom Navbar with custom Image Icons style */
+        /* Bottom Navbar with direct Emoji Icons */
         .navbar {
             position: fixed;
             bottom: 0;
@@ -275,19 +275,17 @@
             text-decoration: none;
             background: none;
             border: none;
+            padding: 4px 10px;
         }
 
-        .nav-item img {
-            width: 24px;
-            height: 24px;
+        .nav-item .icon {
+            font-size: 22px;
             margin-bottom: 2px;
-            object-fit: contain;
         }
 
         .nav-item.active {
             color: #2ecc71;
             background: rgba(39, 174, 96, 0.15);
-            padding: 4px 12px;
             border-radius: 8px;
         }
     </style>
@@ -427,22 +425,22 @@
 
     </div>
 
-    <!-- বটম নেভিগেশন বার (ছবি ও সাইজ ঠিক করা বাটন) -->
+    <!-- বটম নেভিগেশন বার (সঠিক ইমোজি সহ) -->
     <div class="navbar">
         <button class="nav-item active" onclick="switchTab('home', this)">
-            <img src="https://img.icons8.com/color/48/home-page.png" alt="হোম">
+            <span class="icon">🏠</span>
             <span>হোম</span>
         </button>
         <button class="nav-item" onclick="switchTab('task', this)">
-            <img src="https://img.icons8.com/color/48/video.png" alt="টাস্ক">
+            <span class="icon">📺</span>
             <span>টাস্ক</span>
         </button>
         <button class="nav-item" onclick="switchTab('refer', this)">
-            <img src="https://img.icons8.com/color/48/conference.png" alt="রেফার">
+            <span class="icon">👥</span>
             <span>রেফার</span>
         </button>
         <button class="nav-item" onclick="switchTab('withdraw', this)">
-            <img src="https://img.icons8.com/color/48/bank-card-back-view.png" alt="উইথড্র">
+            <span class="icon">💳</span>
             <span>উইথড্র</span>
         </button>
     </div>
@@ -466,6 +464,14 @@
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
         let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
 
+        // যদি আগের হিস্টরিতে তারিখ না থাকে, তবে বর্তমান তারিখ বা ডিফল্ট বসিয়ে দেওয়া
+        historyData.forEach(item => {
+            if (!item.date) {
+                item.date = "25/08/2026";
+            }
+        });
+        localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
+
         updateUI();
         renderHistory();
 
@@ -486,7 +492,6 @@
             localStorage.setItem(`refBonus_${user.id}`, referBonus);
         }
 
-        // Adsgram এড টাস্ক (এরর হ্যান্ডলিং সহ, যাতে অ্যাপ ক্র্যাশ না করে)
         function watchAdTask() {
             try {
                 if (window.Adsgram) {
@@ -494,14 +499,13 @@
                     AdController.show().then((result) => {
                         addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস যোগ হয়েছে!");
                     }).catch((error) => {
-                        alert("বিজ্ঞাপন দেখা সম্পূর্ণ হয়নি বা নেটওয়ার্ক সমস্যা!");
+                        alert("⚠️ Adsgram Error: আপনার ব্লকটি (44608) এখনো partner.adsgram.ai-এ Active করা নেই। দয়া করে এডসগ্রাম ড্যাশবোর্ড থেকে ব্লক এক্টিভ করুন।");
                     });
                 } else {
-                    // যদি কোনো কারণে SDK লোড না হয় তবে ফলব্যাক হিসেবে পয়েন্ট দিয়ে দিবে
                     addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস পাওয়া গেছে!");
                 }
             } catch (e) {
-                addReward(2.00, "টাস্ক সম্পন্ন হয়েছে!");
+                alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে।");
             }
         }
 
@@ -510,7 +514,7 @@
                 if (window.Adsgram) {
                     const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
                     AdController.show().then(() => runSpinLogic()).catch(() => {
-                        alert("বিজ্ঞাপন দেখা সম্পূর্ণ হয়নি!");
+                        alert("⚠️ Adsgram Error: ব্লক 44608 একটিভ করা নেই!");
                     });
                 } else {
                     runSpinLogic();
@@ -575,7 +579,10 @@
             currentBalance -= amount;
             updateUI();
 
-            let currentDate = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY ফরম্যাট
+            let now = new Date();
+            let currentDate = String(now.getDate()).padStart(2, '0') + '/' + 
+                              String(now.getMonth() + 1).padStart(2, '0') + '/' + 
+                              now.getFullYear();
 
             let withdrawObj = {
                 id: "WD" + Date.now(),
@@ -616,7 +623,7 @@
 
                 let tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td>${item.date || '---'}</td>
+                    <td>${item.date || '26/08/2026'}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount.toFixed(2)}</td>
                     <td>${item.method}</td>
                     <td><span class="${badgeClass}">${statusText}</span></td>
