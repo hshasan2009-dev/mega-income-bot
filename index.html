@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earning Mini App</title>
+    <title>Mega Income Bot</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Adsgram SDK -->
@@ -256,7 +256,7 @@
         <div id="home" class="page active">
             <div class="card">
                 <h2>স্বাগতম! 👋</h2>
-                <p style="color: #aaa; margin: 10px 0 20px;">বিজ্ঞাপন দেখে ও রেফার করে প্রতিদিন আয় করুন।</p>
+                <p style="color: #aaa; margin: 10px 0 20px;">বিজ্ঞাপন দেখে ও রেফার করে প্রতিদিন আয় করুন।</p>
                 
                 <a href="https://t.me/+BAquPEEqEhM2NTNl" target="_blank" class="btn btn-official">
                     📢 অফিশিয়াল চ্যানেল
@@ -272,7 +272,7 @@
         <div id="task" class="page">
             <div class="card">
                 <h3>📺 ভিডিও এডস টাস্ক</h3>
-                <p style="color: #aaa; margin: 8px 0 15px; font-size: 14px;">বিজ্ঞাপন দেখে আয় করুন (প্রতি এডে পাবেন বোনাস)</p>
+                <p style="color: #aaa; margin: 8px 0 15px; font-size: 14px;">বিজ্ঞাপন দেখে আয় করুন (প্রতি এডে পাবেন বোনাস)</p>
                 <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
             </div>
 
@@ -316,7 +316,8 @@
         <div id="withdraw" class="page">
             <div class="card">
                 <h3>💳 টাকা তুলুন</h3>
-                <p style="color: #aaa; margin-bottom: 15px; font-size: 13px;">উইথড্র করার সময় ৫% সার্ভিস ফি কাটা হবে।</p>
+                <p style="color: #aaa; margin-bottom: 10px; font-size: 13px;">সর্বনিম্ন উইথড্র limit: <b>১৫০ টাকা</b></p>
+                <p style="color: #aaa; margin-bottom: 15px; font-size: 13px;">উইথড্র করার সময় ৫% সার্ভিস ফি কাটা হবে।</p>
                 
                 <div class="input-group">
                     <label>পেমেন্ট মাধ্যম বেছে নিন</label>
@@ -334,7 +335,7 @@
 
                 <div class="input-group">
                     <label>টাকার পরিমাণ (৳)</label>
-                    <input type="number" id="withdraw-amt" class="input-control" placeholder="৫০">
+                    <input type="number" id="withdraw-amt" class="input-control" placeholder="১৫০">
                 </div>
 
                 <button class="btn btn-main" onclick="submitWithdrawal()">উইথড্র রিকোয়েস্ট দিন</button>
@@ -347,7 +348,7 @@
                     <thead>
                         <tr>
                             <th>মেথড</th>
-                            <th>পাওয়া যাবে (৫% কেটে)</th>
+                            <th>পাওয়া যাবে (৫% কেটে)</th>
                             <th>স্ট্যাটাস</th>
                         </tr>
                     </thead>
@@ -381,10 +382,10 @@
     </div>
 
     <script>
-        // --- অ্যাপের স্থায়ী কনফিগারেশন ---
+        // --- অ্যাপের স্থায়ী কনফিগারেশন ---
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
-        const ADSGRAM_BLOCK_ID = "44575";
+        const ADSGRAM_BLOCK_ID = "44608"; // আপনার নতুন সঠিক ব্লক আইডি
 
         // অ্যাপ তথ্য ও স্টেট
         let tg = window.Telegram?.WebApp;
@@ -398,8 +399,8 @@
         document.getElementById("user-avatar").innerText = (user.first_name || "U").charAt(0).toUpperCase();
 
         // রেফার লিংক জেনারেট
-        let botUsername = "YourBotName"; // বটের ইউজারনেম
-        let referLink = `https://t.me/${botUsername}?start=${user.id}`;
+        let botUsername = "MegaIncomeReal_bot"; // আপনার বটের ইউজারনেম
+        let referLink = `https://t.me/${botUsername}/myapp?start=${user.id}`;
         document.getElementById("ref-link").value = referLink;
 
         // লোকাল স্টোরেজ থেকে ডেটা লোড
@@ -431,12 +432,12 @@
             if (window.Adsgram) {
                 const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
                 AdController.show().then((result) => {
-                    addReward(2.00, "বিজ্ঞাপন দেখার বোনাস ৳২.০০ যোগ হয়েছে!");
+                    addReward(2.00, "বিজ্ঞাপন দেখার বোনাস ৳২.০০ যোগ হয়েছে!");
                 }).catch((error) => {
-                    addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস দেওয়া হয়েছে!");
+                    alert("বিজ্ঞাপন সম্পূর্ণ দেখা হয়নি, তাই বোনাস দেওয়া হয়নি!");
                 });
             } else {
-                addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস পাওয়া গেছে!");
+                addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস পাওয়া গেছে!");
             }
         }
 
@@ -444,7 +445,9 @@
         function playSpinTask() {
             if (window.Adsgram) {
                 const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-                AdController.show().then(() => runSpinLogic()).catch(() => runSpinLogic());
+                AdController.show().then(() => runSpinLogic()).catch(() => {
+                    alert("বিজ্ঞাপন দেখা সম্পন্ন হয়নি!");
+                });
             } else {
                 runSpinLogic();
             }
@@ -457,7 +460,7 @@
             
             setTimeout(() => {
                 let prize = (Math.random() * 3 + 1).toFixed(2);
-                addReward(parseFloat(prize), `🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${prize}`);
+                addReward(parseFloat(prize), `🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${prize}`);
             }, 3000);
         }
 
@@ -471,18 +474,28 @@
         function copyReferLink() {
             let linkInput = document.getElementById("ref-link");
             linkInput.select();
-            document.execCommand("copy");
-            alert("✅ রেফার লিংক কপি হয়েছে!");
+            linkInput.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(linkInput.value).then(() => {
+                alert("✅ রেফার লিংক কপি হয়েছে!");
+            }).catch(() => {
+                document.execCommand("copy");
+                alert("✅ রেফার লিংক কপি হয়েছে!");
+            });
         }
 
-        // উইথড্র সাবমিট লজিক (৫% ফি কেটে নেওয়া এবং নোটিফিকেশন পাঠানো)
+        // উইথড্র সাবমিট লজিক (সর্বনিম্ন ১৫০ টাকা এবং ৫% ফি)
         function submitWithdrawal() {
             let method = document.getElementById("payment-method").value;
             let account = document.getElementById("account-num").value.trim();
             let amount = parseFloat(document.getElementById("withdraw-amt").value);
 
             if (!account || !amount || amount <= 0) {
-                alert("⚠️ দয়া করে সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
+                alert("⚠️ দয়া করে সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
+                return;
+            }
+
+            if (amount < 150) {
+                alert("⚠️ সর্বনিম্ন উইথড্র পরিমাণ ১৫০ টাকা হতে হবে!");
                 return;
             }
 
@@ -512,13 +525,13 @@
 
             sendAdminNotification(withdrawObj);
 
-            alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\n\nমূল পরিমাণ: ৳${amount}\n৫% ফি কেটে পাবেন: ৳${netAmount.toFixed(2)}\nস্ট্যাটাস: Pending`);
+            alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\n\nমূল পরিমাণ: ৳${amount}\n৫% ফি কেটে পাবেন: ৳${netAmount.toFixed(2)}\nস্ট্যাটাস: Pending`);
             
             document.getElementById("account-num").value = "";
             document.getElementById("withdraw-amt").value = "";
         }
 
-        // হিস্টরি রেন্ডার
+        // হিস্টরি রেন্ডার এবং স্ট্যাটাস আপডেট হ্যান্ডেলিং
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             tbody.innerHTML = "";
