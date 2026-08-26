@@ -174,60 +174,35 @@
             outline: none;
         }
 
-        /* Perfect Visual Spin Wheel */
+        /* Canvas Spin Wheel Container */
         .wheel-container {
             position: relative;
-            width: 230px;
-            height: 230px;
+            width: 240px;
+            height: 240px;
             margin: 15px auto;
         }
 
         .wheel-pointer {
             position: absolute;
-            top: -8px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 20px solid #e74c3c;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 22px solid #e74c3c;
             z-index: 20;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
         }
 
-        .wheel-box {
+        #wheel-canvas {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             border: 6px solid #f1c40f;
-            position: relative;
-            overflow: hidden;
-            background: #113626;
-            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
             box-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
-        }
-
-        .wheel-slice {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            transform-origin: 100% 100%;
-            left: 0;
-            top: 0;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 25px;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
-            border-right: 1px solid rgba(255,255,255,0.15);
-        }
-
-        .wheel-slice span {
-            display: inline-block;
-            transform: rotate(90deg);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
         }
 
         /* Refer & Stats Boxes */
@@ -384,10 +359,10 @@
                 <h3>🌀 লকি স্পিন</h3>
                 <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">স্পিন করতে আগে এড দেখতে হবে</p>
                 
-                <!-- স্পিন হুইল উইথ ক্লিয়ার লেবেল সেকশন -->
+                <!-- ক্যানভাস ভিত্তিক স্পিন হুইল -->
                 <div class="wheel-container">
                     <div class="wheel-pointer"></div>
-                    <div class="wheel-box" id="spin-wheel"></div>
+                    <canvas id="wheel-canvas" width="400" height="400"></canvas>
                 </div>
 
                 <button class="btn btn-main" onclick="playSpinTask()" style="margin-top: 15px;">🌀 স্পিন করুন</button>
@@ -508,7 +483,7 @@
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
         let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
 
-        // Spin prizes array with 90% weight for small amounts
+        // Spin prizes with 90% weight for small amounts (0.30, 0.60, 1.00)
         const spinPrizes = [
             { amount: 0.30, label: "৳০.৩০", weight: 45 },
             { amount: 0.60, label: "৳০.৬০", weight: 30 },
@@ -521,28 +496,35 @@
             { amount: 5.00, label: "৳৫.০০", weight: 1 }
         ];
 
-        // Initialize Wheel visual slices cleanly
-        function initWheel() {
-            let wheelBox = document.getElementById("spin-wheel");
-            let totalSlices = spinPrizes.length;
-            let angleStep = 360 / totalSlices;
+        // Draw Wheel on HTML5 Canvas cleanly
+        const canvas = document.getElementById("wheel-canvas");
+        const ctx = canvas.getContext("2d");
+        const center = canvas.width / 2;
+        const radius = canvas.width / 2 - 10;
+        const arcSize = (2 * Math.PI) / spinPrizes.length;
 
-            spinPrizes.forEach((prize, index) => {
-                let slice = document.createElement("div");
-                slice.className = "wheel-slice";
-                let rotateAngle = index * angleStep;
-                slice.style.transform = `rotate(${rotateAngle}deg) skewY(-${90 - angleStep}deg)`;
-                slice.style.backgroundColor = index % 2 === 0 ? '#1b4d3e' : '#143d2c';
-                
-                let textSpan = document.createElement("span");
-                textSpan.style.transform = `skewY(${90 - angleStep}deg) rotate(${angleStep/2}deg)`;
-                textSpan.innerText = prize.label;
-                
-                slice.appendChild(textSpan);
-                wheelBox.appendChild(slice);
+        function drawWheel() {
+            spinPrizes.forEach((prize, i) => {
+                const angle = i * arcSize;
+                ctx.beginPath();
+                ctx.fillStyle = i % 2 === 0 ? "#1b4d3e" : "#143d2c";
+                ctx.moveTo(center, center);
+                ctx.arc(center, center, radius, angle, angle + arcSize, false);
+                ctx.lineTo(center, center);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(center, center);
+                ctx.rotate(angle + arcSize / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 22px sans-serif";
+                ctx.fillText(prize.label, radius - 25, 8);
+                ctx.restore();
             });
         }
-        initWheel();
+        drawWheel();
 
         updateUI();
         renderHistory();
@@ -611,11 +593,10 @@
             }
 
             let chosenPrize = spinPrizes[selectedIndex];
-            let angleStep = 360 / spinPrizes.length;
-            let targetDegree = 1440 + (spinPrizes.length - selectedIndex) * angleStep - (angleStep / 2);
+            let arcDeg = 360 / spinPrizes.length;
+            let targetDegree = 1440 + (spinPrizes.length - selectedIndex) * arcDeg - (arcDeg / 2);
 
-            let wheel = document.getElementById("spin-wheel");
-            wheel.style.transform = `rotate(${targetDegree}deg)`;
+            canvas.style.transform = `rotate(${targetDegree}deg)`;
             
             setTimeout(() => {
                 addReward(chosenPrize.amount, `🎉 অভিনন্দন! স্পিন করে পেয়েছেন ${chosenPrize.label}`);
