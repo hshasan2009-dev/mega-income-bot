@@ -6,7 +6,7 @@
     <title>Mega Income Bot</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Adsgram SDK -->
+    <!-- Adsgram SDK (ভুল এড়ানোর জন্য ট্রাই-ক্যাচ বা ফলব্যাক সহ) -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         * {
@@ -18,57 +18,26 @@
         }
 
         body {
-            background: linear-gradient(135deg, #071a12 0%, #0d2d1f 100%);
+            background-color: #0c2317;
             color: #ffffff;
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
 
-        /* Top Bar / User Header */
-        .user-header {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: #27ae60;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .balance-box {
-            background: rgba(46, 164, 79, 0.2);
-            border: 1px solid #2ea44f;
-            padding: 8px 15px;
-            border-radius: 20px;
-            text-align: right;
-        }
-
-        .balance-amount {
-            color: #2ecc71;
+        /* Top Header Title Bar */
+        .top-title-bar {
+            background-color: #1b4d3e;
+            color: #ffcc00;
+            text-align: center;
+            padding: 12px;
             font-size: 18px;
             font-weight: bold;
+            border-bottom: 2px solid #27ae60;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
-        /* Page Container */
         .container {
-            padding: 20px;
+            padding: 15px;
             max-width: 500px;
             margin: 0 auto;
         }
@@ -83,20 +52,44 @@
 
         /* Card Component */
         .card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
+            background-color: #113626;
+            border: 2px solid #27ae60;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
             text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .balance-card {
+            background-color: #113626;
+            border: 2px solid #27ae60;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .balance-title {
+            color: #ffcc00;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .balance-amount {
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: bold;
         }
 
         /* Buttons Styling */
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             color: #fff;
@@ -104,88 +97,147 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 8px;
+            margin-bottom: 10px;
             text-decoration: none;
-            transition: transform 0.2s;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .btn-official {
-            background: linear-gradient(90deg, #0088cc, #00aaff);
+            background-color: #2980b9;
         }
 
         .btn-support {
-            background: linear-gradient(90deg, #e74c3c, #ff4757);
+            background-color: #c0392b;
         }
 
         .btn-main {
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            background-color: #f1c40f;
+            color: #000;
+            font-size: 17px;
+        }
+
+        /* Rules Box */
+        .rules-box {
+            text-align: left;
+            border: 1px dashed #f39c12;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 10px;
+        }
+
+        .rules-title {
+            color: #f39c12;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .rule-item {
+            font-size: 13px;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .rule-warning {
+            border: 1px solid #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            padding: 8px;
+            border-radius: 6px;
+            color: #ff6b6b;
+            margin-bottom: 8px;
         }
 
         /* Input Fields */
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             text-align: left;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: #aaa;
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: #ddd;
         }
 
         .input-control {
             width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #27ae60;
+            background: #0c2317;
             color: #fff;
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
         }
 
-        /* Spinner Styling */
+        /* Spin Wheel */
         .wheel-box {
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            border: 8px solid #2ecc71;
-            margin: 20px auto;
+            border: 6px solid #f1c40f;
+            margin: 15px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            background: radial-gradient(circle, #0d2d1f, #071a12);
+            font-size: 28px;
+            background: radial-gradient(circle, #1b4d3e, #0c2317);
             transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        /* Refer & Stats Boxes */
+        .stats-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background-color: #1b4d3e;
+            border: 1px solid #27ae60;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f1c40f;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 4px;
         }
 
         /* History Table */
         .history-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 13px;
+            margin-top: 10px;
+            font-size: 12px;
         }
 
         .history-table th, .history-table td {
-            padding: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 5px;
+            border: 1px solid #27ae60;
             text-align: center;
         }
 
         .history-table th {
-            color: #aaa;
+            background-color: #1b4d3e;
+            color: #f1c40f;
         }
 
         .badge-pending {
-            color: #ffc107;
+            color: #f1c40f;
             font-weight: bold;
         }
 
@@ -199,18 +251,18 @@
             font-weight: bold;
         }
 
-        /* Bottom Navbar */
+        /* Bottom Navbar with custom Image Icons style */
         .navbar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(7, 26, 18, 0.95);
-            backdrop-filter: blur(10px);
+            background-color: #0c2317;
             display: flex;
             justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 0;
+            border-top: 2px solid #27ae60;
+            z-index: 1000;
         }
 
         .nav-item {
@@ -218,53 +270,66 @@
             flex-direction: column;
             align-items: center;
             font-size: 12px;
-            color: #888;
+            color: #aaa;
             cursor: pointer;
             text-decoration: none;
+            background: none;
+            border: none;
         }
 
-        .nav-item .icon {
-            font-size: 20px;
-            margin-bottom: 3px;
+        .nav-item img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+            object-fit: contain;
         }
 
         .nav-item.active {
             color: #2ecc71;
+            background: rgba(39, 174, 96, 0.15);
+            padding: 4px 12px;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header / User Info -->
-    <div class="user-header">
-        <div class="user-info">
-            <div class="user-avatar" id="user-avatar">U</div>
-            <div>
-                <div id="user-name" style="font-weight: bold;">ইউজার</div>
-                <div id="user-id" style="font-size: 12px; color: #aaa;">ID: 000000</div>
-            </div>
-        </div>
-        <div class="balance-box">
-            <div style="font-size: 11px; color: #aaa;">ব্যালেন্স</div>
-            <div class="balance-amount">৳ <span id="balance-val">0.00</span></div>
-        </div>
+    <!-- Top Title Header -->
+    <div class="top-title-bar">
+        🚀 Mega Income Bot
     </div>
 
     <div class="container">
 
         <!-- ১. হোম পেজ (HOME PAGE) -->
         <div id="home" class="page active">
-            <div class="card">
-                <h2>স্বাগতম! 👋</h2>
-                <p style="color: #aaa; margin: 10px 0 20px;">বিজ্ঞাপন দেখে ও রেফার করে প্রতিদিন আয় করুন।</p>
+            <div class="balance-card">
+                <div class="balance-title">TOTAL BALANCE</div>
+                <div class="balance-amount">৳ <span id="balance-val">0.00</span></div>
+            </div>
+
+            <a href="https://t.me/+BAquPEEqEhM2NTNl" target="_blank" class="btn btn-official">
+                📢 অফিসিয়াল চ্যানেল
+            </a>
+            
+            <a href="https://t.me/hshasan2009" target="_blank" class="btn btn-support">
+                🛠️ লাইভ সাপোর্ট
+            </a>
+
+            <div class="rules-box">
+                <div class="rules-title">⚠️ কাজের নিয়মাবলী</div>
                 
-                <a href="https://t.me/+BAquPEEqEhM2NTNl" target="_blank" class="btn btn-official">
-                    📢 অফিশিয়াল চ্যানেল
-                </a>
+                <div class="rule-warning">
+                    ❌ ১. VPN অন করে কাজ করলে আপনার অ্যাকাউন্ট চিরতরে ব্যান হতে পারে!
+                </div>
                 
-                <a href="https://t.me/hshasan2009" target="_blank" class="btn btn-support">
-                    🛠️ লাইভ সাপোর্ট
-                </a>
+                <div class="rule-item">
+                    📺 ২. প্রতিটি কাজের জন্য বিজ্ঞাপনের রেট অনুযায়ী মূল ব্যালেন্স যুক্ত হবে।
+                </div>
+                
+                <div class="rule-item">
+                    💳 ৩. উপার্জিত টাকা সরাসরি বিকাশ, নগদ বা রকেটের মাধ্যমে তুলতে পারবেন।
+                </div>
             </div>
         </div>
 
@@ -272,13 +337,13 @@
         <div id="task" class="page">
             <div class="card">
                 <h3>📺 ভিডিও এডস টাস্ক</h3>
-                <p style="color: #aaa; margin: 8px 0 15px; font-size: 14px;">বিজ্ঞাপন দেখে আয় করুন (প্রতি এডে পাবেন বোনাস)</p>
+                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">বিজ্ঞাপন দেখে আয় করুন (প্রতি এডে পাবেন বোনাস)</p>
                 <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
             </div>
 
             <div class="card">
                 <h3>🌀 লকি স্পিন</h3>
-                <p style="color: #aaa; margin: 8px 0 15px; font-size: 14px;">স্পিন করতে আগে এড দেখতে হবে</p>
+                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">স্পিন করতে আগে এড দেখতে হবে</p>
                 <div class="wheel-box" id="spin-wheel">🎯</div>
                 <button class="btn btn-main" onclick="playSpinTask()">🌀 স্পিন করুন</button>
             </div>
@@ -288,9 +353,21 @@
         <div id="refer" class="page">
             <div class="card">
                 <h3>👥 ইনভাইট ও ইনকাম</h3>
-                <p style="color: #aaa; margin: 10px 0; font-size: 14px;">
-                    আপনার রেফারেল লিংকের মাধ্যমে বন্ধু যুক্ত করুন। প্রতি টাস্ক থেকে পাবেন <b>৩০% কমিশন!</b>
+                <p style="color: #ccc; margin: 8px 0 15px; font-size: 13px;">
+                    আপনার রেফারেল লিংকের মাধ্যমে বন্ধু যুক্ত করুন। প্রতি টাস্ক থেকে পাবেন কমিশন!
                 </p>
+
+                <!-- দুইটি বক্স ডিজাইন -->
+                <div class="stats-container">
+                    <div class="stat-box">
+                        <div class="stat-num" id="ref-count">0</div>
+                        <div class="stat-label">মোট ইনভাইট</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num">৳ <span id="ref-bonus-val">0.00</span></div>
+                        <div class="stat-label">মোট রেফার বোনাস</div>
+                    </div>
+                </div>
                 
                 <div class="input-group">
                     <label>আপনার রেফার লিংক:</label>
@@ -299,32 +376,20 @@
 
                 <button class="btn btn-main" onclick="copyReferLink()">📋 লিংক কপি করুন</button>
             </div>
-
-            <div class="card" style="display: flex; justify-content: space-around;">
-                <div>
-                    <div style="font-size: 24px; font-weight: bold; color: #2ecc71;" id="ref-count">0</div>
-                    <div style="font-size: 12px; color: #aaa;">মোট রেফার</div>
-                </div>
-                <div>
-                    <div style="font-size: 24px; font-weight: bold; color: #2ecc71;">৩০%</div>
-                    <div style="font-size: 12px; color: #aaa;">টাস্ক কমিশন</div>
-                </div>
-            </div>
         </div>
 
         <!-- ৪. উইথড্র পেজ (WITHDRAW PAGE) -->
         <div id="withdraw" class="page">
             <div class="card">
                 <h3>💳 টাকা তুলুন</h3>
-                <p style="color: #aaa; margin-bottom: 10px; font-size: 13px;">সর্বনিম্ন উইথড্র limit: <b>১৫০ টাকা</b></p>
-                <p style="color: #aaa; margin-bottom: 15px; font-size: 13px;">উইথড্র করার সময় ৫% সার্ভিস ফি কাটা হবে।</p>
+                <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সর্বনিম্ন উইথড্র limit: <b>১৫০ টাকা</b> (৫% সার্ভিস ফি)</p>
                 
                 <div class="input-group">
                     <label>পেমেন্ট মাধ্যম বেছে নিন</label>
                     <select id="payment-method" class="input-control">
-                        <option value="bKash">বিকাশ (bKash)</option>
-                        <option value="Nagad">নগদ (Nagad)</option>
-                        <option value="Rocket">রকেট (Rocket)</option>
+                        <option value="বিকাশ">বিকাশ (bKash)</option>
+                        <option value="নগদ">নগদ (Nagad)</option>
+                        <option value="রকেট">রকেট (Rocket)</option>
                     </select>
                 </div>
 
@@ -338,17 +403,18 @@
                     <input type="number" id="withdraw-amt" class="input-control" placeholder="১৫০">
                 </div>
 
-                <button class="btn btn-main" onclick="submitWithdrawal()">উইথড্র রিকোয়েস্ট দিন</button>
+                <button class="btn btn-main" onclick="submitWithdrawal()">উইথড্র রিকোয়েস্ট পাঠান</button>
             </div>
 
-            <!-- উইথড্র হিস্টরি টেবিল -->
+            <!-- উইথড্র হিস্টরি টেবিল (তারিখ সহ) -->
             <div class="card">
                 <h3>📜 উইথড্র হিস্টরি</h3>
                 <table class="history-table">
                     <thead>
                         <tr>
+                            <th>তারিখ</th>
+                            <th>পরিমাণ</th>
                             <th>মেথড</th>
-                            <th>পাওয়া যাবে (৫% কেটে)</th>
                             <th>স্ট্যাটাস</th>
                         </tr>
                     </thead>
@@ -361,57 +427,48 @@
 
     </div>
 
-    <!-- বটম নেভিগেশন বার -->
+    <!-- বটম নেভিগেশন বার (ছবি ও সাইজ ঠিক করা বাটন) -->
     <div class="navbar">
-        <div class="nav-item active" onclick="switchTab('home', this)">
-            <span class="icon">🏠</span>
+        <button class="nav-item active" onclick="switchTab('home', this)">
+            <img src="https://img.icons8.com/color/48/home-page.png" alt="হোম">
             <span>হোম</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('task', this)">
-            <span class="icon">📺</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('task', this)">
+            <img src="https://img.icons8.com/color/48/video.png" alt="টাস্ক">
             <span>টাস্ক</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('refer', this)">
-            <span class="icon">👥</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('refer', this)">
+            <img src="https://img.icons8.com/color/48/conference.png" alt="রেফার">
             <span>রেফার</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('withdraw', this)">
-            <span class="icon">💳</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('withdraw', this)">
+            <img src="https://img.icons8.com/color/48/bank-card-back-view.png" alt="উইথড্র">
             <span>উইথড্র</span>
-        </div>
+        </button>
     </div>
 
     <script>
-        // --- অ্যাপের স্থায়ী কনফিগারেশন ---
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
-        const ADSGRAM_BLOCK_ID = "44608"; // আপনার নতুন সঠিক ব্লক আইডি
+        const ADSGRAM_BLOCK_ID = "44608";
 
-        // অ্যাপ তথ্য ও স্টেট
         let tg = window.Telegram?.WebApp;
         if (tg) tg.expand();
 
         let user = tg?.initDataUnsafe?.user || { id: 12345678, first_name: "Demo User", username: "demouser" };
 
-        // ইউজারের নাম ও আইডি সেট
-        document.getElementById("user-name").innerText = user.first_name || "User";
-        document.getElementById("user-id").innerText = "ID: " + user.id;
-        document.getElementById("user-avatar").innerText = (user.first_name || "U").charAt(0).toUpperCase();
-
-        // রেফার লিংক জেনারেট
-        let botUsername = "MegaIncomeReal_bot"; // আপনার বটের ইউজারনেম
+        let botUsername = "MegaIncomeReal_bot"; 
         let referLink = `https://t.me/${botUsername}/myapp?start=${user.id}`;
         document.getElementById("ref-link").value = referLink;
 
-        // লোকাল স্টোরেজ থেকে ডেটা লোড
         let currentBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0.00;
         let referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
+        let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
         let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
 
         updateUI();
         renderHistory();
 
-        // ট্যাব পরিবর্তনের ফাংশন
         function switchTab(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -419,36 +476,46 @@
             element.classList.add('active');
         }
 
-        // UI আপডেট ফাংশন
         function updateUI() {
             document.getElementById("balance-val").innerText = currentBalance.toFixed(2);
             document.getElementById("ref-count").innerText = referCount;
+            document.getElementById("ref-bonus-val").innerText = referBonus.toFixed(2);
+            
             localStorage.setItem(`balance_${user.id}`, currentBalance);
             localStorage.setItem(`refCount_${user.id}`, referCount);
+            localStorage.setItem(`refBonus_${user.id}`, referBonus);
         }
 
-        // Adsgram এড টাস্ক
+        // Adsgram এড টাস্ক (এরর হ্যান্ডলিং সহ, যাতে অ্যাপ ক্র্যাশ না করে)
         function watchAdTask() {
-            if (window.Adsgram) {
-                const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-                AdController.show().then((result) => {
-                    addReward(2.00, "বিজ্ঞাপন দেখার বোনাস ৳২.০০ যোগ হয়েছে!");
-                }).catch((error) => {
-                    alert("বিজ্ঞাপন সম্পূর্ণ দেখা হয়নি, তাই বোনাস দেওয়া হয়নি!");
-                });
-            } else {
-                addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস পাওয়া গেছে!");
+            try {
+                if (window.Adsgram) {
+                    const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+                    AdController.show().then((result) => {
+                        addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস যোগ হয়েছে!");
+                    }).catch((error) => {
+                        alert("বিজ্ঞাপন দেখা সম্পূর্ণ হয়নি বা নেটওয়ার্ক সমস্যা!");
+                    });
+                } else {
+                    // যদি কোনো কারণে SDK লোড না হয় তবে ফলব্যাক হিসেবে পয়েন্ট দিয়ে দিবে
+                    addReward(2.00, "বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস পাওয়া গেছে!");
+                }
+            } catch (e) {
+                addReward(2.00, "টাস্ক সম্পন্ন হয়েছে!");
             }
         }
 
-        // লকি স্পিন টাস্ক
         function playSpinTask() {
-            if (window.Adsgram) {
-                const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-                AdController.show().then(() => runSpinLogic()).catch(() => {
-                    alert("বিজ্ঞাপন দেখা সম্পন্ন হয়নি!");
-                });
-            } else {
+            try {
+                if (window.Adsgram) {
+                    const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+                    AdController.show().then(() => runSpinLogic()).catch(() => {
+                        alert("বিজ্ঞাপন দেখা সম্পূর্ণ হয়নি!");
+                    });
+                } else {
+                    runSpinLogic();
+                }
+            } catch (e) {
                 runSpinLogic();
             }
         }
@@ -470,7 +537,6 @@
             alert(message);
         }
 
-        // রেফার লিংক কপি
         function copyReferLink() {
             let linkInput = document.getElementById("ref-link");
             linkInput.select();
@@ -483,7 +549,6 @@
             });
         }
 
-        // উইথড্র সাবমিট লজিক (সর্বনিম্ন ১৫০ টাকা এবং ৫% ফি)
         function submitWithdrawal() {
             let method = document.getElementById("payment-method").value;
             let account = document.getElementById("account-num").value.trim();
@@ -510,8 +575,11 @@
             currentBalance -= amount;
             updateUI();
 
+            let currentDate = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY ফরম্যাট
+
             let withdrawObj = {
                 id: "WD" + Date.now(),
+                date: currentDate,
                 method: method,
                 account: account,
                 requestedAmount: amount,
@@ -525,53 +593,51 @@
 
             sendAdminNotification(withdrawObj);
 
-            alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\n\nমূল পরিমাণ: ৳${amount}\n৫% ফি কেটে পাবেন: ৳${netAmount.toFixed(2)}\nস্ট্যাটাস: Pending`);
+            alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\n\nপরিমাণ: ৳${amount}\nফি কেটে পাবেন: ৳${netAmount.toFixed(2)}\nস্ট্যাটাস: Pending`);
             
             document.getElementById("account-num").value = "";
             document.getElementById("withdraw-amt").value = "";
         }
 
-        // হিস্টরি রেন্ডার এবং স্ট্যাটাস আপডেট হ্যান্ডেলিং
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             tbody.innerHTML = "";
 
             if (historyData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" style="color:#888;">কোনো উইথড্র হিস্টরি নেই</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" style="color:#aaa;">কোনো উইথড্র হিস্টরি নেই</td></tr>`;
                 return;
             }
 
             historyData.forEach(item => {
                 let badgeClass = "badge-pending";
-                let statusText = "⏳ Pending";
-                if (item.status === "Approved") { badgeClass = "badge-success"; statusText = "✅ Success"; }
-                if (item.status === "Rejected") { badgeClass = "badge-rejected"; statusText = "❌ Rejected"; }
+                let statusText = "Pending";
+                if (item.status === "Approved") { badgeClass = "badge-success"; statusText = "Success"; }
+                if (item.status === "Rejected") { badgeClass = "badge-rejected"; statusText = "Rejected"; }
 
                 let tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td>${item.method}<br><small style="color:#aaa;">${item.account}</small></td>
-                    <td style="color:#2ecc71; font-weight:bold;">৳${item.netAmount.toFixed(2)}</td>
+                    <td>${item.date || '---'}</td>
+                    <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount.toFixed(2)}</td>
+                    <td>${item.method}</td>
                     <td><span class="${badgeClass}">${statusText}</span></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // অ্যাডমিন নোটিফিকেশন টেলিগ্রামে পাঠানো
         function sendAdminNotification(data) {
             let msgText = `🔔 *নতুন উইথড্র রিকোয়েস্ট!*\n\n` +
                 `👤 ইউজার: ${user.first_name} (\`${user.id}\`)\n` +
+                `📅 তারিখ: ${data.date}\n` +
                 `💳 মেথড: ${data.method}\n` +
                 `📱 নম্বর: \`${data.account}\`\n` +
-                `💰 মূল পরিমাণ: ৳${data.requestedAmount}\n` +
-                `✂️ ৫% কেটে পাবে: ৳${data.netAmount.toFixed(2)}\n` +
-                `🆔 ID: \`${data.id}\``;
+                `💰 পরিমাণ: ৳${data.netAmount.toFixed(2)} (ফি সহ: ৳${data.requestedAmount})`;
 
             let replyMarkup = {
                 inline_keyboard: [
                     [
-                        { text: "✅ Accept (অনুমোদন)", callback_data: `acc_${data.id}_${user.id}_${data.requestedAmount}` },
-                        { text: "❌ Reject (বাতিল)", callback_data: `rej_${data.id}_${user.id}_${data.requestedAmount}` }
+                        { text: "✅ Accept", callback_data: `acc_${data.id}_${user.id}_${data.requestedAmount}` },
+                        { text: "❌ Reject", callback_data: `rej_${data.id}_${user.id}_${data.requestedAmount}` }
                     ]
                 ]
             };
