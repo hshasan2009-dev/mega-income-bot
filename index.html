@@ -174,17 +174,17 @@
             outline: none;
         }
 
-        /* Enhanced Visual Spin Wheel */
+        /* Perfect Visual Spin Wheel */
         .wheel-container {
             position: relative;
-            width: 220px;
-            height: 220px;
+            width: 230px;
+            height: 230px;
             margin: 15px auto;
         }
 
         .wheel-pointer {
             position: absolute;
-            top: -10px;
+            top: -8px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
@@ -216,11 +216,18 @@
             top: 0;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 11px;
+            justify-content: flex-end;
+            padding-right: 25px;
+            font-size: 12px;
             font-weight: bold;
             color: #fff;
-            border: 1px solid rgba(255,255,255,0.1);
+            border-right: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .wheel-slice span {
+            display: inline-block;
+            transform: rotate(90deg);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
 
         /* Refer & Stats Boxes */
@@ -377,12 +384,10 @@
                 <h3>🌀 লকি স্পিন</h3>
                 <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">স্পিন করতে আগে এড দেখতে হবে</p>
                 
-                <!-- স্পিন হুইল উইথ প্রাইস সেকশন -->
+                <!-- স্পিন হুইল উইথ ক্লিয়ার লেবেল সেকশন -->
                 <div class="wheel-container">
                     <div class="wheel-pointer"></div>
-                    <div class="wheel-box" id="spin-wheel">
-                        <!-- slices added dynamically via JS -->
-                    </div>
+                    <div class="wheel-box" id="spin-wheel"></div>
                 </div>
 
                 <button class="btn btn-main" onclick="playSpinTask()" style="margin-top: 15px;">🌀 স্পিন করুন</button>
@@ -457,9 +462,7 @@
                             <th>স্ট্যাটাস</th>
                         </tr>
                     </thead>
-                    <tbody id="history-rows">
-                        <!-- জাভাস্ক্রিপ্ট দ্বারা হিস্টরি ফিল হবে -->
-                    </tbody>
+                    <tbody id="history-rows"></tbody>
                 </table>
             </div>
         </div>
@@ -505,7 +508,7 @@
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
         let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
 
-        // Spin prizes array with higher weight for small amounts (90% chance for 0.30, 0.60, 1.00)
+        // Spin prizes array with 90% weight for small amounts
         const spinPrizes = [
             { amount: 0.30, label: "৳০.৩০", weight: 45 },
             { amount: 0.60, label: "৳০.৬০", weight: 30 },
@@ -518,7 +521,7 @@
             { amount: 5.00, label: "৳৫.০০", weight: 1 }
         ];
 
-        // Initialize Wheel visual slices
+        // Initialize Wheel visual slices cleanly
         function initWheel() {
             let wheelBox = document.getElementById("spin-wheel");
             let totalSlices = spinPrizes.length;
@@ -533,9 +536,6 @@
                 
                 let textSpan = document.createElement("span");
                 textSpan.style.transform = `skewY(${90 - angleStep}deg) rotate(${angleStep/2}deg)`;
-                textSpan.style.position = "absolute";
-                textSpan.style.right = "25px";
-                textSpan.style.bottom = "25px";
                 textSpan.innerText = prize.label;
                 
                 slice.appendChild(textSpan);
@@ -597,7 +597,6 @@
         }
 
         function runWeightedSpin() {
-            // Weighted random selection (90% for small amounts)
             let totalWeight = spinPrizes.reduce((sum, item) => sum + item.weight, 0);
             let randomNum = Math.random() * totalWeight;
             let currentWeightSum = 0;
