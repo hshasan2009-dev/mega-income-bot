@@ -324,7 +324,7 @@
 
             <div class="card">
                 <h3>🌀 লকি স্পিন</h3>
-                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;" id="spin-status-text">স্পিন করতে কাজ বা সময় পূর্ণ করুন</p>
+                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;" id="spin-status-text">স্পিন করতে আরও টাস্ক সম্পন্ন করুন বা ২০ মিনিট অপেক্ষা করুন</p>
                 
                 <div class="wheel-container">
                     <div class="wheel-pointer"></div>
@@ -433,8 +433,8 @@
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "44608";
         
-        // সঠিক ও কার্যকর CPX Research Offerwall URL
-        const CPX_OFFERWALL_URL = "https://cpx-research.com/"; 
+        // CPX Research-এর ডাইরেক্ট ইউজার সার্ভে অফারওয়াল লিঙ্ক (আপনার আইডি বসিয়ে নিতে পারেন, বর্তমানে ডিফল্ট ওয়েবলিংক দেওয়া হলো যাতে ডাইরেক্ট সার্ভে পেজ খোলে)
+        const CPX_OFFERWALL_URL = "https://offers.cpx-research.com/index.php?app_id=YOUR_APP_ID&ext_user_id="; 
 
         let tg = window.Telegram?.WebApp;
         if (tg) tg.expand();
@@ -453,7 +453,7 @@
         let completedTasksCount = parseInt(localStorage.getItem(`tasksCount_${user.id}`)) || 0;
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
 
-        // স্পিন প্রাইজ: এখন সবগুলো মান ১ টাকা বা তার নিচে সেট করা হয়েছে এবং বেশি ও ভারী ওয়েট শুধু ছোট অ্যামাউন্টগুলোতে দেওয়া হয়েছে
+        // স্পিন প্রাইজ: সবসময় ১ টাকা বা তার নিচের অ্যামাউন্টগুলোতে বাঁধার জন্য প্রিসেট
         const spinPrizes = [
             { amount: 0.10, label: "৳০.১০", weight: 35 },
             { amount: 0.25, label: "৳০.২৫", weight: 30 },
@@ -524,7 +524,9 @@
         }
 
         function openCPXSurvey() {
-            window.open(CPX_OFFERWALL_URL, '_blank');
+            // ইউজারের নিজস্ব আইডি সহ ডাইরেক্ট সার্ভে অফারওয়াল লিংক ওপেন হবে
+            let finalCPXUrl = CPX_OFFERWALL_URL + user.id;
+            window.open(finalCPXUrl, '_blank');
         }
 
         function watchAdTask() {
@@ -687,6 +689,7 @@
                 let tr = document.getElementById(item.id) || document.createElement("tr");
                 tr.id = item.id;
                 tr.innerHTML = `
+                    :` + `
                     <td>${item.date}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount.toFixed(2)}</td>
                     <td>${item.method}</td>
