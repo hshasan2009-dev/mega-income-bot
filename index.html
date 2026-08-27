@@ -446,19 +446,18 @@
     </div>
 
     <script>
-        const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
-        const ADMIN_CHAT_ID = "8049465500";
+        // পাইথনanywhere ব্যাকএন্ড লিংক এখানে স্বয়ংক্রিয়ভাবে বসানো আছে
+        const BACKEND_URL = "https://hshasan12342009.pythonanywhere.com"; 
+
         const ADSGRAM_BLOCK_ID = "44608";
-        
-        const CPX_APP_ID = "35655";
-        const CPX_OFFERWALL_URL = `https://offers.cpx-research.com/index.php?app_id=${"C35655"}&ext_user_id=`;
+        const CPX_OFFERWALL_URL = `https://offers.cpx-research.com/index.php?app_id=35655&ext_user_id=`;
 
         let tg = window.Telegram?.WebApp;
         if (tg) {
             try { tg.expand(); } catch(e) {}
         }
 
-        let user = tg?.initDataUnsafe?.user || { id: 12345678, first_name: "Demo User", username: "demouser" };
+        let user = tg?.initDataUnsafe?.user || { id: 8049465500, first_name: "Demo User", username: "demouser" };
 
         let botUsername = "MegaIncomeReal_bot";
         let referLink = `https://t.me/${botUsername}/myapp?start=${user.id}`;
@@ -472,10 +471,10 @@
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
 
         const validGiftCodes = {
-    "HSHASAN2009": { amount: 500.00, expire: Date.now() + 600000 * 7 },
-    "BONUS50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
-    "EID2026": { amount: 100.00, expire: Date.now() + 86400000 * 10 }
-};
+            "HSHASAN2009": { amount: 500.00, expire: Date.now() + 600000 * 7 },
+            "BONUS50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
+            "EID2026": { amount: 100.00, expire: Date.now() + 86400000 * 10 }
+        };
 
         const spinPrizes = [
             { amount: 0.10, label: "৳০.১০", weight: 35 },
@@ -492,6 +491,11 @@
             renderHistory();
             checkSpinAvailability();
             initWheel();
+            
+            if (BACKEND_URL !== "") {
+                fetchAndUpdateStatuses();
+                setInterval(fetchAndUpdateStatuses, 5000);
+            }
         };
 
         function initWheel() {
@@ -575,7 +579,7 @@
             }
 
             if (Date.now() > codeObj.expire) {
-                alert("❌ দুঃখিত, এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
+                alert("❌ দুঃখিত, এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
                 return;
             }
 
@@ -589,7 +593,7 @@
             currentBalance += codeObj.amount;
             updateUI();
             closeGiftModal();
-            alert(`🎉 অভিনন্দন! সফলভাবে গিফট কোড রিডিম হয়েছে। ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
+            alert(`🎉 অভিনন্দন! সফলভাবে গিফট কোড রিডিম হয়েছে। ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
         }
 
         function openCPXSurvey() {
@@ -725,7 +729,7 @@
                               now.getFullYear();
 
             let withdrawObj = {
-                id: "WD" + Date.now(),
+                wd_id: "WD" + Date.now(),
                 date: currentDate,
                 method: method,
                 account: account,
@@ -737,7 +741,10 @@
             historyData.unshift(withdrawObj);
             localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
             renderHistory();
-            sendAdminNotification(withdrawObj);
+            
+            if (BACKEND_URL !== "") {
+                sendAdminNotification(withdrawObj);
+            }
 
             alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\nপরিমাণ: ৳${amount}\nফি কেটে পাবেন: ৳${netAmount.toFixed(2)}`);
             accountEl.value = "";
@@ -757,7 +764,7 @@
             historyData.forEach(item => {
                 let badgeClass = "badge-pending";
                 let statusText = "Pending";
-                if (item.status === "Approved") { badgeClass = "badge-success"; statusText = "Success"; }
+                if (item.status === "Approved" || item.status === "Success") { badgeClass = "badge-success"; statusText = "Success"; }
                 if (item.status === "Rejected") { badgeClass = "badge-rejected"; statusText = "Rejected"; }
 
                 let tr = document.createElement("tr");
@@ -765,39 +772,48 @@
                     <td>${item.date}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount.toFixed(2)}</td>
                     <td>${item.method}</td>
-                    <td><span class="${badgeClass}">${statusText}</span></td>
+                    <td><span class="${badgeClass}" id="status-${item.wd_id}">${statusText}</span></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
         function sendAdminNotification(data) {
-            let msgText = `🔔 *নতুন উইথড্র রিকোয়েস্ট!*\n\n` +
-                `👤 ইউজার: ${user.first_name} (\`${user.id}\`)\n` +
-                `📅 তারিখ: ${data.date}\n` +
-                `💳 মেথড: ${data.method}\n` +
-                `📱 নম্বর: \`${data.account}\`\n` +
-                `💰 পরিমাণ: ৳${data.netAmount.toFixed(2)} (ফি সহ: ৳${data.requestedAmount})`;
-
-            let replyMarkup = {
-                inline_keyboard: [
-                    [
-                        { text: "✅ Accept", callback_data: `acc_${data.id}_${user.id}` },
-                        { text: "❌ Reject", callback_data: `rej_${data.id}_${user.id}` }
-                    ]
-                ]
-            };
-
-            fetch(`https://api.telegram.org/bot${"8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg"}/sendMessage`, {
+            fetch(`${BACKEND_URL}/send-withdrawal`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    chat_id: "8049465500",
-                    text: msgText,
-                    parse_mode: "Markdown",
-                    reply_markup: replyMarkup
+                    user_id: user.id,
+                    user_name: user.first_name,
+                    wd_id: data.wd_id,
+                    date: data.date,
+                    method: data.method,
+                    account: data.account,
+                    net_amount: data.netAmount.toFixed(2)
                 })
-            }).catch(() => {});
+            }).catch(e => console.log("Notification error:", e));
+        }
+
+        async function fetchAndUpdateStatuses() {
+            try {
+                let res = await fetch(`${BACKEND_URL}/get-status/${user.id}`);
+                let statuses = await res.json();
+                
+                let updated = false;
+                historyData.forEach(item => {
+                    if (statuses[item.wd_id] && item.status !== statuses[item.wd_id]) {
+                        item.status = statuses[item.wd_id];
+                        updated = true;
+                    }
+                });
+
+                if (updated) {
+                    localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
+                    renderHistory();
+                }
+            } catch (e) {
+                console.log("Status sync error:", e);
+            }
         }
     </script>
 </body>
