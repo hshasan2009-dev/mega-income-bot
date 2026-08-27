@@ -451,7 +451,7 @@
         const ADSGRAM_BLOCK_ID = "44608";
         
         const CPX_APP_ID = "35655";
-        const CPX_OFFERWALL_URL = `https://offers.cpx-research.com/index.php?app_id=${CPX_APP_ID}&ext_user_id=`;
+        const CPX_OFFERWALL_URL = `https://offers.cpx-research.com/index.php?app_id=${"C35655"}&ext_user_id=`;
 
         let tg = window.Telegram?.WebApp;
         if (tg) {
@@ -472,10 +472,10 @@
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "HSHASAN": { amount: 150.00, expire: Date.now() + 600000 * 7 },
-            "BONUS50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
-            "EID2026": { amount: 100.00, expire: Date.now() + 86400000 * 10 }
-        };
+    "HSHASAN": { amount: 150.00, expire: Date.now() + 600000 * 7 },
+    "BONUS50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
+    "EID2026": { amount: 100.00, expire: Date.now() + 86400000 * 10 }
+};
 
         const spinPrizes = [
             { amount: 0.10, label: "৳০.১০", weight: 35 },
