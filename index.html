@@ -446,7 +446,6 @@
     </div>
 
     <script>
-        // সরাসরি HTML এর মধ্যে বট টোকেন ও অ্যাডমিন চ্যাট আইডি সেট করা হলো
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
 
@@ -470,6 +469,7 @@
         
         let completedTasksCount = parseInt(localStorage.getItem(`tasksCount_${user.id}`)) || 0;
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
+        let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
             "HSHASAN2009": { amount: 500.00, expire: Date.now() + 600000 * 7 },
@@ -492,6 +492,9 @@
             renderHistory();
             checkSpinAvailability();
             initWheel();
+
+            // ব্যাকগ্রাউন্ডে টেলিগ্রাম আপডেট চেক করার জন্য লাইভ লজিক চালু করা হলো
+            setInterval(checkAdminActionFromTelegram, 3000);
         };
 
         function initWheel() {
@@ -687,7 +690,6 @@
             });
         }
 
-        // সরাসরি টেলিগ্রামে ফুল ডিটেইলস ও ইনলাইন বাটনসহ মেসেজ পাঠানোর ফাংশন
         function submitWithdrawal() {
             let methodEl = document.getElementById("payment-method");
             let accountEl = document.getElementById("account-num");
@@ -741,7 +743,6 @@
             localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
             renderHistory();
             
-            // সরাসরি টেলিগ্রাম বট এপিআই কল করে অ্যাডমিনের কাছে মেসেজ ও বাটন পাঠানো
             sendTelegramMessageToAdmin(user.first_name, user.id, wdId, currentDate, method, account, netAmount.toFixed(2));
 
             alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\nপরিমাণ: ৳${amount}\nফি কেটে পাবেন: ৳${netAmount.toFixed(2)}`);
@@ -760,7 +761,6 @@
                 `💰 পরিমাণ: ৳${netAmount}`
             );
 
-            // টেলিগ্রাম ইনলাইন বাটন (Success ও Rejected)
             let inlineKeyboard = {
                 inline_keyboard: [
                     [
@@ -782,6 +782,53 @@
                     reply_markup: inlineKeyboard
                 })
             }).catch(e => console.log("Telegram API Error:", e));
+        }
+
+        // অ্যাডমিন বাটনে ক্লিক করলে তা ট্র্যাক করে স্ট্যাটাস আপডেট করার ফাংশন
+        async function checkAdminActionFromTelegram() {
+            try {
+                let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
+                let response = await fetch(url);
+                let data = await response.json();
+
+                if (data.ok && data.result.length > 0) {
+                    for (let update of data.result) {
+                        telegramOffset = update.update_id + 1;
+                        localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
+
+                        if (update.callback_query) {
+                            let callbackData = update.callback_query.data;
+                            let callbackQueryId = update.callback_query.id;
+
+                            // আনসারিং কলব্যাক কুয়েরি যাতে টেলিগ্রামে লোডিং না দেখায়
+                            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ callback_query_id: callbackQueryId, text: "స్ట্যাটাস আপডেট করা হয়েছে!" })
+                            });
+
+                            if (callbackData.includes("_")) {
+                                let parts = callbackData.split("_");
+                                let action = parts[0];
+                                let wdId = parts[1];
+
+                                let targetItem = historyData.find(item => item.wd_id === wdId);
+                                if (targetItem) {
+                                    if (action === "success") {
+                                        targetItem.status = "Success";
+                                    } else if (action === "rejected") {
+                                        targetItem.status = "Rejected";
+                                    }
+                                    localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
+                                    renderHistory();
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log("Polling error:", e);
+            }
         }
 
         function renderHistory() {
