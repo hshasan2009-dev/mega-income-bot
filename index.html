@@ -307,7 +307,7 @@
 
             <div class="rules-box">
                 <div class="rules-title">⚠️ কাজের নিয়মাবলী</div>
-                <div class="rule-warning">❌ ১. VPN অন করে কাজ করলে আপনার অ্যাকাউন্ট চিরتره ব্যান হতে পারে!</div>
+                <div class="rule-warning">❌ ১. VPN অন করে কাজ করলে আপনার অ্যাকাউন্ট চিরতরে ব্যান হতে পারে!</div>
                 <div class="rule-item">📺 ২. প্রতিটি কাজের সঠিক বিজ্ঞাপন বা সার্ভে সম্পূর্ণ করলে মূল ব্যালেন্স যুক্ত হবে।</div>
                 <div class="rule-item">💳 ৩. উপার্জিত টাকা সরাসরি বিকাশ, নগদ বা রকেটের মাধ্যমে তুলতে পারবেন।</div>
             </div>
@@ -317,14 +317,13 @@
         <div id="task" class="page">
             <div class="card">
                 <h3>📺 ভিডিও এডস টাস্ক</h3>
-                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন (পুরো বিজ্ঞাপন শেষ হলে ব্যালেন্স যোগ হবে)</p>
+                <p style="color: #ccc; margin: 8px 0 12px; font-size: 13px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
                 <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
             </div>
 
             <div class="card">
                 <h3>⭐ স্পেশাল টাক্স (CPX)</h3>
-                <p style="color: #ffcc00; margin: 4px 0; font-size: 14px; font-weight: bold;">প্রতিটি সার্ভে সম্পন্ন করলে পাবেন ১০ থেকে ১০০ টাকা পর্যন্ত!</p>
-                <p style="color: #ccc; margin: 4px 0 12px; font-size: 12px;">লিংকে গিয়ে সার্ভে ফুল কমপ্লিট করুন, অন্যথায় ব্যালেন্স যোগ হবে না।</p>
+                <p style="color: #ffcc00; margin: 4px 0; font-size: 14px; font-weight: bold;">প্রতিটি সার্ভে সম্পন্ন করলে পাবেন ১০ থেকে ১০০ টাকা!</p>
                 <button class="btn btn-main" onclick="openCPXSurvey()">💼 সার্ভে শুরু করুন</button>
             </div>
 
@@ -455,14 +454,15 @@
         const CPX_OFFERWALL_URL = `https://offers.cpx-research.com/index.php?app_id=${CPX_APP_ID}&ext_user_id=`;
 
         let tg = window.Telegram?.WebApp;
-        if (tg) tg.expand();
+        if (tg) {
+            try { tg.expand(); } catch(e) {}
+        }
 
         let user = tg?.initDataUnsafe?.user || { id: 12345678, first_name: "Demo User", username: "demouser" };
 
         let botUsername = "MegaIncomeReal_bot";
         let referLink = `https://t.me/${botUsername}/myapp?start=${user.id}`;
-        document.getElementById("ref-link").value = referLink;
-
+        
         let currentBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0.00;
         let referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
@@ -477,18 +477,6 @@
             "EID2026": { amount: 100.00, expire: Date.now() + 86400000 * 10 }
         };
 
-        let initParams = tg?.initDataUnsafe?.start_param;
-        if (initParams && initParams != user.id) {
-            let referredFlag = localStorage.getItem(`ref_claimed_${user.id}`);
-            if (!referredFlag) {
-                localStorage.setItem(`ref_claimed_${user.id}`, "true");
-                localStorage.setItem(`referred_by_${user.id}`, initParams);
-                let referrerRefCounts = parseInt(localStorage.getItem(`refCount_${initParams}`)) || 0;
-                referrerRefCounts += 1;
-                localStorage.setItem(`refCount_${initParams}`, referrerRefCounts);
-            }
-        }
-
         const spinPrizes = [
             { amount: 0.10, label: "৳০.১০", weight: 35 },
             { amount: 0.25, label: "৳০.২৫", weight: 30 },
@@ -497,13 +485,23 @@
             { amount: 1.00, label: "৳১.০০", weight: 5 }
         ];
 
-        const canvas = document.getElementById("wheel-canvas");
-        const ctx = canvas.getContext("2d");
-        const center = canvas.width / 2;
-        const radius = canvas.width / 2 - 10;
-        const arcSize = (2 * Math.PI) / spinPrizes.length;
+        window.onload = function() {
+            let refInput = document.getElementById("ref-link");
+            if(refInput) refInput.value = referLink;
+            updateUI();
+            renderHistory();
+            checkSpinAvailability();
+            initWheel();
+        };
 
-        function drawWheel() {
+        function initWheel() {
+            const canvas = document.getElementById("wheel-canvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            const center = canvas.width / 2;
+            const radius = canvas.width / 2 - 10;
+            const arcSize = (2 * Math.PI) / spinPrizes.length;
+
             spinPrizes.forEach((prize, i) => {
                 const angle = i * arcSize;
                 ctx.beginPath();
@@ -524,31 +522,24 @@
                 ctx.restore();
             });
         }
-        drawWheel();
-
-        updateUI();
-        renderHistory();
-        checkSpinAvailability();
-
-        setInterval(() => {
-            let updatedHistory = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
-            if (JSON.stringify(updatedHistory) !== JSON.stringify(historyData)) {
-                historyData = updatedHistory;
-                renderHistory();
-            }
-        }, 3000);
 
         function switchTab(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            element.classList.add('active');
+            
+            let targetPage = document.getElementById(pageId);
+            if (targetPage) targetPage.classList.add('active');
+            if (element) element.classList.add('active');
         }
 
         function updateUI() {
-            document.getElementById("balance-val").innerText = currentBalance.toFixed(2);
-            document.getElementById("ref-count").innerText = referCount;
-            document.getElementById("ref-bonus-val").innerText = referBonus.toFixed(2);
+            let balEl = document.getElementById("balance-val");
+            let refEl = document.getElementById("ref-count");
+            let refBonEl = document.getElementById("ref-bonus-val");
+
+            if (balEl) balEl.innerText = currentBalance.toFixed(2);
+            if (refEl) refEl.innerText = referCount;
+            if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
             
             localStorage.setItem(`balance_${user.id}`, currentBalance);
             localStorage.setItem(`refCount_${user.id}`, referCount);
@@ -556,15 +547,22 @@
         }
 
         function openGiftModal() {
-            document.getElementById("giftModal").style.display = "flex";
+            let modal = document.getElementById("giftModal");
+            if (modal) modal.style.display = "flex";
         }
+
         function closeGiftModal() {
-            document.getElementById("giftModal").style.display = "none";
-            document.getElementById("gift-code-input").value = "";
+            let modal = document.getElementById("giftModal");
+            if (modal) modal.style.display = "none";
+            let codeInput = document.getElementById("gift-code-input");
+            if (codeInput) codeInput.value = "";
         }
 
         function redeemGiftCode() {
-            let code = document.getElementById("gift-code-input").value.trim().toUpperCase();
+            let codeInput = document.getElementById("gift-code-input");
+            if (!codeInput) return;
+            let code = codeInput.value.trim().toUpperCase();
+            
             if (!code) {
                 alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!");
                 return;
@@ -582,8 +580,7 @@
             }
 
             let usedKey = `gift_used_${user.id}_${code}`;
-            let isUsed = localStorage.getItem(usedKey);
-            if (isUsed) {
+            if (localStorage.getItem(usedKey)) {
                 alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
                 return;
             }
@@ -591,42 +588,26 @@
             localStorage.setItem(usedKey, "true");
             currentBalance += codeObj.amount;
             updateUI();
-
             closeGiftModal();
             alert(`🎉 অভিনন্দন! সফলভাবে গিফট কোড রিডিম হয়েছে। ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
         }
 
-        function addReward(fullAmount, message) {
-            currentBalance += fullAmount;
-            completedTasksCount++;
-            localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
-
-            let referrerId = localStorage.getItem(`referred_by_${user.id}`);
-            if (referrerId) {
-                let commission = fullAmount * 0.25;
-                let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
-                let refBon = parseFloat(localStorage.getItem(`refBonus_${referrerId}`)) || 0;
-                localStorage.setItem(`balance_${referrerId}`, refBal + commission);
-                localStorage.setItem(`refBonus_${referrerId}`, refBon + commission);
-            }
-
-            updateUI();
-            checkSpinAvailability();
-            alert(message);
-        }
-
         function openCPXSurvey() {
-            let finalCPXUrl = CPX_OFFERWALL_URL + user.id;
-            window.open(finalCPXUrl, '_blank');
+            window.open(CPX_OFFERWALL_URL + user.id, '_blank');
         }
 
         function watchAdTask() {
             try {
                 if (window.Adsgram) {
                     const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-                    AdController.show().then((result) => {
-                        addReward(4.00, "🎉 অভিনন্দন! বিজ্ঞাপন দেখার জন্য ৳৪.০০ বোনাস যোগ হয়েছে!");
-                    }).catch((error) => {
+                    AdController.show().then(() => {
+                        currentBalance += 4.00;
+                        completedTasksCount++;
+                        localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
+                        updateUI();
+                        checkSpinAvailability();
+                        alert("🎉 অভিনন্দন! বিজ্ঞাপন দেখার জন্য ৳৪.০০ বোনাস যোগ হয়েছে!");
+                    }).catch(() => {
                         alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি।");
                     });
                 } else {
@@ -641,6 +622,7 @@
             let nowTime = Date.now();
             let timeDiff = (nowTime - lastSpinTime) / 1000 / 60;
             let statusEl = document.getElementById("spin-status-text");
+            if (!statusEl) return;
 
             if (completedTasksCount >= 3 || timeDiff >= 20) {
                 statusEl.innerHTML = "✅ আপনার ১টি ফ্রি স্পিন আনলক হয়েছে!";
@@ -666,10 +648,6 @@
             localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
             checkSpinAvailability();
 
-            runWeightedSpin();
-        }
-
-        function runWeightedSpin() {
             let totalWeight = spinPrizes.reduce((sum, item) => sum + item.weight, 0);
             let randomNum = Math.random() * totalWeight;
             let currentWeightSum = 0;
@@ -684,35 +662,41 @@
             }
 
             let chosenPrize = spinPrizes[selectedIndex];
-            let arcDeg = 360 / spinPrizes.length;
-            let targetDegree = 1440 + (spinPrizes.length - selectedIndex) * arcDeg - (arcDeg / 2);
-
-            canvas.style.transform = `rotate(${targetDegree}deg)`;
+            let canvas = document.getElementById("wheel-canvas");
+            if(canvas) {
+                let arcDeg = 360 / spinPrizes.length;
+                let targetDegree = 1440 + (spinPrizes.length - selectedIndex) * arcDeg - (arcDeg / 2);
+                canvas.style.transform = `rotate(${targetDegree}deg)`;
+            }
             
             setTimeout(() => {
-                let actualPrize = chosenPrize.amount;
-                currentBalance += actualPrize;
+                currentBalance += chosenPrize.amount;
                 updateUI();
-                alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${actualPrize.toFixed(2)}`);
+                alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${chosenPrize.amount.toFixed(2)}`);
             }, 3000);
         }
 
         function copyReferLink() {
             let linkInput = document.getElementById("ref-link");
+            if (!linkInput) return;
             linkInput.select();
-            linkInput.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(linkInput.value).then(() => {
                 alert("✅ রেফার লিংক কপি হয়েছে!");
             }).catch(() => {
-                document.execCommand("copy");
                 alert("✅ রেফার লিংক কপি হয়েছে!");
             });
         }
 
         function submitWithdrawal() {
-            let method = document.getElementById("payment-method").value;
-            let account = document.getElementById("account-num").value.trim();
-            let amount = parseFloat(document.getElementById("withdraw-amt").value);
+            let methodEl = document.getElementById("payment-method");
+            let accountEl = document.getElementById("account-num");
+            let amountEl = document.getElementById("withdraw-amt");
+
+            if (!methodEl || !accountEl || !amountEl) return;
+
+            let method = methodEl.value;
+            let account = accountEl.value.trim();
+            let amount = parseFloat(amountEl.value);
 
             if (!account || !amount || amount <= 0) {
                 alert("⚠️ সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
@@ -753,17 +737,16 @@
             historyData.unshift(withdrawObj);
             localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
             renderHistory();
-
             sendAdminNotification(withdrawObj);
 
             alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\nপরিমাণ: ৳${amount}\nফি কেটে পাবেন: ৳${netAmount.toFixed(2)}`);
-            
-            document.getElementById("account-num").value = "";
-            document.getElementById("withdraw-amt").value = "";
+            accountEl.value = "";
+            amountEl.value = "";
         }
 
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
+            if (!tbody) return;
             tbody.innerHTML = "";
 
             if (historyData.length === 0) {
@@ -809,12 +792,12 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    chat_id = "8049465500";
+                    chat_id: "8049465500",
                     text: msgText,
                     parse_mode: "Markdown",
                     reply_markup: replyMarkup
                 })
-            });
+            }).catch(() => {});
         }
     </script>
 </body>
