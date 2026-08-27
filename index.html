@@ -460,7 +460,7 @@
         let user = tg?.initDataUnsafe?.user || { id: 8049465500, first_name: "Demo User", username: "demouser" };
 
         let botUsername = "MegaIncomeReal_bot";
-        let referLink = `https://t.me/${botUsername}/myapp?start=${user.id}`;
+        let referLink = `https://t.me/${botUsername}?start=${user.id}`;
         
         let currentBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0.00;
         let referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
