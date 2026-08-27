@@ -38,7 +38,7 @@ def handle_callback(call):
     elif action == 'rej':
         bot.answer_callback_query(call.id, "❌ উইথড্র রিজেক্ট করা হয়েছে!")
         new_text = call.message.text + "\n\n✨ **স্ট্যাটাস:** Rejected ❌"
-        bot.edit_message_text(new_text, call.message.chat.id, call.message.message_id, parse_mode="Markdown")
+        bot.edit_message_text(new_text, call.message.chat.id, call.message.message_id, parse_Mode="Markdown")
         user_sync_data[str(target_user_id)][wd_id] = "Rejected"
 
 @app.route('/send-withdrawal', methods=['POST'])
@@ -56,7 +56,7 @@ def send_withdrawal():
 
     msg_text = (
         f"🔔 *নতুন উইথড্র রিকোয়েস্ট!*\n\n"
-        f"👤 ইউজার: {user_name} (`{user_id}`)\n"
+        f"👤 ইউজার: {user_name} (`{user_id}`)\in"
         f"📅 তারিখ: {date}\n"
         f"💳 মেথড: {method}\n"
         f"📱 নম্বর: `{account}`\n"
