@@ -457,25 +457,34 @@
             try { tg.expand(); } catch(e) {}
         }
 
+        // ইউজার ইনফো ডিক্লেয়ার করা
         let user = tg?.initDataUnsafe?.user || { id: 8049465500, first_name: "Demo User", username: "demouser" };
-
-        // রেফার ট্র্যাক করার নতুন লজিক
-        let startParam = tg?.initDataUnsafe?.start_param;
-        if (startParam && startParam != user.id) {
-            let referredKey = `already_referred_${user.id}`;
-            if (!localStorage.getItem(referredKey)) {
-                localStorage.setItem(referredKey, "true");
-                let refCountKey = `refCount_${startParam}`;
-                let currentRefs = parseInt(localStorage.getItem(refCountKey)) || 0;
-                localStorage.setItem(refCountKey, currentRefs + 1);
-            }
-        }
 
         let botUsername = "MegaIncomeReal_bot";
         let referLink = `https://t.me/${botUsername}?start=${user.id}`;
-        
-        // বর্তমান ইউজারের নিজস্ব রেফার কাউন্ট লোকালস্টোরেজ থেকে লোড করা
-        let referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
+
+        // স্থায়ীভাবে রেফার এবং কমিশন ট্র্যাক করার উন্নত লজিক
+        let startParam = tg?.initDataUnsafe?.start_param;
+        if (startParam && startParam != user.id) {
+            let referredListKey = `referred_users_${startParam}`;
+            let referredUsers = JSON.parse(localStorage.getItem(referredListKey)) || [];
+            
+            // যদি এই ইউজার আগে রেফার লিস্টে না থাকে, তবে যুক্ত হবে
+            if (!referredUsers.includes(user.id)) {
+                referredUsers.push(user.id);
+                localStorage.setItem(referredListKey, JSON.stringify(referredUsers));
+                
+                // যার মাধ্যমে এসেছে তার রেফার কাউন্ট বাড়ানো
+                let refCountKey = `refCount_${startParam}`;
+                localStorage.setItem(refCountKey, referredUsers.length);
+            }
+            // কার মাধ্যমে জয়েন করেছে তা সেভ করে রাখা (কমিশনের জন্য)
+            localStorage.setItem(`my_referrer_${user.id}`, startParam);
+        }
+
+        // লোকাল ডাটা লোড করা
+        let refCountKey = `refCount_${user.id}`;
+        let referCount = parseInt(localStorage.getItem(refCountKey)) || 0;
         let currentBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0.00;
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
         let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
@@ -485,7 +494,7 @@
         let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "HSHASAN2027": { amount: 5000.00, expire: Date.now() + 600000 * 7 },
+            "HSHASAN2026": { amount: 5000.00, expire: Date.now() + 600000 * 7 },
             "BONUS50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
             "EID2026": { amount: 100.00, expire: Date.now() + 86400000 * 10 }
         };
@@ -506,7 +515,6 @@
             checkSpinAvailability();
             initWheel();
 
-            // ব্যাকগ্রাউন্ডে টেলিগ্রাম আপডেট চেক করার জন্য লাইভ পোলিং চালু
             setInterval(checkAdminActionFromTelegram, 3000);
         };
 
@@ -553,13 +561,31 @@
             let refEl = document.getElementById("ref-count");
             let refBonEl = document.getElementById("ref-bonus-val");
 
+            // রিফাইল বা কাউন্ট রিয়েল-টাইম লোড করা
+            referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
+            referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
+
             if (balEl) balEl.innerText = currentBalance.toFixed(2);
             if (refEl) refEl.innerText = referCount;
             if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
             
             localStorage.setItem(`balance_${user.id}`, currentBalance);
-            localStorage.setItem(`refCount_${user.id}`, referCount);
-            localStorage.setItem(`refBonus_${user.id}`, referBonus);
+        }
+
+        // রেফার কমিশন ডিস্ট্রিবিউট করার ফাংশন (২৫%)
+        function giveReferralCommission(earnedAmount) {
+            let myReferrerId = localStorage.getItem(`my_referrer_${user.id}`);
+            if (myReferrerId) {
+                let commission = earnedAmount * 0.25; // ২৫% কমিশন
+                let referrerBalanceKey = `balance_${myReferrerId}`;
+                let referrerBonusKey = `refBonus_${myReferrerId}`;
+
+                let currentRefBalance = parseFloat(localStorage.getItem(referrerBalanceKey)) || 0.00;
+                let currentRefBonus = parseFloat(localStorage.getItem(referrerBonusKey)) || 0.00;
+
+                localStorage.setItem(referrerBalanceKey, currentRefBalance + commission);
+                localStorage.setItem(referrerBonusKey, currentRefBonus + commission);
+            }
         }
 
         function openGiftModal() {
@@ -617,9 +643,14 @@
                 if (window.Adsgram) {
                     const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
                     AdController.show().then(() => {
-                        currentBalance += 4.00;
+                        let earned = 4.00;
+                        currentBalance += earned;
                         completedTasksCount++;
                         localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
+                        
+                        // রেফারারকে ২৫% কমিশন দেওয়া
+                        giveReferralCommission(earned);
+
                         updateUI();
                         checkSpinAvailability();
                         alert("🎉 অভিনন্দন! বিজ্ঞাপন দেখার জন্য ৳৪.০০ বোনাস যোগ হয়েছে!");
@@ -687,6 +718,10 @@
             
             setTimeout(() => {
                 currentBalance += chosenPrize.amount;
+                
+                // স্পিনের উপার্জনের ওপর রেফারারকে ২৫% কমিশন দেওয়া
+                giveReferralCommission(chosenPrize.amount);
+
                 updateUI();
                 alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${chosenPrize.amount.toFixed(2)}`);
             }, 3000);
@@ -747,7 +782,7 @@
                 date: currentDate,
                 method: method,
                 account: account,
-                requestedAmount: amount, // রিজেক্ট হলে এই পুরো টাকাটাই ফেরত আসবে
+                requestedAmount: amount, 
                 netAmount: netAmount,
                 status: "Pending"
             };
@@ -797,7 +832,6 @@
             }).catch(e => console.log("Telegram API Error:", e));
         }
 
-        // অ্যাডমিন বাটনে ক্লিক করলে স্ট্যাটাস আপডেট এবং রিজেক্ট হলে টাকা ফেরত দেওয়ার লজিক
         async function checkAdminActionFromTelegram() {
             try {
                 let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
@@ -825,12 +859,11 @@
                                 let wdId = parts[1];
 
                                 let targetItem = historyData.find(item => item.wd_id === wdId);
-                                if (targetItem && targetItem.status === "Pending") { // শুধুমাত্র পেন্ডিং থাকলে কার্যকর হবে
+                                if (targetItem && targetItem.status === "Pending") {
                                     if (action === "success") {
                                         targetItem.status = "Success";
                                     } else if (action === "rejected") {
                                         targetItem.status = "Rejected";
-                                        // রিজেক্ট হলে উইথড্র করা মূল টাকাটা ব্যালেন্সে ফেরত যোগ করা হচ্ছে
                                         currentBalance += targetItem.requestedAmount;
                                         updateUI();
                                     }
