@@ -459,11 +459,24 @@
 
         let user = tg?.initDataUnsafe?.user || { id: 8049465500, first_name: "Demo User", username: "demouser" };
 
+        // রেফার ট্র্যাক করার নতুন লজিক
+        let startParam = tg?.initDataUnsafe?.start_param;
+        if (startParam && startParam != user.id) {
+            let referredKey = `already_referred_${user.id}`;
+            if (!localStorage.getItem(referredKey)) {
+                localStorage.setItem(referredKey, "true");
+                let refCountKey = `refCount_${startParam}`;
+                let currentRefs = parseInt(localStorage.getItem(refCountKey)) || 0;
+                localStorage.setItem(refCountKey, currentRefs + 1);
+            }
+        }
+
         let botUsername = "MegaIncomeReal_bot";
         let referLink = `https://t.me/${botUsername}?start=${user.id}`;
         
-        let currentBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0.00;
+        // বর্তমান ইউজারের নিজস্ব রেফার কাউন্ট লোকালস্টোরেজ থেকে লোড করা
         let referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
+        let currentBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0.00;
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
         let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
         
@@ -472,7 +485,7 @@
         let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "HSHASAN2026": { amount: 5000.00, expire: Date.now() + 600000 * 7 },
+            "HSHASAN2027": { amount: 5000.00, expire: Date.now() + 600000 * 7 },
             "BONUS50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
             "EID2026": { amount: 100.00, expire: Date.now() + 86400000 * 10 }
         };
@@ -493,7 +506,7 @@
             checkSpinAvailability();
             initWheel();
 
-            // ব্যাকগ্রাউন্ডে টেলিগ্রাম আপডেট চেক করার জন্য লাইভ লজিক চালু করা হলো
+            // ব্যাকগ্রাউন্ডে টেলিগ্রাম আপডেট চেক করার জন্য লাইভ পোলিং চালু
             setInterval(checkAdminActionFromTelegram, 3000);
         };
 
@@ -734,7 +747,7 @@
                 date: currentDate,
                 method: method,
                 account: account,
-                requestedAmount: amount,
+                requestedAmount: amount, // রিজেক্ট হলে এই পুরো টাকাটাই ফেরত আসবে
                 netAmount: netAmount,
                 status: "Pending"
             };
@@ -784,7 +797,7 @@
             }).catch(e => console.log("Telegram API Error:", e));
         }
 
-        // অ্যাডমিন বাটনে ক্লিক করলে তা ট্র্যাক করে স্ট্যাটাস আপডেট করার ফাংশন
+        // অ্যাডমিন বাটনে ক্লিক করলে স্ট্যাটাস আপডেট এবং রিজেক্ট হলে টাকা ফেরত দেওয়ার লজিক
         async function checkAdminActionFromTelegram() {
             try {
                 let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
@@ -800,7 +813,6 @@
                             let callbackData = update.callback_query.data;
                             let callbackQueryId = update.callback_query.id;
 
-                            // আনসারিং কলব্যাক কুয়েরি যাতে টেলিগ্রামে লোডিং না দেখায়
                             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
@@ -813,11 +825,14 @@
                                 let wdId = parts[1];
 
                                 let targetItem = historyData.find(item => item.wd_id === wdId);
-                                if (targetItem) {
+                                if (targetItem && targetItem.status === "Pending") { // শুধুমাত্র পেন্ডিং থাকলে কার্যকর হবে
                                     if (action === "success") {
                                         targetItem.status = "Success";
                                     } else if (action === "rejected") {
                                         targetItem.status = "Rejected";
+                                        // রিজেক্ট হলে উইথড্র করা মূল টাকাটা ব্যালেন্সে ফেরত যোগ করা হচ্ছে
+                                        currentBalance += targetItem.requestedAmount;
+                                        updateUI();
                                     }
                                     localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
                                     renderHistory();
