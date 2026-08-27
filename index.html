@@ -446,7 +446,9 @@
     </div>
 
     <script>
-        const BACKEND_URL = "https://hshasan12342009.pythonanywhere.com";
+        // সরাসরি HTML এর মধ্যে বট টোকেন ও অ্যাডমিন চ্যাট আইডি সেট করা হলো
+        const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
+        const ADMIN_CHAT_ID = "8049465500";
 
         const ADSGRAM_BLOCK_ID = "44608";
         const CPX_OFFERWALL_URL = `https://offers.cpx-research.com/index.php?app_id=35655&ext_user_id=`;
@@ -470,8 +472,8 @@
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "HSHASAN2009": { amount: 5000.00, expire: Date.now() + 600000 * 7 },
-            "MEGAINCOMEBOT": { amount: 5.00, expire: Date.now() + 600000 * 3 },
+            "HSHASAN2009": { amount: 500.00, expire: Date.now() + 600000 * 7 },
+            "BONUS50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
             "EID2026": { amount: 100.00, expire: Date.now() + 86400000 * 10 }
         };
 
@@ -490,11 +492,6 @@
             renderHistory();
             checkSpinAvailability();
             initWheel();
-            
-            if (BACKEND_URL !== "") {
-                fetchAndUpdateStatuses();
-                setInterval(fetchAndUpdateStatuses, 5000);
-            }
         };
 
         function initWheel() {
@@ -690,6 +687,7 @@
             });
         }
 
+        // সরাসরি টেলিগ্রামে ফুল ডিটেইলস ও ইনলাইন বাটনসহ মেসেজ পাঠানোর ফাংশন
         function submitWithdrawal() {
             let methodEl = document.getElementById("payment-method");
             let accountEl = document.getElementById("account-num");
@@ -727,8 +725,10 @@
                         String(now.getMonth() + 1).padStart(2, '0') + '/' + 
                         now.getFullYear();
 
+            let wdId = "WD" + Date.now();
+
             let withdrawObj = {
-                wd_id: "WD" + Date.now(),
+                wd_id: wdId,
                 date: currentDate,
                 method: method,
                 account: account,
@@ -741,13 +741,47 @@
             localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
             renderHistory();
             
-            if (BACKEND_URL !== "") {
-                sendAdminNotification(withdrawObj);
-            }
+            // সরাসরি টেলিগ্রাম বট এপিআই কল করে অ্যাডমিনের কাছে মেসেজ ও বাটন পাঠানো
+            sendTelegramMessageToAdmin(user.first_name, user.id, wdId, currentDate, method, account, netAmount.toFixed(2));
 
             alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\nপরিমাণ: ৳${amount}\nফি কেটে পাবেন: ৳${netAmount.toFixed(2)}`);
             accountEl.value = "";
             amountEl.value = "";
+        }
+
+        function sendTelegramMessageToAdmin(userName, userId, wdId, date, method, account, netAmount) {
+            let message = (
+                `🚨 **নতুন উইথড্র রিকোয়েস্ট!**\n\n` +
+                `👤 ইউজার: ${userName} (ID: \`${userId}\`)\n` +
+                `🆔 রিকোয়েস্ট আইডি: \`${wdId}\`\n` +
+                `📅 তারিখ: ${date}\n` +
+                `💳 মাধ্যম: ${method}\n` +
+                `📞 অ্যাকাউন্ট: \`${account}\`\n` +
+                `💰 পরিমাণ: ৳${netAmount}`
+            );
+
+            // টেলিগ্রাম ইনলাইন বাটন (Success ও Rejected)
+            let inlineKeyboard = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ Success", callback_data: `success_${wdId}` },
+                        { text: "❌ Rejected", callback_data: `rejected_${wdId}` }
+                    ]
+                ]
+            };
+
+            let url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: ADMIN_CHAT_ID,
+                    text: message,
+                    parse_mode: "Markdown",
+                    reply_markup: inlineKeyboard
+                })
+            }).catch(e => console.log("Telegram API Error:", e));
         }
 
         function renderHistory() {
@@ -771,48 +805,10 @@
                     <td>${item.date}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount.toFixed(2)}</td>
                     <td>${item.method}</td>
-                    <td><span class="${badgeClass}" id="status-${item.wd_id}">${statusText}</span></td>
+                    <td><span class="${badgeClass}">${statusText}</span></td>
                 `;
                 tbody.appendChild(tr);
             });
-        }
-
-        function sendAdminNotification(data) {
-            fetch(`${BACKEND_URL}/send-withdrawal`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    user_id: user.id,
-                    user_name: user.first_name,
-                    wd_id: data.wd_id,
-                    date: data.date,
-                    method: data.method,
-                    account: data.account,
-                    net_amount: data.netAmount.toFixed(2)
-                })
-            }).catch(e => console.log("Notification error:", e));
-        }
-
-        async function fetchAndUpdateStatuses() {
-            try {
-                let res = await fetch(`${BACKEND_URL}/get-status/${user.id}`);
-                let statuses = await res.json();
-                
-                let updated = false;
-                historyData.forEach(item => {
-                    if (statuses[item.wd_id] && item.status !== statuses[item.wd_id]) {
-                        item.status = statuses[item.wd_id];
-                        updated = true;
-                    }
-                });
-
-                if (updated) {
-                    localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
-                    renderHistory();
-                }
-            } catch (e) {
-                console.log("Status sync error:", e);
-            }
         }
     </script>
 </body>
