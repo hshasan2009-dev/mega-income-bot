@@ -102,6 +102,7 @@
 
         .btn-official { background-color: #2980b9; }
         .btn-support { background-color: #c0392b; }
+        .btn-gift { background: linear-gradient(135deg, #f39c12, #d35400); color: white; }
         .btn-main { background-color: #f1c40f; color: #000; font-size: 17px; }
 
         .rules-box {
@@ -291,6 +292,11 @@
                 <div class="balance-amount">৳ <span id="balance-val">0.00</span></div>
             </div>
 
+            <!-- গিফট কোড অপশন -->
+            <button class="btn btn-gift" onclick="openGiftModal()">
+                🎁 গিফট কোড রিডিম করুন
+            </button>
+
             <a href="https://t.me/+BAquPEEqEhM2NTNl" target="_blank" class="btn btn-official">
                 📢 অফিসিয়াল চ্যানেল
             </a>
@@ -301,7 +307,7 @@
 
             <div class="rules-box">
                 <div class="rules-title">⚠️ কাজের নিয়মাবলী</div>
-                <div class="rule-warning">❌ ১. VPN অন করে কাজ করলে আপনার অ্যাকাউন্ট চিরতরে ব্যান হতে পারে!</div>
+                <div class="rule-warning">❌ ১. VPN অন করে কাজ করলে আপনার অ্যাকাউন্ট চিরتره ব্যান হতে পারে!</div>
                 <div class="rule-item">📺 ২. প্রতিটি কাজের সঠিক বিজ্ঞাপন বা সার্ভে সম্পূর্ণ করলে মূল ব্যালেন্স যুক্ত হবে।</div>
                 <div class="rule-item">💳 ৩. উপার্জিত টাকা সরাসরি বিকাশ, নগদ বা রকেটের মাধ্যমে তুলতে পারবেন।</div>
             </div>
@@ -318,7 +324,7 @@
             <div class="card">
                 <h3>⭐ স্পেশাল টাক্স (CPX)</h3>
                 <p style="color: #ffcc00; margin: 4px 0; font-size: 14px; font-weight: bold;">প্রতিটি সার্ভে সম্পন্ন করলে পাবেন ১০ থেকে ১০০ টাকা পর্যন্ত!</p>
-                <p style="color: #ccc; margin: 4px 0 12px; font-size: 12px;">লিংকে গিয়ে সার্ভে ফুল কমপ্লিট করুন, অন্যথায় ব্যালেন্স যোগ হবে না।</p>
+                <p style="color: #ccc; margin: 4px 0 12px; font-size: 12px;">লিংকে গিয়ে সার্ভে ফুল কমপ্লিট করুন, অন্যথায় ব্যালেন্স যোগ হবে না।</p>
                 <button class="btn btn-main" onclick="openCPXSurvey()">💼 সার্ভে শুরু করুন</button>
             </div>
 
@@ -409,6 +415,7 @@
 
     </div>
 
+    <!-- ন্যাভবার -->
     <div class="navbar">
         <button class="nav-item active" onclick="switchTab('home', this)">
             <span class="icon">🏠</span>
@@ -428,13 +435,23 @@
         </button>
     </div>
 
+    <!-- গিফট কোড পপআপ মডেল -->
+    <div id="giftModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; justify-content:center; align-items:center;">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:350px; text-align:center;">
+            <h3 style="color:#ffcc00; margin-bottom:10px;">🎁 গিফট কোড রিডিম</h3>
+            <p style="color:#ccc; font-size:13px; margin-bottom:15px;">আপনার প্রোমো বা গিফট কোডটি নিচে লিখুন:</p>
+            <input type="text" id="gift-code-input" class="input-control" placeholder="যেমন: BONUS50" style="margin-bottom:12px; text-align:center; text-transform:uppercase;">
+            <button class="btn btn-main" onclick="redeemGiftCode()" style="margin-bottom:8px;">সাবমিট করুন</button>
+            <button class="btn" onclick="closeGiftModal()" style="background:#c0392b;">বন্ধ করুন</button>
+        </div>
+    </div>
+
     <script>
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "44608";
         
-        // এখানে আপনার সঠিক CPX App ID বসিয়ে দিন (যেমন: 12345 বা আপনার CPX আইডি)
-        const CPX_APP_ID = "12345"; 
+        const CPX_APP_ID = "12345";
         const CPX_OFFERWALL_URL = `https://offers.cpx-research.com/index.php?app_id=${CPX_APP_ID}&ext_user_id=`;
 
         let tg = window.Telegram?.WebApp;
@@ -442,11 +459,10 @@
 
         let user = tg?.initDataUnsafe?.user || { id: 12345678, first_name: "Demo User", username: "demouser" };
 
-        let botUsername = "MegaIncomeReal_bot"; 
+        let botUsername = "MegaIncomeReal_bot";
         let referLink = `https://t.me/${botUsername}/myapp?start=${user.id}`;
         document.getElementById("ref-link").value = referLink;
 
-        // লোকালস্টোরেজ থেকে ডাটা লোড বা ইনিশিয়ালাইজ
         let currentBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0.00;
         let referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
         let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
@@ -455,23 +471,24 @@
         let completedTasksCount = parseInt(localStorage.getItem(`tasksCount_${user.id}`)) || 0;
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
 
-        // রেফার চেক (যদি টেলিগ্রাম স্টার্ট প্যারাম থাকে)
+        const validGiftCodes = {
+            "MEGA10": { amount: 10.00, expire: Date.now() + 86400000 * 7 },
+            "BONUS50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
+            "EID2026": { amount: 100.00, expire: Date.now() + 86400000 * 10 }
+        };
+
         let initParams = tg?.initDataUnsafe?.start_param;
         if (initParams && initParams != user.id) {
             let referredFlag = localStorage.getItem(`ref_claimed_${user.id}`);
             if (!referredFlag) {
                 localStorage.setItem(`ref_claimed_${user.id}`, "true");
-                let referrerBalance = parseFloat(localStorage.getItem(`balance_${initParams}`)) || 0;
+                localStorage.setItem(`referred_by_${user.id}`, initParams);
                 let referrerRefCounts = parseInt(localStorage.getItem(`refCount_${initParams}`)) || 0;
-                let referrerBonus = parseFloat(localStorage.getItem(`refBonus_${initParams}`)) || 0;
-                
                 referrerRefCounts += 1;
                 localStorage.setItem(`refCount_${initParams}`, referrerRefCounts);
-                localStorage.setItem(`balance_${initParams}`, referrerBalance);
             }
         }
 
-        // স্পিন প্রাইজ: ১ টাকা বা তার নিচের অ্যামাউন্টগুলোর সঠিক বিন্যাস
         const spinPrizes = [
             { amount: 0.10, label: "৳০.১০", weight: 35 },
             { amount: 0.25, label: "৳০.২৫", weight: 30 },
@@ -513,7 +530,6 @@
         renderHistory();
         checkSpinAvailability();
 
-        // 주기적으로 লোকালস্টোরেজ স্ট্যাটাস চেক করা যাতে অ্যাডমিন অ্যাপ্রুভ করলে সাথে সাথে স্ট্যাটাস বদলে যায়
         setInterval(() => {
             let updatedHistory = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
             if (JSON.stringify(updatedHistory) !== JSON.stringify(historyData)) {
@@ -539,12 +555,52 @@
             localStorage.setItem(`refBonus_${user.id}`, referBonus);
         }
 
+        function openGiftModal() {
+            document.getElementById("giftModal").style.display = "flex";
+        }
+        function closeGiftModal() {
+            document.getElementById("giftModal").style.display = "none";
+            document.getElementById("gift-code-input").value = "";
+        }
+
+        function redeemGiftCode() {
+            let code = document.getElementById("gift-code-input").value.trim().toUpperCase();
+            if (!code) {
+                alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!");
+                return;
+            }
+
+            let codeObj = validGiftCodes[code];
+            if (!codeObj) {
+                alert("❌ ভুল বা Invalid গিফট কোড!");
+                return;
+            }
+
+            if (Date.now() > codeObj.expire) {
+                alert("❌ দুঃখিত, এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
+                return;
+            }
+
+            let usedKey = `gift_used_${user.id}_${code}`;
+            let isUsed = localStorage.getItem(usedKey);
+            if (isUsed) {
+                alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
+                return;
+            }
+
+            localStorage.setItem(usedKey, "true");
+            currentBalance += codeObj.amount;
+            updateUI();
+
+            closeGiftModal();
+            alert(`🎉 অভিনন্দন! সফলভাবে গিফট কোড রিডিম হয়েছে। ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
+        }
+
         function addReward(fullAmount, message) {
             currentBalance += fullAmount;
             completedTasksCount++;
             localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
 
-            // রেফার কমিশন হ্যান্ডলিং (যদি এই ইউজারের কোনো রেফারার থাকে)
             let referrerId = localStorage.getItem(`referred_by_${user.id}`);
             if (referrerId) {
                 let commission = fullAmount * 0.25;
@@ -569,12 +625,12 @@
                 if (window.Adsgram) {
                     const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
                     AdController.show().then((result) => {
-                        addReward(4.00, "🎉 অভিনন্দন! বিজ্ঞাপন সম্পূর্ণ দেখার জন্য ৳৪.০০ বোনাস যোগ হয়েছে!");
+                        addReward(4.00, "🎉 অভিনন্দন! বিজ্ঞাপন দেখার জন্য ৳৪.০০ বোনাস যোগ হয়েছে!");
                     }).catch((error) => {
-                        alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি বা কেটে দেওয়া হয়েছে।");
+                        alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি।");
                     });
                 } else {
-                    alert("⚠️ বিজ্ঞাপন লোড হয়নি। দয়া করে কিছুক্ষণ পর আবার চেষ্টা করুন।");
+                    alert("⚠️ বিজ্ঞাপন লোড হয়নি।");
                 }
             } catch (e) {
                 alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে।");
@@ -587,7 +643,7 @@
             let statusEl = document.getElementById("spin-status-text");
 
             if (completedTasksCount >= 3 || timeDiff >= 20) {
-                statusEl.innerHTML = "✅ আপনার ১টি ফ্রি স্পিন আনলক হয়েছে!";
+                statusEl.innerHTML = "✅ আপনার ১টি ফ্রি স্পিন আনলক হয়েছে!";
                 statusEl.style.color = "#2ecc71";
             } else {
                 statusEl.innerHTML = "স্পিন করতে আরও টাস্ক সম্পন্ন করুন বা ২০ মিনিট অপেক্ষা করুন";
@@ -600,7 +656,7 @@
             let timeDiff = (nowTime - lastSpinTime) / 1000 / 60;
 
             if (completedTasksCount < 3 && timeDiff < 20) {
-                alert("⚠️ ২০ মিনিট সময় অথবা কমপক্ষে ৩টি টাস্ক সম্পন্ন করার পর ফ্রি স্পিন করতে পারবেন!");
+                alert("⚠️ ২০ মিনিট সময় অথবা কমপক্ষে ৩টি টাস্ক সম্পন্ন করার পর ফ্রি স্পিন করতে পারবেন!");
                 return;
             }
 
@@ -659,7 +715,7 @@
             let amount = parseFloat(document.getElementById("withdraw-amt").value);
 
             if (!account || !amount || amount <= 0) {
-                alert("⚠️ দয়া করে সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
+                alert("⚠️ সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
                 return;
             }
 
@@ -669,7 +725,7 @@
             }
 
             if (amount > currentBalance) {
-                alert("⚠️ আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!");
+                alert("⚠️ পর্যাপ্ত ব্যালেন্স নেই!");
                 return;
             }
 
@@ -700,7 +756,7 @@
 
             sendAdminNotification(withdrawObj);
 
-            alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\n\nপরিমাণ: ৳${amount}\nফি কেটে পাবেন: ৳${netAmount.toFixed(2)}\nস্ট্যাটাস: Pending`);
+            alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\nপরিমাণ: ৳${amount}\nফি কেটে পাবেন: ৳${netAmount.toFixed(2)}`);
             
             document.getElementById("account-num").value = "";
             document.getElementById("withdraw-amt").value = "";
@@ -753,7 +809,7 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    chat_id: ADMIN_CHAT_ID,
+                    chat_id = "8049465500";
                     text: msgText,
                     parse_mode: "Markdown",
                     reply_markup: replyMarkup
