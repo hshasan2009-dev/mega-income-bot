@@ -1,4 +1,5 @@
 import os
+import threading
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import telebot
@@ -9,6 +10,7 @@ bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 CORS(app)
 
+# ইউজার ডেটা সংরক্ষণের জন্য ডিকশনারি
 user_sync_data = {}
 
 @app.route('/get-status/<user_id>', methods=['GET'])
@@ -32,18 +34,27 @@ def handle_callback(call):
     if action == 'acc':
         bot.answer_callback_query(call.id, "✅ উইথড্র সফলভাবে অ্যাপ্রুভ করা হয়েছে!")
         new_text = call.message.text + "\n\n✨ **স্ট্যাটাস:** Approved ✅"
-        bot.edit_message_text(new_text, call.message.chat.id, call.message.message_id, parse_mode="Markdown")
+        try:
+            bot.edit_message_text(new_text, call.message.chat.id, call.message.message_id, parse_mode="Markdown")
+        except Exception:
+            pass
         user_sync_data[str(target_user_id)][wd_id] = "Approved"
 
     elif action == 'rej':
         bot.answer_callback_query(call.id, "❌ উইথড্র রিজেক্ট করা হয়েছে!")
         new_text = call.message.text + "\n\n✨ **স্ট্যাটাস:** Rejected ❌"
-        bot.edit_message_text(new_text, call.message.chat.id, call.message.message_id, parse_Mode="Markdown")
+        try:
+            bot.edit_message_text(new_text, call.message.chat.id, call.message.message_id, parse_mode="Markdown")
+        except Exception:
+            pass
         user_sync_data[str(target_user_id)][wd_id] = "Rejected"
 
 @app.route('/send-withdrawal', methods=['POST'])
 def send_withdrawal():
     req_data = request.json
+    if not req_data:
+        return jsonify({"status": "error", "message": "No data provided"}), 400
+
     user_id = str(req_data.get('user_id'))
     user_name = req_data.get('user_name')
     wd_id = req_data.get('wd_id')
@@ -56,7 +67,7 @@ def send_withdrawal():
 
     msg_text = (
         f"🔔 *নতুন উইথড্র রিকোয়েস্ট!*\n\n"
-        f"👤 ইউজার: {user_name} (`{user_id}`)\in"
+        f"👤 ইউজার: {user_name} (`{user_id}`)\n"
         f"📅 তারিখ: {date}\n"
         f"💳 মেথড: {method}\n"
         f"📱 নম্বর: `{account}`\n"
@@ -74,6 +85,17 @@ def send_withdrawal():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
+# টেলিগ্রাম বট ব্যাকগ্রাউন্ড থ্রেডে চালানোর জন্য ফাংশন
+def run_bot():
+    print("Telegram bot is running...")
+    bot.infinity_polling(skip_pending=True)
+
 if __name__ == '__main__':
+    # বটকে আলাদা থ্রেডে চালু করা হলো যাতে ফ্লাস্কের সাথে কোনো কনফ্লিক্ট না হয়
+    bot_thread = threading.Thread(target=run_bot)
+    bot_thread.daemon = True
+    bot_thread.start()
+
+    # ফ্লাস্ক সার্ভার চালু করা
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
