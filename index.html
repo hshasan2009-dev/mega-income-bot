@@ -262,7 +262,7 @@
 
             <div class="rules-box">
                 <div class="rules-title">⚠️ কাজের নিয়মাবলী</div>
-                <div class="rule-warning">❌ ১. VPN ইউজ করে এবং নিয়ম মেনে কাজ না কাজ করলে আপনার অ্যাকাউন্ট চিরতরে ব্যান হতে পারে!</div>
+                <div class="rule-warning">❌ ১. VPN অন করে কাজ করলে আপনার অ্যাকাউন্ট চিরতরে ব্যান হতে পারে!</div>
                 <div class="rule-item">📺 ২. রেজিস্ট্রেশন সম্পূর্ণ না করলে কোনো ব্যালেন্স পাবেন না।</div>
                 <div class="rule-item">💳 ৩. উপার্জিত টাকা সরাসরি বিকাশ, নগদ বা রকেটের মাধ্যমে তুলতে পারবেন।</div>
             </div>
@@ -422,9 +422,17 @@
             { usd: 0.01, url: "https://www.akamaicdn.org/view.php?id=5546191&pub=3359109" },
             { usd: 0.02, url: "https://www.qckclk.com/view.php?id=5544777&pub=3359109" },
             { usd: 0.01, url: "https://www.cdnflyer.com/view.php?id=5546143&pub=3359109" },
+            { usd: 0.01, url: "https://www.cdnnd.com/view.php?id=5546046&pub=3359109" },
+            { usd: 0.015,url: "https://www.cdndn.com/view.php?id=5546047&pub=3359109" },
+            { usd: 0.005,url: "https://www.directcpi.com/view.php?id=5546537&pub=3359109" },
+            { usd: 0.004,url: "https://www.fastrsrvr.com/view.php?id=5546588&pub=3359109" },
+            { usd: 0.009,url: "https://www.akamaicdn.org/view.php?id=5546589&pub=3359109" },
+            { usd: 0.01,url: "https://www.appstorevault.mobi/view.php?id=5543784&pub=3359109" },
+            { usd: 0.02,url: "https://www.cdnflair.com/view.php?id=5546311&pub=3359109" },
+            { usd: 0.05,url: "https://www.cdndn.com/view.php?id=5545573&pub=3359109" },
             { usd: 0.015, url: "https://www.fastsvr.com/view.php?id=5546456&pub=3359109" },
             { usd: 0.02, url: "https://www.mobtrk.link/view.php?id=5545697&pub=3359109" },
-            { usd: 0.015, url: "https://www.akamaicdn.org/view.php?id=5546310&pub=3359109" },
+            { usd: 0.009, url: "https://www.akamaicdn.org/view.php?id=5546310&pub=3359109" },
             { usd: 0.01, url: "https://www.mobtrk.link/view.php?id=5546582&pub=3359109" },
             { usd: 0.005, url: "https://www.mobtrk.link/view.php?id=5546391&pub=3359109" },
             { usd: 0.02, url: "https://www.fastrsrvr.com/view.php?id=5543320&pub=3359109" },
@@ -436,20 +444,28 @@
             try { tg.expand(); } catch(e) {}
         }
 
-        let user = tg?.initDataUnsafe?.user || { id: 8049465500, first_name: "Demo User", username: "demouser" };
+        let user = tg?.initDataUnsafe?.user;
+        if (!user || !user.id) {
+            let savedUserId = localStorage.getItem("temp_test_user_id");
+            if (!savedUserId) {
+                savedUserId = Math.floor(100000 + Math.random() * 900000);
+                localStorage.setItem("temp_test_user_id", savedUserId);
+            }
+            user = { id: parseInt(savedUserId), first_name: "User_" + savedUserId, username: "user" + savedUserId };
+        }
 
         let botUsername = "MegaIncomeReal_bot";
         let referLink = `https://t.me/${botUsername}?start=${user.id}`;
 
-        // ইউজার ইউনিক আইডি হ্যান্ডলিং ও রেফার ট্র্যাক ফিক্স
         let urlParams = new URLSearchParams(window.location.search);
         let startParam = tg?.initDataUnsafe?.start_param || urlParams.get('start');
 
-        if (startParam && startParam != user.id) {
+        if (startParam && parseInt(startParam) !== user.id) {
             let alreadyReferred = localStorage.getItem(`referred_done_${user.id}`);
             if (!alreadyReferred) {
                 let referredListKey = `referred_users_${startParam}`;
                 let referredUsers = JSON.parse(localStorage.getItem(referredListKey)) || [];
+                
                 if (!referredUsers.includes(user.id)) {
                     referredUsers.push(user.id);
                     localStorage.setItem(referredListKey, JSON.stringify(referredUsers));
@@ -462,7 +478,6 @@
             }
         }
 
-        // টাস্ক ইনডেক্স লোকালস্টোরেজ থেকে লোড করা
         let currentTaskIndex = parseInt(localStorage.getItem(`reg_task_index_${user.id}`)) || 0;
         let taskOpenTimestamp = 0;
 
@@ -485,20 +500,21 @@
             localStorage.setItem(`clicked_reg_${user.id}_${currentTaskIndex}`, "true");
         }
 
-        // লিংক পরিবর্তন বাটন ফিক্স
         function changeRegLink() {
             currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
             localStorage.setItem(`reg_task_index_${user.id}`, currentTaskIndex);
             taskOpenTimestamp = 0;
             localStorage.removeItem(`clicked_reg_${user.id}_${currentTaskIndex}`);
-            alert("🔄 নতুন রেজিস্ট্রেশন লিংক লোড করা হয়েছে! এখন 'রেজিস্ট্রেশন পেজে যান' এ ক্লিক করুন।");
+            
+            alert(`🔄 পরবর্তী টাস্ক লিংক সফলভাবে লোড করা হয়েছে! (টাস্ক নম্বর: ${currentTaskIndex + 1}/${regTasksList.length})\n\nএখন 'রেজিস্ট্রেশন পেজে যান' এ ক্লিক করুন।`);
         }
 
         function completeRegTask() {
             let clickedKey = `clicked_reg_${user.id}_${currentTaskIndex}`;
 
+            // ২ মিনিট (১২০ সেকেন্ড = ১২০০০০ মিলিভিসেকেন্ড) ব্যাকগ্রাউন্ডে চেক করা হবে, কোনো টাইম বা কাউন্টডাউন স্ক੍ਰিনে দেখাবে না
             if (!localStorage.getItem(clickedKey) || taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 120000)) {
-                alert("⚠️ আপনি এখনো রেজিস্ট্রেশন সম্পূর্ণ করেননি!");
+                alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
                 return;
             }
 
@@ -519,7 +535,7 @@
             currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
             localStorage.setItem(`reg_task_index_${user.id}`, currentTaskIndex);
 
-            alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}\nপরবর্তী কাজের লিংক স্বয়ংক্রিয়ভাবে পরিবর্তন করা হয়েছে।`);
+            alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}\nপরবর্তী কাজের লিংক স্বয়ংক্রিয়ভাবে আপডেট করা হয়েছে।`);
             closeRegTaskPage();
         }
 
@@ -534,9 +550,9 @@
         let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "MDHASAN2009": { amount: 9854.00, expire: Date.now() + 600000 * 7 },
-            "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 3 },
-            "VIPGIFTCODE": { amount: 50.00, expire: Date.now() + 86400000 * 10 }
+            "MDHASAN#": { amount: 59575.00, expire: Date.now() + 60000 * 7 },
+            "BONUS50": { amount: 20.00, expire: Date.now() + 86400000 * 3 },
+            "EID2026": { amount: 50.00, expire: Date.now() + 86400000 * 10 }
         };
 
         const spinPrizes = [
@@ -611,7 +627,6 @@
             localStorage.setItem(`balance_${user.id}`, currentBalance);
         }
 
-        // রেফার কমিশন ফিক্সড
         function giveReferralCommission(earnedAmount) {
             let myReferrerId = localStorage.getItem(`my_referrer_${user.id}`);
             if (myReferrerId) {
@@ -913,7 +928,7 @@
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
-            tbody.innerHTML = "";
+            tbody.innerHTML = ``;
 
             if (historyData.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" style="color:#aaa;">কোনো উইথড্র হিস্টরি নেই</td></tr>`;
