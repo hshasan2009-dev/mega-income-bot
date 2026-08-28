@@ -494,30 +494,55 @@
         }
 
         function goToRegLink() {
-            let task = regTasksList[currentTaskIndex];
-            window.open(task.url, '_blank');
-            taskOpenTimestamp = Date.now(); 
-            localStorage.setItem(`clicked_reg_${user.id}_${currentTaskIndex}`, "true");
-        }
+    let task = regTasksList[currentTaskIndex];
+    window.open(task.url, '_blank');
+    
+    // প্রতিবার নতুন লিংকে ক্লিক করলে যেন ফ্রেশ টাইম কাউন্ট শুরু হয়
+    taskOpenTimestamp = Date.now(); 
+    localStorage.setItem(`clicked_reg_${user.id}_${currentTaskIndex}`, "true");
+}
 
-        function changeRegLink() {
-            currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
-            localStorage.setItem(`reg_task_index_${user.id}`, currentTaskIndex);
-            taskOpenTimestamp = 0;
-            localStorage.removeItem(`clicked_reg_${user.id}_${currentTaskIndex}`);
-            
-            alert(`🔄 পরবর্তী টাস্ক লিংক সফলভাবে লোড করা হয়েছে! (টাস্ক নম্বর: ${currentTaskIndex + 1}/${regTasksList.length})\n\nএখন 'রেজিস্ট্রেশন পেজে যান' এ ক্লিক করুন।`);
-        }
+function changeRegLink() {
+    // সরাসরি পরবর্তী ইনডেক্সে মুভ করবে এবং লোকালস্টোরেজ থেকে পুরনো ক্লিকের তথ্য মুছে ফেলবে
+    currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
+    localStorage.setItem(`reg_task_index_${user.id}`, currentTaskIndex);
+    
+    taskOpenTimestamp = 0;
+    localStorage.removeItem(`clicked_reg_${user.id}_${currentTaskIndex}`);
+    
+    alert(`🔄 পরবর্তী টাস্ক লিংক লোড করা হয়েছে! (টাস্ক নম্বর: ${currentTaskIndex + 1}/${regTasksList.length})\n\nএখন 'রেজিস্ট্রেশন পেজে যান' এ ক্লিক করুন।`);
+}
 
-        function completeRegTask() {
-            let clickedKey = `clicked_reg_${user.id}_${currentTaskIndex}`;
+function completeRegTask() {
+    let clickedKey = `clicked_reg_${user.id}_${currentTaskIndex}`;
 
-            // ২ মিনিট (১২০ সেকেন্ড = ১২০০০০ মিলিভিসেকেন্ড) ব্যাকগ্রাউন্ডে চেক করা হবে, কোনো টাইম বা কাউন্টডাউন স্ক੍ਰিনে দেখাবে না
-            if (!localStorage.getItem(clickedKey) || taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 120000)) {
-                alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
-                return;
-            }
+    // ২ মিনিট (১২০ সেকেন্ড) সময় পূরণ হয়েছে কি না চেক করা হচ্ছে
+    if (!localStorage.getItem(clickedKey) || taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 120000)) {
+        alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
+        return;
+    }
 
+    let task = regTasksList[currentTaskIndex];
+    let rewardInBDT = (task.usd * 100) * 0.50; 
+    
+    currentBalance += rewardInBDT;
+    completedTasksCount++;
+    localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
+    
+    giveReferralCommission(rewardInBDT);
+    updateUI();
+    checkSpinAvailability();
+
+    // টাস্ক সম্পন্ন হওয়ার পর স্বয়ংক্রিয়ভাবে পরবর্তী লিংকে চলে যাবে
+    localStorage.removeItem(clickedKey);
+    taskOpenTimestamp = 0;
+    
+    currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
+    localStorage.setItem(`reg_task_index_${user.id}`, currentTaskIndex);
+
+    alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}\nপরবর্তী কাজের লিংক স্বয়ংক্রিয়ভাবে আপডেট করা হয়েছে।`);
+    closeRegTaskPage();
+  }
             let task = regTasksList[currentTaskIndex];
             let rewardInBDT = (task.usd * 100) * 0.50; 
             
