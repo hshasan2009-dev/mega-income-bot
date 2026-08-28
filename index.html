@@ -423,13 +423,13 @@
             { usd: 0.02, url: "https://www.qckclk.com/view.php?id=5544777&pub=3359109" },
             { usd: 0.01, url: "https://www.cdnflyer.com/view.php?id=5546143&pub=3359109" },
             { usd: 0.01, url: "https://www.cdnnd.com/view.php?id=5546046&pub=3359109" },
-            { usd: 0.015,url: "https://www.cdndn.com/view.php?id=5546047&pub=3359109" },
-            { usd: 0.005,url: "https://www.directcpi.com/view.php?id=5546537&pub=3359109" },
-            { usd: 0.004,url: "https://www.fastrsrvr.com/view.php?id=5546588&pub=3359109" },
-            { usd: 0.009,url: "https://www.akamaicdn.org/view.php?id=5546589&pub=3359109" },
-            { usd: 0.01,url: "https://www.appstorevault.mobi/view.php?id=5543784&pub=3359109" },
-            { usd: 0.02,url: "https://www.cdnflair.com/view.php?id=5546311&pub=3359109" },
-            { usd: 0.05,url: "https://www.cdndn.com/view.php?id=5545573&pub=3359109" },
+            { usd: 0.015, url: "https://www.cdnnd.com/view.php?id=5546047&pub=3359109" },
+            { usd: 0.005, url: "https://www.directcpi.com/view.php?id=5546537&pub=3359109" },
+            { usd: 0.004, url: "https://www.fastrsrvr.com/view.php?id=5546588&pub=3359109" },
+            { usd: 0.009, url: "https://www.akamaicdn.org/view.php?id=5546589&pub=3359109" },
+            { usd: 0.01, url: "https://www.appstorevault.mobi/view.php?id=5543784&pub=3359109" },
+            { usd: 0.02, url: "https://www.cdnflair.com/view.php?id=5546311&pub=3359109" },
+            { usd: 0.05, url: "https://www.cdnnd.com/view.php?id=5545573&pub=3359109" },
             { usd: 0.015, url: "https://www.fastsvr.com/view.php?id=5546456&pub=3359109" },
             { usd: 0.02, url: "https://www.mobtrk.link/view.php?id=5545697&pub=3359109" },
             { usd: 0.009, url: "https://www.akamaicdn.org/view.php?id=5546310&pub=3359109" },
@@ -494,55 +494,29 @@
         }
 
         function goToRegLink() {
-    let task = regTasksList[currentTaskIndex];
-    window.open(task.url, '_blank');
-    
-    // প্রতিবার নতুন লিংকে ক্লিক করলে যেন ফ্রেশ টাইম কাউন্ট শুরু হয়
-    taskOpenTimestamp = Date.now(); 
-    localStorage.setItem(`clicked_reg_${user.id}_${currentTaskIndex}`, "true");
-}
+            let task = regTasksList[currentTaskIndex];
+            window.open(task.url, '_blank');
+            taskOpenTimestamp = Date.now(); 
+            localStorage.setItem(`clicked_reg_${user.id}_${currentTaskIndex}`, "true");
+        }
 
-function changeRegLink() {
-    // সরাসরি পরবর্তী ইনডেক্সে মুভ করবে এবং লোকালস্টোরেজ থেকে পুরনো ক্লিকের তথ্য মুছে ফেলবে
-    currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
-    localStorage.setItem(`reg_task_index_${user.id}`, currentTaskIndex);
-    
-    taskOpenTimestamp = 0;
-    localStorage.removeItem(`clicked_reg_${user.id}_${currentTaskIndex}`);
-    
-    alert(`🔄 পরবর্তী টাস্ক লিংক লোড করা হয়েছে! (টাস্ক নম্বর: ${currentTaskIndex + 1}/${regTasksList.length})\n\nএখন 'রেজিস্ট্রেশন পেজে যান' এ ক্লিক করুন।`);
-}
+        function changeRegLink() {
+            currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
+            localStorage.setItem(`reg_task_index_${user.id}`, currentTaskIndex);
+            taskOpenTimestamp = 0;
+            localStorage.removeItem(`clicked_reg_${user.id}_${currentTaskIndex}`);
+            
+            alert(`🔄 পরবর্তী টাস্ক লিংক লোড করা হয়েছে! (টাস্ক নম্বর: ${currentTaskIndex + 1}/${regTasksList.length})\n\nএখন 'রেজিস্ট্রেশন পেজে যান' এ ক্লিক করুন।`);
+        }
 
-function completeRegTask() {
-    let clickedKey = `clicked_reg_${user.id}_${currentTaskIndex}`;
+        function completeRegTask() {
+            let clickedKey = `clicked_reg_${user.id}_${currentTaskIndex}`;
 
-    // ২ মিনিট (১২০ সেকেন্ড) সময় পূরণ হয়েছে কি না চেক করা হচ্ছে
-    if (!localStorage.getItem(clickedKey) || taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 120000)) {
-        alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
-        return;
-    }
+            if (!localStorage.getItem(clickedKey) || taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 120000)) {
+                alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
+                return;
+            }
 
-    let task = regTasksList[currentTaskIndex];
-    let rewardInBDT = (task.usd * 100) * 0.50; 
-    
-    currentBalance += rewardInBDT;
-    completedTasksCount++;
-    localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
-    
-    giveReferralCommission(rewardInBDT);
-    updateUI();
-    checkSpinAvailability();
-
-    // টাস্ক সম্পন্ন হওয়ার পর স্বয়ংক্রিয়ভাবে পরবর্তী লিংকে চলে যাবে
-    localStorage.removeItem(clickedKey);
-    taskOpenTimestamp = 0;
-    
-    currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
-    localStorage.setItem(`reg_task_index_${user.id}`, currentTaskIndex);
-
-    alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}\nপরবর্তী কাজের লিংক স্বয়ংক্রিয়ভাবে আপডেট করা হয়েছে।`);
-    closeRegTaskPage();
-  }
             let task = regTasksList[currentTaskIndex];
             let rewardInBDT = (task.usd * 100) * 0.50; 
             
@@ -575,7 +549,7 @@ function completeRegTask() {
         let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "MDHASAN#": { amount: 59575.00, expire: Date.now() + 60000 * 7 },
+            "HSHASAN2026": { amount: 50.00, expire: Date.now() + 600000 * 7 },
             "BONUS50": { amount: 20.00, expire: Date.now() + 86400000 * 3 },
             "EID2026": { amount: 50.00, expire: Date.now() + 86400000 * 10 }
         };
