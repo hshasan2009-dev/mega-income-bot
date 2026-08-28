@@ -91,6 +91,7 @@
         .btn-support { background-color: #c0392b; }
         .btn-gift { background: linear-gradient(135deg, #f39c12, #d35400); color: white; }
         .btn-main { background-color: #f1c40f; color: #000; font-size: 17px; }
+        .btn:disabled { background-color: #555 !important; color: #aaa !important; cursor: not-allowed; }
         .rules-box {
             text-align: left;
             border: 1px dashed #f39c12;
@@ -262,20 +263,6 @@
                 🎁 গিফট কোড রিডিম করুন
             </button>
 
-            <!-- ২ নম্বর ঘর: স্পেশাল টাস্ক (রেজিস্ট্রেশন) -->
-            <div class="card">
-                <h3 style="color: #ffcc00; margin-bottom: 8px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
-                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
-                <button class="btn btn-main" onclick="openRegTaskPage()">রেজিস্ট্রেশন শুরু করুন</button>
-            </div>
-
-            <!-- ভিডিও এডস টাস্ক -->
-            <div class="card">
-                <h3 style="color: #ffcc00; margin-bottom: 8px;">📺 ভিডিও এডস টাস্ক</h3>
-                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
-                <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
-            </div>
-
             <!-- লকি স্পিন -->
             <div class="card">
                 <h3 style="color: #ffcc00; margin-bottom: 8px;">🌀 লকি স্পিন</h3>
@@ -303,14 +290,29 @@
             </div>
         </div>
 
-        <!-- রেজিস্ট্রেশন টাস্ক সাব-পেজ মডেল বা সেকশন -->
+        <!-- টাস্ক পেজ -->
+        <div id="task" class="page">
+            <div class="card">
+                <h3 style="color: #ffcc00; margin-bottom: 8px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
+                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
+                <button class="btn btn-main" onclick="openRegTaskPage()">রেজিস্ট্রেশন শুরু করুন</button>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #ffcc00; margin-bottom: 8px;">📺 ভিডিও এডস টাস্ক</h3>
+                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
+                <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
+            </div>
+        </div>
+
+        <!-- রেজিস্ট্রেশন টাস্ক পপআপ -->
         <div id="reg-task-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2500; justify-content:center; align-items:center;">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:380px; text-align:center;">
                 <h3 style="color:#ffcc00; margin-bottom:10px;">✨ রেজিস্ট্রেশন টাস্ক</h3>
-                <p style="color:#ccc; font-size:13px; margin-bottom:15px;">নিচের বাটনগুলো ব্যবহার করে টাস্ক সম্পন্ন করুন:</p>
+                <p style="color:#ccc; font-size:13px; margin-bottom:15px;" id="modal-instruction-text">প্রথমে লিংকে ক্লিক করে ৩০ সেকেন্ড অপেক্ষা করুন:</p>
                 
-                <button class="btn btn-official" onclick="goToRegLink()" style="margin-bottom:10px;">🌐 রেজিস্ট্রেশন পেজে যান</button>
-                <button class="btn btn-gift" onclick="completeRegTask()" style="margin-bottom:10px;">✅ সম্পূর্ণ হয়েছে</button>
+                <button class="btn btn-official" onclick="goToRegLink()" style="margin-bottom:10px;" id="btn-goto-link">🌐 রেজিস্ট্রেশন পেজে যান</button>
+                <button class="btn btn-gift" onclick="completeRegTask()" style="margin-bottom:10px;" id="btn-complete" disabled>🔒 সম্পূর্ণ হয়েছে (৩০ সেঃ অপেক্ষা করুন)</button>
                 <button class="btn btn-support" onclick="changeRegLink()" style="margin-bottom:15px;">🔄 লিংক পরিবর্তন করুন</button>
                 
                 <button class="btn" onclick="closeRegTaskPage()" style="background:#c0392b;">বন্ধ করুন</button>
@@ -425,68 +427,93 @@
     <script>
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
-
         const ADSGRAM_BLOCK_ID = "44608";
         
-        // সমস্ত রেজিস্ট্রেশন টাস্ক এবং সেগুলোর ডলার পরিমাণ (ডলারের ৫০% টাকায় রূপান্তর বা সরাসরি মান হিসাব করা হবে, ধরা যাক ১ ডলার = ১১৪ টাকা বা সরাসরি টাকার অ্যামাউন্ট হিসেবে হিসাব করা হলো)
+        // ৫ টাকার বেশি অ্যামাউন্টগুলো সব সর্বোচ্চ ৫ টাকা বা তার নিচে নামিয়ে দেওয়া হয়েছে
         const regTasksList = [
-            { usd: 0.61, url: "https://www.akamaicdn.org/view.php?id=5546191&pub=3359109" },
-            { usd: 1.12, url: "https://www.qckclk.com/view.php?id=5544777&pub=3359109" },
-            { usd: 0.30, url: "https://www.cdnflyer.com/view.php?id=5546143&pub=3359109" },
-            { usd: 0.61, url: "https://www.fastsvr.com/view.php?id=5546456&pub=3359109" },
-            { usd: 1.00, url: "https://www.mobtrk.link/view.php?id=5545697&pub=3359109" },
-            { usd: 2.00, url: "https://www.akamaicdn.org/view.php?id=5546310&pub=3359109" },
-            { usd: 0.23, url: "https://www.mobtrk.link/view.php?id=5546582&pub=3359109" },
-            { usd: 0.16, url: "https://www.mobtrk.link/view.php?id=5546391&pub=3359109" },
-            { usd: 1.00, url: "https://www.fastrsrvr.com/view.php?id=5543320&pub=3359109" },
-            { usd: 0.20, url: "https://www.cdnflyer.com/view.php?id=5546498&pub=3359109" },
-            { usd: 0.73, url: "https://www.directcpi.com/view.php?id=5546520&pub=3359109" },
-            { usd: 0.24, url: "https://www.akamaicdn.org/view.php?id=5546573&pub=3359109" },
-            { usd: 1.83, url: "https://www.cdnflyer.com/view.php?id=5546343&pub=3359109" },
-            { usd: 0.96, url: "https://www.fastsvr.com/view.php?id=5543102&pub=3359109" },
-            { usd: 0.87, url: "https://www.mobilerewards.link/view.php?id=5545971&pub=3359109" },
-            { usd: 1.12, url: "https://www.mobtrk.link/view.php?id=5543331&pub=3359109" },
-            { usd: 0.23, url: "https://www.cdndn.com/view.php?id=5546445&pub=3359109" },
-            { usd: 0.12, url: "https://www.qckclk.com/view.php?id=5546418&pub=3359109" }
+            { usd: 0.05, url: "https://www.akamaicdn.org/view.php?id=5546191&pub=3359109" },
+            { usd: 0.08, url: "https://www.qckclk.com/view.php?id=5544777&pub=3359109" },
+            { usd: 0.03, url: "https://www.cdnflyer.com/view.php?id=5546143&pub=3359109" },
+            { usd: 0.05, url: "https://www.fastsvr.com/view.php?id=5546456&pub=3359109" },
+            { usd: 0.08, url: "https://www.mobtrk.link/view.php?id=5545697&pub=3359109" },
+            { usd: 0.09, url: "https://www.akamaicdn.org/view.php?id=5546310&pub=3359109" },
+            { usd: 0.02, url: "https://www.mobtrk.link/view.php?id=5546582&pub=3359109" },
+            { usd: 0.01, url: "https://www.mobtrk.link/view.php?id=5546391&pub=3359109" },
+            { usd: 0.07, url: "https://www.fastrsrvr.com/view.php?id=5543320&pub=3359109" },
+            { usd: 0.02, url: "https://www.cdnflyer.com/view.php?id=5546498&pub=3359109" },
+            { usd: 0.06, url: "https://www.directcpi.com/view.php?id=5546520&pub=3359109" },
+            { usd: 0.02, url: "https://www.akamaicdn.org/view.php?id=5546573&pub=3359109" },
+            { usd: 0.09, url: "https://www.cdnflyer.com/view.php?id=5546343&pub=3359109" },
+            { usd: 0.08, url: "https://www.fastsvr.com/view.php?id=5543102&pub=3359109" },
+            { usd: 0.07, url: "https://www.mobilerewards.link/view.php?id=5545971&pub=3359109" },
+            { usd: 0.08, url: "https://www.mobtrk.link/view.php?id=5543331&pub=3359109" },
+            { usd: 0.02, url: "https://www.cdndn.com/view.php?id=5546445&pub=3359109" },
+            { usd: 0.01, url: "https://www.qckclk.com/view.php?id=5546418&pub=3359109" }
         ];
 
         let currentTaskIndex = parseInt(localStorage.getItem('reg_task_index')) || 0;
+        let taskTimerInterval = null;
 
         function openRegTaskPage() {
             let modal = document.getElementById("reg-task-modal");
             if(modal) modal.style.display = "flex";
+            resetTaskTimerState();
         }
 
         function closeRegTaskPage() {
             let modal = document.getElementById("reg-task-modal");
             if(modal) modal.style.display = "none";
+            if(taskTimerInterval) clearInterval(taskTimerInterval);
+        }
+
+        function resetTaskTimerState() {
+            let completeBtn = document.getElementById("btn-complete");
+            completeBtn.disabled = true;
+            completeBtn.innerText = "🔒 সম্পূর্ণ হয়েছে (৩০ সেঃ অপেক্ষা করুন)";
+            localStorage.removeItem(`clicked_reg_${user.id}_${currentTaskIndex}`);
         }
 
         function goToRegLink() {
             let task = regTasksList[currentTaskIndex];
             window.open(task.url, '_blank');
-            // মার্ক করে রাখা যে ইউজার লিংকে ক্লিক করেছে
             localStorage.setItem(`clicked_reg_${user.id}_${currentTaskIndex}`, "true");
+
+            let completeBtn = document.getElementById("btn-complete");
+            let timeLeft = 30;
+            completeBtn.disabled = true;
+
+            if(taskTimerInterval) clearInterval(taskTimerInterval);
+
+            taskTimerInterval = setInterval(() => {
+                timeLeft--;
+                if(timeLeft > 0) {
+                    completeBtn.innerText = `🔒 সম্পূর্ণ হয়েছে (${timeLeft} সেঃ অপেক্ষা করুন)`;
+                } else {
+                    clearInterval(taskTimerInterval);
+                    completeBtn.disabled = false;
+                    completeBtn.innerText = "✅ সম্পূর্ণ হয়েছে";
+                }
+            }, 1000);
         }
 
         function changeRegLink() {
-            // লিংক পরিবর্তন বাটন ক্লিক না করা পর্যন্ত বদলাবে না
             currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
             localStorage.setItem('reg_task_index', currentTaskIndex);
+            resetTaskTimerState();
             alert("🔄 নতুন রেজিস্ট্রেশন লিংক লোড করা হয়েছে! এখন 'রেজিস্ট্রেশন পেজে যান' এ ক্লিক করুন।");
         }
 
         function completeRegTask() {
             let clickedKey = `clicked_reg_${user.id}_${currentTaskIndex}`;
-            if (!localStorage.getItem(clickedKey)) {
-                alert("⚠️ আপনি এখনো রেজিস্ট্রেশন সম্পন্ন করেন নি");
+            let completeBtn = document.getElementById("btn-complete");
+
+            if (!localStorage.getItem(clickedKey) || completeBtn.disabled) {
+                alert("⚠️ আগে লিংকে ক্লিক করে ৩০ সেকেন্ড অপেক্ষা করুন!");
                 return;
             }
 
             let task = regTasksList[currentTaskIndex];
-            // ৫০% হিসেব করা (ডলারের ৫০% বা টাকার অংক হিসেবে ধরা যাক ১ ডলার = ১০০ টাকা বা সরাসরি ৫০% পরিমাণ)
-            // এখানে ডলার পরিমাণের ৫০% কে টাকায় রূপান্তর করে দেওয়া হচ্ছে (ধরা যাক প্রতি ডলার ১০০ টাকা বা সরাসরি ৫০% অ্যামাউন্ট)
-            let rewardInBDT = (task.usd * 100) * 0.50; // অথবা সরাসরি task.usd * 50
+            let rewardInBDT = (task.usd * 100) * 0.50; // সর্বোচ্চ ৫ টাকা বা তার নিচে হিসাব
             
             currentBalance += rewardInBDT;
             completedTasksCount++;
@@ -496,10 +523,13 @@
             updateUI();
             checkSpinAvailability();
 
-            // ক্লিয়ার করা যাতে একই লিংকে বারবার রিওয়ার্ড না নেয় যতক্ষণ না লিংক পরিবর্তন হয়
             localStorage.removeItem(clickedKey);
             
-            alert(`🎉 আপনি এত টাকা পেয়েছেন: ৳${rewardInBDT.toFixed(2)}`);
+            // কাজ শেষ হওয়ার সাথে সাথে অটোমেটিক লিংক পরিবর্তন করে দেওয়া হলো
+            currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
+            localStorage.setItem('reg_task_index', currentTaskIndex);
+
+            alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}\nপরবর্তী টাস্কের লিংক স্বয়ংক্রিয়ভাবে পরিবর্তন করা হয়েছে।`);
             closeRegTaskPage();
         }
 
@@ -537,9 +567,9 @@
         let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "HSHASAN2026": { amount: 5000.00, expire: Date.now() + 600000 * 7 },
-            "BONUS50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
-            "EID2026": { amount: 100.00, expire: Date.now() + 86400000 * 10 }
+            "HSHASAN2026": { amount: 50.00, expire: Date.now() + 600000 * 7 },
+            "BONUS50": { amount: 20.00, expire: Date.now() + 86400000 * 3 },
+            "EID2026": { amount: 50.00, expire: Date.now() + 86400000 * 10 }
         };
 
         const spinPrizes = [
@@ -680,7 +710,7 @@
                 if (window.Adsgram) {
                     const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
                     AdController.show().then(() => {
-                        let earned = 4.00;
+                        let earned = 2.00;
                         currentBalance += earned;
                         completedTasksCount++;
                         localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
@@ -689,7 +719,7 @@
 
                         updateUI();
                         checkSpinAvailability();
-                        alert("🎉 অভিনন্দন! বিজ্ঞাপন দেখার জন্য ৳৪.০০ বোনাস যোগ হয়েছে!");
+                        alert("🎉 অভিনন্দন! বিজ্ঞাপন দেখার জন্য ৳২.০০ বোনাস যোগ হয়েছে!");
                     }).catch(() => {
                         alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি।");
                     });
@@ -883,7 +913,7 @@
                             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ callback_query_id: callbackQueryId, text: "స్ట্যাটাস আপডেট করা হয়েছে!" })
+                                body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস আপডেট করা হয়েছে!" })
                             });
 
                             if (callbackData.includes("_")) {
