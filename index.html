@@ -626,61 +626,24 @@
             localStorage.setItem(`balance_${user.id}`, currentBalance);
         }
 
-        function giveReferralCommission(earnedAmount) {
-            let myReferrerId = localStorage.getItem(`my_referrer_${user.id}`);
-            if (myReferrerId) {
-                let commission = earnedAmount * 0.25;
-                let referrerBalanceKey = `balance_${myReferrerId}`;
-                let referrerBonusKey = `refBonus_${myReferrerId}`;
-
-                let currentRefBalance = parseFloat(localStorage.getItem(referrerBalanceKey)) || 0.00;
-                let currentRefBonus = parseFloat(localStorage.getItem(referrerBonusKey)) || 0.00;
-
-                localStorage.setItem(referrerBalanceKey, currentRefBalance + commission);
-                localStorage.setItem(referrerBonusKey, currentRefBonus + commission);
-            }
+       function giveReferralCommission(earnedAmount) {
+    let referrerId = localStorage.getItem(`my_referrer_${user.id}`);
+    if (referrerId) {
+        let commission = earnedAmount * 0.20; // ২০% কমিশন
+        
+        let refBonusKey = `refBonus_${referrerId}`;
+        let currentRefBonus = parseFloat(localStorage.getItem(refBonusKey)) || 0;
+        let newRefBonus = currentRefBonus + commission;
+        localStorage.setItem(refBonusKey, newRefBonus.toFixed(2));
+        
+        let referrerBalanceKey = `balance_${referrerId}`;
+        let currentRefBalance = parseFloat(localStorage.getItem(referrerBalanceKey)) || 0;
+        localStorage.setItem(referrerBalanceKey, (currentRefBalance + commission).toFixed(2));
+    }
         }
+    
 
-        function openGiftModal() {
-            let modal = document.getElementById("giftModal");
-            if (modal) modal.style.display = "flex";
-        }
-
-        function closeGiftModal() {
-            let modal = document.getElementById("giftModal");
-            if (modal) modal.style.display = "none";
-            let codeInput = document.getElementById("gift-code-input");
-            if (codeInput) codeInput.value = "";
-        }
-
-        function redeemGiftCode() {
-            let codeInput = document.getElementById("gift-code-input");
-            if (!codeInput) return;
-            let code = codeInput.value.trim().toUpperCase();
-            
-            if (!code) {
-                alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!");
-                return;
-            }
-
-            let codeObj = validGiftCodes[code];
-            if (!codeObj) {
-                alert("❌ ভুল বা Invalid গিফট কোড!");
-                return;
-            }
-
-            if (Date.now() > codeObj.expire) {
-                alert("❌ দুঃখিত, এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
-                return;
-            }
-
-            let usedKey = `gift_used_${user.id}_${code}`;
-            if (localStorage.getItem(usedKey)) {
-                alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
-                return;
-            }
-
-            localStorage.setItem(usedKey, "true");
+             localStorage.setItem(usedKey, "true");
             currentBalance += codeObj.amount;
             updateUI();
             closeGiftModal();
