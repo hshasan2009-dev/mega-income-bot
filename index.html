@@ -419,24 +419,24 @@
         const ADSGRAM_BLOCK_ID = "44608";
         
         const regTasksList = [
-            { usd: 0.02, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75312&tracking_id=2580" },
-            { usd: 0.02, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75302&tracking_id=2580" },
-            { usd: 0.01, url: "https://trianglerockers.com/1911060/1122" },
-            { usd: 0.02, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75302&tracking_id=2580" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=55090&tracking_id=2580" },
-            { usd: 0.05, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=71192&tracking_id=2580" },
-            { usd: 0.0, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=74985&tracking_id=2580" },
-            { usd: 0.01, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=70158&tracking_id=2580" },
-            { usd: 0.01, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=73397&tracking_id=2580" },
-            { usd: 0.02, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=74208&tracking_id=2580" },
-            { usd: 0.05, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75302&tracking_id=2580" },
-            { usd: 0.05, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75302&tracking_id=2580" },
-            { usd: 0.02, url: "https://optilinklock.com/show.php?l=0&u=2553075&id=63064&tracking_id=2009" },
-            { usd: 0.02, url: "https://filestrue.com/show.php?l=0&u=2553075&id=63064&tracking_id=2009" },
-            { usd: 0.01, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=71192&tracking_id=2580" },
-            { usd: 0.005, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=70158&tracking_id=2580" },
-            { usd: 0.02, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=74208&tracking_id=2580" },
-            { usd: 0.01, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=74208&tracking_id=2580" }
+            { usd: 0.01, url: "https://www.akamaicdn.org/view.php?id=5546191&pub=3359109" },
+            { usd: 0.02, url: "https://www.qckclk.com/view.php?id=5544777&pub=3359109" },
+            { usd: 0.01, url: "https://www.cdnflyer.com/view.php?id=5546143&pub=3359109" },
+            { usd: 0.01, url: "https://www.cdnnd.com/view.php?id=5546046&pub=3359109" },
+            { usd: 0.015, url: "https://www.cdnnd.com/view.php?id=5546047&pub=3359109" },
+            { usd: 0.005, url: "https://www.directcpi.com/view.php?id=5546537&pub=3359109" },
+            { usd: 0.004, url: "https://www.fastrsrvr.com/view.php?id=5546588&pub=3359109" },
+            { usd: 0.009, url: "https://www.akamaicdn.org/view.php?id=5546589&pub=3359109" },
+            { usd: 0.01, url: "https://www.appstorevault.mobi/view.php?id=5543784&pub=3359109" },
+            { usd: 0.02, url: "https://www.cdnflair.com/view.php?id=5546311&pub=3359109" },
+            { usd: 0.05, url: "https://www.cdnnd.com/view.php?id=5545573&pub=3359109" },
+            { usd: 0.015, url: "https://www.fastsvr.com/view.php?id=5546456&pub=3359109" },
+            { usd: 0.02, url: "https://www.mobtrk.link/view.php?id=5545697&pub=3359109" },
+            { usd: 0.009, url: "https://www.akamaicdn.org/view.php?id=5546310&pub=3359109" },
+            { usd: 0.01, url: "https://www.mobtrk.link/view.php?id=5546582&pub=3359109" },
+            { usd: 0.005, url: "https://www.mobtrk.link/view.php?id=5546391&pub=3359109" },
+            { usd: 0.02, url: "https://www.fastrsrvr.com/view.php?id=5543320&pub=3359109" },
+            { usd: 0.01, url: "https://www.cdnflyer.com/view.php?id=5546498&pub=3359109" }
         ];
 
         let tg = window.Telegram?.WebApp;
@@ -549,8 +549,8 @@
         let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "HASAN": { amount: 5000.00, expire: Date.now() + 600000 * 7 },
-            "BONUS5": { amount: 5.00, expire: Date.now() + 86400000 * 3 },
+            "HSHASAN2026": { amount: 50.00, expire: Date.now() + 600000 * 7 },
+            "BONUS50": { amount: 20.00, expire: Date.now() + 86400000 * 3 },
             "EID2026": { amount: 50.00, expire: Date.now() + 86400000 * 10 }
         };
 
@@ -626,24 +626,61 @@
             localStorage.setItem(`balance_${user.id}`, currentBalance);
         }
 
-       function giveReferralCommission(earnedAmount) {
-    let referrerId = localStorage.getItem(`my_referrer_${user.id}`);
-    if (referrerId) {
-        let commission = earnedAmount * 0.20; // ২০% কমিশন
-        
-        let refBonusKey = `refBonus_${referrerId}`;
-        let currentRefBonus = parseFloat(localStorage.getItem(refBonusKey)) || 0;
-        let newRefBonus = currentRefBonus + commission;
-        localStorage.setItem(refBonusKey, newRefBonus.toFixed(2));
-        
-        let referrerBalanceKey = `balance_${referrerId}`;
-        let currentRefBalance = parseFloat(localStorage.getItem(referrerBalanceKey)) || 0;
-        localStorage.setItem(referrerBalanceKey, (currentRefBalance + commission).toFixed(2));
-    }
-        }
-    
+        function giveReferralCommission(earnedAmount) {
+            let myReferrerId = localStorage.getItem(`my_referrer_${user.id}`);
+            if (myReferrerId) {
+                let commission = earnedAmount * 0.25;
+                let referrerBalanceKey = `balance_${myReferrerId}`;
+                let referrerBonusKey = `refBonus_${myReferrerId}`;
 
-             localStorage.setItem(usedKey, "true");
+                let currentRefBalance = parseFloat(localStorage.getItem(referrerBalanceKey)) || 0.00;
+                let currentRefBonus = parseFloat(localStorage.getItem(referrerBonusKey)) || 0.00;
+
+                localStorage.setItem(referrerBalanceKey, currentRefBalance + commission);
+                localStorage.setItem(referrerBonusKey, currentRefBonus + commission);
+            }
+        }
+
+        function openGiftModal() {
+            let modal = document.getElementById("giftModal");
+            if (modal) modal.style.display = "flex";
+        }
+
+        function closeGiftModal() {
+            let modal = document.getElementById("giftModal");
+            if (modal) modal.style.display = "none";
+            let codeInput = document.getElementById("gift-code-input");
+            if (codeInput) codeInput.value = "";
+        }
+
+        function redeemGiftCode() {
+            let codeInput = document.getElementById("gift-code-input");
+            if (!codeInput) return;
+            let code = codeInput.value.trim().toUpperCase();
+            
+            if (!code) {
+                alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!");
+                return;
+            }
+
+            let codeObj = validGiftCodes[code];
+            if (!codeObj) {
+                alert("❌ ভুল বা Invalid গিফট কোড!");
+                return;
+            }
+
+            if (Date.now() > codeObj.expire) {
+                alert("❌ দুঃখিত, এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
+                return;
+            }
+
+            let usedKey = `gift_used_${user.id}_${code}`;
+            if (localStorage.getItem(usedKey)) {
+                alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
+                return;
+            }
+
+            localStorage.setItem(usedKey, "true");
             currentBalance += codeObj.amount;
             updateUI();
             closeGiftModal();
