@@ -948,6 +948,45 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
+function handleGmailSubmit() {
+    var gmailData = document.getElementById('gmailInputField').value.trim();
+    if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
+    if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
+    
+    let gId = "GM" + Date.now();
+    let nowDate = new Date();
+    let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+    
+    let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending" };
+    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+    gmailHistory.unshift(gmailObj);
+    localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
+    renderGmailHistory();
+    
+    let gmailMsg = `📥 **নতুন জিমেইল বিক্রির অনুরোধ!**\n\n📧 ইউজারের তথ্য: \`${gmailData}\`\n🆔 আইডি: \`${gId}\`\n📅 তারিখ: ${currentDate}\n\n⚠️ নিয়ম: পাসওয়ার্ড সঠিক হলে নিচের বাটনে ক্লিক করুন।`;
+    let gmailUrl = `https://telegram.org{botToken}/sendMessage`;
+    
+    fetch(gmailUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            chat_id: ADMIN_CHAT_ID, 
+            text: gmailMsg,
+            parse_mode: "Markdown",
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        { text: "✅ Accept (১৫ টাকা)", callback_data: "gacc_" + gId },
+                        { text: "❌ Reject (০ টাকা)", callback_data: "grej_" + gId }
+                    ]
+                ]
+            }
+        })
+    });
+    alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে!");
+    document.getElementById('gmailInputField').value = "";
+    closeGmailSellPage();
+}
 
         async function checkAdminActionFromTelegram() {
             try {
