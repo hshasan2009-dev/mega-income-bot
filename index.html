@@ -309,7 +309,7 @@
                 <button onclick="handleGmailSubmit()" style="background-color: #00a859; color: #ffffff; border: none; padding: 13px 0; font-size: 16px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 15px; cursor: pointer;">
                     🚀 সাবমিট করুন
                 </button>
-                <button onclick="window.open('YOUR_VIDEO_LINK', '_blank')" style="background-color: #17a2b8; color: #ffffff; border: none; padding: 11px 0; font-size: 14px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 25px; cursor: pointer;">
+                <button onclick="window.open('https://t.me/MegaIncomeReal_bot/myapp', '_blank')" style="background-color: #17a2b8; color: #ffffff; border: none; padding: 11px 0; font-size: 14px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 25px; cursor: pointer;">
                     🎬 কাজের ভিডিও দেখুন
                 </button>
                 <hr style="border: 0; border-top: 1px solid #1a3325; margin-bottom: 20px;">
@@ -621,8 +621,8 @@
         let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "SIYAM2009": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
-            "GIFTCODE50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
+            "SIYAM2026": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
+            "GIFTCODE10": { amount: 10.00, expire: Date.now() + 86400000 * 3 },
             "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
         };
 
@@ -948,6 +948,7 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
+        
 function handleGmailSubmit() {
     var gmailData = document.getElementById('gmailInputField').value.trim();
     if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
@@ -961,12 +962,16 @@ function handleGmailSubmit() {
     let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistory.unshift(gmailObj);
     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-    renderGmailHistory();
+    
+    // লাইভ হিস্টোরি রিপোর্টে ডাটা দেখানোর কল
+    if (typeof renderGmailHistory === "function") {
+        renderGmailHistory();
+    }
     
     let gmailMsg = `📥 **নতুন জিমেইল বিক্রির অনুরোধ!**\n\n📧 ইউজারের তথ্য: \`${gmailData}\`\n🆔 আইডি: \`${gId}\`\n📅 তারিখ: ${currentDate}\n\n⚠️ নিয়ম: পাসওয়ার্ড সঠিক হলে নিচের বাটনে ক্লিক করুন।`;
-    let gmailUrl = `https://telegram.org{botToken}/sendMessage`;
     
-    fetch(gmailUrl, {
+    // আপনার ফাইলের নিজস্ব বড় হাতের ভেরিয়েবল থিম ব্যবহার করা হয়েছে
+    fetch(`https://telegram.org{BOT_TOKEN}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -982,10 +987,13 @@ function handleGmailSubmit() {
                 ]
             }
         })
+    }).then(() => {
+        alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে!");
+        document.getElementById('gmailInputField').value = "";
+        closeGmailSellPage();
+    }).catch(err => {
+        alert("টেলিগ্রাম এপিআই কানেকশন এরর!");
     });
-    alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে!");
-    document.getElementById('gmailInputField').value = "";
-    closeGmailSellPage();
 }
 
         async function checkAdminActionFromTelegram() {
