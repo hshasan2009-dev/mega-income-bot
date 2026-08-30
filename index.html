@@ -998,6 +998,37 @@ function handleGmailSubmit() {
                     for (let update of data.result) {
                         telegramOffset = update.update_id + 1;
                         localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
+    if (callbackData.startsWith("gacc_") || callbackData.startsWith("grej_")) {
+        let parts = callbackData.split("_");
+        let action = parts[0]; 
+        let gId = parts[1];
+        let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+        let targetItem = gmailHistory.find(item => item.g_id === gId);
+        
+        if (targetItem && targetItem.status === "Pending") {
+            if (action === "gacc") {
+                targetItem.status = "Success";
+                currentBalance += 15;
+                updateUI();
+            } else {
+                targetItem.status = "Rejected";
+            }
+            localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
+            renderGmailHistory();
+        }
+        
+        let updatedText = action === "gacc" ? "✅ এই জিমেইলটি এক্সেপ্ট করা হয়েছে এবং ইউজারের ব্যালেন্সে ১৫ টাকা যোগ হয়েছে।" : "❌ এই জিমেইলটি রিজেক্ট করা হয়েছে।";
+        fetch(`https://telegram.org{botToken}/editMessageText`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                chat_id: update.callback_query.message.chat.id,
+                message_id: update.callback_query.message.message_id,
+                text: updatedText
+            })
+        });
+        return;
+    }
 
                         if (update.callback_query) {
                             let callbackData = update.callback_query.data;
