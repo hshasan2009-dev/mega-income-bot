@@ -970,12 +970,13 @@ function handleGmailSubmit() {
     let gmailMsg = `📥 **নতুন জিমেইল বিক্রির অনুরোধ!**\n\n📧 ইউজারের তথ্য: \`${gmailData}\`\n🆔 আইডি: \`${gId}\`\n📅 তারিখ: ${currentDate}\n\n⚠️ নিয়ম: পাসওয়ার্ড সঠিক হলে নিচের বাটনে ক্লিক করুন।`;
     
     // কোনো ডলার বা ব্যাকটিক সাইন ছাড়া সরাসরি সাধারণ ইউআরএল লিংক তৈরি
-    let gmailUrl = "https://telegram.org" + BOT_TOKEN + "/sendMessage";    
+    let gmailUrl = "https://telegram.org" + BOT_TOKEN + "/sendMessage";
+    
     fetch(gmailUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            chat_id: "8049465500" 
+            chat_id: ADMIN_CHAT_ID, 
             text: gmailMsg,
             parse_mode: "Markdown",
             reply_markup: {
@@ -1077,35 +1078,6 @@ function handleGmailSubmit() {
             }
         }
 
-   // ==========================================
-// জিমেইল পেন্ডিং, সাকসেস ও রিজেক্ট রিপোর্ট দেখানোর কোড
-// ==========================================
-function renderGmailHistory() {
-    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-    let logList = document.getElementById('gmailHistoryLog');
-    if (!logList) return;
-    logList.innerHTML = "";
-    
-    if (gmailHistory.length === 0) {
-        logList.innerHTML = "<li style='list-style: none; color: #a5b3aa;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
-        return;
-    }
-    
-    gmailHistory.forEach(item => {
-        let statusText = "";
-        if (item.status === 'Pending') statusText = "<span style='color: #ffcc00; font-weight:bold;'>⏳ পেন্ডিং</span>";
-        if (item.status === 'Success') statusText = "<span style='color: #28a745; font-weight:bold;'>✅ এক্সেপ্ট (+১৫ টাকা)</span>";
-        if (item.status === 'Deleted' || item.status === 'Rejected') statusText = "<span style='color: #dc3545; font-weight:bold;'>❌ বাতিল (০ টাকা)</span>";
-        
-        logList.innerHTML += `<li style='border-bottom: 1px dashed #1a3325; padding: 8px 0; list-style: none; color: #ffffff; font-size: 14px;'>🔹 ${item.info} — ${statusText}</li>`;
-    });
-    
-
-// পেজ ওপেন হওয়ার সাথে সাথেই যেন রিপোর্ট লোড হয়
-document.addEventListener("DOMContentLoaded", function() {
-    renderGmailHistory();
-});
-     
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
