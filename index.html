@@ -948,7 +948,7 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-function handleGmailSubmit() {
+    function handleGmailSubmit() {
     var gmailData = document.getElementById('gmailInputField').value.trim();
     if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
     if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
@@ -962,71 +962,12 @@ function handleGmailSubmit() {
     gmailHistory.unshift(gmailObj);
     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
     
-    // নতুন হিস্টোরি রেন্ডার ফাংশন কল
-    renderGmailHistory();
-    
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.sendData(JSON.stringify({ 
-            action: "gmail_submit", 
-            g_id: gId, 
-            info: gmailData 
-        }));
-        alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!");
-        document.getElementById('gmailInputField').value = "";
-    } else {
-        alert("টেলিগ্রাম অ্যাপের ভেতর থেকে এটি ওপেন করুন!");
+    // হিস্টোরি লিস্ট সাথে সাথে স্ক্রিনে দেখানোর জন্য ফাংশন কল
+    if (typeof renderGmailHistory === "function") {
+        renderGmailHistory();
+    } else if (typeof showGmailHistory === "function") {
+        showGmailHistory();
     }
-}
-function renderGmailHistory() {
-    // জিমেইল রিপোর্ট দেখানোর জন্য এইচটিএমএল এরিয়া আইডি খুঁজে বের করা
-    let reportContainer = document.querySelector('.gmail-report-container') || document.body; 
-    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-    
-    if (gmailHistory.length === 0) {
-        // কোনো ডেটা না থাকলে খালি দেখাবে
-        return;
-    }
-    
-    let htmlContent = "";
-    gmailHistory.forEach(item => {
-        // স্ট্যাটাস অনুযায়ী আলাদা কালার সেট করা
-        let statusColor = "#ffc107"; // Pending (হলুদ)
-        if (item.status === "Success") statusColor = "#28a745"; // Success (সবুজ)
-        if (item.status === "Rejected" || item.status === "Reject") statusColor = "#dc3545"; // Reject (লাল)
-        
-        htmlContent += `
-            <div style="background: #111; padding: 10px; margin-bottom: 8px; border-radius: 5px; border-left: 4px solid ${statusColor}; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <div style="color: #fff; font-size: 13px; font-weight: bold;">${item.info}</div>
-                    <div style="color: #aaa; font-size: 11px;">তারিখ: ${item.date}</div>
-                </div>
-                <div style="background: ${statusColor}; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
-                    Status: ${item.status}
-                </div>
-            </div>
-        `;
-    });
-    
-    // আপনার কোডের রিপোর্ট দেখানোর বক্সে ডাটা ঢুকিয়ে দেওয়া
-    let reportBox = document.querySelector('[style*="gmail_history"]') || document.getElementById('gmailReportBox');
-    if (reportBox) {
-        reportBox.innerHTML = htmlContent;
-    } else {
-        // যদি নির্দিষ্ট আইডি না মেলে তবে আপনার রিপোর্টের নিচের সেকশনে ডাটা বসাবে
-        let allDivs = document.querySelectorAll('div');
-        allDivs.forEach(div => {
-            if(div.innerText && div.innerText.includes("আপনার জিমেইল সাবমিট রিপোর্ট:")) {
-                div.innerHTML = `<span style="color:#ffc107; font-weight:bold;">আপনার জিমেইল সাবমিট রিপোর্ট:</span><br><br>` + htmlContent;
-            }
-        });
-    }
-}
-
-// পেজ লোড হওয়ার সাথে সাথেই যেন আগের জিমেইল লিস্ট স্ক্রিনে দেখায়
-document.addEventListener("DOMContentLoaded", function() {
-    renderGmailHistory();
-});
-
     
     if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.sendData(JSON.stringify({ 
