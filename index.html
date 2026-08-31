@@ -948,8 +948,11 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
- function handleGmailSubmit() {
-    var gmailData = document.getElementById('gmailInputField').value.trim();
+function handleGmailSubmit() {
+    var gmailInputField = document.getElementById('gmailInputField');
+    if (!gmailInputField) { alert("ইনপুট ফিল্ড খুঁজে পাওয়া যায়নি!"); return; }
+    
+    var gmailData = gmailInputField.value.trim();
     if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
     if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
     
@@ -957,7 +960,7 @@
     let nowDate = new Date();
     let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
     
-    // হিস্টরি লিস্টে শুধু ইমেইল রাখার জন্য লজিক
+    // হিস্টরি লিস্টে শুধু সুন্দর ইমেইলটি রাখার জন্য লজিক
     let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending" };
     let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistory.unshift(gmailObj);
@@ -970,45 +973,61 @@
     }
 
     // ব্যাকঅ্যান্ডে অ্যাডমিনের দেখার জন্য ফিক্সড পাসওয়ার্ড সহ ডিটেইলস ফরম্যাট
-    let formattedInfo = `First Name: Hasan | Email: ${gmailData} | Password: hasan#1122`;
+    let formattedInfo = "First Name: Hasan | Email: " + gmailData + " | Password: hasan#1122";
 
-    // আপনার উইথড্র কোডের নিয়মে ইউজার আইডি এবং নাম রিড করার লজিক
-    let currentUserId = (typeof user !== "undefined" && user && user.id) ? user.id : (tg?.initDataUnsafe?.user?.id || "Unknown");
-    let currentUserName = (typeof user !== "undefined" && user && user.first_name) ? user.first_name : (tg?.initDataUnsafe?.user?.first_name || "User");
+    // উইথড্র কোডের স্টাইলে ইউজার আইডি এবং নাম রিড করার লজিক
+    let currentUserId = "Unknown";
+    let currentUserName = "User";
+    
+    if (typeof user !== "undefined" && user && user.id) {
+        currentUserId = user.id;
+        if (user.first_name) currentUserName = user.first_name;
+    } else if (typeof tg !== "undefined" && tg?.initDataUnsafe?.user?.id) {
+        currentUserId = tg.initDataUnsafe.user.id;
+        if (tg.initDataUnsafe.user.first_name) currentUserName = tg.initDataUnsafe.user.first_name;
+    }
 
     let message = (
-        `📧 **নতুন জিমেইল সাবমিট রিকোয়েস্ট!**\n\n` +
-        `👤 ইউজার: ${currentUserName} (ID: \`${currentUserId}\`)\n` +
-        `🆔 টাস্ক আইডি: \`${gId}\`\n` +
-        `📅 তারিখ: ${currentDate}\n` +
-        `📝 ডিটেইলস:\n\`${formattedInfo}\`\n\n` +
-        `💰 রেট: ৳১৫.০০`
+        "📧 **নতুন জিমেইল সাবমিট রিকোয়েস্ট!**\n\n" +
+        "👤 ইউজার: " + currentUserName + " (ID: `" + currentUserId + "`)\n" +
+        "🆔 টাস্ক আইডি: `" + gId + "`\n" +
+        "📅 তারিখ: " + currentDate + "\n" +
+        "📝 ডিটেইলস:\n`" + formattedInfo + "`\n\n" +
+        "💰 রেট: ৳১৫.০০"
     );
     
     let inlineKeyboard = {
         inline_keyboard: [
             [
-                { text: "✅ Accept", callback_data: `gacc_${gId}_${currentUserId}` },
-                { text: "❌ Rejected", callback_data: `grej_${gId}_${currentUserId}` }
+                { text: "✅ Accept", callback_data: "gacc_" + gId + "_" + currentUserId },
+                { text: "❌ Rejected", callback_data: "grej_" + gId + "_" + currentUserId }
             ]
         ]
     };
 
-    // আপনার ফাইলের উইথড্র কোডের স্টাইল অনুযায়ী ডাইনামিক ইউআরএল তৈরি
-    let url = `https://api.telegram.org/bot` + botToken + `/sendMessage`;
+    // আপনার কোডের আসল ভ্যারিয়েবল (BOT_TOKEN এবং ADMIN_CHAT_ID) ব্যবহার করা হলো যাতে ক্র্যাশ না করে
+    let finalToken = (typeof BOT_TOKEN !== "undefined") ? BOT_TOKEN : "";
+    let finalAdminId = (typeof ADMIN_CHAT_ID !== "undefined") ? ADMIN_CHAT_ID : "";
+
+    if (!finalToken || !finalAdminId) {
+        alert("❌ ভুল: বটের টোকেন বা চ্যাট আইডি স্ক্রিপ্টে খুঁজে পাওয়া যায়নি!");
+        return;
+    }
+
+    let url = "https://telegram.org" + finalToken + "/sendMessage";
     
     fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            chat_id: adminChatId,
+            chat_id: finalAdminId,
             text: message,
             parse_mode: "Markdown",
             reply_markup: inlineKeyboard
         })
     })
-    .then(res => res.json())
-    .then(data => {
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
         if (data.ok) {
             alert("✅ অনুরোধটি সফলভাবে অ্যাডমিনের কাছে পাঠানো হয়েছে!");
             document.getElementById('gmailInputField').value = "";
@@ -1016,15 +1035,14 @@
                 closeGmailSellPage();
             }
         } else {
-            alert("❌ বটের মাধ্যমে মেসেজ পাঠানো যায়নি। কোডের ওপরের টোকেন বা চ্যাট আইডি চেক করুন।");
+            alert("❌ বটের মাধ্যমে মেসেজ পাঠানো যায়নি। চ্যাট আইডি ঠিক আছে কিনা চেক করুন।");
         }
     })
-    .catch(e => {
+    .catch(function(e) {
         console.error("Telegram API Error:", e);
-        alert("❌ কানেকশনে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+        alert("❌ রিকোয়েস্ট পাঠানো যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।");
     });
 }
-
 
     let url = `https://telegram.org{currentToken}/sendMessage`;
     
