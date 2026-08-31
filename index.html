@@ -935,7 +935,8 @@
                 ]
             };
 
-            let url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            let gmailUrl = "https://telegram.org" + BOT_TOKEN + "/sendMessage";
+    fetch(gmailUrl, {
             
             fetch(url, {
                 method: "POST",
@@ -964,7 +965,7 @@ function handleGmailSubmit() {
     renderGmailHistory();
     
     let gmailMsg = `📥 **নতুন জিমেইল বিক্রির অনুরোধ!**\n\n📧 ইউজারের তথ্য: \`${gmailData}\`\n🆔 আইডি: \`${gId}\`\n📅 তারিখ: ${currentDate}\n\n⚠️ নিয়ম: পাসওয়ার্ড সঠিক হলে নিচের বাটনে ক্লিক করুন।`;
-    let gmailUrl = `https://telegram.org{botToken}/sendMessage`;
+    let gmailUrl = "https://telegram.org" + BOT_TOKEN + "/sendMessage";
     
     fetch(gmailUrl, {
         method: "POST",
