@@ -963,18 +963,18 @@ function handleGmailSubmit() {
     gmailHistory.unshift(gmailObj);
     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
     
-    if (typeof renderGmailHistory === "function") {
-        renderGmailHistory();
-    }
-    
     let gmailMsg = `📥 **নতুন জিমেইল বিক্রির অনুরোধ!**\n\n📧 ইউজারের তথ্য: \`${gmailData}\`\n🆔 আইডি: \`${gId}\`\n📅 তারিখ: ${currentDate}\n\n⚠ নিয়ম: পাসওয়ার্ড সঠিক হলে নিচের বাটনে ক্লিক করুন।`;
-    let gmailUrl = `https://telegram.org{BOT_TOKEN}/sendMessage`;
+    
+    // এখানে আপনার সঠিক টোকেন এবং চ্যাট আইডি সরাসরি বসানো হয়েছে
+    let token = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
+    let adminId = "8049465500";
+    let gmailUrl = `https://telegram.org{token}/sendMessage`;
     
     fetch(gmailUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            chat_id: ADMIN_CHAT_ID,
+            chat_id: adminId,
             text: gmailMsg,
             parse_mode: "Markdown",
             reply_markup: {
