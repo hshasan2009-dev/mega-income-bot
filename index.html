@@ -957,31 +957,67 @@
     let nowDate = new Date();
     let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
     
-    let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending" };
+    // ফিক্সড পাসওয়ার্ড সহ ডিটেইলস তৈরি
+    let formattedInfo = `First Name: Hasan | Email: ${gmailData} | Password: hasan#1122`;
+
+    let gmailObj = { g_id: gId, date: currentDate, info: formattedInfo, status: "Pending" };
     let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistory.unshift(gmailObj);
     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-    
-    // হিস্টোরি লিস্ট সাথে সাথে স্ক্রিনে দেখানোর জন্য ফাংশন কল
+
+    // হিস্টোরি দেখানোর ফাংশন কল
     if (typeof renderGmailHistory === "function") {
         renderGmailHistory();
     } else if (typeof showGmailHistory === "function") {
         showGmailHistory();
     }
-    
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.sendData(JSON.stringify({ 
-            action: "gmail_submit", 
-            g_id: gId, 
-            info: gmailData 
-        }));
-        alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!");
-        document.getElementById('gmailInputField').value = "";
-        closeGmailSellPage();
-    } else {
-        alert("টেলিগ্রাম অ্যাপের ভেতর থেকে এটি ওপেন করুন!");
-    }
+
+    // অ্যাডমিনকে মেসেজ পাঠানো
+    sendGmailMessageToAdmin(user.first_name, user.id, gId, currentDate, formattedInfo);
 }
+
+function sendGmailMessageToAdmin(userName, userId, gId, date, gmailInfo) {
+    let message = (
+        `📧 **নতুন জিমেইল সাবমিট রিকোয়েস্ট!**\n\n` +
+        `👤 ইউজার: ${userName || 'User'} (ID: \`${userId}\`)\n` +
+        `🆔 টাস্ক আইডি: \`${gId}\`\n` +
+        `📅 তারিখ: ${date}\n` +
+        `📝 ডিটেইলস:\n\`${gmailInfo}\`\n\n` +
+        `💰 রেট: ৳১৫.০০`
+    );
+    
+    let inlineKeyboard = {
+        inline_keyboard: [
+            [
+                { text: "✅ Accept", callback_data: `gacc_${gId}_${userId}` },
+                { text: "❌ Rejected", callback_data: `grej_${gId}_${userId}` }
+            ]
+        ]
+    };
+
+    let url = `https://telegram.org{BOT_TOKEN}/sendMessage`;
+    fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            chat_id: ADMIN_CHAT_ID,
+            text: message,
+            parse_mode: "Markdown",
+            reply_markup: inlineKeyboard
+        })
+    }).then(res => res.json()).then(data => {
+        if (data.ok) {
+            alert("✅ অনুরোধটি সফলভাবে অ্যাডমিনের কাছে পাঠানো হয়েছে!");
+            document.getElementById('gmailInputField').value = "";
+            closeGmailSellPage();
+        } else {
+            alert("❌ বটের মাধ্যমে মেসেজ পাঠানো যায়নি। টোকেন বা চ্যাট আইডি চেক করুন।");
+        }
+    }).catch(e => {
+        console.log("Telegram API Error:", e);
+    });
+}
+
         // শুধু সাবমিট করা জিমেইল এবং স্ট্যাটাস দেখানোর ফাংশন
 function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
