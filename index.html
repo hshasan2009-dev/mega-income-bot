@@ -982,6 +982,48 @@
         alert("টেলিগ্রাম অ্যাপের ভেতর থেকে এটি ওপেন করুন!");
     }
 }
+        // শুধু সাবমিট করা জিমেইল এবং স্ট্যাটাস দেখানোর ফাংশন
+function renderGmailHistory() {
+    let gmailHistoryLog = document.getElementById('gmailHistoryLog');
+    if (!gmailHistoryLog) return;
+    
+    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+    gmailHistoryLog.innerHTML = ""; 
+    
+    if (gmailHistory.length === 0) {
+        gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
+        return;
+    }
+    
+    gmailHistory.forEach(item => {
+        let statusBadge = "";
+        if (item.status === "Pending") {
+            statusBadge = "<span class='badge-pending' style='color: #f1c40f; font-weight: bold;'>Pending</span>";
+        } else if (item.status === "Success") {
+            statusBadge = "<span class='badge-success' style='color: #2ecc71; font-weight: bold;'>Success</span>";
+        } else {
+            statusBadge = "<span class='badge-rejected' style='color: #e74c3c; font-weight: bold;'>Rejected</span>";
+        }
+        
+        let li = document.createElement('li');
+        li.style.borderBottom = "1px dashed #1a3325";
+        li.style.padding = "8px 0";
+        li.style.display = "flex";
+        li.style.justifyContent = "space-between";
+        li.style.alignItems = "center";
+        
+        li.innerHTML = `
+            <span style='color: #ffffff; font-size: 14px;'>📧 ${item.info}</span>
+            ${statusBadge}
+        `;
+        gmailHistoryLog.appendChild(li);
+    });
+}
+
+window.addEventListener('load', function() {
+    renderGmailHistory();
+});
+
 
         async function checkAdminActionFromTelegram() {
             try {
