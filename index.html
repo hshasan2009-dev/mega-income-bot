@@ -621,7 +621,7 @@
         let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "SIYAM1122": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
+            "SIYAM2009": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
             "GIFTCODE50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
             "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
         };
@@ -986,7 +986,24 @@
     }
 
     // অ্যাডমিন প্যানেলের জন্য মেসেজ টেক্সট সাজানো
+    let message = (
+        `📧 **নতুন জিমেইল সাবমিট রিকোয়েস্ট!**\n\n` +
+        `👤 ইউজার: ${currentUserName} (ID: \`${currentUserId}\`)\n` +
+        `🆔 টাস্ক আইডি: \`${gId}\`\n` +
+        `📅 তারিখ: ${currentDate}\n` +
+        `📝 ডিটেইলস:\n\`${formattedInfo}\`\n\n` +
+        `💰 রেট: ৳১৫.০০`
+    );
     
+    // টেলিগ্রাম ইনলাইন বাটন (Accept এবং Rejected)
+    let inlineKeyboard = {
+        inline_keyboard: [
+            [
+                { text: "✅ Accept", callback_data: `gacc_${gId}_${currentUserId}` },
+                { text: "❌ Rejected", callback_data: `grej_${gId}_${currentUserId}` }
+            ]
+        ]
+    };
 
     // আপনার কোডের গ্লোবাল ভ্যারিয়েবল (BOT_TOKEN এবং ADMIN_CHAT_ID) ব্যবহার করে সরাসরি মেসেজ পাঠানো
     let token = (typeof BOT_TOKEN !== "undefined") ? BOT_TOKEN : "";
@@ -999,27 +1016,7 @@
     }
 
     // সরাসরি Telegram API তে মেসেজ হিট করার লজিক
-    let url = `https://telegram.org{BOT_TOKEN}/function sendTelegramMessageToAdmin(userName, userId, wdId, date, method, account, netAmount) {
-            let message = (
-                `🚨 **নতুন উইথড্র রিকোয়েস্ট!**\n\n` +
-                `👤 ইউজার: ${userName} (ID: \`${userId}\`)\n` +
-                `🆔 রিকোয়েস্ট আইডি: \`${wdId}\`\n` +
-                `📅 তারিখ: ${date}\n` +
-                `💳 মাধ্যম: ${method}\n` +
-                `📞 অ্যাকাউন্ট: \`${account}\`\n` +
-                `💰 পরিমাণ: ৳${netAmount}`
-            );
-
-            let inlineKeyboard = {
-                inline_keyboard: [
-                    [
-                        { text: "✅ Success", callback_data: `success_${wdId}` },
-                        { text: "❌ Rejected", callback_data: `rejected_${wdId}` }
-                    ]
-                ]
-            };
-
-            let url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;`;
+    let url = `https://telegram.org{BOT_TOKEN}/sendMessage`;
     
     fetch(url, {
         method: "POST",
