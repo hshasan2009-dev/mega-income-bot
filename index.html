@@ -948,7 +948,7 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-        function handleGmailSubmit() {
+    function handleGmailSubmit() {
     var gmailData = document.getElementById('gmailInputField').value.trim();
     if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
     if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
@@ -962,7 +962,13 @@
     gmailHistory.unshift(gmailObj);
     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
     
-    // টেলিগ্রাম ওয়েব অ্যাপের নিজস্ব মেথড ব্যবহার করে ডাটা পাঠানো (এটি ব্রাউজারে ব্লক হবে না)
+    // হিস্টোরি লিস্ট সাথে সাথে স্ক্রিনে দেখানোর জন্য ফাংশন কল
+    if (typeof renderGmailHistory === "function") {
+        renderGmailHistory();
+    } else if (typeof showGmailHistory === "function") {
+        showGmailHistory();
+    }
+    
     if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.sendData(JSON.stringify({ 
             action: "gmail_submit", 
@@ -976,6 +982,7 @@
         alert("টেলিগ্রাম অ্যাপের ভেতর থেকে এটি ওপেন করুন!");
     }
 }
+
         async function checkAdminActionFromTelegram() {
             try {
                 let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
