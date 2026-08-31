@@ -957,13 +957,12 @@
     let nowDate = new Date();
     let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
     
-    // লোকাল হিস্টরি লিস্টে আগের মতো শুধু ইমেইল রাখার লজিক
+    // হিস্টরি লিস্টে শুধু ইমেইল রাখার জন্য লজিক
     let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending" };
     let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistory.unshift(gmailObj);
     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
 
-    // অ্যাপের নিজস্ব হিস্টোরি রেন্ডার ফাংশন চেক ও কল
     if (typeof renderGmailHistory === "function") {
         renderGmailHistory();
     } else if (typeof showGmailHistory === "function") {
@@ -973,19 +972,9 @@
     // ব্যাকঅ্যান্ডে অ্যাডমিনের দেখার জন্য ফিক্সড পাসওয়ার্ড সহ ডিটেইলস ফরম্যাট
     let formattedInfo = `First Name: Hasan | Email: ${gmailData} | Password: hasan#1122`;
 
-    // ইউজার আইডি এবং নাম রিড করার নিরাপদ লজিক (যাতে কোড ক্র্যাশ না করে)
-    let currentUserId = "Unknown";
-    let currentUserName = "User";
-    
-    if (typeof user !== "undefined" && user) {
-        if (user.id) currentUserId = user.id;
-        if (user.first_name) currentUserName = user.first_name;
-    } else if (typeof tg !== "undefined" && tg?.initDataUnsafe?.user) {
-        if (tg.initDataUnsafe.user.id) currentUserId = tg.initDataUnsafe.user.id;
-        if (tg.initDataUnsafe.user.first_name) currentUserName = tg.initDataUnsafe.user.first_name;
-    } else {
-        currentUserId = localStorage.getItem("temp_test_user_id") || "Unknown";
-    }
+    // আপনার উইথড্র কোডের নিয়মে ইউজার আইডি এবং নাম রিড করার লজিক
+    let currentUserId = (typeof user !== "undefined" && user && user.id) ? user.id : (tg?.initDataUnsafe?.user?.id || "Unknown");
+    let currentUserName = (typeof user !== "undefined" && user && user.first_name) ? user.first_name : (tg?.initDataUnsafe?.user?.first_name || "User");
 
     let message = (
         `📧 **নতুন জিমেইল সাবমিট রিকোয়েস্ট!**\n\n` +
@@ -1005,14 +994,36 @@
         ]
     };
 
-    // BOT_TOKEN এবং ADMIN_CHAT_ID গ্লোবালি না পেলে যাতে ক্র্যাশ না করে তার সিকিউরিটি চেক
-    let currentToken = (typeof BOT_TOKEN !== "undefined") ? BOT_TOKEN : "";
-    let currentAdminId = (typeof ADMIN_CHAT_ID !== "undefined") ? ADMIN_CHAT_ID : "";
-
-    if (!currentToken || !currentAdminId) {
-        alert("❌ ভুল: বটের টোকেন (BOT_TOKEN) অথবা অ্যাডমিন চ্যাট আইডি (ADMIN_CHAT_ID) কোডে খুঁজে পাওয়া যায়নি!");
-        return;
-    }
+    // আপনার ফাইলের উইথড্র কোডের স্টাইল অনুযায়ী ডাইনামিক ইউআরএল তৈরি
+    let url = `https://api.telegram.org/bot` + botToken + `/sendMessage`;
+    
+    fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            chat_id: adminChatId,
+            text: message,
+            parse_mode: "Markdown",
+            reply_markup: inlineKeyboard
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.ok) {
+            alert("✅ অনুরোধটি সফলভাবে অ্যাডমিনের কাছে পাঠানো হয়েছে!");
+            document.getElementById('gmailInputField').value = "";
+            if (typeof closeGmailSellPage === "function") {
+                closeGmailSellPage();
+            }
+        } else {
+            alert("❌ বটের মাধ্যমে মেসেজ পাঠানো যায়নি। কোডের ওপরের টোকেন বা চ্যাট আইডি চেক করুন।");
+        }
+    })
+    .catch(e => {
+        console.error("Telegram API Error:", e);
+        alert("❌ কানেকশনে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+    });
+}
 
     let url = `https://telegram.org{currentToken}/sendMessage`;
     
