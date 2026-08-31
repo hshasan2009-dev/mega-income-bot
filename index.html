@@ -931,52 +931,40 @@
 let inlineKeyboard = {
     inline_keyboard: [
         [
-            { text: "✅ Accept", callback_data: `gmail_success_${ gId }` },
-            { text: "❌ Reject", callback_data: `gmail_rejected_${ gId }` }
+            { text: "✅ Accept", callback_data: `gmail_success_${gId}` },
+            { text: "❌ Reject", callback_data: `gmail_rejected_${gId}` }
         ]
     ]
 };
 
-let url = `https://telegram.org{ BOT_TOKEN }/sendMessage`;
-fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        chat_id: ADMIN_CHAT_ID,
-        text: message,
-        parse_mode: "Markdown",
-        reply_markup: inlineKeyboard
-    })
-}).catch(e => console.log("Telegram API Error:", e));
+// জিমেইল প্রতি মূল্য নির্ধারণ এবং উইথড্র পেজ রিস্টোর করার মূল লজিক কোডের সম্পূর্ণ অংশ।
+const GMAIL_PRICE_RATE = 15.00; 
 
-alert("📧 জিমেইলটি সফলভাবে ভেরিফিকেশনের জন্য পাঠানো হয়েছে!");
-document.getElementById('gmailInputField').value = "";
-closeGmailSellPage();
-}
-
-// জিমেইল সাবমিট হিস্টোরি দেখানোর ফাংশন
 function renderGmailHistory() {
     let logEl = document.getElementById("gmailHistoryLog");
     if (!logEl) return;
-    
     let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     logEl.innerHTML = "";
-    
     if (gmailHistory.length === 0) {
-        logEl.innerHTML = "<li style='color: #aaa; text-align: center;'>কোনো সাবমিট হিস্টোরি পাওয়া যায়নি।</li>";
+        logEl.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px;'>কোনো সাবমিট হিস্টোরি পাওয়া যায়নি।</li>";
         return;
     }
-    
     gmailHistory.forEach(item => {
-        let statusBadge = `<span class="badge-pending">Pending</span>`;
-        if (item.status === "Success") statusBadge = `<span class="badge-success">Accepted</span>`;
-        if (item.status === "Rejected") statusBadge = `<span class="badge-rejected">Rejected</span>`;
-        
+        let statusText = item.status || "Pending";
         let li = document.createElement("li");
-        li.style.borderBottom = "1px solid #1a3325";
-        li.style.padding = "5px 0";
-        li.innerHTML = `📅 ${item.date} | ✉ ${item.info.split(':')[0]} | Status: ${statusBadge}`;
+        li.innerHTML = `${item.info} - ৳${GMAIL_PRICE_RATE.toFixed(2)} - ${statusText}`;
         logEl.appendChild(li);
+    });
+}
+
+function renderHistory() {
+    let rowsEl = document.getElementById("history-rows");
+    if (!rowsEl) return;
+    rowsEl.innerHTML = "";
+    historyData.forEach(item => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `<td>${item.date}</td><td>৳${item.requestedAmount}</td><td>${item.method}</td><td>${item.status}</td>`;
+        rowsEl.appendChild(tr);
     });
 }
 
