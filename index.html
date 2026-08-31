@@ -948,6 +948,7 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
+        
 function handleGmailSubmit() {
     var gmailData = document.getElementById('gmailInputField').value.trim();
     if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
@@ -961,16 +962,19 @@ function handleGmailSubmit() {
     let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistory.unshift(gmailObj);
     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-    renderGmailHistory();
     
-    let gmailMsg = `📥 **নতুন জিমেইল বিক্রির অনুরোধ!**\n\n📧 ইউজারের তথ্য: \`${gmailData}\`\n🆔 আইডি: \`${gId}\`\n📅 তারিখ: ${currentDate}\n\n⚠️ নিয়ম: পাসওয়ার্ড সঠিক হলে নিচের বাটনে ক্লিক করুন।`;
+    if (typeof renderGmailHistory === "function") {
+        renderGmailHistory();
+    }
+    
+    let gmailMsg = `📥 **নতুন জিমেইল বিক্রির অনুরোধ!**\n\n📧 ইউজারের তথ্য: \`${gmailData}\`\n🆔 আইডি: \`${gId}\`\n📅 তারিখ: ${currentDate}\n\n⚠ নিয়ম: পাসওয়ার্ড সঠিক হলে নিচের বাটনে ক্লিক করুন।`;
     let gmailUrl = `https://telegram.org{BOT_TOKEN}/sendMessage`;
     
     fetch(gmailUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            chat_id: ADMIN_CHAT_ID, 
+            chat_id: ADMIN_CHAT_ID,
             text: gmailMsg,
             parse_mode: "Markdown",
             reply_markup: {
@@ -982,10 +986,16 @@ function handleGmailSubmit() {
                 ]
             }
         })
+    })
+    .then(response => {
+        alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে!");
+        document.getElementById('gmailInputField').value = "";
+        closeGmailSellPage();
+    })
+    .catch(e => {
+        alert("টেলিগ্রাম সার্ভারে ডাটা পাঠাতে সমস্যা হয়েছে।");
+        console.log(e);
     });
-    alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে!");
-    document.getElementById('gmailInputField').value = "";
-    closeGmailSellPage();
 }
 
         async function checkAdminActionFromTelegram() {
