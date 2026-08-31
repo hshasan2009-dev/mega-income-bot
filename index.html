@@ -981,30 +981,6 @@
         alert("টেলিগ্রাম অ্যাপের ভেতর থেকে এটি ওপেন করুন!");
     }
 }
-
-function renderGmailHistory() {
-    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-    if (gmailHistory.length === 0) return;
-    
-    let htmlContent = "";
-    gmailHistory.forEach(item => {
-        let statusColor = "#ffc107"; // Pending (হলুদ)
-        if (item.status === "Success") statusColor = "#28a745"; // Success (সবুজ)
-        if (item.status === "Rejected" || item.status === "Reject") statusColor = "#dc3545"; // Reject (লাল)
-        
-        // আপনার অ্যাপের থিমের সাথে মিলিয়ে সুন্দর একটি রো (Row) তৈরি করা
-        htmlContent += `
-            <div style="background: #111111; padding: 12px; margin-top: 8px; border-radius: 6px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; text-align: left;">
-                <div>
-                    <div style="color: #ffffff; font-size: 13px; font-weight: 500; word-break: break-all;">${item.info}</div>
-                    <div style="color: #888888; font-size: 11px; margin-top: 4px;">তারিখ: ${item.date}</div>
-                </div>
-                <div style="background: ${statusColor}; color: #000000; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; min-width: 70px; text-align: center; margin-left: 10px;">
-                    ${item.status}
-                </div>
-            </div>
-        `;
-    });
     
     // আপনার স্ক্রিনের "আপনার জিমেইল সাবমিট রিপোর্ট:" লেখার নিচের বক্সটি খুঁজে বের করা
     let reportSections = document.querySelectorAll('div, p, span');
