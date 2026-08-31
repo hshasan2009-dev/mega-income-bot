@@ -948,8 +948,7 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-        
-function handleGmailSubmit() {
+        function handleGmailSubmit() {
     var gmailData = document.getElementById('gmailInputField').value.trim();
     if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
     if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
@@ -963,41 +962,20 @@ function handleGmailSubmit() {
     gmailHistory.unshift(gmailObj);
     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
     
-    let gmailMsg = `📥 **নতুন জিমেইল বিক্রির অনুরোধ!**\n\n📧 ইউজারের তথ্য: \`${gmailData}\`\n🆔 আইডি: \`${gId}\`\n📅 তারিখ: ${currentDate}\n\n⚠ নিয়ম: পাসওয়ার্ড সঠিক হলে নিচের বাটনে ক্লিক করুন।`;
-    
-    // এখানে আপনার সঠিক টোকেন এবং চ্যাট আইডি সরাসরি বসানো হয়েছে
-    let token = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
-    let adminId = "8049465500";
-    let gmailUrl = `https://telegram.org{token}/sendMessage`;
-    
-    fetch(gmailUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            chat_id: adminId,
-            text: gmailMsg,
-            parse_mode: "Markdown",
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        { text: "✅ Accept (১৫ টাকা)", callback_data: "gacc_" + gId },
-                        { text: "❌ Reject (০ টাকা)", callback_data: "grej_" + gId }
-                    ]
-                ]
-            }
-        })
-    })
-    .then(response => {
-        alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে!");
+    // টেলিগ্রাম ওয়েব অ্যাপের নিজস্ব মেথড ব্যবহার করে ডাটা পাঠানো (এটি ব্রাউজারে ব্লক হবে না)
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.sendData(JSON.stringify({ 
+            action: "gmail_submit", 
+            g_id: gId, 
+            info: gmailData 
+        }));
+        alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!");
         document.getElementById('gmailInputField').value = "";
         closeGmailSellPage();
-    })
-    .catch(e => {
-        alert("টেলিগ্রাম সার্ভারে ডাটা পাঠাতে সমস্যা হয়েছে।");
-        console.log(e);
-    });
+    } else {
+        alert("টেলিগ্রাম অ্যাপের ভেতর থেকে এটি ওপেন করুন!");
+    }
 }
-
         async function checkAdminActionFromTelegram() {
             try {
                 let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
