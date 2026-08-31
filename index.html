@@ -309,7 +309,7 @@
                 <button onclick="handleGmailSubmit()" style="background-color: #00a859; color: #ffffff; border: none; padding: 13px 0; font-size: 16px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 15px; cursor: pointer;">
                     🚀 সাবমিট করুন
                 </button>
-                <button onclick="window.open('https://t.me/hshasan2009', '_blank')" style="background-color: #17a2b8; color: #ffffff; border: none; padding: 11px 0; font-size: 14px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 25px; cursor: pointer;">
+                <button onclick="window.open('YOUR_VIDEO_LINK', '_blank')" style="background-color: #17a2b8; color: #ffffff; border: none; padding: 11px 0; font-size: 14px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 25px; cursor: pointer;">
                     🎬 কাজের ভিডিও দেখুন
                 </button>
                 <hr style="border: 0; border-top: 1px solid #1a3325; margin-bottom: 20px;">
@@ -621,8 +621,8 @@
         let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
-            "SIYAM2026": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
-            "GIFTCODE10": { amount: 10.00, expire: Date.now() + 86400000 * 3 },
+            "SIYAM2009": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
+            "GIFTCODE50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
             "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
         };
 
@@ -948,7 +948,6 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-        
 function handleGmailSubmit() {
     var gmailData = document.getElementById('gmailInputField').value.trim();
     if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
@@ -962,15 +961,10 @@ function handleGmailSubmit() {
     let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistory.unshift(gmailObj);
     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-    
-    if (typeof renderGmailHistory === "function") {
-        renderGmailHistory();
-    }
+    renderGmailHistory();
     
     let gmailMsg = `📥 **নতুন জিমেইল বিক্রির অনুরোধ!**\n\n📧 ইউজারের তথ্য: \`${gmailData}\`\n🆔 আইডি: \`${gId}\`\n📅 তারিখ: ${currentDate}\n\n⚠️ নিয়ম: পাসওয়ার্ড সঠিক হলে নিচের বাটনে ক্লিক করুন।`;
-    
-    // কোনো ডলার বা ব্যাকটিক সাইন ছাড়া সরাসরি সাধারণ ইউআরএল লিংক তৈরি
-    let gmailUrl = "https://telegram.org" + BOT_TOKEN + "/sendMessage";
+    let gmailUrl = `https://telegram.org{botToken}/sendMessage`;
     
     fetch(gmailUrl, {
         method: "POST",
@@ -988,16 +982,10 @@ function handleGmailSubmit() {
                 ]
             }
         })
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error('API error');
-        }
-        alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে!");
-        document.getElementById('gmailInputField').value = "";
-        closeGmailSellPage();
-    }).catch(err => {
-        alert("টেলিগ্রাম এপিআই কানেকশন এরর! অনুগ্রহ করে আপনার বটের টোকেন বা এডমিন আইডি চেক করুন।");
     });
+    alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে!");
+    document.getElementById('gmailInputField').value = "";
+    closeGmailSellPage();
 }
 
         async function checkAdminActionFromTelegram() {
@@ -1010,37 +998,6 @@ function handleGmailSubmit() {
                     for (let update of data.result) {
                         telegramOffset = update.update_id + 1;
                         localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
-    if (callbackData.startsWith("gacc_") || callbackData.startsWith("grej_")) {
-        let parts = callbackData.split("_");
-        let action = parts[0]; 
-        let gId = parts[1];
-        let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-        let targetItem = gmailHistory.find(item => item.g_id === gId);
-        
-        if (targetItem && targetItem.status === "Pending") {
-            if (action === "gacc") {
-                targetItem.status = "Success";
-                currentBalance += 15;
-                updateUI();
-            } else {
-                targetItem.status = "Rejected";
-            }
-            localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-            renderGmailHistory();
-        }
-        
-        let updatedText = action === "gacc" ? "✅ এই জিমেইলটি এক্সেপ্ট করা হয়েছে এবং ইউজারের ব্যালেন্সে ১৫ টাকা যোগ হয়েছে।" : "❌ এই জিমেইলটি রিজেক্ট করা হয়েছে।";
-        fetch(`https://telegram.org{botToken}/editMessageText`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                chat_id: update.callback_query.message.chat.id,
-                message_id: update.callback_query.message.message_id,
-                text: updatedText
-            })
-        });
-        return;
-    }
 
                         if (update.callback_query) {
                             let callbackData = update.callback_query.data;
