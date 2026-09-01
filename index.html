@@ -949,28 +949,35 @@
             }).catch(e => console.log("Telegram API Error:", e));
         }
     function handleGmailSubmit() {
-    var gmailData = document.getElementById('gmailInputField').value.trim();
-    if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
-    if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
+    var gmailInput = document.getElementById('gmailInputField');
+    var gmailData = gmailInput ? gmailInput.value.trim() : "";
+
+    if (gmailData === "") { 
+        alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); 
+        return; 
+    }
+    if (!gmailData.toLowerCase().includes("@gmail.com")) { 
+        alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); 
+        return; 
+    }
     
     let gId = "GM" + Date.now();
     let nowDate = new Date();
     let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
     
-    // লোকাল হিস্টরি লিস্টে শুধু ইমেইল রাখার আসল লজিক
+    // Local History Saving
     let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending" };
     let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistory.unshift(gmailObj);
     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
 
-    // অ্যাপের নিজস্ব হিস্টোরি রেন্ডার ফাংশন চেক ও কল
     if (typeof renderGmailHistory === "function") {
         renderGmailHistory();
     } else if (typeof showGmailHistory === "function") {
         showGmailHistory();
     }
 
-    // ইউজার আইডি এবং নাম রিড করার নিরাপদ লজিক
+    // Safe User Info Reading
     let currentUserId = "Unknown";
     let currentUserName = "User";
     
@@ -982,17 +989,16 @@
         if (tg.initDataUnsafe.user.first_name) currentUserName = tg.initDataUnsafe.user.first_name;
     }
 
-    // অ্যাডমিন প্যানেলের জন্য মেসেজ টেক্সট সাজানো (পাসওয়ার্ড ছাড়া)
-    let message = (
-        `📧 *নতুন জিমেইল সাবমিট রিকোয়েস্ট!*\n\n` +
-        `👤 *ইউজার:* ${currentUserName} (ID: \`${currentUserId}\`)\n` +
-        `🆔 *টাস্ক আইডি:* \`${gId}\`\n` +
-        `📅 *তারিখ:* ${currentDate}\n` +
-        `📧 *Gmail:* \`${gmailData}\`\n\n` +
-        `💰 *রেট:* ৳১৫.০০`
-    );
+    // HTML Mode (No Markdown Crash Issues)
+    let message = 
+        `📧 <b>নতুন জিমেইল সাবমিট রিকোয়েস্ট!</b>\n\n` +
+        `👤 <b>ইউজার:</b> ${currentUserName} (ID: <code>${currentUserId}</code>)\n` +
+        `🆔 <b>টাস্ক আইডি:</b> <code>${gId}</code>\n` +
+        `📅 <b>তারিখ:</b> ${currentDate}\n` +
+        `📧 <b>Gmail:</b> <code>${gmailData}</code>\n\n` +
+        `💰 <b>রেট:</b> ৳১৫.০০`;
     
-    // টেলিগ্রাম ইনলাইন বাটন (Accept এবং Rejected)
+    // Inline Buttons
     let inlineKeyboard = {
         inline_keyboard: [
             [
@@ -1002,53 +1008,41 @@
         ]
     };
 
-    // আপনার কোডের গ্লোবাল ভ্যারিয়েবল চেক
+    // Bot Credentials (Fallback Supported)
     let token = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
     let adminId = "8049465500";
 
     if (typeof BOT_TOKEN !== "undefined" && BOT_TOKEN) token = BOT_TOKEN;
     if (typeof ADMIN_CHAT_ID !== "undefined" && ADMIN_CHAT_ID) adminId = ADMIN_CHAT_ID;
 
-    // সঠিক Telegram API URL
-    let url = `https://api.telegram.org/bot${token}/sendMessage`;
-    
-    fetch(url, {
+    // Send Request to Telegram
+    fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             chat_id: adminId,
             text: message,
-            parse_mode: "Markdown",
+            parse_mode: "HTML",
             reply_markup: inlineKeyboard
         })
     })
     .then(res => res.json())
     .then(data => {
-        alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
-        document.getElementById('gmailInputField').value = "";
-        if (typeof closeGmailSellPage === "function") {
-            closeGmailSellPage();
+        if(!data.ok) {
+            console.error("Telegram API Error:", data);
         }
     })
     .catch(e => {
-        console.error("API Error:", e);
-        alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!");
-        document.getElementById('gmailInputField').value = "";
-        if (typeof closeGmailSellPage === "function") {
-            closeGmailSellPage();
-        }
+        console.error("Fetch Failure:", e);
     });
-}
-    .catch(e => {
-        // নেটওয়ার্ক ফেইল করলেও ইউজারের এক্সপেরিয়েন্স ঠিক রাখা হলো
-        alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!");
-        document.getElementById('gmailInputField').value = "";
-        if (typeof closeGmailSellPage === "function") {
-            closeGmailSellPage();
-        }
-    });
-}
 
+    // Instant UI Response for User
+    alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
+    if (gmailInput) gmailInput.value = "";
+    if (typeof closeGmailSellPage === "function") {
+        closeGmailSellPage();
+    }
+}
         // শুধু সাবমিট করা জিমেইল এবং স্ট্যাটাস দেখানোর ফাংশন
 function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
