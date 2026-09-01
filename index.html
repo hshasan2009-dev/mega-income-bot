@@ -1007,6 +1007,46 @@
             ]
         ]
     };
+        async function loadStatusAndBalance() {
+    let user_id = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || 8049465500;
+    
+    try {
+        const res = await fetch(`https://hshasan12342009.pythonanywhere.com/get-status/${user_id}`);
+        const data = await res.json();
+        
+        // ব্যালেন্স আপডেট
+        let balanceElement = document.getElementById("userBalance") || document.getElementById("balance");
+        if (data.balance !== undefined && balanceElement) {
+            balanceElement.innerText = `৳${data.balance.toFixed(2)}`;
+        }
+
+        // লোকাল লিস্টে স্ট্যাটাস আপডেট
+        let gmailList = JSON.parse(localStorage.getItem("userGmails")) || [];
+        let isUpdated = false;
+
+        if (data.statuses) {
+            gmailList.forEach(item => {
+                if (data.statuses[item.id] && item.status !== data.statuses[item.id]) {
+                    item.status = data.statuses[item.id];
+                    isUpdated = true;
+                } else if (data.statuses[item.gmail] && item.status !== data.statuses[item.gmail]) {
+                    item.status = data.statuses[item.gmail];
+                    isUpdated = true;
+                }
+            });
+        }
+
+        if (isUpdated) {
+            localStorage.setItem("userGmails", JSON.stringify(gmailList));
+            if (typeof renderGmailList === "function") renderGmailList();
+        }
+    } catch (e) {
+        console.log("Status fetch error:", e);
+    }
+}
+
+// প্রতি ৩ সেকেন্ড পর পর অটো চেক করবে
+setInterval(loadStatusAndBalance, 3000);
 
     // Bot Credentials (Fallback Supported)
     let token = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
