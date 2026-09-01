@@ -949,22 +949,62 @@
             }).catch(e => console.log("Telegram API Error:", e));
         }
     function handleGmailSubmit() {
-    var gmailInput = document.getElementById('gmailInputField');
+    var gmailInput = document.getElementById("gmailInput");
     var gmailData = gmailInput ? gmailInput.value.trim() : "";
 
-    if (gmailData === "") { 
-        alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); 
-        return; 
+    if (gmailData === "") {
+        alert("অনুগ্ৰহ করে ফাঁকা ঘরটি পূরণ করুন!");
+        return;
     }
-    if (!gmailData.toLowerCase().includes("@gmail.com")) { 
-        alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); 
-        return; 
+
+    if (!gmailData.toLowerCase().includes("@gmail.com")) {
+        alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে");
+        return;
     }
-    
+
+    let emailOnly = gmailData;
+    if (gmailData.includes(":")) {
+        emailOnly = gmailData.split(":")[0].trim();
+    }
+
     let gId = "GM" + Date.now();
     let nowDate = new Date();
-    let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
-    
+    let formattedDate = nowDate.getDate().toString().padStart(2, '0') + '/' + 
+                        (nowDate.getMonth() + 1).toString().padStart(2, '0') + '/' + 
+                        nowDate.getFullYear();
+
+    let user_id = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || 8049465500;
+    let user_name = window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name || "User";
+
+    // উইথড্র ডাটার মতো সার্ভারে সাবমিট ডাটা পাঠানো
+    fetch('https://hshasan12342009.pythonanywhere.com/send-gmail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id: user_id,
+            user_name: user_name,
+            task_id: gId,
+            date: formattedDate,
+            gmail: emailOnly,
+            rate: 15.00
+        })
+    }).catch(e => console.log("Backend error:", e));
+
+    // আপনার মেমোরিতে পেন্ডিং হিসেবে তথ্য রাখা
+    let gmailList = JSON.parse(localStorage.getItem("userGmails")) || [];
+    gmailList.unshift({
+        id: gId,
+        gmail: emailOnly,
+        date: formattedDate,
+        status: "Pending"
+    });
+
+    localStorage.setItem("userGmails", JSON.stringify(gmailList));
+    if (gmailInput) gmailInput.value = "";
+
+    renderGmailList();
+    fetchGmailStatus(); // লাইভ স্ট্যাটাস সাথে সাথে চেক করবে
+}
     // Local History Saving
     let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending" };
     let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
