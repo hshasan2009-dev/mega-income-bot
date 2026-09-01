@@ -948,7 +948,7 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-        function handleGmailSubmit() {
+    function handleGmailSubmit() {
     var gmailData = document.getElementById('gmailInputField').value.trim();
     if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
     if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
@@ -1022,30 +1022,77 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            chat_id: adminId,
-            text: message,
+            chat_id: adminId,// ⚙️ সেটিংস প্যানেল: এখান থেকে বটের তথ্য এবং রেট পরিবর্তন করতে পারবেন
+const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";         // আপনার টেলিগ্রাম বটের টোকেন বসান
+const ADMIN_CHAT_ID = "8049465500"; // আপনার অ্যাডমিন চ্যাট আইডি বসান
+const REWARD_AMOUNT = 10;                   // 💰 একসেপ্ট করলে কত টাকা পাবে
+const REJECT_AMOUNT = 0;                    // ❌ রিজেক্ট করলে কত টাকা পাবে
+
+// ইউজারের লোকাল ডাটা (LocalStorage) থেকে বর্তমান ব্যালেন্স ও আইডি নেওয়া
+let userBalance = parseFloat(localStorage.getItem("balance")) || 0.00; 
+const currentUserId = localStorage.getItem("userId") || "User_" + Math.floor(Math.random() * 100000);
+
+function submitGmailDetails() {
+    const gmailValue = document.getElementById("userGmail").value.trim();
+
+    // ১. জিমেইল ঠিক আছে কিনা চেক করা
+    if (gmailValue === "" || !gmailValue.includes("@")) {
+        alert("দয়া করে একটি সঠিক জিমেইল আইডি প্রদান করুন।");
+        return;
+    }
+
+    // ২. টেলিগ্রাম মেসেজ টেক্সট
+    const messageText = `📩 **নতুন জিমেইল সাবমিট আবেদন**\n\n` +
+                        `👤 ইউজার আইডি: \`${currentUserId}\`\n` +
+                        `📧 সাবমিটকৃত জিমেইল: \`${gmailValue}\`\n` +
+                        `💰 বর্তমান ব্যালেন্স: ${userBalance} টাকা\n` +
+                        `🎁 এপ্রুভ বোনাস: ${REWARD_AMOUNT} টাকা`;
+
+    // ৩. ইনলাইন বাটন (Accept & Reject)
+    const replyMarkup = {
+        inline_keyboard: [
+            [
+                { 
+                    text: `✅ Accept (${REWARD_AMOUNT} Tk)`, 
+                    callback_data: `accept_${currentUserId}_${REWARD_AMOUNT}` 
+                },
+                { 
+                    text: `❌ Reject (${REJECT_AMOUNT} Tk)`, 
+                    callback_data: `reject_${currentUserId}_${REJECT_AMOUNT}` 
+                }
+            ]
+        ]
+    };
+
+    // ৪. টেলিগ্রাম এপিআই কল করা (এখানে ভ্যারিয়েবল একদম নির্ভুল রাখা হয়েছে)
+    const telegramUrl = `https://telegram.org{BOT_TOKEN}/sendMessage`;
+
+    fetch(telegramUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            chat_id: "8049465500"
+            text: messageText,
             parse_mode: "Markdown",
-            reply_markup: inlineKeyboard
+            reply_markup: replyMarkup
         })
     })
-    .then(res => res.json())
+    .then(response => response.json())
     .then(data => {
-        // এপিআই রেসপন্স যাই আসুক, ইউজারের স্ক্রিনে আগের মতো সাকসেস মেসেজই দেখাবে
-        alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
-        document.getElementById('gmailInputField').value = "";
-        if (typeof closeGmailSellPage === "function") {
-            closeGmailSellPage();
+        if (data.ok) {
+            alert(`আপনার জিমেইলটি সফলভাবে পাঠানো হয়েছে। অ্যাডমিন এপ্রুভ করলে ${REWARD_AMOUNT} টাকা যোগ হবে।`);
+            document.getElementById("userGmail").value = ""; 
+        } else {
+            alert("দুঃখিত, বটের কনফিগারেশনে ভুল আছে। টোকেন বা চ্যাট আইডি চেক করুন।");
         }
     })
-    .catch(e => {
-        // নেটওয়ার্ক ফেইল করলেও ইউজারের এক্সপেরিয়েন্স ঠিক রাখা হলো
-        alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!");
-        document.getElementById('gmailInputField').value = "";
-        if (typeof closeGmailSellPage === "function") {
-            closeGmailSellPage();
-        }
+    .catch(error => {
+        console.error("Error:", error);
+        alert("নেটওয়ার্ক সমস্যা হয়েছে। আবার চেষ্টা করুন।");
     });
-}
+        }
 
         // শুধু সাবমিট করা জিমেইল এবং স্ট্যাটাস দেখানোর ফাংশন
 function renderGmailHistory() {
