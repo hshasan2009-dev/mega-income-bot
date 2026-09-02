@@ -1033,6 +1033,9 @@ function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
     if (!gmailHistoryLog) return;
     
+    // বর্তমান জিমেইল রেট (ভবিষ্যতে রেট পাল্টালে শুধু এই সংখ্যাটি পরিবর্তন করবেন)
+    let currentRate = 15.00; 
+    
     let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistoryLog.innerHTML = ""; 
     
@@ -1043,12 +1046,26 @@ function renderGmailHistory() {
     
     gmailHistory.forEach(item => {
         let statusBadge = "";
+        
+        // dynamic rate হিসাব (সেভ করা অ্যামাউন্ট থাকলে সেটা, না থাকলে কারেন্ট রেট)
+        let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
+        
+        // স্ট্যাটাস ফিল্টারিং এবং ডাইনামিক অ্যামাউন্ট ডিজাইন
         if (item.status === "Pending") {
-            statusBadge = "<span style='color: #f1c40f; font-weight: bold;'>Pending</span>";
+            statusBadge = `<div style="text-align: right;">
+                <span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span>
+            </div>`;
         } else if (item.status === "Success" || item.status === "Approved") {
-            statusBadge = "<span style='color: #2ecc71; font-weight: bold;'>Success</span>";
+            // সাকসেস হলে নিচে Dynamic Amount শো করবে
+            statusBadge = `<div style="text-align: right;">
+                <span style='color: #2ecc71; font-weight: bold; font-size: 14px;'>Success</span><br>
+                <small style='color: #2ecc71; font-size: 11px;'>+৳${displayAmount}</small>
+            </div>`;
         } else {
-            statusBadge = "<span style='color: #e74c3c; font-weight: bold;'>Rejected</span>";
+            statusBadge = `<div style="text-align: right;">
+                <span style='color: #e74c3c; font-weight: bold; font-size: 14px;'>Rejected</span><br>
+                <small style='color: #e74c3c; font-size: 11px;'>+৳০.০০</small>
+            </div>`;
         }
         
         let li = document.createElement('li');
@@ -1064,8 +1081,7 @@ function renderGmailHistory() {
         `;
         gmailHistoryLog.appendChild(li);
     });
-}
-
+}        
 // পেজ লোড হলে হিস্ট্রি দেখানো
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
