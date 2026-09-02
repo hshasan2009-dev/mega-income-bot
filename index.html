@@ -1084,7 +1084,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-    async function checkAdminActionFromTelegram() {
+async function checkAdminActionFromTelegram() {
             try {
                 let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
                 let response = await fetch(url);
@@ -1108,9 +1108,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (callbackData.includes("_")) {
                                 let parts = callbackData.split("_");
                                 let action = parts[0].toLowerCase();
-                                let itemId = parts[1];
+                                let itemId = parts[1]; // এখানে টাস্ক আইডি (GM...) আসবে
 
-                                // ১. উইথড্র হিস্ট্রি আপডেট (হুবহু অপরিবর্তিত)
+                                // ১. উইথড্র হিস্ট্রি আপডেট (হুবহু আগের মতো রাখা হলো)
                                 if (typeof historyData !== 'undefined' && Array.isArray(historyData)) {
                                     let targetItem = historyData.find(item => item.wd_id === itemId);
                                     if (targetItem && targetItem.status === "Pending") {
@@ -1126,21 +1126,21 @@ document.addEventListener('DOMContentLoaded', function() {
                                     }
                                 }
 
-                                // ২. জিমেইল হিস্ট্রি আপডেট (ফিক্সড কোড - যেন স্ক্রিনশটের Pending লেখা বদলায়)
+                                // ২. জিমেইল হিস্ট্রি ফিক্সড আপডেট (টাস্ক আইডি, জিমেইল বা অবজেক্ট ফিল্ড যাই হোক না কেন ম্যাচ করবে)
                                 let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
                                 
-                                // জিমেইল আইডি অথবা টেক্সট মেলানো
                                 let targetGmail = gmailHistory.find(item => 
                                     (item.id && String(item.id) === String(itemId)) || 
+                                    (item.task_id && String(item.task_id) === String(itemId)) ||
                                     (item.info && item.info.toLowerCase().includes(itemId.toLowerCase())) ||
                                     (item.gmail && item.gmail.toLowerCase().includes(itemId.toLowerCase()))
                                 );
 
                                 if (targetGmail && targetGmail.status === "Pending") {
-                                    if (action === "success" || action === "approve" || action === "approved") {
+                                    if (action === "success" || action === "accept" || action === "approve" || action === "approved") {
                                         targetGmail.status = "Success";
                                         
-                                        // রিওয়ার্ড যোগ করা
+                                        // রেট ব্যালেন্স এড
                                         let rate = targetGmail.amount ? Number(targetGmail.amount) : 15.00;
                                         if (typeof currentBalance !== 'undefined') {
                                             currentBalance += rate;
@@ -1150,7 +1150,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         targetGmail.status = "Rejected";
                                     }
 
-                                    // লোকালস্টোরেজ আপডেট ও হিস্ট্রি রি-রেন্ডার
+                                    // পরিবর্তন সেভ এবং সাথে সাথে ডিসপ্লে আপডেট
                                     localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
                                     if (typeof renderGmailHistory === "function") {
                                         renderGmailHistory();
