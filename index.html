@@ -1027,14 +1027,13 @@ function handleGmailSubmit() {
         alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
     });
 }
-// ২. হিস্ট্রি রেন্ডার করার ফাংশন
+        functionস্ট্রি রেন্ডার করার ফাংশন (ডিজাইন অপরিবর্তিত)
 function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
     if (!gmailHistoryLog) return;
     
     let currentRate = 15.00; 
-    let gmailHistoryKey = (typeof user !== 'undefined' && user && user.id) ? `gmail_history_${user.id}` : 'gmail_history';
-    let gmailHistory = JSON.parse(localStorage.getItem(gmailHistoryKey)) || JSON.parse(localStorage.getItem('gmail_history')) || [];
+    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistoryLog.innerHTML = ""; 
     
     if (gmailHistory.length === 0) {
@@ -1047,18 +1046,15 @@ function renderGmailHistory() {
         let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
         
         if (item.status === "Pending") {
-            // Pending অবস্থায় শুধু প্যান্ডিং লেখাটি দেখাবে (কোনো টাকা দেখাবে না)
             statusBadge = `<div style="text-align: right;">
                 <span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span>
             </div>`;
         } else if (item.status === "Success" || item.status === "Approved") {
-            // শুধু Success হলেই নিচে ছোট করে +৳অ্যামাউন্ট দেখাবে
             statusBadge = `<div style="text-align: right;">
                 <span style='color: #2ecc71; font-weight: bold; font-size: 14px;'>Success</span><br>
                 <small style='color: #2ecc71; font-size: 11px;'>+৳${displayAmount}</small>
             </div>`;
         } else {
-            // Rejected হলে শুধু রিজেক্টেড লেখাটি দেখাবে
             statusBadge = `<div style="text-align: right;">
                 <span style='color: #e74c3c; font-weight: bold; font-size: 14px;'>Rejected</span>
             </div>`;
@@ -1072,12 +1068,13 @@ function renderGmailHistory() {
         li.style.alignItems = "center";
         
         li.innerHTML = `
-            <span style='color: #ffffff; font-size: 14px;'>📧 ${item.info || item.gmail || ''}</span>
+            <span style='color: #ffffff; font-size: 14px;'>📧 ${item.info}</span>
             ${statusBadge}
         `;
         gmailHistoryLog.appendChild(li);
     });
 } 
+
 // পেজ লোড হলে হিস্ট্রি দেখানো
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
@@ -1109,7 +1106,7 @@ async function checkAdminActionFromTelegram() {
                         let action = parts[0].toLowerCase();
                         let targetId = parts[1];
 
-                        // ১. উইথড্র হিস্ট্রি চেক ও আপডেট (হুবহু অপরিবর্তিত)
+                        // ১. উইথড্র হিস্ট্রি আপডেট (আপনার আগের কোড)
                         if (typeof historyData !== 'undefined' && Array.isArray(historyData)) {
                             let targetItem = historyData.find(item => item.wd_id === targetId);
                             if (targetItem && targetItem.status === "Pending") {
@@ -1118,41 +1115,38 @@ async function checkAdminActionFromTelegram() {
                                 } else if (action === "rejected") {
                                     targetItem.status = "Rejected";
                                     currentBalance += targetItem.requestedAmount;
-                                    if (typeof updateUI === 'function') updateUI();
+                                    if (typeof updateUI === "function") updateUI();
                                 }
                                 localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
-                                if (typeof renderHistory === 'function') renderHistory();
+                                if (typeof renderHistory === "function") renderHistory();
                             }
                         }
 
-                        // ২. জিমেইল হিস্ট্রি চেক ও আপডেট (উইথড্রর মতোই ডায়নামিক কি ও আইডি ম্যাচিং)
-                        let gmailStorageKey = (typeof user !== 'undefined' && user && user.id) ? `gmail_history_${user.id}` : 'gmail_history';
-                        let gmailHistory = JSON.parse(localStorage.getItem(gmailStorageKey)) || JSON.parse(localStorage.getItem('gmail_history')) || [];
-                        
+                        // ২. জিমেইল হিস্ট্রি ফিক্সড আপডেট
+                        let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
                         let targetGmail = gmailHistory.find(item => 
-                            item.id === targetId || 
                             item.task_id === targetId || 
+                            item.id === targetId || 
                             item.wd_id === targetId ||
                             (item.info && item.info.includes(targetId))
                         );
 
                         if (targetGmail && targetGmail.status === "Pending") {
-                            if (action === "success" || action === "accept" || action === "approve") {
+                            // টেলিগ্রামের "accept" বা "success" দুইটাই হ্যান্ডেল করা হয়েছে
+                            if (action === "accept" || action === "success" || action === "approved") {
                                 targetGmail.status = "Success";
-                                let addAmount = targetGmail.amount ? Number(targetGmail.amount) : 15.00;
+                                
+                                let rate = targetGmail.amount ? Number(targetGmail.amount) : 15.00;
                                 if (typeof currentBalance !== 'undefined') {
-                                    currentBalance += addAmount;
+                                    currentBalance += rate;
                                 }
-                                if (typeof updateUI === 'function') updateUI();
+                                if (typeof updateUI === "function") updateUI();
                             } else if (action === "rejected" || action === "reject") {
                                 targetGmail.status = "Rejected";
                             }
 
-                            // লোকাল স্টোরেজে উভয় ফরম্যাটেই সেভ রাখা হচ্ছে যেন কোনো কি মিস না হয়
-                            localStorage.setItem(gmailStorageKey, JSON.stringify(gmailHistory));
                             localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-                            
-                            renderGmailHistory();
+                            renderGmailHistory(); // সাথে সাথে স্ক্রিনে আপডেট দেখাবে
                         }
                     }
                 }
