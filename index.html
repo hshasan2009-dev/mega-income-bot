@@ -948,66 +948,86 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-        // ১. জিমেইল সাবমিট করার ফাংশন// ১. জিমেইল সাবমিট করার ফাংশন
-        function handleGmailSubmit() {
-            var gmailInput = document.getElementById('gmailInput');
-            var gmailData = gmailInput ? gmailInput.value.trim() : "";
+        // ১. জিমেইল সাবমিট করার ফাংশন
+function handleGmailSubmit() {
+    var gmailInput = document.getElementById('gmailInputField');
+    var gmailData = gmailInput ? gmailInput.value.trim() : "";
 
-            if (gmailData === "") {
-                alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন।");
-                return;
-            }
+    if (gmailData === "") { 
+        alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); 
+        return; 
+    }
+    if (!gmailData.toLowerCase().includes("@gmail.com")) { 
+        alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); 
+        return; 
+    }
+    
+    let gId = "GM" + Date.now();
+    let nowDate = new Date();
+    let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+    
+    // হিস্ট্রি সেভ
+    let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending" };
+    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+    gmailHistory.unshift(gmailObj);
+    localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
 
-            if (!gmailData.toLowerCase().endsWith("@gmail.com")) {
-                alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে।");
-                return;
-            }
+    // লাইভ হিস্ট্রি শো করা
+    renderGmailHistory();
 
-            let gId = "GM" + Date.now();
-            let nowDate = new Date();
-            let currentDate = String(nowDate.getDate()).padStart(2, '0') + '/' + 
-                              String(nowDate.getMonth() + 1).padStart(2, '0') + '/' + 
-                              nowDate.getFullYear();
+    // টেলিগ্রাম ইউজার ডাটা
+    let currentUserId = "Unknown";
+    let currentUserName = "User";
+    if (typeof tg !== "undefined" && tg?.initDataUnsafe?.user) {
+        if (tg.initDataUnsafe.user.id) currentUserId = tg.initDataUnsafe.user.id;
+        if (tg.initDataUnsafe.user.first_name) currentUserName = tg.initDataUnsafe.user.first_name;
+    }
 
-            // PythonAnywhere সার্ভারে ডাটা পাঠানো (ডাটাবেজে সেভ করার জন্য)
-            let payload = {
-                user_id: user.id,
-                user_name: currentUser,
-                task_id: gId,
-                date: currentDate,
-                gmail: gmailData,
-                rate: 15.00
-            };
+    let message = 
+        `📧 <b>নতুন জিমেইল সাবমিট রিকোয়েস্ট!</b>\n\n` +
+        `👤 <b>ইউজার:</b> ${currentUserName} (ID: <code>${currentUserId}</code>)\n` +
+        `🆔 <b>টাস্ক আইডি:</b> <code>${gId}</code>\n` +
+        `📅 <b>তারিখ:</b> ${currentDate}\n` +
+        `📧 <b>Gmail:</b> <code>${gmailData}</code>\n\n` +
+        `💰 <b>রেট:</b> ৳১৫.০০`;
+    
+    let inlineKeyboard = {
+        inline_keyboard: [
+            [
+                { text: "✅ Accept", callback_data: `gacc_${gId}_${currentUserId}_15` },
+                { text: "❌ Rejected", callback_data: `grej_${gId}_${currentUserId}` }
+            ]
+        ]
+    };
 
-            fetch("https://MegaIncome.pythonanywhere.com/send-gmail", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "success") {
-                    // লোকালস্টোরেজ আপডেট
-                    let gmailObj = { g_id: gId, date: currentDate, info: gmailData, gmail: gmailData, status: 'Pending', amount: 15.00 };
-                    let gmailHistoryKey = `gmail_history_${user.id}`;
-                    let gmailHistory = JSON.parse(localStorage.getItem(gmailHistoryKey)) || JSON.parse(localStorage.getItem('gmail_history')) || [];
-                    
-                    gmailHistory.unshift(gmailObj);
-                    localStorage.setItem(gmailHistoryKey, JSON.stringify(gmailHistory));
-                    localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
+    let token = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
+    let adminId = "8049465500";
 
-                    alert("আপনার জিমেইলটি সফলভাবে সাবমিট হয়েছে!");
-                    if (gmailInput) gmailInput.value = "";
-                    renderGmailHistory();
-                } else {
-                    alert("সাবমিট করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।");
-                }
-            })
-            .catch(err => {
-                console.error("Error:", err);
-                alert("সার্ভার কানেকশন ত্রুটি!");
-            });
+    // Telegram API Call
+    fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            chat_id: adminId,
+            text: message,
+            parse_mode: "HTML",
+            reply_markup: inlineKeyboard
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.ok) {
+            alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
+            if (gmailInput) gmailInput.value = "";
+        } else {
+            alert("টেলিগ্রাম বটের মেসেজ পাঠাতে সমস্যা হচ্ছে!");
         }
+    })
+    .catch(e => {
+        alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
+    });
+}
+
 // ২. হিস্ট্রি রেন্ডার করার ফাংশন
 function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
@@ -1138,4 +1158,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     </script>
 </body>
-</html>
+    </html>
