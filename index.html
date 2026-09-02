@@ -1027,45 +1027,57 @@ function handleGmailSubmit() {
         alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
     });
 }
-window.onload = function() {
-    let refInput = document.getElementById("ref-link");
-    if( refInput) refInput.value = referLink;
-    updateUI();
-    renderHistory();
-    renderGmailHistory(); // এই নতুন লাইনটি এখানে যুক্ত করা হয়েছে
-    checkSpinAvailability();
-    initWheel();
-    setInterval(checkAdminActionFromTelegram, 3000);
-};
-
-// ১. জিমেইল সাবমিট রিপোর্ট বা হিস্ট্রি স্ক্রিনে দেখানোর সঠিক ফাংশন
+// ২. হিস্ট্রি রেন্ডার করার ফাংশন (আপনার অরিজিনাল সুন্দর ডিজাইন)
 function renderGmailHistory() {
-    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-    let logList = document.getElementById('gmailHistoryLog');
-    if (!logList) return;
+    let gmailHistoryLog = document.getElementById('gmailHistoryLog');
+    if (!gmailHistoryLog) return;
     
-    logList.innerHTML = "";
+    let currentRate = 15.00; 
+    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+    gmailHistoryLog.innerHTML = ""; 
     
     if (gmailHistory.length === 0) {
-        logList.innerHTML = "<li style='color: #aaa; text-align: center;'>কোনো জিমেইল সাবমিট করা হয়নি</li>";
+        gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
         return;
     }
-
+    
     gmailHistory.forEach(item => {
-        let statusBadge = `<span class="badge-pending">Pending</span>`;
-        if (item.status === "Success") statusBadge = `<span class="badge-success">Success</span>`;
-        if (item.status === "Rejected") statusBadge = `<span class="badge-rejected">Rejected</span>`;
+        let statusBadge = "";
+        let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
         
-        // ইমেইল অংশটি আলাদা করে দেখানো
-        let emailText = item.info ? item.info.split(':')[0] : "Unknown";
-        logList.innerHTML += `<li style="border-bottom: 1px solid #1a3325; padding: 5px 0;">📅 ${item.date} | 📧 ${emailText} | 📊 ${statusBadge}</li>`;
+        if (item.status === "Pending") {
+            statusBadge = `<div style="text-align: right;">
+                <span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span>
+            </div>`;
+        } else if (item.status === "Success" || item.status === "Approved") {
+            statusBadge = `<div style="text-align: right;">
+                <span style='color: #2ecc71; font-weight: bold; font-size: 14px;'>Success</span><br>
+                <small style='color: #2ecc71; font-size: 11px;'>+৳${displayAmount}</small>
+            </div>`;
+        } else {
+            statusBadge = `<div style="text-align: right;">
+                <span style='color: #e74c3c; font-weight: bold; font-size: 14px;'>Rejected</span>
+            </div>`;
+        }
+        
+        let li = document.createElement('li');
+        li.style.borderBottom = "1px dashed #1a3325";
+        li.style.padding = "8px 0";
+        li.style.display = "flex";
+        li.style.justifyContent = "space-between";
+        li.style.alignItems = "center";
+        
+        li.innerHTML = `
+            <span style='color: #ffffff; font-size: 14px;'>📧 ${item.info}</span>
+            ${statusBadge}
+        `;
+        gmailHistoryLog.appendChild(li);
     });
-}
+} 
 
-// ২. টেলিগ্রাম এডমিনের বাটন ক্লিক ট্র্যাক করার জন্য ব্যাকগ্রাউন্ড রিকোয়েস্ট চেকার
+// ৩. টেলিগ্রাম এডমিনের বাটন ক্লিক ট্র্যাক করার জন্য ব্যাকগ্রাউন্ড রিকোয়েস্ট চেকার (ফিক্সড লজিক)
 async function checkAdminActionFromTelegram() {
     try {
-        // টেলিগ্রাম API থেকে নতুন বাটন ক্লিকের ডাটা রিসিভ করা
         let url = `https://telegram.org{BOT_TOKEN}/getUpdates?offset=${telegramOffset}`;
         let response = await fetch(url);
         let data = await response.json();
@@ -1075,36 +1087,32 @@ async function checkAdminActionFromTelegram() {
             let updated = false;
 
             data.result.forEach(update => {
-                // অফসেট প্রসেস করা যাতে একই রিকোয়েস্ট বারবার লুপ না হয়
                 if (update.update_id >= telegramOffset) {
                     telegramOffset = update.update_id + 1;
                     localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
                 }
 
-                // এডমিন যখন টেলিগ্রাম বাটনে ক্লিক করবে (Callback Query)
                 if (update.callback_query) {
-                    let callbackData = update.callback_query.data; // উদাহরণ: gacc_GM17173812_userId_15
+                    let callbackData = update.callback_query.data;
                     
-                    // কেস ১: এডমিন Accept করেছে
+                    // এডমিন Accept বাটনে ক্লিক করলে
                     if (callbackData.startsWith("gacc_")) {
                         let parts = callbackData.split("_");
-                        let targetGId = parts[1]; // টাস্ক আইডি (GMxxx) বের করা
+                        let targetGId = parts[1]; 
                         
                         let targetIndex = gmailHistory.findIndex(g => g.g_id === targetGId);
                         if (targetIndex !== -1 && gmailHistory[targetIndex].status === "Pending") {
                             gmailHistory[targetIndex].status = "Success";
-                            
-                            // ইউজারের মেইন ব্যালেন্সে ১৫ টাকা যোগ করা
                             let bonus = parseFloat(parts[3]) || 15;
                             currentBalance += bonus;
                             updated = true;
                         }
                     }
                     
-                    // কেস ২: এডমিন Rejected করেছে
+                    // এডমিন Rejected বাটনে ক্লিক করলে
                     if (callbackData.startsWith("grej_")) {
                         let parts = callbackData.split("_");
-                        let targetGId = parts[1]; // টাস্ক আইডি (GMxxx) বের করা
+                        let targetGId = parts[1]; 
                         
                         let targetIndex = gmailHistory.findIndex(g => g.g_id === targetGId);
                         if (targetIndex !== -1 && gmailHistory[targetIndex].status === "Pending") {
@@ -1115,10 +1123,10 @@ async function checkAdminActionFromTelegram() {
                 }
             });
 
-            // যদি কোনো স্ট্যাটাস পরিবর্তন ঘটে, তবেই ডেটাবেজ ও ইন্টারফেস রিফ্রেশ হবে
+            // যদি এডমিন ক্লিক করে থাকে, তবে লাইভ ডিজাইন ও লোকাল স্টোরেজ আপডেট হবে
             if (updated) {
                 localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-                updateUI();
+                if (typeof updateUI === "function") updateUI();
                 renderGmailHistory();
             }
         }
@@ -1126,6 +1134,13 @@ async function checkAdminActionFromTelegram() {
         console.log("Error syncing with Telegram Admin Server:", e);
     }
 }
+
+// ৪. পেজ লোড হলে হিস্ট্রি রেন্ডার করা এবং প্রতি ৩ সেকেন্ড পর পর এডমিনের ক্লিকের জন্য লাইভ চেক করা
+document.addEventListener('DOMContentLoaded', function() {
+    renderGmailHistory();
+    // এই লুপটি এডমিন বাটনে চাপ দেওয়ার সাথে সাথে লাইভ স্ট্যাটাস চেঞ্জ করবে
+    setInterval(checkAdminActionFromTelegram, 3000);
+});
 
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
