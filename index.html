@@ -1027,14 +1027,14 @@ function handleGmailSubmit() {
         alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
     });
 }
-
 // ২. হিস্ট্রি রেন্ডার করার ফাংশন
 function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
     if (!gmailHistoryLog) return;
     
     let currentRate = 15.00; 
-    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+    let gmailHistoryKey = (typeof user !== 'undefined' && user && user.id) ? `gmail_history_${user.id}` : 'gmail_history';
+    let gmailHistory = JSON.parse(localStorage.getItem(gmailHistoryKey)) || JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistoryLog.innerHTML = ""; 
     
     if (gmailHistory.length === 0) {
@@ -1047,7 +1047,7 @@ function renderGmailHistory() {
         let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
         
         if (item.status === "Pending") {
-            // Pending অবস্থায় শুধু প্যান্ডিং লেখাটি দেখাবে (কোনো টাকা দেখাবে না)
+            // Pending অবস্থায় শুধু প্যান্ডিং লেখাটি দেখাবে (কোনো টাকা দেখাবে না)
             statusBadge = `<div style="text-align: right;">
                 <span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span>
             </div>`;
@@ -1072,7 +1072,7 @@ function renderGmailHistory() {
         li.style.alignItems = "center";
         
         li.innerHTML = `
-            <span style='color: #ffffff; font-size: 14px;'>📧 ${item.info}</span>
+            <span style='color: #ffffff; font-size: 14px;'>📧 ${item.info || item.gmail || ''}</span>
             ${statusBadge}
         `;
         gmailHistoryLog.appendChild(li);
@@ -1082,9 +1082,6 @@ function renderGmailHistory() {
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
 });
-
-// ৩ সেকেন্ড পর পর টেলগ্রাম ডাটা চেক করা (আগের মতোই ৩ সেকেন্ড পর পর রান হবে)
-setInterval(checkAdminActionFromTelegram, 3000);
 
 async function checkAdminActionFromTelegram() {
     try {
@@ -1110,55 +1107,52 @@ async function checkAdminActionFromTelegram() {
                     if (callbackData.includes("_")) {
                         let parts = callbackData.split("_");
                         let action = parts[0].toLowerCase();
-                        let itemId = parts[1];
+                        let targetId = parts[1];
 
-                        // =================১. উইথড্র হিস্টরি আপডেট (হুবহু আগের কোড)=================
+                        // ১. উইথড্র হিস্ট্রি চেক ও আপডেট (হুবহু অপরিবর্তিত)
                         if (typeof historyData !== 'undefined' && Array.isArray(historyData)) {
-                            let targetItem = historyData.find(item => item.wd_id === itemId);
+                            let targetItem = historyData.find(item => item.wd_id === targetId);
                             if (targetItem && targetItem.status === "Pending") {
                                 if (action === "success") {
                                     targetItem.status = "Success";
                                 } else if (action === "rejected") {
                                     targetItem.status = "Rejected";
                                     currentBalance += targetItem.requestedAmount;
-                                    if (typeof updateUI === "function") updateUI();
+                                    if (typeof updateUI === 'function') updateUI();
                                 }
                                 localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
-                                if (typeof renderHistory === "function") renderHistory();
+                                if (typeof renderHistory === 'function') renderHistory();
                             }
                         }
 
-                        // =================২. জিমেইল হিস্টরি আপডেট (উইথড্র লজিক অনুযায়ী সমাধান)=================
-                        let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+                        // ২. জিমেইল হিস্ট্রি চেক ও আপডেট (উইথড্রর মতোই ডায়নামিক কি ও আইডি ম্যাচিং)
+                        let gmailStorageKey = (typeof user !== 'undefined' && user && user.id) ? `gmail_history_${user.id}` : 'gmail_history';
+                        let gmailHistory = JSON.parse(localStorage.getItem(gmailStorageKey)) || JSON.parse(localStorage.getItem('gmail_history')) || [];
                         
-                        // আইডি বা টাস্ক আইডি দিয়ে জিমেইল হিস্টরি খোঁজা
                         let targetGmail = gmailHistory.find(item => 
-                            (item.task_id && item.task_id === itemId) || 
-                            (item.id && item.id === itemId) ||
-                            (item.info && item.info.includes(itemId))
+                            item.id === targetId || 
+                            item.task_id === targetId || 
+                            item.wd_id === targetId ||
+                            (item.info && item.info.includes(targetId))
                         );
 
                         if (targetGmail && targetGmail.status === "Pending") {
-                            if (action === "success" || action === "accept" || action === "approved") {
+                            if (action === "success" || action === "accept" || action === "approve") {
                                 targetGmail.status = "Success";
-                                
-                                // জিমেইলের টাকা যোগ করা
-                                let rate = targetGmail.amount ? Number(targetGmail.amount) : 15.00;
+                                let addAmount = targetGmail.amount ? Number(targetGmail.amount) : 15.00;
                                 if (typeof currentBalance !== 'undefined') {
-                                    currentBalance += rate;
+                                    currentBalance += addAmount;
                                 }
-                                if (typeof updateUI === "function") updateUI();
+                                if (typeof updateUI === 'function') updateUI();
                             } else if (action === "rejected" || action === "reject") {
                                 targetGmail.status = "Rejected";
                             }
 
-                            // লোকাল স্টোরেজে নতুন স্ট্যাটাস সেভ
+                            // লোকাল স্টোরেজে উভয় ফরম্যাটেই সেভ রাখা হচ্ছে যেন কোনো কি মিস না হয়
+                            localStorage.setItem(gmailStorageKey, JSON.stringify(gmailHistory));
                             localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
                             
-                            // উইথড্র রেন্ডারের মতোই জিমেইল হিস্ট্রি স্ক্রিনে আপডেট করা
-                            if (typeof renderGmailHistory === "function") {
-                                renderGmailHistory();
-                            }
+                            renderGmailHistory();
                         }
                     }
                 }
