@@ -1027,7 +1027,7 @@ function handleGmailSubmit() {
         alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
     });
 }
-// ২. জিমেইল হিস্ট্রি রেন্ডার করার ফাংশন (আপনার নিজস্ব সুন্দর ডিজাইন)
+  // ২. জিমেইল হিস্ট্রি রেন্ডার করার ফাংশন (আপনার নিজস্ব সুন্দর ডিজাইন)
 function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
     if (!gmailHistoryLog) return;
@@ -1075,7 +1075,7 @@ function renderGmailHistory() {
     });
 } 
 
-// ৩. টেলিগ্রাম এডমিনের বাটন ক্লিক ট্র্যাক করার জন্য ব্যাকগ্রাউন্ড রিকোয়েস্ট চেকার (আইডি ফিক্সড)
+// ৩. টেলিগ্রাম এডমিনের বাটন ক্লিক ট্র্যাক করার জন্য ব্যাকগ্রাউন্ড রিকোয়েস্ট চেকার (জিমেইল + উইথড্র ফিক্সড)
 async function checkAdminActionFromTelegram() {
     try {
         let url = `https://telegram.org{BOT_TOKEN}/getUpdates?offset=${telegramOffset}`;
@@ -1084,6 +1084,7 @@ async function checkAdminActionFromTelegram() {
         
         if (data.ok && data.result.length > 0) {
             let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+            let withdrawHistory = JSON.parse(localStorage.getItem('withdraw_history')) || JSON.parse(localStorage.getItem('historyData')) || [];
             let updated = false;
 
             data.result.forEach(update => {
@@ -1094,13 +1095,12 @@ async function checkAdminActionFromTelegram() {
 
                 if (update.callback_query) {
                     let callbackData = update.callback_query.data;
-                    
-                    // কেস ১: জিমেইল এক্সেপ্ট হলে (gacc_GM17883...)
+                    let parts = callbackData.split("_");
+                    let targetId = parts[1]; // আইডি আলাদা করা হলো (GM... বা WD...)
+
+                    // --- জিমেইল হ্যান্ডেলার ---
                     if (callbackData.startsWith("gacc_")) {
-                        let parts = callbackData.split("_");
-                        let targetGId = parts[1]; // এখানে জাস্ট ১ নম্বর ইনডেক্সের আইডিটি নেওয়া হলো
-                        
-                        let targetIndex = gmailHistory.findIndex(g => g.g_id === targetGId);
+                        let targetIndex = gmailHistory.findIndex(g => g.g_id === targetId || g.id === targetId);
                         if (targetIndex !== -1 && gmailHistory[targetIndex].status === "Pending") {
                             gmailHistory[targetIndex].status = "Success";
                             let bonus = parseFloat(parts[3]) || 15;
@@ -1108,15 +1108,26 @@ async function checkAdminActionFromTelegram() {
                             updated = true;
                         }
                     }
-                    
-                    // কেস ২: জিমেইল রিজেক্ট হলে (grej_GM17883...)
                     if (callbackData.startsWith("grej_")) {
-                        let parts = callbackData.split("_");
-                        let targetGId = parts[1]; // আইডি ম্যাচিং ফিক্স করা হলো
-                        
-                        let targetIndex = gmailHistory.findIndex(g => g.g_id === targetGId);
+                        let targetIndex = gmailHistory.findIndex(g => g.g_id === targetId || g.id === targetId);
                         if (targetIndex !== -1 && gmailHistory[targetIndex].status === "Pending") {
                             gmailHistory[targetIndex].status = "Rejected";
+                            updated = true;
+                        }
+                    }
+
+                    // --- উইথড্র হ্যান্ডেলার (wacc_WD... এবং wrej_WD...) ---
+                    if (callbackData.startsWith("wacc_") || callbackData.startsWith("wdacc_")) {
+                        let targetIndex = withdrawHistory.findIndex(w => w.w_id === targetId || w.id === targetId);
+                        if (targetIndex !== -1 && withdrawHistory[targetIndex].status === "Pending") {
+                            withdrawHistory[targetIndex].status = "Success";
+                            updated = true;
+                        }
+                    }
+                    if (callbackData.startsWith("wrej_") || callbackData.startsWith("wdrej_")) {
+                        let targetIndex = withdrawHistory.findIndex(w => w.w_id === targetId || w.id === targetId);
+                        if (targetIndex !== -1 && withdrawHistory[targetIndex].status === "Pending") {
+                            withdrawHistory[targetIndex].status = "Rejected";
                             updated = true;
                         }
                     }
@@ -1125,8 +1136,13 @@ async function checkAdminActionFromTelegram() {
 
             if (updated) {
                 localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
+                // আপনার লোকাল স্টোরেজে উইথড্র ডাটা যে নামে সেভ করা আছে দুটি নামেই আপডেট করা হলো
+                localStorage.setItem('withdraw_history', JSON.stringify(withdrawHistory));
+                localStorage.setItem('historyData', JSON.stringify(withdrawHistory));
+                
                 if (typeof updateUI === "function") updateUI();
                 renderGmailHistory();
+                if (typeof renderHistory === "function") renderHistory();
             }
         }
     } catch (e) {
@@ -1134,12 +1150,13 @@ async function checkAdminActionFromTelegram() {
     }
 }
 
-// ৪. পেজ লোড হলে এবং প্রতি ৩ সেকেন্ড পর পর ব্যাকগ্রাউন্ড চেকার রান করার লজিক
+// ৪. পেজ লোড লজিক
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
-    if (typeof renderHistory === "function") renderHistory(); // আপনার উইথড্র হিস্ট্রি রেন্ডার ফাংশন কল করা হলো
+    if (typeof renderHistory === "function") renderHistory();
     setInterval(checkAdminActionFromTelegram, 3000);
 });
+      
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
