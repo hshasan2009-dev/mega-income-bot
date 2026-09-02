@@ -1029,15 +1029,62 @@ function handleGmailSubmit() {
 }
 
 // ২. হিস্ট্রি রেন্ডার করার ফাংশন
-function renderGmailHistory() {
+async function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
     if (!gmailHistoryLog) return;
-    
-    let currentRate = 15.00; 
-    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-    gmailHistoryLog.innerHTML = ""; 
-    
-    if (gmailHistory.length === 0) {
+
+    gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>লোড হচ্ছে...</li>";
+
+    try {
+        let response = await fetch(`https://MegaIncome.pythonanywhere.com/get-status/${user.id}`);
+        let data = await response.json();
+        
+        gmailHistoryLog.innerHTML = "";
+        let statuses = data.statuses || {};
+        let keys = Object.keys(statuses);
+
+        if (keys.length === 0) {
+            gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
+            return;
+        }
+
+        // ডাটাবেজের প্রতি জিমেইল চেক
+        for (let gmailKey in statuses) {
+            let item = statuses[gmailKey];
+            let statusText = typeof item === 'object' ? item.status : item;
+            let amount = typeof item === 'object' ? (item.amount || 15.00) : 15.00;
+            
+            // ইমেইল কিনা চেক (টাস্ক আইডি বাদ দেওয়ার জন্য)
+            if (!gmailKey.includes('@')) continue;
+
+            let statusBadge = "";
+            if (statusText === "Pending") {
+                statusBadge = `<div style="text-align: right;"><span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span></div>`;
+            } else if (statusText === "Success" || statusText === "Approved") {
+                statusBadge = `<div style="text-align: right;"><span style='color: #2ecc71; font-weight: bold; font-size: 14px;'>Success</span><br><small style='color: #2ecc71; font-size: 11px;'>+৳${Number(amount).toFixed(2)}</small></div>`;
+            } else {
+                statusBadge = `<div style="text-align: right;"><span style='color: #e74c3c; font-weight: bold; font-size: 14px;'>Rejected</span></div>`;
+            }
+
+            let li = document.createElement('li');
+            li.style.borderBottom = "1px dashed #1a3325";
+            li.style.padding = "8px 0";
+            li.style.display = "flex";
+            li.style.justifyContent = "space-between";
+            li.style.alignItems = "center";
+
+            li.innerHTML = `
+                <span style='color: #ffffff; font-size: 14px;'>📧 ${gmailKey}</span>
+                ${statusBadge}
+            `;
+            gmailHistoryLog.appendChild(li);
+        }
+    } catch (e) {
+        console.error("Gmail history load error:", e);
+        gmailHistoryLog.innerHTML = "<li style='color: #e74c3c; text-align: center; padding: 10px 0;'>হিস্ট্রি লোড করতে ব্যর্থ হয়েছে।</li>";
+    }
+}    
+        if (gmailHistory.length === 0) {
         gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
         return;
     }
