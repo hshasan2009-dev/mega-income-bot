@@ -1029,7 +1029,7 @@ function handleGmailSubmit() {
 }
 
 // ২. হিস্ট্রি রেন্ডার করার ফাংশন
-function renderGmailHistory() {
+ function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
     if (!gmailHistoryLog) return;
     
@@ -1081,7 +1081,7 @@ function renderGmailHistory() {
         `;
         gmailHistoryLog.appendChild(li);
     });
-}        
+}       
 // পেজ লোড হলে হিস্ট্রি দেখানো
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
