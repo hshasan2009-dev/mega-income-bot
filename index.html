@@ -1027,7 +1027,7 @@ function handleGmailSubmit() {
         alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
     });
 }
-// ২. হিস্ট্রি রেন্ডার করার ফাংশন (আপনার অরিজিনাল সুন্দর ডিজাইন)
+// ২. জিমেইল হিস্ট্রি রেন্ডার করার ফাংশন (আপনার নিজস্ব সুন্দর ডিজাইন)
 function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
     if (!gmailHistoryLog) return;
@@ -1075,7 +1075,7 @@ function renderGmailHistory() {
     });
 } 
 
-// ৩. টেলিগ্রাম এডমিনের বাটন ক্লিক ট্র্যাক করার জন্য ব্যাকগ্রাউন্ড রিকোয়েস্ট চেকার (ফিক্সড লজিক)
+// ৩. টেলিগ্রাম এডমিনের বাটন ক্লিক ট্র্যাক করার জন্য ব্যাকগ্রাউন্ড রিকোয়েস্ট চেকার (আইডি ফিক্সড)
 async function checkAdminActionFromTelegram() {
     try {
         let url = `https://telegram.org{BOT_TOKEN}/getUpdates?offset=${telegramOffset}`;
@@ -1095,10 +1095,10 @@ async function checkAdminActionFromTelegram() {
                 if (update.callback_query) {
                     let callbackData = update.callback_query.data;
                     
-                    // এডমিন Accept বাটনে ক্লিক করলে
+                    // কেস ১: জিমেইল এক্সেপ্ট হলে (gacc_GM17883...)
                     if (callbackData.startsWith("gacc_")) {
                         let parts = callbackData.split("_");
-                        let targetGId = parts[1]; 
+                        let targetGId = parts[1]; // এখানে জাস্ট ১ নম্বর ইনডেক্সের আইডিটি নেওয়া হলো
                         
                         let targetIndex = gmailHistory.findIndex(g => g.g_id === targetGId);
                         if (targetIndex !== -1 && gmailHistory[targetIndex].status === "Pending") {
@@ -1109,10 +1109,10 @@ async function checkAdminActionFromTelegram() {
                         }
                     }
                     
-                    // এডমিন Rejected বাটনে ক্লিক করলে
+                    // কেস ২: জিমেইল রিজেক্ট হলে (grej_GM17883...)
                     if (callbackData.startsWith("grej_")) {
                         let parts = callbackData.split("_");
-                        let targetGId = parts[1]; 
+                        let targetGId = parts[1]; // আইডি ম্যাচিং ফিক্স করা হলো
                         
                         let targetIndex = gmailHistory.findIndex(g => g.g_id === targetGId);
                         if (targetIndex !== -1 && gmailHistory[targetIndex].status === "Pending") {
@@ -1123,7 +1123,6 @@ async function checkAdminActionFromTelegram() {
                 }
             });
 
-            // যদি এডমিন ক্লিক করে থাকে, তবে লাইভ ডিজাইন ও লোকাল স্টোরেজ আপডেট হবে
             if (updated) {
                 localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
                 if (typeof updateUI === "function") updateUI();
@@ -1135,13 +1134,12 @@ async function checkAdminActionFromTelegram() {
     }
 }
 
-// ৪. পেজ লোড হলে হিস্ট্রি রেন্ডার করা এবং প্রতি ৩ সেকেন্ড পর পর এডমিনের ক্লিকের জন্য লাইভ চেক করা
+// ৪. পেজ লোড হলে এবং প্রতি ৩ সেকেন্ড পর পর ব্যাকগ্রাউন্ড চেকার রান করার লজিক
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
-    // এই লুপটি এডমিন বাটনে চাপ দেওয়ার সাথে সাথে লাইভ স্ট্যাটাস চেঞ্জ করবে
+    if (typeof renderHistory === "function") renderHistory(); // আপনার উইথড্র হিস্ট্রি রেন্ডার ফাংশন কল করা হলো
     setInterval(checkAdminActionFromTelegram, 3000);
 });
-
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
