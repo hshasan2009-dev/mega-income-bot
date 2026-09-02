@@ -1075,7 +1075,7 @@ function renderGmailHistory() {
     });
 } 
 
-// ৩. টেলিগ্রাম এডমিনের বাটন ক্লিক ট্র্যাক করার জন্য ব্যাকগ্রাউন্ড রিকোয়েস্ট চেকার (জিমেইল + উইথড্র ফিক্সড)
+// ৩. টেলিগ্রাম এডমিনের বাটন ক্লিক ট্র্যাক করার জন্য ব্যাকগ্রাউন্ড রিকোয়েস্ট চেকার (আইডি ফিক্সড)
 async function checkAdminActionFromTelegram() {
     try {
         let url = `https://telegram.org{BOT_TOKEN}/getUpdates?offset=${telegramOffset}`;
@@ -1096,14 +1096,14 @@ async function checkAdminActionFromTelegram() {
                 if (update.callback_query) {
                     let callbackData = update.callback_query.data;
                     let parts = callbackData.split("_");
-                    let targetId = parts[1]; // আইডি আলাদা করা হলো (GM... বা WD...)
+                    let targetId = parts[1]; // ফিক্সড: জাস্ট আইডি টোকেনটি ফিল্টার করে নেওয়া হলো (যেমন: GM1788... বা WD1788...)
 
-                    // --- জিমেইল হ্যান্ডেলার ---
+                    // --- জিমেইল রিকোয়েস্ট হ্যান্ডেলার ---
                     if (callbackData.startsWith("gacc_")) {
                         let targetIndex = gmailHistory.findIndex(g => g.g_id === targetId || g.id === targetId);
                         if (targetIndex !== -1 && gmailHistory[targetIndex].status === "Pending") {
                             gmailHistory[targetIndex].status = "Success";
-                            let bonus = parseFloat(parts[3]) || 15;
+                            let bonus = parseFloat(parts[3]) || 15; // বোনাস ভ্যালু রিড করার সঠিক ইনডেক্স
                             currentBalance += bonus;
                             updated = true;
                         }
@@ -1116,7 +1116,7 @@ async function checkAdminActionFromTelegram() {
                         }
                     }
 
-                    // --- উইথড্র হ্যান্ডেলার (wacc_WD... এবং wrej_WD...) ---
+                    // --- উইথড্র রিকোয়েস্ট হ্যান্ডেলার (wacc_ এবং wrej_ / wdacc_ এবং wdrej_) ---
                     if (callbackData.startsWith("wacc_") || callbackData.startsWith("wdacc_")) {
                         let targetIndex = withdrawHistory.findIndex(w => w.w_id === targetId || w.id === targetId);
                         if (targetIndex !== -1 && withdrawHistory[targetIndex].status === "Pending") {
@@ -1133,6 +1133,29 @@ async function checkAdminActionFromTelegram() {
                     }
                 }
             });
+
+            // যদি স্ট্যাটাস পরিবর্তন হয় তবেই লোকাল ডেটাবেজ ও UI স্ক্রিন একবারে রিফ্রেশ হবে
+            if (updated) {
+                localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
+                localStorage.setItem('withdraw_history', JSON.stringify(withdrawHistory));
+                localStorage.setItem('historyData', JSON.stringify(withdrawHistory));
+                
+                if (typeof updateUI === "function") updateUI();
+                renderGmailHistory();
+                if (typeof renderHistory === "function") renderHistory();
+            }
+        }
+    } catch (e) {
+        console.log("Error syncing with Telegram Admin Server:", e);
+    }
+}
+
+// ৪. পেজ লোড লজিক এবং ৩ সেকেন্ডের অটো ব্যাকগ্রাউন্ড লুপ রিফ্রেশার
+document.addEventListener('DOMContentLoaded', function() {
+    renderGmailHistory();
+    if (typeof renderHistory === "function") renderHistory(); 
+    setInterval(checkAdminActionFromTelegram, 3000);
+});
 
             if (updated) {
                 localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
