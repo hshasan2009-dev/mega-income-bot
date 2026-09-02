@@ -948,7 +948,8 @@
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-    function handleGmailSubmit() {
+// ১. জিমেইল সাবমিট হ্যান্ডলার
+function handleGmailSubmit() {
     var gmailInput = document.getElementById('gmailInputField');
     var gmailData = gmailInput ? gmailInput.value.trim() : "";
 
@@ -964,18 +965,7 @@
     let gId = "GM" + Date.now();
     let nowDate = new Date();
     let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
-    
-    // Local History Saving
-    let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending" };
-    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-    gmailHistory.unshift(gmailObj);
-    localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-
-    if (typeof renderGmailHistory === "function") {
-        renderGmailHistory();
-    } else if (typeof showGmailHistory === "function") {
-        showGmailHistory();
-    }
+    let rate = 15.00; // জিমেইল রেট
 
     // Safe User Info Reading
     let currentUserId = "Unknown";
@@ -989,95 +979,110 @@
         if (tg.initDataUnsafe.user.first_name) currentUserName = tg.initDataUnsafe.user.first_name;
     }
 
-    // HTML Mode (No Markdown Crash Issues)
-    let message = 
-        `📧 <b>নতুন জিমেইল সাবমিট রিকোয়েস্ট!</b>\n\n` +
-        `👤 <b>ইউজার:</b> ${currentUserName} (ID: <code>${currentUserId}</code>)\n` +
-        `🆔 <b>টাস্ক আইডি:</b> <code>${gId}</code>\n` +
-        `📅 <b>তারিখ:</b> ${currentDate}\n` +
-        `📧 <b>Gmail:</b> <code>${gmailData}</code>\n\n` +
-        `💰 <b>রেট:</b> ৳১৫.০০`;
-    
-    // Inline Buttons
-    let inlineKeyboard = {
-        inline_keyboard: [
-            [
-                { text: "✅ Accept", callback_data: `gacc_${gId}_${currentUserId}` },
-                { text: "❌ Rejected", callback_data: `grej_${gId}_${currentUserId}` }
-            ]
-        ]
+    // ২. LocalStorage-এর বদলে Firebase-এ সাবমিট ডাটা সেভ করা
+    let submissionData = {
+        g_id: gId,
+        userId: currentUserId,
+        userName: currentUserName,
+        info: gmailData,
+        rate: rate,
+        date: currentDate,
+        status: "Pending" // শুরুতে স্ট্যাটাস থাকবে Pending
     };
 
-    // Bot Credentials (Fallback Supported)
-    let token = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
-    let adminId = "8049465500";
+    // Firebase Database-এ পাঠানো
+    firebase.database().ref('submissions/' + gId).set(submissionData)
+    .then(() => {
+        // ৩. টেলিগ্রামে নোটিফিকেশন মেসেজ পাঠানো (rate যোগ করা হয়েছে callback_data-তে)
+        let message = 
+            `📧 <b>নতুন জিমেইল সাবমিট রিকোয়েস্ট!</b>\n\n` +
+            `👤 <b>ইউজার:</b> ${currentUserName} (ID: <code>${currentUserId}</code>)\n` +
+            `🆔 <b>টাস্ক আইডি:</b> <code>${gId}</code>\n` +
+            `📅 <b>তারিখ:</b> ${currentDate}\n` +
+            `📧 <b>Gmail:</b> <code>${gmailData}</code>\n\n` +
+            `💰 <b>রেট:</b> ৳${rate}`;
+        
+        let inlineKeyboard = {
+            inline_keyboard: [
+                [
+                    { text: "✅ Accept", callback_data: `gacc_${gId}_${currentUserId}_${rate}` },
+                    { text: "❌ Rejected", callback_data: `grej_${gId}_${currentUserId}` }
+                ]
+            ]
+        };
 
-    if (typeof BOT_TOKEN !== "undefined" && BOT_TOKEN) token = BOT_TOKEN;
-    if (typeof ADMIN_CHAT_ID !== "undefined" && ADMIN_CHAT_ID) adminId = ADMIN_CHAT_ID;
+        let token = "YOUR_BOT_TOKEN";
+        let adminId = "YOUR_ADMIN_ID";
 
-    // Send Request to Telegram
-    fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            chat_id: adminId,
-            text: message,
-            parse_mode: "HTML",
-            reply_markup: inlineKeyboard
-        })
+        return fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                chat_id: adminId,
+                text: message,
+                parse_mode: "HTML",
+                reply_markup: inlineKeyboard
+            })
+        });
     })
-    .then(res => res.json())
-    .then(data => {
-        if(!data.ok) {
-            console.error("Telegram API Error:", data);
+    .then(() => {
+        alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
+        if (gmailInput) gmailInput.value = "";
+        if (typeof closeGmailSellPage === "function") {
+            closeGmailSellPage();
         }
     })
     .catch(e => {
-        console.error("Fetch Failure:", e);
+        console.error("Submission Error:", e);
+        alert("সাবমিট করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।");
     });
-
-    // Instant UI Response for User
-    alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
-    if (gmailInput) gmailInput.value = "";
-    if (typeof closeGmailSellPage === "function") {
-        closeGmailSellPage();
-    }
 }
-        // শুধু সাবমিট করা জিমেইল এবং স্ট্যাটাস দেখানোর ফাংশন
+
+// ৪. Firebase থেকে রিয়েল-টাইমে হিস্ট্রি এবং স্ট্যাটাস শো করার ফাংশন
 function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
     if (!gmailHistoryLog) return;
-    
-    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-    gmailHistoryLog.innerHTML = ""; 
-    
-    if (gmailHistory.length === 0) {
-        gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
-        return;
+
+    let currentUserId = "Unknown";
+    if (typeof tg !== "undefined" && tg?.initDataUnsafe?.user?.id) {
+        currentUserId = tg.initDataUnsafe.user.id;
     }
-    
-    gmailHistory.forEach(item => {
-        let statusBadge = "";
-        if (item.status === "Pending") {
-            statusBadge = "<span class='badge-pending' style='color: #f1c40f; font-weight: bold;'>Pending</span>";
-        } else if (item.status === "Success") {
-            statusBadge = "<span class='badge-success' style='color: #2ecc71; font-weight: bold;'>Success</span>";
-        } else {
-            statusBadge = "<span class='badge-rejected' style='color: #e74c3c; font-weight: bold;'>Rejected</span>";
+
+    // Firebase থেকে ইউজার অনুযায়ী লাইভ হিস্ট্রি টানা
+    firebase.database().ref('submissions').orderByChild('userId').equalTo(currentUserId).on('value', (snapshot) => {
+        gmailHistoryLog.innerHTML = ""; 
+        
+        if (!snapshot.exists()) {
+            gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
+            return;
         }
-        
-        let li = document.createElement('li');
-        li.style.borderBottom = "1px dashed #1a3325";
-        li.style.padding = "8px 0";
-        li.style.display = "flex";
-        li.style.justifyContent = "space-between";
-        li.style.alignItems = "center";
-        
-        li.innerHTML = `
-            <span style='color: #ffffff; font-size: 14px;'>📧 ${item.info}</span>
-            ${statusBadge}
-        `;
-        gmailHistoryLog.appendChild(li);
+
+        snapshot.forEach((childSnapshot) => {
+            let item = childSnapshot.val();
+            let statusBadge = "";
+
+            // স্ট্যাটাস ফিল্টারিং
+            if (item.status === "Pending") {
+                statusBadge = "<span class='badge-pending' style='color: #f1c40f; font-weight: bold;'>Pending</span>";
+            } else if (item.status === "Success" || item.status === "Approved") {
+                statusBadge = "<span class='badge-success' style='color: #2ecc71; font-weight: bold;'>Success</span>";
+            } else {
+                statusBadge = "<span class='badge-rejected' style='color: #e74c3c; font-weight: bold;'>Rejected</span>";
+            }
+            
+            let li = document.createElement('li');
+            li.style.borderBottom = "1px dashed #1a3325";
+            li.style.padding = "8px 0";
+            li.style.display = "flex";
+            li.style.justifyContent = "space-between";
+            li.style.alignItems = "center";
+            
+            li.innerHTML = `
+                <span style='color: #ffffff; font-size: 14px;'>📧 ${item.info}</span>
+                ${statusBadge}
+            `;
+            gmailHistoryLog.appendChild(li);
+        });
     });
 }
 
