@@ -1093,27 +1093,63 @@ async function checkAdminActionFromTelegram() {
         let data = await response.json();
 
         if (data.ok && data.result && data.result.length > 0) {
+            let currentUserId = (typeof tg !== "undefined" && tg?.initDataUnsafe?.user?.id) ? tg.initDataUnsafe.user.id : "Unknown";
             let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+            let withdrawHistory = JSON.parse(localStorage.getItem(`withdraw_history_${currentUserId}`)) || [];
             
             for (let update of data.result) {
                 if (update.callback_query && update.callback_query.data) {
                     let callbackData = update.callback_query.data;
+                    let callbackQueryId = update.callback_query.id;
                     let parts = callbackData.split("_");
                     let action = parts[0];
-                    let gId = parts[1];
+                    let reqId = parts[1];
+                    let popupMsg = "অ্যাকশন গ্রহণ করা হয়েছে!";
 
-                    let targetItem = gmailHistory.find(item => item.g_id === gId);
-                    if (targetItem && targetItem.status === "Pending") {
+                    // ১. জিমেইল অ্যাকশন প্রসেস
+                    let targetGmail = gmailHistory.find(item => item.g_id === reqId);
+                    if (targetGmail && targetGmail.status === "Pending") {
                         if (action === "gacc") {
-                            targetItem.status = "Success";
+                            targetGmail.status = "Success";
+                            popupMsg = "✅ Accepted! জিমেইল সফলভাবে গ্রহণ করা হয়েছে।";
+                            
+                            // ২০% রেফার কমিশন যুক্ত করার লজিক
+                            let referrerId = localStorage.getItem(`referrer_${currentUserId}`);
+                            if (referrerId) {
+                                let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
+                                localStorage.setItem(`balance_${referrerId}`, refBal + (15.00 * 0.20));
+                            }
                         } else if (action === "grej") {
-                            targetItem.status = "Rejected";
+                            targetGmail.status = "Rejected";
+                            popupMsg = "❌ Rejected! জিমেইল বাতিল করা হয়েছে।";
                         }
                     }
+
+                    // ২. উইথড্র হিস্ট্রি অ্যাকশন প্রসেস
+                    let targetWithdraw = withdrawHistory.find(item => item.wd_id === reqId);
+                    if (targetWithdraw && targetWithdraw.status === "Pending") {
+                        if (action === "success") {
+                            targetWithdraw.status = "Success";
+                            popupMsg = "✅ Withdraw Approved!";
+                        } else if (action === "rejected") {
+                            targetWithdraw.status = "Rejected";
+                            popupMsg = "❌ Withdraw Rejected!";
+                        }
+                    }
+
+                    // বাটনে ক্লিক করলে টেলিগ্রামে পপ-আপ মেসেজ দেখাবে
+                    fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ callback_query_id: callbackQueryId, text: popupMsg, show_alert: true })
+                    });
                 }
             }
             localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
+            localStorage.setItem(`withdraw_history_${currentUserId}`, JSON.stringify(withdrawHistory));
+            
             renderGmailHistory();
+            if (typeof renderHistory === 'function') renderHistory();
         }
     } catch (e) {
         console.log("Error checking status:", e);
