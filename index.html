@@ -948,7 +948,7 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-    // ১. জিমেইল সাবমিট করার ফাংশন
+// ১. জিমেইল সাবমিট করার ফাংশন
 function handleGmailSubmit() {
     var gmailInput = document.getElementById('gmailInputField');
     var gmailData = gmailInput ? gmailInput.value.trim() : "";
@@ -1076,10 +1076,10 @@ function renderGmailHistory() {
     });
 } 
 
-// পেজ লোড হলে হিস্ট্রি দেখানো ও বট চেকিং চালু রাখা
+// পেজ লোড হলে হিস্ট্রি ও বট চেকিং চালু রাখা
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
-    setInterval(checkAdminActionFromTelegram, 1000); // দ্রুত রিয়েলটাইম আপডেটের জন্য ১ সেকেন্ড পর পর রান হবে
+    setInterval(checkAdminActionFromTelegram, 1000);
 });
 
 // ৩. অ্যাডমিন একশন চেক করার ফাংশন
@@ -1122,14 +1122,21 @@ async function checkAdminActionFromTelegram() {
                                     // ইউজারকে মূল ব্যালেন্সে ১৫.০০ টাকা যোগ
                                     currentBalance += 15.00;
                                     localStorage.setItem(`balance_${user.id}`, currentBalance);
-                                    if (typeof updateUI === 'function') updateUI();
 
-                                    // ২০% রেফার কমিশন প্রদান (৳৩.০০)
-                                    let referrerId = localStorage.getItem(`referrer_${targetUserId}`);
+                                    // **রেফার কমিশন ফিক্স:**
+                                    let referrerId = localStorage.getItem(`referrer_${targetUserId}`) || localStorage.getItem(`referrer_${user.id}`);
                                     if (referrerId) {
                                         let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
-                                        localStorage.setItem(`balance_${referrerId}`, refBal + 3.00);
+                                        let newRefBal = refBal + 3.00; // ২০% কমিশন (৳৩.০০)
+                                        localStorage.setItem(`balance_${referrerId}`, newRefBal);
+                                        
+                                        // যদি রেফারার নিজে এই মুহূর্তে অ্যাপে থাকে তবে তার ব্যালেন্স লাইভ আপডেট হবে
+                                        if (user.id == referrerId) {
+                                            currentBalance = newRefBal;
+                                        }
                                     }
+
+                                    if (typeof updateUI === 'function') updateUI();
                                 } else if (action === "grej") {
                                     targetGmail.status = "Rejected";
                                 }
@@ -1138,7 +1145,7 @@ async function checkAdminActionFromTelegram() {
                             }
                         }
 
-                        // --- আপনার দেওয়া হুবহু উইথড্র কোড (একটি বর্ণ বা লাইন পরিবর্তন করা হয়নি) ---
+                        // --- আপনার দেওয়া হুবহু উইথড্র কোড (একটি লাইনও এডিট করা হয়নি) ---
                         let targetItem = historyData.find(item => item.wd_id === wdId);
                         if (targetItem && targetItem.status === "Pending") {
                             if (action === "success") {
