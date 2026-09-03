@@ -948,7 +948,18 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-        // ১. জিমেইল সাবমিট করার ফাংশন
+// প্রয়োজনীয় গ্লোবাল ভ্যারিয়েবলসমূহ
+var BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
+var telegramOffset = 0;
+var user = { id: "Unknown" };
+var currentBalance = 0;
+
+// টেলিগ্রাম অবজেক্ট থাকলে ইউজার আইডি সেট করা
+if (typeof tg !== "undefined" && tg?.initDataUnsafe?.user?.id) {
+    user.id = tg.initDataUnsafe.user.id;
+}
+
+// ১. জিমেইল সাবমিট করার ফাংশন
 function handleGmailSubmit() {
     var gmailInput = document.getElementById('gmailInputField');
     var gmailData = gmailInput ? gmailInput.value.trim() : "";
@@ -1024,7 +1035,7 @@ function handleGmailSubmit() {
         }
     })
     .catch(e => {
-        alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
+        alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
     });
 }
 
@@ -1047,7 +1058,7 @@ function renderGmailHistory() {
         let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
         
         if (item.status === "Pending") {
-            // Pending অবস্থায় শুধু প্যান্ডিং লেখাটি দেখাবে (কোনো টাকা দেখাবে না)
+            // Pending অবস্থায় শুধু প্যান্ডিং লেখাটি দেখাবে (কোনো টাকা দেখাবে না)
             statusBadge = `<div style="text-align: right;">
                 <span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span>
             </div>`;
@@ -1078,58 +1089,72 @@ function renderGmailHistory() {
         gmailHistoryLog.appendChild(li);
     });
 } 
-// পেজ লোড হলে হিস্ট্রি দেখানো
+
+// হেল্পার ফাংশনসমূহ
+function updateUI() {
+    let balanceElem = document.getElementById('userBalance');
+    if (balanceElem) balanceElem.innerText = currentBalance.toFixed(2);
+}
+
+function renderHistory() {
+    renderGmailHistory();
+}
+
+// পেজ লোড হলে হিস্ট্রি দেখানো এবং টেলিগ্রাম চেক চালু করা
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
+    // প্রতি ৩ সেকেন্ড পর পর টেলিগ্রাম থেকে আপডেট চেক করবে
+    setInterval(checkAdminActionFromTelegram, 3000);
 });
 
-        async function checkAdminActionFromTelegram() {
-            try {
-                let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
-                let response = await fetch(url);
-                let data = await response.json();
+// ৩. টেলিগ্রাম থেকে অ্যাডমিন অ্যাকশন চেক করার ফাংশন
+async function checkAdminActionFromTelegram() {
+    try {
+        let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
+        let response = await fetch(url);
+        let data = await response.json();
 
-                if (data.ok && data.result.length > 0) {
-                    for (let update of data.result) {
-                        telegramOffset = update.update_id + 1;
-                        localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
+        if (data.ok && data.result.length > 0) {
+            for (let update of data.result) {
+                telegramOffset = update.update_id + 1;
+                localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
 
-                        if (update.callback_query) {
-                            let callbackData = update.callback_query.data;
-                            let callbackQueryId = update.callback_query.id;
+                if (update.callback_query) {
+                    let callbackData = update.callback_query.data;
+                    let callbackQueryId = update.callback_query.id;
 
-                            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস আপডেট করা হয়েছে!" })
-                            });
+                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস আপডেট করা হয়েছে!" })
+                    });
 
-                            if (callbackData.includes("_")) {
-                                let parts = callbackData.split("_");
-                                let action = parts[0];
-                                let wdId = parts[1];
+                    if (callbackData.includes("_")) {
+                        let parts = callbackData.split("_");
+                        let action = parts[0];
+                        let wdId = parts[1]; // টাস্ক আইডি (g_id)
 
-                                let targetItem = historyData.find(item => item.wd_id === wdId);
-                                if (targetItem && targetItem.status === "Pending") {
-                                    if (action === "success") {
-                                        targetItem.status = "Success";
-                                    } else if (action === "rejected") {
-                                        targetItem.status = "Rejected";
-                                        currentBalance += targetItem.requestedAmount;
-                                        updateUI();
-                                    }
-                                    localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
-                                    renderHistory();
-                                }
+                        let historyData = JSON.parse(localStorage.getItem('gmail_history')) || [];
+                        let targetItem = historyData.find(item => item.g_id === wdId);
+
+                        if (targetItem && targetItem.status === "Pending") {
+                            if (action === "gacc") {
+                                targetItem.status = "Success";
+                                targetItem.amount = parts[3] ? parseFloat(parts[3]) : 15.00;
+                            } else if (action === "grej") {
+                                targetItem.status = "Rejected";
                             }
+                            localStorage.setItem('gmail_history', JSON.stringify(historyData));
+                            renderHistory();
                         }
                     }
                 }
-            } catch (e) {
-                console.log("Polling error:", e);
             }
         }
-
+    } catch (e) {
+        console.log("Polling error:", e);
+    }
+}
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
