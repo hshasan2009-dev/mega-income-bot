@@ -948,17 +948,17 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-    // গ্লোবাল ভ্যারিয়েবল ডিফাইন (প্রয়োজনীয় ডিফল্ট ভ্যালু সহ)
-let BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
-let telegramOffset = 0;
-let user = { id: "default_user" };
-let currentBalance = 0;
+// গ্লোবাল ভ্যারিয়েবল ডিফাইন
+var BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
+var telegramOffset = 0;
+var user = { id: "Unknown" };
+var currentBalance = 0;
 
-// টেলিগ্রাম ইউজার আইডি লোকালস্টোরেজ থেকে পাওয়ার চেষ্টা
+// টেলিগ্রাম ইউজার ডাটা চেক
 if (typeof tg !== "undefined" && tg?.initDataUnsafe?.user?.id) {
     user.id = tg.initDataUnsafe.user.id;
 }
-telegramOffset = Number(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
+telegramOffset = Number(localStorage.getItem('tg_offset_' + user.id)) || 0;
 
 // ১. জিমেইল সাবমিট করার ফাংশন
 function handleGmailSubmit() {
@@ -988,9 +988,10 @@ function handleGmailSubmit() {
     renderGmailHistory();
 
     // টেলিগ্রাম ইউজার ডাটা
-    let currentUserId = user.id;
+    let currentUserId = "Unknown";
     let currentUserName = "User";
     if (typeof tg !== "undefined" && tg?.initDataUnsafe?.user) {
+        if (tg.initDataUnsafe.user.id) currentUserId = tg.initDataUnsafe.user.id;
         if (tg.initDataUnsafe.user.first_name) currentUserName = tg.initDataUnsafe.user.first_name;
     }
 
@@ -1030,7 +1031,7 @@ function handleGmailSubmit() {
             alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
             if (gmailInput) gmailInput.value = "";
         } else {
-            alert("টেলিগ্রাম বটের মেসেজ পাঠাতে সমস্যা হচ্ছে!");
+            alert("টেলিগ্রাম বটের মেসেজ পাঠাতে সমস্যা হচ্ছে! Bot Token বা Admin ID পরীক্ষা করুন।");
         }
     })
     .catch(e => {
@@ -1089,17 +1090,16 @@ function renderGmailHistory() {
     });
 } 
 
-// পেজ লোড হলে হিস্ট্রি দেখানো
-document.addEventListener('DOMContentLoaded', function() {
-    renderGmailHistory();
-});
-
-// সহায়ক ইউআই আপডেট ফাংশন
+// সহায়ক ফাংশন
 function updateUI() {
     let balanceElement = document.getElementById('userBalance');
     if (balanceElement) {
         balanceElement.innerText = currentBalance.toFixed(2);
     }
+}
+
+function renderHistory() {
+    renderGmailHistory();
 }
 
 // ৩. টেলিগ্রাম থেকে অ্যাডমিন অ্যাকশন চেক ফাংশন
@@ -1109,7 +1109,7 @@ async function checkAdminActionFromTelegram() {
         let response = await fetch(url);
         let data = await response.json();
 
-        if (data.ok && data.result.length > 0) {
+        if (data.ok && data.result && data.result.length > 0) {
             for (let update of data.result) {
                 telegramOffset = update.update_id + 1;
                 localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
@@ -1118,6 +1118,7 @@ async function checkAdminActionFromTelegram() {
                     let callbackData = update.callback_query.data;
                     let callbackQueryId = update.callback_query.id;
 
+                    // অ্যান্সার কলব্যাক কুয়েরি পাঠাবো যেন বাটনে ঘড়ির চিহ্ন না ঘোরে
                     fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -1152,6 +1153,13 @@ async function checkAdminActionFromTelegram() {
         console.log("Polling error:", e);
     }
 }
+
+// পেজ লোড হলে হিস্ট্রি দেখানো এবং টেলিগ্রাম চেক চালু করা
+document.addEventListener('DOMContentLoaded', function() {
+    renderGmailHistory();
+    // প্রতি ৩ সেকেন্ড পর পর ব্যাকগ্রাউন্ডে চেক করবে অ্যাডমিন ক্লিক করেছে কি না
+    setInterval(checkAdminActionFromTelegram, 3000);
+});
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
