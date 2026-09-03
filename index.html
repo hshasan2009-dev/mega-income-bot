@@ -948,18 +948,20 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-// ==========================================
+        // ==========================================
 // ০. রেফারেল লিংক থেকে রেফারার আইডি সেভ রাখার লজিক
 // ==========================================
 (function checkReferral() {
     let urlParams = new URLSearchParams(window.location.search);
     let refParam = urlParams.get('start') || urlParams.get('ref');
     
+    // টেলিগ্রাম স্টার্ট প্যারাম থেকে আইডি বের করা (যেমন: startapp=123456)
     if (!refParam && typeof tg !== "undefined" && tg?.initDataUnsafe?.start_param) {
         refParam = tg.initDataUnsafe.start_param;
     }
 
     if (refParam && user.id && user.id !== "Unknown") {
+        // ইউজার যেন নিজেকে নিজে রেফার না করতে পারে
         if (refParam != user.id) {
             localStorage.setItem(`referrer_${user.id}`, refParam);
         }
@@ -1143,38 +1145,23 @@ async function checkAdminActionFromTelegram() {
                                 if (action === "gacc") {
                                     targetGmail.status = "Success";
                                     
-                                    // ১. মূল ব্যালেন্সে ১৫.০০ টাকা যোগ
+                                    // ১. ইউজারকে মূল ব্যালেন্সে ১৫.০০ টাকা যোগ
                                     currentBalance += 15.00;
                                     localStorage.setItem(`balance_${user.id}`, currentBalance);
 
-                                    // ২. ২০% রেফার কমিশন (৳৩.০০) মূল ব্যালেন্স + রেফার পেজের ব্যালেন্সে যোগ
+                                    // ২. ২০% রেফার কমিশন (৳৩.০০) দেওয়া
                                     let referrerId = localStorage.getItem(`referrer_${targetUserId}`) || localStorage.getItem(`referrer_${user.id}`);
                                     if (referrerId) {
-                                        // মূল ব্যালেন্স আপডেট
                                         let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
                                         let newRefBal = refBal + 3.00;
                                         localStorage.setItem(`balance_${referrerId}`, newRefBal);
                                         
-                                        // রেফার বোনাস কাউন্টার আপডেট (সকল সাধারণ নামি-বেনামি ভ্যারিয়েবলে ৩ টাকা যোগ করা)
-                                        let currentBonus = parseFloat(localStorage.getItem(`referral_bonus_${referrerId}`)) || parseFloat(localStorage.getItem(`ref_bonus_${referrerId}`)) || 0;
-                                        let updatedBonus = currentBonus + 3.00;
-                                        
-                                        localStorage.setItem(`referral_bonus_${referrerId}`, updatedBonus);
-                                        localStorage.setItem(`ref_bonus_${referrerId}`, updatedBonus);
-
-                                        // যদি অ্যাপে গ্লোবাল ভ্যারিয়েবল থাকে তবে তা লাইভ আপডেট করা
-                                        if (typeof referBonus !== 'undefined') referBonus += 3.00;
-                                        if (typeof totalReferralBonus !== 'undefined') totalReferralBonus += 3.00;
-
                                         if (user.id == referrerId) {
                                             currentBalance = newRefBal;
                                         }
                                     }
 
-                                    // UI আপডেট কল করা
                                     if (typeof updateUI === 'function') updateUI();
-                                    if (typeof renderReferPage === 'function') renderReferPage();
-                                    if (typeof loadUserData === 'function') loadUserData();
                                 } else if (action === "grej") {
                                     targetGmail.status = "Rejected";
                                 }
@@ -1183,7 +1170,7 @@ async function checkAdminActionFromTelegram() {
                             }
                         }
 
-                        // --- আপনার দেওয়া হুবহু উইথড্র কোড (একটি লাইনও এডিট করা হয়নি) ---
+                        // --- আপনার দেওয়া হুবহু উইথড্র কোড (একটি লাইন বা অক্ষরও পরিবর্তন করা হয়নি) ---
                         let targetItem = historyData.find(item => item.wd_id === wdId);
                         if (targetItem && targetItem.status === "Pending") {
                             if (action === "success") {
