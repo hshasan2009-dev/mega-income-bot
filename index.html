@@ -948,7 +948,7 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-// ১. জিমেইল সাবমিট করার ফাংশন
+        // ১. জিমেইল সাবমিট করার ফাংশন
 function handleGmailSubmit() {
     var gmailInput = document.getElementById('gmailInputField');
     var gmailData = gmailInput ? gmailInput.value.trim() : "";
@@ -1047,18 +1047,15 @@ function renderGmailHistory() {
         let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
         
         if (item.status === "Pending") {
-            // Pending অবস্থায় শুধু প্যান্ডিং লেখাটি দেখাবে
             statusBadge = `<div style="text-align: right;">
                 <span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span>
             </div>`;
         } else if (item.status === "Success" || item.status === "Approved") {
-            // Success হলেই নিচে ছোট করে +৳অ্যামাউন্ট দেখাবে
             statusBadge = `<div style="text-align: right;">
                 <span style='color: #2ecc71; font-weight: bold; font-size: 14px;'>Success</span><br>
                 <small style='color: #2ecc71; font-size: 11px;'>+৳${displayAmount}</small>
             </div>`;
         } else {
-            // Rejected হলে শুধু রিজেক্টেড লেখাটি দেখাবে
             statusBadge = `<div style="text-align: right;">
                 <span style='color: #e74c3c; font-weight: bold; font-size: 14px;'>Rejected</span>
             </div>`;
@@ -1079,15 +1076,22 @@ function renderGmailHistory() {
     });
 } 
 
-// পেজ লোড হলে হিস্ট্রি দেখানো ও বট চেকিং চালু করা
+// পেজ লোড হলে হিস্ট্রি ও চেকিং শুরু
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
     setInterval(checkAdminActionFromTelegram, 2000);
 });
 
-// ৩. অ্যাডমিন একশন চেক করার ফাংশন
+// ৩. অ্যাডমিন একশন চেক করার ফাংশন (উইথড্র ও জিমেইল ফিক্সড)
 async function checkAdminActionFromTelegram() {
     try {
+        let BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
+        let currentUserId = "Unknown";
+        if (typeof tg !== "undefined" && tg?.initDataUnsafe?.user?.id) {
+            currentUserId = tg.initDataUnsafe.user.id;
+        }
+
+        let telegramOffset = localStorage.getItem(`tg_offset_${currentUserId}`) || 0;
         let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
         let response = await fetch(url);
         let data = await response.json();
@@ -1095,13 +1099,13 @@ async function checkAdminActionFromTelegram() {
         if (data.ok && data.result.length > 0) {
             for (let update of data.result) {
                 telegramOffset = update.update_id + 1;
-                localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
+                localStorage.setItem(`tg_offset_${currentUserId}`, telegramOffset);
 
                 if (update.callback_query) {
                     let callbackData = update.callback_query.data;
                     let callbackQueryId = update.callback_query.id;
 
-                    // বাটন চাপার সাথে সাথে নোটিফিকেশন পাঠানো
+                    // বাটন ক্লিকে রেসপন্স মেসেজ
                     fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -1110,50 +1114,69 @@ async function checkAdminActionFromTelegram() {
 
                     if (callbackData.includes("_")) {
                         let parts = callbackData.split("_");
-                        let action = parts[0];
-                        let reqId = parts[1];
-                        let targetUserId = parts[2] || user.id;
+                        let action = parts[0]; 
+                        let reqId = parts[1];  
+                        let targetUserId = parts[2] || currentUserId;
 
-                        // --- উইথড্র হিস্ট্রি আপডেট প্রসেস ---
-                        let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
-                        let targetWithdraw = historyData.find(item => item.wd_id === reqId);
+                        // --- ১. উইথড্র আপডেট লজিক ---
+                        if (action === "success" || action === "rejected" || action === "wacc" || action === "wrej") {
+                            let withdrawKeys = [`withdraw_history_${currentUserId}`, `withdraw_history_${targetUserId}`, `withdraw_history`];
+                            
+                            withdrawKeys.forEach(key => {
+                                let wHistory = JSON.parse(localStorage.getItem(key)) || [];
+                                let targetItem = wHistory.find(item => item.wd_id === reqId || item.id === reqId);
 
-                        if (targetWithdraw && targetWithdraw.status === "Pending") {
-                            if (action === "success") {
-                                targetWithdraw.status = "Success";
-                            } else if (action === "rejected") {
-                                targetWithdraw.status = "Rejected";
-                                currentBalance += parseFloat(targetWithdraw.requestedAmount || 0);
-                                if (typeof updateUI === 'function') updateUI();
-                            }
-                            localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
+                                if (targetItem && targetItem.status === "Pending") {
+                                    if (action === "success" || action === "wacc") {
+                                        targetItem.status = "Success";
+                                    } else if (action === "rejected" || action === "wrej") {
+                                        targetItem.status = "Rejected";
+                                        
+                                        // রিজেক্ট হলে টাকা ওয়ালেটে ফেরত দেওয়া
+                                        let returnAmount = parseFloat(targetItem.requestedAmount || targetItem.amount || 0);
+                                        let currentBal = parseFloat(localStorage.getItem(`balance_${targetUserId}`)) || 0;
+                                        localStorage.setItem(`balance_${targetUserId}`, currentBal + returnAmount);
+                                    }
+                                    localStorage.setItem(key, JSON.stringify(wHistory));
+                                }
+                            });
+
                             if (typeof renderHistory === 'function') renderHistory();
+                            if (typeof renderWithdrawHistory === 'function') renderWithdrawHistory();
+                            if (typeof updateUI === 'function') updateUI();
                         }
 
-                        // --- জিমেইল টাস্ক আপডেট প্রসেস ---
-                        let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-                        let targetGmail = gmailHistory.find(item => item.g_id === reqId);
+                        // --- ২. জিমেইল টাস্ক আপডেট লজিক ---
+                        if (action === "gacc" || action === "grej") {
+                            let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+                            let targetGmail = gmailHistory.find(item => item.g_id === reqId);
 
-                        if (targetGmail && targetGmail.status === "Pending") {
-                            if (action === "gacc") {
-                                targetGmail.status = "Success";
-                                
-                                // ইউজারের মূল ব্যালেন্সে ১৫ টাকা যোগ
-                                currentBalance += 15.00;
-                                localStorage.setItem(`balance_${user.id}`, currentBalance);
-                                if (typeof updateUI === 'function') updateUI();
+                            if (targetGmail && targetGmail.status === "Pending") {
+                                if (action === "gacc") {
+                                    targetGmail.status = "Success";
 
-                                // ২০% রেফার কমিশন (৳৩.০০) দেওয়া
-                                let referrerId = localStorage.getItem(`referrer_${targetUserId}`);
-                                if (referrerId) {
-                                    let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
-                                    localStorage.setItem(`balance_${referrerId}`, refBal + 3.00);
+                                    // ১৫ টাকা একাউন্টে যোগ
+                                    let currentBal = parseFloat(localStorage.getItem(`balance_${targetUserId}`)) || 0;
+                                    let newBal = currentBal + 15.00;
+                                    localStorage.setItem(`balance_${targetUserId}`, newBal);
+                                    
+                                    if (typeof currentBalance !== 'undefined') {
+                                        currentBalance = newBal;
+                                    }
+
+                                    // ২০% রেফার কমিশন (৳৩.০০)
+                                    let referrerId = localStorage.getItem(`referrer_${targetUserId}`);
+                                    if (referrerId) {
+                                        let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
+                                        localStorage.setItem(`balance_${referrerId}`, refBal + 3.00);
+                                    }
+                                } else if (action === "grej") {
+                                    targetGmail.status = "Rejected";
                                 }
-                            } else if (action === "grej") {
-                                targetGmail.status = "Rejected";
+                                localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
+                                renderGmailHistory();
+                                if (typeof updateUI === 'function') updateUI();
                             }
-                            localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-                            renderGmailHistory();
                         }
                     }
                 }
@@ -1163,7 +1186,6 @@ async function checkAdminActionFromTelegram() {
         console.log("Polling error:", e);
     }
 }
-
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
