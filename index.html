@@ -949,7 +949,7 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             }).catch(e => console.log("Telegram API Error:", e));
         }
     // ১. জিমেইল সাবমিট করার ফাংশন
-function handleGmailSubmit() {
+    function handleGmailSubmit() {
     var gmailInput = document.getElementById('gmailInputField');
     var gmailData = gmailInput ? gmailInput.value.trim() : "";
 
@@ -1028,8 +1028,8 @@ function handleGmailSubmit() {
     });
 }
 
-// ২. হিস্ট্রি রেন্ডার করার ফাংশন
-function renderGmailHistory() {
+   // ২. হিস্ট্রি রেন্ডার করার ফাংশন
+    function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
     if (!gmailHistoryLog) return;
     
@@ -1135,7 +1135,7 @@ async function checkAdminActionFromTelegram() {
     }
 }
 
-        function renderHistory() {
+   function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
             tbody.innerHTML = ``;
