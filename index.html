@@ -948,8 +948,8 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 })
             }).catch(e => console.log("Telegram API Error:", e));
         }
-    // ১. জিমেইল সাবমিট করার ফাংশন
-    function handleGmailSubmit() {
+        // ১. জিমেইল সাবমিট করার ফাংশন
+function handleGmailSubmit() {
     var gmailInput = document.getElementById('gmailInputField');
     var gmailData = gmailInput ? gmailInput.value.trim() : "";
 
@@ -1024,12 +1024,12 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
         }
     })
     .catch(e => {
-        alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
+        alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
     });
 }
 
-   // ২. হিস্ট্রি রেন্ডার করার ফাংশন
-    function renderGmailHistory() {
+// ২. হিস্ট্রি রেন্ডার করার ফাংশন
+function renderGmailHistory() {
     let gmailHistoryLog = document.getElementById('gmailHistoryLog');
     if (!gmailHistoryLog) return;
     
@@ -1047,7 +1047,7 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
         let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
         
         if (item.status === "Pending") {
-            // Pending অবস্থায় শুধু প্যান্ডিং লেখাটি দেখাবে (কোনো টাকা দেখাবে না)
+            // Pending অবস্থায় শুধু প্যান্ডিং লেখাটি দেখাবে (কোনো টাকা দেখাবে না)
             statusBadge = `<div style="text-align: right;">
                 <span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span>
             </div>`;
@@ -1081,61 +1081,56 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
 // পেজ লোড হলে হিস্ট্রি দেখানো
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
-    // অ্যাডমিন রেসপন্স চেক ব্যাকগ্রাউন্ডে চালু রাখার জন্য
-    setInterval(checkAdminActionFromTelegram, 3000);
 });
 
-// ৩. অ্যাডমিন একশন চেক করার ফাংশন
-var BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
-var telegramOffset = 0;
+        async function checkAdminActionFromTelegram() {
+            try {
+                let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
+                let response = await fetch(url);
+                let data = await response.json();
 
-async function checkAdminActionFromTelegram() {
-    try {
-        let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
-        let response = await fetch(url);
-        let data = await response.json();
+                if (data.ok && data.result.length > 0) {
+                    for (let update of data.result) {
+                        telegramOffset = update.update_id + 1;
+                        localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
 
-        if (data.ok && data.result && data.result.length > 0) {
-            for (let update of data.result) {
-                telegramOffset = update.update_id + 1;
+                        if (update.callback_query) {
+                            let callbackData = update.callback_query.data;
+                            let callbackQueryId = update.callback_query.id;
 
-                if (update.callback_query) {
-                    let callbackData = update.callback_query.data;
-                    let callbackQueryId = update.callback_query.id;
+                            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস আপডেট করা হয়েছে!" })
+                            });
 
-                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস আপডেট করা হয়েছে!" })
-                    });
+                            if (callbackData.includes("_")) {
+                                let parts = callbackData.split("_");
+                                let action = parts[0];
+                                let wdId = parts[1];
 
-                    if (callbackData.includes("_")) {
-                        let parts = callbackData.split("_");
-                        let action = parts[0];
-                        let gId = parts[1];
-
-                        let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-                        let targetItem = gmailHistory.find(item => item.g_id === gId);
-
-                        if (targetItem && targetItem.status === "Pending") {
-                            if (action === "gacc") {
-                                targetItem.status = "Success";
-                            } else if (action === "grej") {
-                                targetItem.status = "Rejected";
+                                let targetItem = historyData.find(item => item.wd_id === wdId);
+                                if (targetItem && targetItem.status === "Pending") {
+                                    if (action === "success") {
+                                        targetItem.status = "Success";
+                                    } else if (action === "rejected") {
+                                        targetItem.status = "Rejected";
+                                        currentBalance += targetItem.requestedAmount;
+                                        updateUI();
+                                    }
+                                    localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
+                                    renderHistory();
+                                }
                             }
-                            localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-                            renderGmailHistory();
                         }
                     }
                 }
+            } catch (e) {
+                console.log("Polling error:", e);
             }
         }
-    } catch (e) {
-        console.log("Polling error:", e);
-    }
-}
 
-   function renderHistory() {
+        function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
             tbody.innerHTML = ``;
