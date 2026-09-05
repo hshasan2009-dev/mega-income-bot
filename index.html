@@ -585,7 +585,7 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
         function completeRegTask() {
             let clickedKey = `clicked_reg_${user.id}_${currentTaskIndex}`;
 
-            if (!localStorage.getItem(clickedKey) || taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 120000)) {
+            if (!localStorage.getItem(clickedKey) || taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 80000)) {
                 alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
                 return;
             }
