@@ -1108,8 +1108,9 @@ document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
     setInterval(checkAdminActionFromTelegram, 1000);
 });
-     // ==========================================
-// ৩. অ্যাডমিন একশন চেক করার ফিক্সড ফাংশন
+
+// ==========================================
+// ৩. অ্যাডমিন একশন চেক করার ফাংশন
 // ==========================================
 async function checkAdminActionFromTelegram() {
     try {
@@ -1126,10 +1127,16 @@ async function checkAdminActionFromTelegram() {
                     let callbackData = update.callback_query.data;
                     let callbackQueryId = update.callback_query.id;
 
+                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস আপডেট করা হয়েছে!" })
+                    });
+
                     if (callbackData.includes("_")) {
                         let parts = callbackData.split("_");
-                        let action = parts[0]; 
-                        let wdId = parts[1];   
+                        let action = parts[0];
+                        let wdId = parts[1];
                         let targetUserId = parts[2] || user.id;
 
                         // --- জিমেইল সাবমিট এক্সেপ্ট / রিজেক্ট লজিক ---
@@ -1140,14 +1147,21 @@ async function checkAdminActionFromTelegram() {
                             if (targetGmail && targetGmail.status === "Pending") {
                                 if (action === "gacc") {
                                     targetGmail.status = "Success";
+                                    
+                                    // ১. ইউজারকে মূল ব্যালেন্সে ১৫.০০ টাকা যোগ
                                     currentBalance += 15.00;
                                     localStorage.setItem(`balance_${user.id}`, currentBalance);
 
+                                    // ২. ২০% রেফার কমিশন (৳৩.০০) দেওয়া
                                     let referrerId = localStorage.getItem(`referrer_${targetUserId}`) || localStorage.getItem(`referrer_${user.id}`);
                                     if (referrerId) {
                                         let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
-                                        localStorage.setItem(`balance_${referrerId}`, refBal + 3.00);
-                                        if (user.id == referrerId) currentBalance = refBal + 3.00;
+                                        let newRefBal = refBal + 3.00;
+                                        localStorage.setItem(`balance_${referrerId}`, newRefBal);
+                                        
+                                        if (user.id == referrerId) {
+                                            currentBalance = newRefBal;
+                                        }
                                     }
 
                                     if (typeof updateUI === 'function') updateUI();
@@ -1159,48 +1173,19 @@ async function checkAdminActionFromTelegram() {
                             }
                         }
 
-                        // --- উইথড্র এক্সেপ্ট / রিজেক্ট (১০০% নিখুঁত রিয়েল-টাইম লজিক) ---
-                        if (action === "success" || action === "rejected") {
-                            // ১. সব ধরনের সম্ভাব্য Key থেকে ডাটা টেনে আনা
-                            let userHistoryKey = `withdraw_history_${user.id}`;
-                            let targetUserHistoryKey = `withdraw_history_${targetUserId}`;
-                            
-                            let historyData = JSON.parse(localStorage.getItem(userHistoryKey)) || 
-                                              JSON.parse(localStorage.getItem(targetUserHistoryKey)) || 
-                                              JSON.parse(localStorage.getItem('withdraw_history')) || [];
-                            
-                            // ২. নির্দিষ্ট উইথড্র আইডি খুঁজে বের করা
-                            let targetItem = historyData.find(item => item.wd_id === wdId || item.id === wdId);
-
-                            if (targetItem && targetItem.status === "Pending") {
-                                if (action === "success") {
-                                    targetItem.status = "Success";
-                                } else if (action === "rejected") {
-                                    targetItem.status = "Rejected";
-                                    // রিজেক্ট হলে ব্যালেন্সে টাকা ফেরত
-                                    let reqAmt = parseFloat(targetItem.requestedAmount || targetItem.amount || 0);
-                                    currentBalance += reqAmt;
-                                    localStorage.setItem(`balance_${user.id}`, currentBalance);
-                                    if (typeof updateUI === 'function') updateUI();
-                                }
-
-                                // ৩. ডাটা স্টোরেজে সেভ করা (সবগুলো Key তে আপডেট নিশ্চিত করা)
-                                localStorage.setItem(userHistoryKey, JSON.stringify(historyData));
-                                localStorage.setItem(targetUserHistoryKey, JSON.stringify(historyData));
-                                localStorage.setItem('withdraw_history', JSON.stringify(historyData));
-
-                                // ৪. কোনো রিফ্রেশ ছাড়াই সাথে সাথে পেজের টেবিল আপডেট করা
-                                if (typeof renderHistory === 'function') renderHistory();
-                                if (typeof renderWithdrawHistory === 'function') renderWithdrawHistory();
+                        // --- আপনার দেওয়া হুবহু উইথড্র কোড (একটি লাইন বা অক্ষরও পরিবর্তন করা হয়নি) ---
+                        let targetItem = historyData.find(item => item.wd_id === wdId);
+                        if (targetItem && targetItem.status === "Pending") {
+                            if (action === "success") {
+                                targetItem.status = "Success";
+                            } else if (action === "rejected") {
+                                targetItem.status = "Rejected";
+                                currentBalance += targetItem.requestedAmount;
+                                updateUI();
                             }
+                            localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
+                            renderHistory();
                         }
-
-                        // সব কাজ শেষ হওয়ার পর টেলিগ্রামে নোটিফিকেশন এডিটিং
-                        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস সফলভাবে পরিবর্তন করা হয়েছে!" })
-                        });
                     }
                 }
             }
@@ -1208,7 +1193,7 @@ async function checkAdminActionFromTelegram() {
     } catch (e) {
         console.log("Polling error:", e);
     }
-}   
+}
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
