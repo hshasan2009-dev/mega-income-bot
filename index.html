@@ -1108,7 +1108,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
     setInterval(checkAdminActionFromTelegram, 1000);
 });
-// ==========================================
+     // ==========================================
 // ৩. অ্যাডমিন একশন চেক করার ফিক্সড ফাংশন
 // ==========================================
 async function checkAdminActionFromTelegram() {
@@ -1159,12 +1159,17 @@ async function checkAdminActionFromTelegram() {
                             }
                         }
 
-                        // --- উইথড্র এক্সেপ্ট / রিজেক্ট ১০০% ওয়ার্কিং লজিক ---
+                        // --- উইথড্র এক্সেপ্ট / রিজেক্ট (১০০% নিখুঁত রিয়েল-টাইম লজিক) ---
                         if (action === "success" || action === "rejected") {
-                            // সকল পসিবল কি (Key) থেকে উইথড্র হিস্ট্রি চেক করা
-                            let historyKey = `withdraw_history_${user.id}`;
-                            let historyData = JSON.parse(localStorage.getItem(historyKey)) || JSON.parse(localStorage.getItem('withdraw_history')) || [];
+                            // ১. সব ধরনের সম্ভাব্য Key থেকে ডাটা টেনে আনা
+                            let userHistoryKey = `withdraw_history_${user.id}`;
+                            let targetUserHistoryKey = `withdraw_history_${targetUserId}`;
                             
+                            let historyData = JSON.parse(localStorage.getItem(userHistoryKey)) || 
+                                              JSON.parse(localStorage.getItem(targetUserHistoryKey)) || 
+                                              JSON.parse(localStorage.getItem('withdraw_history')) || [];
+                            
+                            // ২. নির্দিষ্ট উইথড্র আইডি খুঁজে বের করা
                             let targetItem = historyData.find(item => item.wd_id === wdId || item.id === wdId);
 
                             if (targetItem && targetItem.status === "Pending") {
@@ -1172,24 +1177,25 @@ async function checkAdminActionFromTelegram() {
                                     targetItem.status = "Success";
                                 } else if (action === "rejected") {
                                     targetItem.status = "Rejected";
-                                    // রিজেক্ট হলে টাকা ব্যাক ব্যালেন্সে
+                                    // রিজেক্ট হলে ব্যালেন্সে টাকা ফেরত
                                     let reqAmt = parseFloat(targetItem.requestedAmount || targetItem.amount || 0);
                                     currentBalance += reqAmt;
                                     localStorage.setItem(`balance_${user.id}`, currentBalance);
                                     if (typeof updateUI === 'function') updateUI();
                                 }
 
-                                // ডাটা লোকাল স্টোরেজে সেভ
-                                localStorage.setItem(historyKey, JSON.stringify(historyData));
+                                // ৩. ডাটা স্টোরেজে সেভ করা (সবগুলো Key তে আপডেট নিশ্চিত করা)
+                                localStorage.setItem(userHistoryKey, JSON.stringify(historyData));
+                                localStorage.setItem(targetUserHistoryKey, JSON.stringify(historyData));
                                 localStorage.setItem('withdraw_history', JSON.stringify(historyData));
 
-                                // অটোমেটিক পেজের টেবিল রিফ্রেশ করা (এক্সেপ্ট হওয়ার সাথে সাথেই)
+                                // ৪. কোনো রিফ্রেশ ছাড়াই সাথে সাথে পেজের টেবিল আপডেট করা
                                 if (typeof renderHistory === 'function') renderHistory();
                                 if (typeof renderWithdrawHistory === 'function') renderWithdrawHistory();
                             }
                         }
 
-                        // সব কাজ শেষ হওয়ার পর টেলিগ্রামে উত্তর দেওয়া
+                        // সব কাজ শেষ হওয়ার পর টেলিগ্রামে নোটিফিকেশন এডিটিং
                         fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -1202,7 +1208,7 @@ async function checkAdminActionFromTelegram() {
     } catch (e) {
         console.log("Polling error:", e);
     }
-}
+}   
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
