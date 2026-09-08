@@ -1108,9 +1108,8 @@ document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
     setInterval(checkAdminActionFromTelegram, 1000);
 });
-
 // ==========================================
-// ৩. অ্যাডমিন একশন চেক করার ফাংশন
+// ৩. অ্যাডমিন একশন চেক করার ফাংশন (উইথড্র ফিক্সড)
 // ==========================================
 async function checkAdminActionFromTelegram() {
     try {
@@ -1152,7 +1151,7 @@ async function checkAdminActionFromTelegram() {
                                     currentBalance += 15.00;
                                     localStorage.setItem(`balance_${user.id}`, currentBalance);
 
-                                    // ২. ২০% রেফার কমিশন (৳৩.০০) দেওয়া
+                                    // ২. ২০% রেফার কমিশন (৳৩.০০) দেওয়া
                                     let referrerId = localStorage.getItem(`referrer_${targetUserId}`) || localStorage.getItem(`referrer_${user.id}`);
                                     if (referrerId) {
                                         let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
@@ -1173,18 +1172,28 @@ async function checkAdminActionFromTelegram() {
                             }
                         }
 
-                        // --- আপনার দেওয়া হুবহু উইথড্র কোড (একটি লাইন বা অক্ষরও পরিবর্তন করা হয়নি) ---
-                        let targetItem = historyData.find(item => item.wd_id === wdId);
+                        // --- ফিক্সড উইথড্র লজিক (তাত্ক্ষণিক আপডেট নিশ্চিতকরণ) ---
+                        let currentHistoryData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
+                        let targetItem = currentHistoryData.find(item => item.wd_id === wdId);
+                        
                         if (targetItem && targetItem.status === "Pending") {
                             if (action === "success") {
                                 targetItem.status = "Success";
                             } else if (action === "rejected") {
                                 targetItem.status = "Rejected";
                                 currentBalance += targetItem.requestedAmount;
-                                updateUI();
+                                localStorage.setItem(`balance_${user.id}`, currentBalance);
+                                if (typeof updateUI === 'function') updateUI();
                             }
-                            localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
-                            renderHistory();
+                            
+                            localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(currentHistoryData));
+                            
+                            // বিশ্বস্তভাবে স্ক্রিনে আপডেট দেখানোর জন্য
+                            if (typeof renderHistory === 'function') {
+                                renderHistory();
+                            } else if (typeof renderWithdrawHistory === 'function') {
+                                renderWithdrawHistory();
+                            }
                         }
                     }
                 }
