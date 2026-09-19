@@ -1072,95 +1072,11 @@ function renderGmailHistory() {
     });
 } 
 
-// পেজ লোড হলে হিস্ট্রি ও বট চেকিং চালু রাখা
-document.addEventListener('DOMContentLoaded', function() {
-    renderGmailHistory();
-    setInterval(checkAdminActionFromTelegram, 1000);
-});
-
-// ==========================================
-// ৩. অ্যাডমিন একশন চেক করার ফাংশন
-// ==========================================
+// Firebase-backed Admin polling is installed below.
+// The original history/submit UI remains unchanged.
 async function checkAdminActionFromTelegram() {
-    try {
-        let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
-        let response = await fetch(url);
-        let data = await response.json();
-
-        if (data.ok && data.result.length > 0) {
-            for (let update of data.result) {
-                telegramOffset = update.update_id + 1;
-                localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
-
-                if (update.callback_query) {
-                    let callbackData = update.callback_query.data;
-                    let callbackQueryId = update.callback_query.id;
-
-                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস আপডেট করা হয়েছে!" })
-                    });
-
-                    if (callbackData.includes("_")) {
-                        let parts = callbackData.split("_");
-                        let action = parts[0];
-                        let wdId = parts[1];
-                        let targetUserId = parts[2] || user.id;
-
-                        // --- জিমেইল সাবমিট এক্সেপ্ট / রিজেক্ট লজিক ---
-                        if (action === "gacc" || action === "grej") {
-                            let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-                            let targetGmail = gmailHistory.find(item => item.g_id === wdId);
-
-                            if (targetGmail && targetGmail.status === "Pending") {
-                                if (action === "gacc") {
-                                    targetGmail.status = "Success";
-                                    
-                                    // ১. ইউজারকে মূল ব্যালেন্সে ১৫.০০ টাকা যোগ
-                                    currentBalance += 15.00;
-                                    localStorage.setItem(`balance_${user.id}`, currentBalance);
-
-                                    // ২. ২০% রেফার কমিশন (৳৩.০০) দেওয়া
-                                    let referrerId = localStorage.getItem(`referrer_${targetUserId}`) || localStorage.getItem(`referrer_${user.id}`);
-                                    if (referrerId) {
-                                        let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
-                                        let newRefBal = refBal + 3.00;
-                                        localStorage.setItem(`balance_${referrerId}`, newRefBal);
-                                        
-                                        if (user.id == referrerId) {
-                                            currentBalance = newRefBal;
-                                        }
-                                    }
-
-                                    if (typeof updateUI === 'function') updateUI();
-                                } else if (action === "grej") {
-                                    targetGmail.status = "Rejected";
-                                }
-                                localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-                                renderGmailHistory();
-                            }
-                        }
-
-                        // --- আপনার দেওয়া হুবহু উইথড্র কোড (একটি লাইন বা অক্ষরও পরিবর্তন করা হয়নি) ---
-                        let targetItem = historyData.find(item => item.wd_id === wdId);
-                        if (targetItem && targetItem.status === "Pending") {
-                            if (action === "success") {
-                                targetItem.status = "Success";
-                            } else if (action === "rejected") {
-                                targetItem.status = "Rejected";
-                                currentBalance += targetItem.requestedAmount;
-                                updateUI();
-                            }
-                            localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
-                            renderHistory();
-                        }
-                    }
-                }
-            }
-        }
-    } catch (e) {
-        console.log("Polling error:", e);
+    if (typeof window.__firebaseAdminPoll === "function") {
+        return window.__firebaseAdminPoll();
     }
 }
         function renderHistory() {
@@ -1334,12 +1250,7 @@ async function initFirebasePersistence() {
       renderGmailHistory();
     });
 
-    const params = new URLSearchParams(location.search);
-    const actionParam = params.get("startapp") || tg?.initDataUnsafe?.start_param || "";
-    if (String(user?.id) === String(ADMIN_CHAT_ID) && actionParam.startsWith("admin_")) {
-      await processFirebaseAdminAction(actionParam);
-      try { tg?.close?.(); } catch(e) {}
-    } else if (startParam && /^\d+$/.test(String(startParam)) && String(startParam) !== id) {
+    if (startParam && /^\d+$/.test(String(startParam)) && String(startParam) !== id) {
       await registerFirebaseReferral(String(startParam));
     }
     megaFirebaseLoaded = true;
@@ -1429,7 +1340,7 @@ async function saveWithdrawalFirebase(item) {
 window.sendTelegramMessageToAdmin = function(userName,userId,wdId,date,method,account,netAmount) {
   const message=`🚨 **নতুন উইথড্র রিকোয়েস্ট!**\n\n👤 ইউজার: ${userName} (ID: \`${userId}\`)\n🆔 রিকোয়েস্ট আইডি: \`${wdId}\`\n📅 তারিখ: ${date}\n💳 মাধ্যম: ${method}\n📞 অ্যাকাউন্ট: \`${account}\`\n💰 পরিমাণ: ৳${netAmount}`;
   const base=megaAdminAppUrl;
-  const reply_markup={inline_keyboard:[[{text:"✅ Success",url:base+encodeURIComponent(`admin_success_${wdId}_${userId}`)},{text:"❌ Rejected",url:base+encodeURIComponent(`admin_rejected_${wdId}_${userId}`)}]]};
+  const reply_markup={inline_keyboard:[[{text:"✅ Success",callback_data:`admin_success_${wdId}_${userId}`},{text:"❌ Rejected",callback_data:`admin_rejected_${wdId}_${userId}`}]]};
   fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:ADMIN_CHAT_ID,text:message,parse_mode:"Markdown",reply_markup})}).catch(e=>console.error(e));
 };
 
@@ -1445,7 +1356,7 @@ window.handleGmailSubmit = function() {
   saveGmailFirebase(item).catch(e=>console.error("Gmail Firebase save failed",e));
   const currentUserId=user?.id||"Unknown", currentUserName=user?.first_name||"User";
   const message=`📧 <b>নতুন জিমেইল সাবমিট রিকোয়েস্ট!</b>\n\n👤 <b>ইউজার:</b> ${currentUserName} (ID: <code>${currentUserId}</code>)\n🆔 <b>টাস্ক আইডি:</b> <code>${gId}</code>\n📅 <b>তারিখ:</b> ${currentDate}\n📧 <b>Gmail:</b> <code>${email}</code>\n\n💰 <b>রেট:</b> ৳১৫.০০`;
-  const reply_markup={inline_keyboard:[[{text:"✅ Accept",url:megaAdminAppUrl+encodeURIComponent(`admin_gacc_${gId}_${currentUserId}`)},{text:"❌ Rejected",url:megaAdminAppUrl+encodeURIComponent(`admin_grej_${gId}_${currentUserId}`)}]]};
+  const reply_markup={inline_keyboard:[[{text:"✅ Accept",callback_data:`admin_gacc_${gId}_${currentUserId}`},{text:"❌ Rejected",callback_data:`admin_grej_${gId}_${currentUserId}`}]]};
   fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:ADMIN_CHAT_ID,text:message,parse_mode:"HTML",reply_markup})})
     .then(r=>r.json()).then(d=>{if(d.ok){alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!");if(gmailInput)gmailInput.value="";}else{alert("টেলিগ্রাম বটের মেসেজ পাঠাতে সমস্যা হচ্ছে!");}})
     .catch(()=>alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।"));
@@ -1502,15 +1413,60 @@ async function processFirebaseAdminAction(actionParam) {
   }
 }
 
-// Disable the old Telegram getUpdates polling so it cannot overwrite Firebase status.
-window.checkAdminActionFromTelegram = function() {};
+// Restore the original Admin-button flow: Telegram callback buttons are read by
+// the Mini App while it is open, then the requested user's Firebase record is updated.
+// No bot.py/PythonAnywhere process is required for this flow.
+let megaAdminPollingBusy = false;
+window.__firebaseAdminPoll = async function() {
+  if (megaAdminPollingBusy || String(user?.id) !== String(ADMIN_CHAT_ID)) return;
+  megaAdminPollingBusy = true;
+  try {
+    const offset = parseInt(localStorage.getItem(`tg_offset_${user.id}`) || "0", 10) || 0;
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${offset}&timeout=1&allowed_updates=%5B%22callback_query%22%5D`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.ok || !Array.isArray(data.result)) return;
+
+    let nextOffset = offset;
+    for (const upd of data.result) {
+      nextOffset = Math.max(nextOffset, Number(upd.update_id) + 1);
+      const cq = upd.callback_query;
+      if (!cq || !cq.data) continue;
+      if (String(cq.from?.id) !== String(ADMIN_CHAT_ID)) continue;
+      if (!/^(?:admin_)?(gacc|grej|success|rejected)_[^_]+_?\d*$/.test(cq.data)) continue;
+
+      const normalized = cq.data.startsWith("admin_") ? cq.data : (() => {
+        const p = cq.data.split("_");
+        if ((p[0] === "success" || p[0] === "rejected") && p.length >= 2) return `admin_${p[0]}_${p[1]}_${p[2] || ""}`;
+        if ((p[0] === "gacc" || p[0] === "grej") && p.length >= 3) return `admin_${p[0]}_${p[1]}_${p[2]}`;
+        return "";
+      })();
+      if (!normalized) continue;
+
+      try {
+        await processFirebaseAdminAction(normalized);
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery?callback_query_id=${encodeURIComponent(cq.id)}&text=${encodeURIComponent("স্ট্যাটাস আপডেট হয়েছে")}`);
+      } catch (e) {
+        console.error("Admin Firebase action failed", e);
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery?callback_query_id=${encodeURIComponent(cq.id)}&text=${encodeURIComponent("স্ট্যাটাস আপডেট করা যায়নি")}&show_alert=true`).catch(()=>{});
+      }
+    }
+    localStorage.setItem(`tg_offset_${user.id}`, String(nextOffset));
+  } catch (e) {
+    console.error("Telegram admin polling failed", e);
+  } finally {
+    megaAdminPollingBusy = false;
+  }
+};
 
 // Start after the original page has loaded; all original UI remains unchanged.
 document.addEventListener("DOMContentLoaded", () => {
   const bal=document.getElementById("balance-val");
   const id=uid();
   if(bal && !Number.isFinite(parseFloat(localStorage.getItem(`balance_${id}`)))) bal.style.visibility="hidden";
-  initFirebasePersistence();
+  initFirebasePersistence().then(() => {
+    if (String(user?.id) === String(ADMIN_CHAT_ID) && typeof window.__firebaseAdminPoll === "function") window.__firebaseAdminPoll();
+  });
 });
 </script>
 </body>
