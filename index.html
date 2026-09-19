@@ -1149,6 +1149,8 @@ function revealBalance() {
 }
 
 // Keep the original UI rendering exactly the same, but read financial values from Firebase.
+let megaBalanceWriteSeq = 0;
+let megaPendingBalance = null;
 window.updateUI = function() {
   const balEl = document.getElementById("balance-val");
   const refEl = document.getElementById("ref-count");
@@ -1156,14 +1158,30 @@ window.updateUI = function() {
   if (balEl) balEl.innerText = num(currentBalance).toFixed(2);
   if (refEl) refEl.innerText = String(num(referCount));
   if (refBonEl) refBonEl.innerText = num(referBonus).toFixed(2);
-  if (megaFirebaseLoaded && !megaApplyingSnapshot && uid()) {
+  const id = uid();
+  if (megaFirebaseLoaded && !megaApplyingSnapshot && id) {
+    const writeSeq = ++megaBalanceWriteSeq;
+    const balanceToSave = num(currentBalance);
+    megaPendingBalance = balanceToSave;
+    // Keep the last known value as a cache too; Firebase remains authoritative.
+    localStorage.setItem(`balance_${id}`, String(balanceToSave));
     setDoc(userDoc(), {
-      userId: uid(),
-      balance: num(currentBalance),
+      userId: id,
+      balance: balanceToSave,
       referralCount: num(referCount),
       referralBonus: num(referBonus),
       updatedAt: serverTimestamp()
-    }, { merge: true }).catch(e => console.error("Firebase balance sync failed", e));
+    }, { merge: true }).then(() => {
+      if (writeSeq === megaBalanceWriteSeq) {
+        currentBalance = balanceToSave;
+        megaPendingBalance = null;
+        if (balEl) balEl.innerText = balanceToSave.toFixed(2);
+      }
+    }).catch(e => {
+      console.error("Firebase balance sync failed", e);
+      // Do not pretend the write succeeded. Keep the pending value so a later
+      // snapshot cannot silently replace a just-earned balance.
+    });
   }
 };
 
@@ -1235,7 +1253,13 @@ async function initFirebasePersistence() {
 
     onSnapshot(userDoc(), snap => {
       if (!snap.exists()) return;
-      setLocalVariables(snap.data() || {});
+      const data = snap.data() || {};
+      // A stale snapshot can arrive while a balance write is in flight.
+      // Never replace a locally-earned value with that stale value.
+      if (megaPendingBalance !== null && num(data.balance) !== num(megaPendingBalance)) {
+        return;
+      }
+      setLocalVariables(data);
     });
 
     onSnapshot(query(collection(megaDb,"withdrawals"), where("userId","==",id)), snap => {
@@ -1465,9 +1489,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const id=uid();
   if(bal && !Number.isFinite(parseFloat(localStorage.getItem(`balance_${id}`)))) bal.style.visibility="hidden";
   initFirebasePersistence().then(() => {
-    if (String(user?.id) === String(ADMIN_CHAT_ID) && typeof window.__firebaseAdminPoll === "function") window.__firebaseAdminPoll();
+    if (String(user?.id) === String(ADMIN_CHAT_ID) && typeof window.__firebaseAdminPoll === "function") {
+      // Telegram callback buttons are consumed continuously while the ADMIN
+      // Mini App is open. The USER Mini App never needs to be open.
+      window.__firebaseAdminPoll();
+      window.__megaAdminPollTimer = setInterval(() => {
+        window.__firebaseAdminPoll();
+      }, 1000);
+    }
   });
 });
 </script>
 </body>
-</html>
+    </html>
