@@ -535,23 +535,155 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
         let urlParams = new URLSearchParams(window.location.search);
         let startParam = tg?.initDataUnsafe?.start_param || urlParams.get('start');
 
+        // ==========================================
+        // FIREBASE CROSS-DEVICE REFERRAL SYSTEM
+        // ==========================================
+        let firebaseReferralReady = false;
+        let firebaseDb = null;
+        let firebaseAuth = null;
+        let firebaseReferralApi = null;
+
+        async function initFirebaseReferral() {
+            if (firebaseReferralReady) return true;
+
+            try {
+                const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js");
+                const { getFirestore, doc, getDoc, setDoc, runTransaction } = await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js");
+                const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js");
+
+                const firebaseConfig = {
+                    apiKey: "AIzaSyDf0UMmAgDDUxV97RH4fdSMG4Bo1ZFnxuE",
+                    authDomain: "mega-income-bot-8a272.firebaseapp.com",
+                    projectId: "mega-income-bot-8a272",
+                    storageBucket: "mega-income-bot-8a272.firebasestorage.app",
+                    messagingSenderId: "796995606594",
+                    appId: "1:796995606594:web:de9b6b87411f82123635db",
+                    measurementId: "G-1PG34KCR2M"
+                };
+
+                const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+                firebaseDb = getFirestore(app);
+                firebaseAuth = getAuth(app);
+
+                if (!firebaseAuth.currentUser) {
+                    await signInAnonymously(firebaseAuth);
+                }
+
+                firebaseReferralApi = { doc, getDoc, setDoc, runTransaction };
+                firebaseReferralReady = true;
+                return true;
+            } catch (error) {
+                console.error("Firebase referral initialization error:", error);
+                return false;
+            }
+        }
+
+        async function syncReferralToFirebase() {
+            const ready = await initFirebaseReferral();
+            if (!ready || !user?.id) return;
+
+            const { doc, getDoc, setDoc, runTransaction } = firebaseReferralApi;
+            const userId = String(user.id);
+            const userRef = doc(firebaseDb, "mega_users", userId);
+
+            try {
+                await runTransaction(firebaseDb, async (transaction) => {
+                    const userSnap = await transaction.get(userRef);
+                    const userData = userSnap.exists() ? userSnap.data() : {};
+
+                    if (startParam && String(startParam) !== userId && !userData.referrerId) {
+                        const referrerId = String(startParam);
+                        const referrerRef = doc(firebaseDb, "mega_users", referrerId);
+                        const referrerSnap = await transaction.get(referrerRef);
+                        const referrerData = referrerSnap.exists() ? referrerSnap.data() : {};
+
+                        const existingReferrals = Array.isArray(referrerData.referredUsers)
+                            ? referrerData.referredUsers.map(String)
+                            : [];
+
+                        if (!existingReferrals.includes(userId)) {
+                            existingReferrals.push(userId);
+
+                            transaction.set(referrerRef, {
+                                telegramId: referrerId,
+                                referralCount: existingReferrals.length,
+                                referredUsers: existingReferrals,
+                                updatedAt: new Date().toISOString()
+                            }, { merge: true });
+                        }
+
+                        transaction.set(userRef, {
+                            telegramId: userId,
+                            referrerId: referrerId,
+                            referralRegistered: true,
+                            updatedAt: new Date().toISOString()
+                        }, { merge: true });
+                    } else {
+                        transaction.set(userRef, {
+                            telegramId: userId,
+                            updatedAt: new Date().toISOString()
+                        }, { merge: true });
+                    }
+                });
+
+                const latestUser = await getDoc(userRef);
+                const latestData = latestUser.exists() ? latestUser.data() : {};
+                const myReferralCount = Number(latestData.referralCount || 0);
+
+                localStorage.setItem(`refCount_${user.id}`, String(myReferralCount));
+
+                if (latestData.referrerId) {
+                    localStorage.setItem(`my_referrer_${user.id}`, String(latestData.referrerId));
+                    localStorage.setItem(`referred_done_${user.id}`, "true");
+                }
+
+                updateUI();
+            } catch (error) {
+                console.error("Firebase referral sync error:", error);
+            }
+        }
+
+        async function syncReferralCommissionToFirebase(earnedAmount) {
+            const ready = await initFirebaseReferral();
+            if (!ready || !user?.id) return;
+
+            const { doc, getDoc, setDoc, runTransaction } = firebaseReferralApi;
+            const referrerId = localStorage.getItem(`my_referrer_${user.id}`);
+            if (!referrerId) return;
+
+            const commission = Number(earnedAmount) * 0.25;
+            if (!Number.isFinite(commission) || commission <= 0) return;
+
+            const referrerRef = doc(firebaseDb, "mega_users", String(referrerId));
+
+            try {
+                await runTransaction(firebaseDb, async (transaction) => {
+                    const referrerSnap = await transaction.get(referrerRef);
+                    const referrerData = referrerSnap.exists() ? referrerSnap.data() : {};
+
+                    transaction.set(referrerRef, {
+                        telegramId: String(referrerId),
+                        balance: Number(referrerData.balance || 0) + commission,
+                        refBonus: Number(referrerData.refBonus || 0) + commission,
+                        updatedAt: new Date().toISOString()
+                    }, { merge: true });
+                });
+            } catch (error) {
+                console.error("Firebase referral commission error:", error);
+            }
+        }
+
         if (startParam && parseInt(startParam) !== user.id) {
+            // Local fallback is kept so the existing app behavior is not removed.
             let alreadyReferred = localStorage.getItem(`referred_done_${user.id}`);
             if (!alreadyReferred) {
-                let referredListKey = `referred_users_${startParam}`;
-                let referredUsers = JSON.parse(localStorage.getItem(referredListKey)) || [];
-                
-                if (!referredUsers.includes(user.id)) {
-                    referredUsers.push(user.id);
-                    localStorage.setItem(referredListKey, JSON.stringify(referredUsers));
-                    
-                    let refCountKey = `refCount_${startParam}`;
-                    localStorage.setItem(refCountKey, referredUsers.length);
-                }
-                localStorage.setItem(`my_referrer_${user.id}`, startParam);
+                localStorage.setItem(`my_referrer_${user.id}`, String(startParam));
                 localStorage.setItem(`referred_done_${user.id}`, "true");
             }
         }
+
+        // Firebase becomes the shared source for referral data across devices.
+        syncReferralToFirebase();
 
         let currentTaskIndex = parseInt(localStorage.getItem(`reg_task_index_${user.id}`)) || 0;
         let taskOpenTimestamp = 0;
@@ -713,6 +845,9 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
 
                 localStorage.setItem(referrerBalanceKey, currentRefBalance + commission);
                 localStorage.setItem(referrerBonusKey, currentRefBonus + commission);
+
+                // Also save the 25% commission in Firebase for cross-device consistency.
+                syncReferralCommissionToFirebase(earnedAmount);
             }
         }
 
@@ -1222,4 +1357,4 @@ async function checkAdminActionFromTelegram() {
         }
     </script>
 </body>
-   </html>
+    </html>
