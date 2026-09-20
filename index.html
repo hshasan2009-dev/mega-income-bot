@@ -1112,7 +1112,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==========================================
 // ৩. অ্যাডমিন একশন চেক করার ফাংশন
 // ==========================================
-async async function checkAdminActionFromTelegram() {
+async function checkAdminActionFromTelegram() {
     try {
         let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
         let response = await fetch(url);
