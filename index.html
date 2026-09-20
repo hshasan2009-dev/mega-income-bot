@@ -6,6 +6,9 @@
     <title>Mega Income Bot</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -301,9 +304,9 @@
             <h2 style="color: #ffcc00; text-align: center; font-size: 22px; margin: 10px 0 5px 0;">📧 জিমেইল সাবমিট করুন</h2>
             <p style="color: #a5b3aa; text-align: center; font-size: 13px; margin: 0 0 25px 0;">সঠিক তথ্য সাবমিট করে ভেরিফিকেশনের জন্য অপেক্ষা করুন।</p>
             <div style="margin: 20px 0; text-align: left; padding: 0 5px;">
-                <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 14px; font-weight: bold;">আপনার জিমেইল ও পাসওয়ার্ড লিখুন:</label>
-                <span style="color: #ffcc00; display: block; margin-bottom: 10px; font-size: 12px;">(নিয়ম: ফার্স্ট নাম:Hasan পাসওয়ার্ড:hasan#1122 নিচে আপনার তৈরি ইমেইল দিয়ে সাবমিট করুন )</span>
-                <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com : Password" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #00a859; background-color: #0d1e15; color: #ffffff; font-size: 15px; box-sizing: border-box; outline: none;">
+                <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 14px; font-weight: bold;">আপনার জিমেইল লিখুন:</label>
+                <span style="color: #ffcc00; display: block; margin-bottom: 10px; font-size: 12px;">(নিচে আপনার তৈরি ইমেইল দিয়ে সাবমিট করুন)</span>
+                <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #00a859; background-color: #0d1e15; color: #ffffff; font-size: 15px; box-sizing: border-box; outline: none;">
             </div>
             <div style="margin-top: 20px;">
                 <button onclick="handleGmailSubmit()" style="background-color: #00a859; color: #ffffff; border: none; padding: 13px 0; font-size: 16px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 15px; cursor: pointer;">
@@ -332,16 +335,8 @@
             var historyPanel = document.getElementById('gmailHistorySection');
             historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none';
         }
-        function handleGmailSubmit() {
-            var gmailData = document.getElementById('gmailInputField').value.trim();
-            if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
-            if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
-            
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.sendData(JSON.stringify({ action: "gmail_submit", info: gmailData }));
-                alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে!");
-                closeGmailSellPage();
-            } else { alert("অনুরোধটি এডমিনের কাছে পাঠানো হয়েছে! (বট টেস্ট মোড)"); }
+        function handleGmailSubmitLegacy() {
+            return handleGmailSubmit.apply(this, arguments);
         }
         </script>
 
@@ -481,6 +476,235 @@
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "46374";
+
+        // Firebase is used only for the requested persistent data:
+        // balance, referral data, Gmail history/status and withdrawal history/status.
+        const firebaseConfig = {
+            apiKey: "AIzaSyDf0UMmAgDDUxV97RH4fdSMG4BoZ1FnxuE",
+            authDomain: "mega-income-bot-8a272.firebaseapp.com",
+            projectId: "mega-income-bot-8a272",
+            storageBucket: "mega-income-bot-8a272.firebasestorage.app",
+            messagingSenderId: "796995606594",
+            appId: "1:796995606594:web:de9b6b87411f82123635db"
+        };
+        const firebaseApp = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        // Firebase is the persistent source of truth for balance, referrals, Gmail and withdrawals.
+        let firebaseAuthReady = auth.currentUser ? Promise.resolve() : auth.signInAnonymously();
+
+        let firebaseReady = firebaseAuthReady;
+        let userDocRef = null;
+        let unsubscribeUserDoc = null;
+        let unsubscribeWithdrawals = null;
+        let unsubscribeGmail = null;
+
+        async function loadFirebaseUserData() {
+            await firebaseAuthReady;
+            if (!user || !user.id) return;
+            userDocRef = db.collection('users').doc(String(user.id));
+
+            const localBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0;
+            const localRefCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
+            const localRefBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0;
+            const localReferrer = localStorage.getItem(`my_referrer_${user.id}`) || localStorage.getItem(`referrer_${user.id}`) || null;
+
+            const snap = await userDocRef.get();
+            if (!snap.exists) {
+                await userDocRef.set({
+                    userId: String(user.id),
+                    name: user.first_name || 'User',
+                    balance: localBalance,
+                    referralCount: localRefCount,
+                    referralBonus: localRefBonus,
+                    referrerId: localReferrer,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            } else {
+                const d = snap.data() || {};
+                if (d.balance === undefined || d.referralCount === undefined || d.referralBonus === undefined) {
+                    await userDocRef.set({
+                        ...(d.balance === undefined ? { balance: localBalance } : {}),
+                        ...(d.referralCount === undefined ? { referralCount: localRefCount } : {}),
+                        ...(d.referralBonus === undefined ? { referralBonus: localRefBonus } : {}),
+                        ...(d.referrerId === undefined && localReferrer ? { referrerId: localReferrer } : {}),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                }
+            }
+
+            unsubscribeUserDoc = userDocRef.onSnapshot(doc => {
+                const d = doc.data() || {};
+                currentBalance = Number(d.balance || 0);
+                referCount = Number(d.referralCount || 0);
+                referBonus = Number(d.referralBonus || 0);
+                updateUI(false);
+            });
+
+            unsubscribeWithdrawals = db.collection('withdrawals')
+                .where('userId', '==', String(user.id))
+                .onSnapshot(snapshot => {
+                    historyData = snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
+                        .sort((a,b) => ((b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)) || String(b.wd_id || b.g_id || '').localeCompare(String(a.wd_id || a.g_id || '')));
+                    renderHistory();
+                });
+
+            unsubscribeGmail = db.collection('gmail_submissions')
+                .where('userId', '==', String(user.id))
+                .onSnapshot(snapshot => {
+                    window.gmailHistoryData = snapshot.docs.map(x => ({ id: x.id, ...x.data() }))
+                        .sort((a,b) => ((b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)) || String(b.wd_id || b.g_id || '').localeCompare(String(a.wd_id || a.g_id || '')));
+                    renderGmailHistory();
+                });
+
+            await migrateLegacyPersistentData();
+            await processAdminActionFromStartParam();
+        }
+
+        async function migrateLegacyPersistentData() {
+            if (!user || !user.id) return;
+            const uid = String(user.id);
+            const userRef = db.collection('users').doc(uid);
+            const snap = await userRef.get();
+            const d = snap.data() || {};
+
+            // Never overwrite existing Firebase values with local values.
+            const patch = {};
+            if (d.balance === undefined) patch.balance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0;
+            if (d.referralCount === undefined) patch.referralCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
+            if (d.referralBonus === undefined) patch.referralBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0;
+            const oldRef = localStorage.getItem(`my_referrer_${user.id}`) || localStorage.getItem(`referrer_${user.id}`);
+            if (d.referrerId === undefined && oldRef) patch.referrerId = oldRef;
+            if (Object.keys(patch).length) {
+                patch.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+                await userRef.set(patch, { merge: true });
+            }
+
+            const oldWithdrawals = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`) || '[]');
+            for (const item of oldWithdrawals) {
+                const ref = db.collection('withdrawals').doc(`${uid}_${item.wd_id}`);
+                const exists = await ref.get();
+                if (!exists.exists) {
+                    await ref.set({ ...item, userId: uid, createdAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                }
+            }
+
+            const oldGmail = JSON.parse(localStorage.getItem('gmail_history') || '[]');
+            for (const item of oldGmail) {
+                const ref = db.collection('gmail_submissions').doc(`${uid}_${item.g_id}`);
+                const exists = await ref.get();
+                if (!exists.exists) {
+                    await ref.set({ ...item, userId: uid, createdAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                }
+            }
+        }
+
+        async function changeFirebaseBalance(uid, delta, bonusDelta = 0) {
+            const ref = db.collection('users').doc(String(uid));
+            const result = await db.runTransaction(async tx => {
+                const snap = await tx.get(ref);
+                const d = snap.exists ? snap.data() : {};
+                const nextBalance = Number(d.balance || 0) + Number(delta || 0);
+                const nextBonus = Number(d.referralBonus || 0) + Number(bonusDelta || 0);
+                tx.set(ref, {
+                    userId: String(uid),
+                    balance: nextBalance,
+                    referralBonus: nextBonus,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                return { balance: nextBalance, bonus: nextBonus };
+            });
+            if (String(uid) === String(user.id)) {
+                currentBalance = result.balance;
+                referBonus = result.bonus;
+                updateUI(false);
+            }
+            return result;
+        }
+
+        async function registerReferralInFirebase(referrerId) {
+            await firebaseAuthReady;
+            const uid = String(user.id);
+            const rid = String(referrerId);
+            if (!rid || rid === uid) return;
+            const claimRef = db.collection('referral_claims').doc(`${rid}_${uid}`);
+            const referrerRef = db.collection('users').doc(rid);
+            const userRef = db.collection('users').doc(uid);
+            await db.runTransaction(async tx => {
+                const claim = await tx.get(claimRef);
+                const uSnap = await tx.get(userRef);
+                const uData = uSnap.exists ? uSnap.data() : {};
+                if (!uData.referrerId) {
+                    tx.set(userRef, { referrerId: rid, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                }
+                if (!claim.exists) {
+                    const rSnap = await tx.get(referrerRef);
+                    const rData = rSnap.exists ? rSnap.data() : {};
+                    tx.set(referrerRef, {
+                        userId: rid,
+                        referralCount: Number(rData.referralCount || 0) + 1,
+                        balance: Number(rData.balance || 0),
+                        referralBonus: Number(rData.referralBonus || 0),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                    tx.set(claimRef, { referrerId: rid, referredUserId: uid, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                }
+            });
+        }
+
+        async function processAdminActionFromStartParam() {
+            await firebaseAuthReady;
+            const start = tg?.initDataUnsafe?.start_param || new URLSearchParams(location.search).get('startapp');
+            if (!start || String(user.id) !== String(ADMIN_CHAT_ID)) return;
+            const m = String(start).match(/^admin_(gacc|grej|success|rejected)_([^_]+)_([^_]+)$/);
+            if (!m) return;
+            const action = m[1], itemId = m[2], targetUid = m[3];
+            try {
+                if (action === 'gacc' || action === 'grej') {
+                    const ref = db.collection('gmail_submissions').doc(`${targetUid}_${itemId}`);
+                    await db.runTransaction(async tx => {
+                        const snap = await tx.get(ref);
+                        if (!snap.exists || snap.data().status !== 'Pending') return;
+                        const item = snap.data();
+                        if (action === 'gacc') {
+                            tx.update(ref, { status: 'Success', amount: 15, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                            const userRef = db.collection('users').doc(String(targetUid));
+                            const us = await tx.get(userRef);
+                            const ud = us.exists ? us.data() : {};
+                            tx.set(userRef, { balance: Number(ud.balance || 0) + 15, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                            const rid = ud.referrerId;
+                            if (rid) {
+                                const rr = db.collection('users').doc(String(rid));
+                                const rs = await tx.get(rr); const rd = rs.exists ? rs.data() : {};
+                                tx.set(rr, { balance: Number(rd.balance || 0) + 3, referralBonus: Number(rd.referralBonus || 0) + 3, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                            }
+                        } else {
+                            tx.update(ref, { status: 'Rejected', updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                        }
+                    });
+                } else {
+                    const ref = db.collection('withdrawals').doc(`${targetUid}_${itemId}`);
+                    await db.runTransaction(async tx => {
+                        const snap = await tx.get(ref);
+                        if (!snap.exists || snap.data().status !== 'Pending') return;
+                        const item = snap.data();
+                        tx.update(ref, { status: action === 'success' ? 'Success' : 'Rejected', updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                        if (action === 'rejected') {
+                            const userRef = db.collection('users').doc(String(targetUid));
+                            const us = await tx.get(userRef); const ud = us.exists ? us.data() : {};
+                            tx.set(userRef, { balance: Number(ud.balance || 0) + Number(item.requestedAmount || 0), updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                        }
+                    });
+                }
+                alert('✅ স্ট্যাটাস সফলভাবে আপডেট হয়েছে।');
+                if (tg?.close) setTimeout(() => tg.close(), 500);
+            } catch (e) {
+                console.error('Admin action error:', e);
+                alert('❌ স্ট্যাটাস আপডেট করা যায়নি। Firebase Rules/connection পরীক্ষা করুন।');
+            }
+        }
+
         
         const regTasksList = [
             { usd: 0.02, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" },
@@ -535,22 +759,8 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
         let urlParams = new URLSearchParams(window.location.search);
         let startParam = tg?.initDataUnsafe?.start_param || urlParams.get('start');
 
-        if (startParam && parseInt(startParam) !== user.id) {
-            let alreadyReferred = localStorage.getItem(`referred_done_${user.id}`);
-            if (!alreadyReferred) {
-                let referredListKey = `referred_users_${startParam}`;
-                let referredUsers = JSON.parse(localStorage.getItem(referredListKey)) || [];
-                
-                if (!referredUsers.includes(user.id)) {
-                    referredUsers.push(user.id);
-                    localStorage.setItem(referredListKey, JSON.stringify(referredUsers));
-                    
-                    let refCountKey = `refCount_${startParam}`;
-                    localStorage.setItem(refCountKey, referredUsers.length);
-                }
-                localStorage.setItem(`my_referrer_${user.id}`, startParam);
-                localStorage.setItem(`referred_done_${user.id}`, "true");
-            }
+        if (startParam && !String(startParam).startsWith('admin_') && parseInt(startParam) !== user.id) {
+            firebaseReady = firebaseReady.then(() => registerReferralInFirebase(startParam));
         }
 
         let currentTaskIndex = parseInt(localStorage.getItem(`reg_task_index_${user.id}`)) || 0;
@@ -584,7 +794,7 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             alert(`🔄 পরবর্তী টাস্ক লিংক লোড করা হয়েছে! (টাস্ক নম্বর: ${currentTaskIndex + 1}/${regTasksList.length})\n\nএখন 'রেজিস্ট্রেশন পেজে যান' এ ক্লিক করুন।`);
         }
 
-        function completeRegTask() {
+        async function completeRegTask() {
             let clickedKey = `clicked_reg_${user.id}_${currentTaskIndex}`;
 
             if (!localStorage.getItem(clickedKey) || taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 110000)) {
@@ -595,11 +805,11 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             let task = regTasksList[currentTaskIndex];
             let rewardInBDT = (task.usd * 100) * 0.50; 
             
-            currentBalance += rewardInBDT;
+            await addOwnBalance(rewardInBDT);
             completedTasksCount++;
             localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
             
-            giveReferralCommission(rewardInBDT);
+            await giveReferralCommission(rewardInBDT);
             updateUI();
             checkSpinAvailability();
 
@@ -613,15 +823,14 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             closeRegTaskPage();
         }
 
-        let refCountKey = `refCount_${user.id}`;
-        let referCount = parseInt(localStorage.getItem(refCountKey)) || 0;
-        let currentBalance = parseFloat(localStorage.getItem(`balance_${user.id}`)) || 0.00;
-        let referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
-        let historyData = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
+        let referCount = 0;
+        let currentBalance = 0.00;
+        let referBonus = 0.00;
+        let historyData = [];
+        window.gmailHistoryData = [];
         
         let completedTasksCount = parseInt(localStorage.getItem(`tasksCount_${user.id}`)) || 0;
         let lastSpinTime = parseInt(localStorage.getItem(`lastSpin_${user.id}`)) || 0;
-        let telegramOffset = parseInt(localStorage.getItem(`tg_offset_${user.id}`)) || 0;
 
         const validGiftCodes = {
             "SIYAM1122": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
@@ -637,15 +846,25 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             { amount: 1.00, label: "৳১.০০", weight: 5 }
         ];
 
-        window.onload = function() {
+        window.onload = async function() {
             let refInput = document.getElementById("ref-link");
             if(refInput) refInput.value = referLink;
-            updateUI();
+            updateUI(false);
             renderHistory();
+            renderGmailHistory();
             checkSpinAvailability();
             initWheel();
-
-            setInterval(checkAdminActionFromTelegram, 3000);
+            try {
+                firebaseReady = loadFirebaseUserData();
+                await firebaseReady;
+                if (startParam && !String(startParam).startsWith('admin_') && parseInt(startParam) !== user.id) await registerReferralInFirebase(startParam);
+                updateUI(false);
+                renderHistory();
+                renderGmailHistory();
+            } catch (e) {
+                console.error('Firebase initialization error:', e);
+                alert('⚠️ Firebase সংযোগ হচ্ছে না। Rules/Internet পরীক্ষা করুন।');
+            }
         };
 
         function initWheel() {
@@ -686,34 +905,29 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             if (element) element.classList.add('active');
         }
 
-        function updateUI() {
+        function updateUI(saveLocal = false) {
             let balEl = document.getElementById("balance-val");
             let refEl = document.getElementById("ref-count");
             let refBonEl = document.getElementById("ref-bonus-val");
-
-            referCount = parseInt(localStorage.getItem(`refCount_${user.id}`)) || 0;
-            referBonus = parseFloat(localStorage.getItem(`refBonus_${user.id}`)) || 0.00;
-
-            if (balEl) balEl.innerText = currentBalance.toFixed(2);
-            if (refEl) refEl.innerText = referCount;
-            if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
-            
-            localStorage.setItem(`balance_${user.id}`, currentBalance);
+            if (balEl) balEl.innerText = Number(currentBalance || 0).toFixed(2);
+            if (refEl) refEl.innerText = Number(referCount || 0);
+            if (refBonEl) refBonEl.innerText = Number(referBonus || 0).toFixed(2);
         }
 
-        function giveReferralCommission(earnedAmount) {
-            let myReferrerId = localStorage.getItem(`my_referrer_${user.id}`);
+        async function giveReferralCommission(earnedAmount) {
+            await firebaseReady;
+            const snap = await userDocRef.get();
+            const d = snap.data() || {};
+            const myReferrerId = d.referrerId || null;
             if (myReferrerId) {
-                let commission = earnedAmount * 0.25;
-                let referrerBalanceKey = `balance_${myReferrerId}`;
-                let referrerBonusKey = `refBonus_${myReferrerId}`;
-
-                let currentRefBalance = parseFloat(localStorage.getItem(referrerBalanceKey)) || 0.00;
-                let currentRefBonus = parseFloat(localStorage.getItem(referrerBonusKey)) || 0.00;
-
-                localStorage.setItem(referrerBalanceKey, currentRefBalance + commission);
-                localStorage.setItem(referrerBonusKey, currentRefBonus + commission);
+                const commission = Number(earnedAmount) * 0.25;
+                await changeFirebaseBalance(myReferrerId, commission, commission);
             }
+        }
+
+        async function addOwnBalance(amount) {
+            await firebaseReady;
+            return changeFirebaseBalance(user.id, Number(amount), 0);
         }
 
         function openGiftModal() {
@@ -728,7 +942,7 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             if (codeInput) codeInput.value = "";
         }
 
-        function redeemGiftCode() {
+        async function redeemGiftCode() {
             let codeInput = document.getElementById("gift-code-input");
             if (!codeInput) return;
             let code = codeInput.value.trim().toUpperCase();
@@ -756,8 +970,8 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             }
 
             localStorage.setItem(usedKey, "true");
-            currentBalance += codeObj.amount;
-            updateUI();
+            await addOwnBalance(codeObj.amount);
+            updateUI(false);
             closeGiftModal();
             alert(`🎉 অভিনন্দন! সফলভাবে গিফট কোড রিডিম হয়েছে। ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
         }
@@ -766,13 +980,13 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             try {
                 if (window.Adsgram) {
                     const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-                    AdController.show().then(() => {
+                    AdController.show().then(async () => {
                         let earned = 1.00;
-                        currentBalance += earned;
+                        await addOwnBalance(earned);
                         completedTasksCount++;
                         localStorage.setItem(`tasksCount_${user.id}`, completedTasksCount);
                         
-                        giveReferralCommission(earned);
+                        await giveReferralCommission(earned);
 
                         updateUI();
                         checkSpinAvailability();
@@ -839,10 +1053,10 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 canvas.style.transform = `rotate(${targetDegree}deg)`;
             }
             
-            setTimeout(() => {
-                currentBalance += chosenPrize.amount;
-                giveReferralCommission(chosenPrize.amount);
-                updateUI();
+            setTimeout(async () => {
+                await addOwnBalance(chosenPrize.amount);
+                await giveReferralCommission(chosenPrize.amount);
+                updateUI(false);
                 alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${chosenPrize.amount.toFixed(2)}`);
             }, 3000);
         }
@@ -858,7 +1072,7 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             });
         }
 
-        function submitWithdrawal() {
+        async function submitWithdrawal() {
             let methodEl = document.getElementById("payment-method");
             let accountEl = document.getElementById("account-num");
             let amountEl = document.getElementById("withdraw-amt");
@@ -879,16 +1093,37 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 return;
             }
 
-            if (amount > currentBalance) {
+            await firebaseReady;
+            const balanceRef = db.collection('users').doc(String(user.id));
+            let debitResult;
+            try {
+                debitResult = await db.runTransaction(async tx => {
+                    const snap = await tx.get(balanceRef);
+                    const d = snap.exists ? snap.data() : {};
+                    const balanceNow = Number(d.balance || 0);
+                    if (amount > balanceNow) return null;
+                    const nextBalance = balanceNow - amount;
+                    tx.set(balanceRef, {
+                        balance: nextBalance,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                    return nextBalance;
+                });
+            } catch (e) {
+                console.error("Withdrawal balance transaction error:", e);
+                alert("❌ ব্যালেন্স আপডেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+                return;
+            }
+            if (debitResult === null) {
                 alert("⚠️ পর্যাপ্ত ব্যালেন্স নেই!");
                 return;
             }
 
+            currentBalance = Number(debitResult);
+            updateUI(false);
+
             let fee = amount * 0.05;
             let netAmount = amount - fee;
-
-            currentBalance -= amount;
-            updateUI();
 
             let now = new Date();
             let currentDate = String(now.getDate()).padStart(2, '0') + '/' + 
@@ -907,8 +1142,11 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
                 status: "Pending"
             };
 
+            await firebaseReady;
+            await db.collection('withdrawals').doc(`${user.id}_${wdId}`).set({
+                ...withdrawObj, userId: String(user.id), createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
             historyData.unshift(withdrawObj);
-            localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
             renderHistory();
             
             sendTelegramMessageToAdmin(user.first_name, user.id, wdId, currentDate, method, account, netAmount.toFixed(2));
@@ -932,8 +1170,8 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             let inlineKeyboard = {
                 inline_keyboard: [
                     [
-                        { text: "✅ Success", callback_data: `success_${wdId}` },
-                        { text: "❌ Rejected", callback_data: `rejected_${wdId}` }
+                        { text: "✅ Success", url: `https://t.me/MegaIncomeReal_bot/app?startapp=${encodeURIComponent(`admin_success_${wdId}_${userId}`)}` },
+                        { text: "❌ Rejected", url: `https://t.me/MegaIncomeReal_bot/app?startapp=${encodeURIComponent(`admin_rejected_${wdId}_${userId}`)}` }
                     ]
                 ]
             };
@@ -952,105 +1190,57 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             }).catch(e => console.log("Telegram API Error:", e));
         }
         // ==========================================
-// ০. রেফারেল লিংক থেকে রেফারার আইডি সেভ রাখার লজিক
-// ==========================================
-(function checkReferral() {
-    let urlParams = new URLSearchParams(window.location.search);
-    let refParam = urlParams.get('start') || urlParams.get('ref');
-    
-    // টেলিগ্রাম স্টার্ট প্যারাম থেকে আইডি বের করা (যেমন: startapp=123456)
-    if (!refParam && typeof tg !== "undefined" && tg?.initDataUnsafe?.start_param) {
-        refParam = tg.initDataUnsafe.start_param;
-    }
-
-    if (refParam && user.id && user.id !== "Unknown") {
-        // ইউজার যেন নিজেকে নিজে রেফার না করতে পারে
-        if (refParam != user.id) {
-            localStorage.setItem(`referrer_${user.id}`, refParam);
-        }
-    }
-})();
+// ০. রেফারেল লিংক Firebase-এ সংরক্ষণ করা হয়।
+// এখানে referral সম্পর্কিত কোনো localStorage write নেই।
 
 // ==========================================
 // ১. জিমেইল সাবমিট করার ফাংশন
 // ==========================================
-function handleGmailSubmit() {
+async function handleGmailSubmit() {
     var gmailInput = document.getElementById('gmailInputField');
     var gmailData = gmailInput ? gmailInput.value.trim() : "";
+    if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
+    if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
 
-    if (gmailData === "") { 
-        alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); 
-        return; 
-    }
-    if (!gmailData.toLowerCase().includes("@gmail.com")) { 
-        alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); 
-        return; 
-    }
-    
+    let currentUserId = user?.id || "Unknown";
+    let currentUserName = user?.first_name || "User";
     let gId = "GM" + Date.now();
     let nowDate = new Date();
     let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
-    
-    // হিস্ট্রি সেভ
-    let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending" };
-    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-    gmailHistory.unshift(gmailObj);
-    localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
+    let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending", userId: String(currentUserId), amount: 15 };
 
-    // লাইভ হিস্ট্রি শো করা
-    renderGmailHistory();
+    try {
+        await firebaseReady;
+        await db.collection('gmail_submissions').doc(`${currentUserId}_${gId}`).set({
+            ...gmailObj, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
 
-    // টেলিগ্রাম ইউজার ডাটা
-    let currentUserId = "Unknown";
-    let currentUserName = "User";
-    if (typeof tg !== "undefined" && tg?.initDataUnsafe?.user) {
-        if (tg.initDataUnsafe.user.id) currentUserId = tg.initDataUnsafe.user.id;
-        if (tg.initDataUnsafe.user.first_name) currentUserName = tg.initDataUnsafe.user.first_name;
+        let message = `📧 <b>নতুন জিমেইল সাবমিট রিকোয়েস্ট!</b>\n\n` +
+            `👤 <b>ইউজার:</b> ${currentUserName} (ID: <code>${currentUserId}</code>)\n` +
+            `🆔 <b>টাস্ক আইডি:</b> <code>${gId}</code>\n` +
+            `📅 <b>তারিখ:</b> ${currentDate}\n` +
+            `📧 <b>Gmail:</b> <code>${gmailData}</code>\n\n` +
+            `💰 <b>রেট:</b> ৳১৫.০০`;
+
+        const adminBase = `https://t.me/MegaIncomeReal_bot/app?startapp=`;
+        let inlineKeyboard = { inline_keyboard: [[
+            { text: "✅ Accept", url: adminBase + encodeURIComponent(`admin_gacc_${gId}_${currentUserId}`) },
+            { text: "❌ Rejected", url: adminBase + encodeURIComponent(`admin_grej_${gId}_${currentUserId}`) }
+        ]]};
+
+        let response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: message, parse_mode: "HTML", reply_markup: inlineKeyboard })
+        });
+        let data = await response.json();
+        if (!data.ok) throw new Error('Telegram message failed');
+
+        alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!");
+        if (gmailInput) gmailInput.value = "";
+    } catch (e) {
+        console.error(e);
+        alert("❌ ডাটা সেভ/রিকোয়েস্ট পাঠাতে সমস্যা হয়েছে।");
     }
-
-    let message = 
-        `📧 <b>নতুন জিমেইল সাবমিট রিকোয়েস্ট!</b>\n\n` +
-        `👤 <b>ইউজার:</b> ${currentUserName} (ID: <code>${currentUserId}</code>)\n` +
-        `🆔 <b>টাস্ক আইডি:</b> <code>${gId}</code>\n` +
-        `📅 <b>তারিখ:</b> ${currentDate}\n` +
-        `📧 <b>Gmail:</b> <code>${gmailData}</code>\n\n` +
-        `💰 <b>রেট:</b> ৳১৫.০০`;
-    
-    let inlineKeyboard = {
-        inline_keyboard: [
-            [
-                { text: "✅ Accept", callback_data: `gacc_${gId}_${currentUserId}` },
-                { text: "❌ Rejected", callback_data: `grej_${gId}_${currentUserId}` }
-            ]
-        ]
-    };
-
-    let token = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
-    let adminId = "8049465500";
-
-    // Telegram API Call
-    fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            chat_id: adminId,
-            text: message,
-            parse_mode: "HTML",
-            reply_markup: inlineKeyboard
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.ok) {
-            alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
-            if (gmailInput) gmailInput.value = "";
-        } else {
-            alert("টেলিগ্রাম বটের মেসেজ পাঠাতে সমস্যা হচ্ছে!");
-        }
-    })
-    .catch(e => {
-        alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
-    });
 }
 
 // ==========================================
@@ -1061,7 +1251,7 @@ function renderGmailHistory() {
     if (!gmailHistoryLog) return;
     
     let currentRate = 15.00; 
-    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+    let gmailHistory = window.gmailHistoryData || [];
     gmailHistoryLog.innerHTML = ""; 
     
     if (gmailHistory.length === 0) {
@@ -1106,94 +1296,11 @@ function renderGmailHistory() {
 // পেজ লোড হলে হিস্ট্রি ও বট চেকিং চালু রাখা
 document.addEventListener('DOMContentLoaded', function() {
     renderGmailHistory();
-    setInterval(checkAdminActionFromTelegram, 1000);
 });
 
 // ==========================================
 // ৩. অ্যাডমিন একশন চেক করার ফাংশন
 // ==========================================
-async function checkAdminActionFromTelegram() {
-    try {
-        let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
-        let response = await fetch(url);
-        let data = await response.json();
-
-        if (data.ok && data.result.length > 0) {
-            for (let update of data.result) {
-                telegramOffset = update.update_id + 1;
-                localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
-
-                if (update.callback_query) {
-                    let callbackData = update.callback_query.data;
-                    let callbackQueryId = update.callback_query.id;
-
-                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস আপডেট করা হয়েছে!" })
-                    });
-
-                    if (callbackData.includes("_")) {
-                        let parts = callbackData.split("_");
-                        let action = parts[0];
-                        let wdId = parts[1];
-                        let targetUserId = parts[2] || user.id;
-
-                        // --- জিমেইল সাবমিট এক্সেপ্ট / রিজেক্ট লজিক ---
-                        if (action === "gacc" || action === "grej") {
-                            let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
-                            let targetGmail = gmailHistory.find(item => item.g_id === wdId);
-
-                            if (targetGmail && targetGmail.status === "Pending") {
-                                if (action === "gacc") {
-                                    targetGmail.status = "Success";
-                                    
-                                    // ১. ইউজারকে মূল ব্যালেন্সে ১৫.০০ টাকা যোগ
-                                    currentBalance += 15.00;
-                                    localStorage.setItem(`balance_${user.id}`, currentBalance);
-
-                                    // ২. ২০% রেফার কমিশন (৳৩.০০) দেওয়া
-                                    let referrerId = localStorage.getItem(`referrer_${targetUserId}`) || localStorage.getItem(`referrer_${user.id}`);
-                                    if (referrerId) {
-                                        let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
-                                        let newRefBal = refBal + 3.00;
-                                        localStorage.setItem(`balance_${referrerId}`, newRefBal);
-                                        
-                                        if (user.id == referrerId) {
-                                            currentBalance = newRefBal;
-                                        }
-                                    }
-
-                                    if (typeof updateUI === 'function') updateUI();
-                                } else if (action === "grej") {
-                                    targetGmail.status = "Rejected";
-                                }
-                                localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
-                                renderGmailHistory();
-                            }
-                        }
-
-                        // --- আপনার দেওয়া হুবহু উইথড্র কোড (একটি লাইন বা অক্ষরও পরিবর্তন করা হয়নি) ---
-                        let targetItem = historyData.find(item => item.wd_id === wdId);
-                        if (targetItem && targetItem.status === "Pending") {
-                            if (action === "success") {
-                                targetItem.status = "Success";
-                            } else if (action === "rejected") {
-                                targetItem.status = "Rejected";
-                                currentBalance += targetItem.requestedAmount;
-                                updateUI();
-                            }
-                            localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
-                            renderHistory();
-                        }
-                    }
-                }
-            }
-        }
-    } catch (e) {
-        console.log("Polling error:", e);
-    }
-}
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
