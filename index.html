@@ -303,7 +303,7 @@
             <div style="margin: 20px 0; text-align: left; padding: 0 5px;">
                 <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 14px; font-weight: bold;">আপনার জিমেইল ও পাসওয়ার্ড লিখুন:</label>
                 <span style="color: #ffcc00; display: block; margin-bottom: 10px; font-size: 12px;">(নিয়ম: ফার্স্ট নাম:Hasan পাসওয়ার্ড:hasan#1122 নিচে আপনার তৈরি ইমেইল দিয়ে সাবমিট করুন )</span>
-                <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #00a859; background-color: #0d1e15; color: #ffffff; font-size: 15px; box-sizing: border-box; outline: none;">
+                <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com : Password" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #00a859; background-color: #0d1e15; color: #ffffff; font-size: 15px; box-sizing: border-box; outline: none;">
             </div>
             <div style="margin-top: 20px;">
                 <button onclick="handleGmailSubmit()" style="background-color: #00a859; color: #ffffff; border: none; padding: 13px 0; font-size: 16px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 15px; cursor: pointer;">
@@ -932,8 +932,8 @@ let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
             let inlineKeyboard = {
                 inline_keyboard: [
                     [
-                        { text: "✅ Success", url: `${window.location.origin}${window.location.pathname}?admin_action=success&id=${encodeURIComponent(wdId)}&uid=${encodeURIComponent(userId)}` },
-                        { text: "❌ Rejected", url: `${window.location.origin}${window.location.pathname}?admin_action=rejected&id=${encodeURIComponent(wdId)}&uid=${encodeURIComponent(userId)}` }
+                        { text: "✅ Success", callback_data: `success_${wdId}` },
+                        { text: "❌ Rejected", callback_data: `rejected_${wdId}` }
                     ]
                 ]
             };
@@ -993,9 +993,9 @@ function handleGmailSubmit() {
     
     // হিস্ট্রি সেভ
     let gmailObj = { g_id: gId, date: currentDate, info: gmailData, status: "Pending" };
-    let gmailHistory = JSON.parse(localStorage.getItem(`gmail_history_${user.id}`)) || [];
+    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistory.unshift(gmailObj);
-    localStorage.setItem(`gmail_history_${user.id}`, JSON.stringify(gmailHistory));
+    localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
 
     // লাইভ হিস্ট্রি শো করা
     renderGmailHistory();
@@ -1019,8 +1019,8 @@ function handleGmailSubmit() {
     let inlineKeyboard = {
         inline_keyboard: [
             [
-                { text: "✅ Accept", url: `${window.location.origin}${window.location.pathname}?admin_action=gacc&id=${encodeURIComponent(gId)}&uid=${encodeURIComponent(currentUserId)}` },
-                { text: "❌ Rejected", url: `${window.location.origin}${window.location.pathname}?admin_action=grej&id=${encodeURIComponent(gId)}&uid=${encodeURIComponent(currentUserId)}` }
+                { text: "✅ Accept", callback_data: `gacc_${gId}_${currentUserId}` },
+                { text: "❌ Rejected", callback_data: `grej_${gId}_${currentUserId}` }
             ]
         ]
     };
@@ -1061,7 +1061,7 @@ function renderGmailHistory() {
     if (!gmailHistoryLog) return;
     
     let currentRate = 15.00; 
-    let gmailHistory = JSON.parse(localStorage.getItem(`gmail_history_${user.id}`)) || [];
+    let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
     gmailHistoryLog.innerHTML = ""; 
     
     if (gmailHistory.length === 0) {
@@ -1117,63 +1117,76 @@ async function checkAdminActionFromTelegram() {
         let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
         let response = await fetch(url);
         let data = await response.json();
-        if (!data.ok || !Array.isArray(data.result) || data.result.length === 0) return;
 
-        for (let update of data.result) {
-            telegramOffset = update.update_id + 1;
-            localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
-            if (!update.callback_query) continue;
+        if (data.ok && data.result.length > 0) {
+            for (let update of data.result) {
+                telegramOffset = update.update_id + 1;
+                localStorage.setItem(`tg_offset_${user.id}`, telegramOffset);
 
-            const callbackData = String(update.callback_query.data || '');
-            const callbackQueryId = update.callback_query.id;
-            const parts = callbackData.split('_');
-            const action = parts[0] || '';
-            const itemId = parts[1] || '';
-            const targetUserId = String(parts[2] || '');
+                if (update.callback_query) {
+                    let callbackData = update.callback_query.data;
+                    let callbackQueryId = update.callback_query.id;
 
-            // এই update শুধু যে ইউজারের জন্য তৈরি হয়েছে, সেই ইউজারের app-ই পরিবর্তন করবে।
-            if (targetUserId !== String(user.id)) continue;
+                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস আপডেট করা হয়েছে!" })
+                    });
 
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস আপডেট করা হয়েছে!" })
-            }).catch(() => {});
+                    if (callbackData.includes("_")) {
+                        let parts = callbackData.split("_");
+                        let action = parts[0];
+                        let wdId = parts[1];
+                        let targetUserId = parts[2] || user.id;
 
-            if (action === 'gacc' || action === 'grej') {
-                let gmailHistory = JSON.parse(localStorage.getItem(`gmail_history_${user.id}`)) || [];
-                let item = gmailHistory.find(x => String(x.g_id) === String(itemId));
-                if (item && item.status === 'Pending') {
-                    if (action === 'gacc') {
-                        item.status = 'Success';
-                        item.amount = Number(item.amount || 15);
-                        currentBalance += item.amount;
-                        localStorage.setItem(`balance_${user.id}`, String(currentBalance));
-                        if (window.firebaseApplyGmailStatus) await window.firebaseApplyGmailStatus(item, 'Success');
-                        updateUI();
-                    } else {
-                        item.status = 'Rejected';
-                        if (window.firebaseApplyGmailStatus) await window.firebaseApplyGmailStatus(item, 'Rejected');
+                        // --- জিমেইল সাবমিট এক্সেপ্ট / রিজেক্ট লজিক ---
+                        if (action === "gacc" || action === "grej") {
+                            let gmailHistory = JSON.parse(localStorage.getItem('gmail_history')) || [];
+                            let targetGmail = gmailHistory.find(item => item.g_id === wdId);
+
+                            if (targetGmail && targetGmail.status === "Pending") {
+                                if (action === "gacc") {
+                                    targetGmail.status = "Success";
+                                    
+                                    // ১. ইউজারকে মূল ব্যালেন্সে ১৫.০০ টাকা যোগ
+                                    currentBalance += 15.00;
+                                    localStorage.setItem(`balance_${user.id}`, currentBalance);
+
+                                    // ২. ২০% রেফার কমিশন (৳৩.০০) দেওয়া
+                                    let referrerId = localStorage.getItem(`referrer_${targetUserId}`) || localStorage.getItem(`referrer_${user.id}`);
+                                    if (referrerId) {
+                                        let refBal = parseFloat(localStorage.getItem(`balance_${referrerId}`)) || 0;
+                                        let newRefBal = refBal + 3.00;
+                                        localStorage.setItem(`balance_${referrerId}`, newRefBal);
+                                        
+                                        if (user.id == referrerId) {
+                                            currentBalance = newRefBal;
+                                        }
+                                    }
+
+                                    if (typeof updateUI === 'function') updateUI();
+                                } else if (action === "grej") {
+                                    targetGmail.status = "Rejected";
+                                }
+                                localStorage.setItem('gmail_history', JSON.stringify(gmailHistory));
+                                renderGmailHistory();
+                            }
+                        }
+
+                        // --- আপনার দেওয়া হুবহু উইথড্র কোড (একটি লাইন বা অক্ষরও পরিবর্তন করা হয়নি) ---
+                        let targetItem = historyData.find(item => item.wd_id === wdId);
+                        if (targetItem && targetItem.status === "Pending") {
+                            if (action === "success") {
+                                targetItem.status = "Success";
+                            } else if (action === "rejected") {
+                                targetItem.status = "Rejected";
+                                currentBalance += targetItem.requestedAmount;
+                                updateUI();
+                            }
+                            localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
+                            renderHistory();
+                        }
                     }
-                    localStorage.setItem(`gmail_history_${user.id}`, JSON.stringify(gmailHistory));
-                    renderGmailHistory();
-                }
-            }
-
-            if (action === 'success' || action === 'rejected') {
-                let targetItem = historyData.find(x => String(x.wd_id) === String(itemId));
-                if (targetItem && targetItem.status === 'Pending') {
-                    if (action === 'success') {
-                        targetItem.status = 'Success';
-                        if (window.firebaseApplyWithdrawalStatus) await window.firebaseApplyWithdrawalStatus(targetItem, 'Success');
-                    } else {
-                        targetItem.status = 'Rejected';
-                        currentBalance += Number(targetItem.requestedAmount || 0);
-                        localStorage.setItem(`balance_${user.id}`, String(currentBalance));
-                        if (window.firebaseApplyWithdrawalStatus) await window.firebaseApplyWithdrawalStatus(targetItem, 'Rejected');
-                        updateUI();
-                    }
-                    localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(historyData));
-                    renderHistory();
                 }
             }
         }
@@ -1181,7 +1194,6 @@ async function checkAdminActionFromTelegram() {
         console.log("Polling error:", e);
     }
 }
-
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
@@ -1209,311 +1221,5 @@ async function checkAdminActionFromTelegram() {
             });
         }
     </script>
-
-<script type="module">
-/* Firebase persistence + realtime sync. Admin buttons use /api/admin-action on Vercel. */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import {
-  getFirestore, doc, getDoc, setDoc, updateDoc, runTransaction,
-  collection, query, where, onSnapshot
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDf0UMmAgDDUxV97RH4fdSM4GBoZ1FnxuE",
-  authDomain: "mega-income-bot-8a272.firebaseapp.com",
-  projectId: "mega-income-bot-8a272",
-  storageBucket: "mega-income-bot-8a272.firebasestorage.app",
-  messagingSenderId: "796995606594",
-  appId: "1:796995606594:web:de9b6b87411f82123635db",
-  measurementId: "G-1PG34KCR2M"
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
-const firebaseUid = String(user.id);
-const num = v => Number.isFinite(Number(v)) ? Number(v) : 0;
-
-async function getUserDoc() {
-  return await getDoc(doc(db, "users", firebaseUid));
-}
-
-async function ensureUser() {
-  const ref = doc(db, "users", firebaseUid);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) {
-    await setDoc(ref, {
-      userId: firebaseUid,
-      balance: num(currentBalance),
-      referralCount: num(referCount),
-      referralBonus: num(referBonus),
-      referrerId: localStorage.getItem(`referrer_${user.id}`) || localStorage.getItem(`my_referrer_${user.id}`) || null,
-      createdAt: Date.now()
-    }, { merge: true });
-  } else {
-    const d = snap.data();
-    /* Firebase is authoritative for the persistent balance. */
-    if (Object.prototype.hasOwnProperty.call(d, "balance")) {
-      currentBalance = num(d.balance);
-      localStorage.setItem(`balance_${user.id}`, String(currentBalance));
-    }
-    if (Object.prototype.hasOwnProperty.call(d, "referralCount")) {
-      referCount = parseInt(d.referralCount, 10) || 0;
-      localStorage.setItem(`refCount_${user.id}`, String(referCount));
-    }
-    if (Object.prototype.hasOwnProperty.call(d, "referralBonus")) {
-      referBonus = num(d.referralBonus);
-      localStorage.setItem(`refBonus_${user.id}`, String(referBonus));
-    }
-  }
-}
-
-let firebaseReady = false;
-async function saveBalance() {
-  if (!firebaseReady) return;
-  try {
-    await setDoc(doc(db, "users", firebaseUid), {
-      userId: firebaseUid,
-      balance: num(currentBalance)
-    }, { merge: true });
-  } catch (e) { console.error("Balance save failed", e); }
-}
-
-/* Every existing updateUI call now also persists the latest balance. */
-const oldUpdateUI = window.updateUI;
-window.updateUI = function() {
-  if (typeof oldUpdateUI === "function") oldUpdateUI();
-  saveBalance();
-};
-
-function watchUser() {
-  onSnapshot(doc(db, "users", firebaseUid), snap => {
-    if (!snap.exists()) return;
-    const d = snap.data();
-    if (Object.prototype.hasOwnProperty.call(d, "balance")) {
-      currentBalance = num(d.balance);
-      localStorage.setItem(`balance_${user.id}`, String(currentBalance));
-    }
-    if (Object.prototype.hasOwnProperty.call(d, "referralCount")) {
-      referCount = parseInt(d.referralCount, 10) || 0;
-      localStorage.setItem(`refCount_${user.id}`, String(referCount));
-    }
-    if (Object.prototype.hasOwnProperty.call(d, "referralBonus")) {
-      referBonus = num(d.referralBonus);
-      localStorage.setItem(`refBonus_${user.id}`, String(referBonus));
-    }
-    if (typeof oldUpdateUI === "function") oldUpdateUI();
-    firebaseReady = true;
-  }, err => console.error("User listener error", err));
-}
-
-/* Referral registration is device-independent and duplicate-safe. */
-async function registerReferral() {
-  let refParam = (typeof startParam !== "undefined" && startParam) ? startParam : "";
-  if (!refParam && tg?.initDataUnsafe?.start_param) refParam = tg.initDataUnsafe.start_param;
-  if (!refParam) {
-    const q = new URLSearchParams(location.search);
-    refParam = q.get("start") || q.get("ref") || "";
-  }
-  if (!refParam || String(refParam) === firebaseUid) return;
-
-  const referrerId = String(refParam);
-  const claimRef = doc(db, "referral_claims", `${referrerId}_${firebaseUid}`);
-  const childRef = doc(db, "users", firebaseUid);
-  const refRef = doc(db, "users", referrerId);
-
-  await runTransaction(db, async tx => {
-    const claim = await tx.get(claimRef);
-    if (claim.exists()) return;
-    const childSnap = await tx.get(childRef);
-    const refSnap = await tx.get(refRef);
-    const child = childSnap.exists() ? childSnap.data() : {};
-    const ref = refSnap.exists() ? refSnap.data() : {};
-
-    tx.set(childRef, {
-      userId: firebaseUid,
-      referrerId,
-      balance: num(child.balance ?? currentBalance),
-      referralCount: num(child.referralCount),
-      referralBonus: num(child.referralBonus)
-    }, { merge: true });
-    tx.set(refRef, {
-      userId: referrerId,
-      referralCount: num(ref.referralCount) + 1,
-      referralBonus: num(ref.referralBonus)
-    }, { merge: true });
-    tx.set(claimRef, { referrerId, userId: firebaseUid, createdAt: Date.now() });
-  });
-  localStorage.setItem(`referrer_${user.id}`, referrerId);
-}
-
-/* Store a Gmail submission permanently. */
-async function saveGmail(item) {
-  const referrerId = localStorage.getItem(`referrer_${user.id}`) || localStorage.getItem(`my_referrer_${user.id}`) || null;
-  await setDoc(doc(db, "gmail_submissions", String(item.g_id)), {
-    ...item,
-    g_id: String(item.g_id),
-    userId: firebaseUid,
-    userName: user.first_name || "User",
-    referrerId: referrerId ? String(referrerId) : null,
-    createdAt: Date.now()
-  }, { merge: true });
-}
-
-function watchGmail() {
-  const q = query(collection(db, "gmail_submissions"), where("userId", "==", firebaseUid));
-  onSnapshot(q, snap => {
-    const list = [];
-    snap.forEach(s => list.push(s.data()));
-    list.sort((a,b) => num(b.createdAt) - num(a.createdAt));
-    localStorage.setItem(`gmail_history_${user.id}`, JSON.stringify(list));
-    if (typeof renderGmailHistory === "function") renderGmailHistory();
-  }, err => console.error("Gmail listener error", err));
-}
-
-function watchWithdrawals() {
-  const q = query(collection(db, "withdrawals"), where("userId", "==", firebaseUid));
-  onSnapshot(q, snap => {
-    const list = [];
-    snap.forEach(s => list.push(s.data()));
-    list.sort((a,b) => num(b.createdAt) - num(a.createdAt));
-    historyData = list;
-    localStorage.setItem(`withdraw_history_${user.id}`, JSON.stringify(list));
-    if (typeof renderHistory === "function") renderHistory();
-  }, err => console.error("Withdrawal listener error", err));
-}
-
-async function saveWithdrawal(item) {
-  await setDoc(doc(db, "withdrawals", String(item.wd_id)), {
-    ...item,
-    wd_id: String(item.wd_id),
-    userId: firebaseUid,
-    userName: user.first_name || "User",
-    createdAt: Date.now()
-  }, { merge: true });
-  await saveBalance();
-}
-
-/* Status updates made from the Telegram buttons are also persisted in Firebase. */
-window.firebaseApplyGmailStatus = async function(item, status) {
-  try {
-    const itemRef = doc(db, "gmail_submissions", String(item.g_id));
-    await updateDoc(itemRef, { status: status, amount: Number(item.amount || 15), updatedAt: Date.now() });
-    if (status === "Success") {
-      const userRef = doc(db, "users", String(item.userId || firebaseUid));
-      await runTransaction(db, async tx => {
-        const snap = await tx.get(userRef);
-        const d = snap.exists() ? snap.data() : {};
-        const balance = num(d.balance);
-        tx.set(userRef, { userId: String(item.userId || firebaseUid), balance: balance + Number(item.amount || 15) }, { merge: true });
-        const referrerId = item.referrerId || d.referrerId;
-        if (referrerId) {
-          const refRef = doc(db, "users", String(referrerId));
-          const refSnap = await tx.get(refRef);
-          const rd = refSnap.exists() ? refSnap.data() : {};
-          const commission = Number(item.amount || 15) * 0.20;
-          tx.set(refRef, { userId: String(referrerId), balance: num(rd.balance) + commission, referralBonus: num(rd.referralBonus) + commission }, { merge: true });
-        }
-      });
-    }
-  } catch(e) { console.error("Firebase Gmail status failed", e); }
-};
-
-window.firebaseApplyWithdrawalStatus = async function(item, status) {
-  try {
-    const itemRef = doc(db, "withdrawals", String(item.wd_id));
-    await updateDoc(itemRef, { status: status, updatedAt: Date.now() });
-    if (status === "Rejected") {
-      const userRef = doc(db, "users", String(item.userId || firebaseUid));
-      await runTransaction(db, async tx => {
-        const snap = await tx.get(userRef);
-        const d = snap.exists() ? snap.data() : {};
-        tx.set(userRef, { userId: String(item.userId || firebaseUid), balance: num(d.balance) + Number(item.requestedAmount || 0) }, { merge: true });
-      });
-    }
-  } catch(e) { console.error("Firebase Withdrawal status failed", e); }
-};
-
-/* Gmail submit: preserve the existing task behaviour, plus Firebase persistence. */
-const oldGmailSubmit = window.handleGmailSubmit;
-window.handleGmailSubmit = async function() {
-  const input = document.getElementById("gmailInputField");
-  const value = input ? input.value.trim() : "";
-  if (!value || !value.toLowerCase().includes("@gmail.com")) return oldGmailSubmit();
-
-  const gId = "GM" + Date.now();
-  const d = new Date();
-  const date = String(d.getDate()).padStart(2,"0") + "/" + String(d.getMonth()+1).padStart(2,"0") + "/" + d.getFullYear();
-  const item = { g_id:gId, date, info:value, status:"Pending", amount:15.00 };
-  const list = JSON.parse(localStorage.getItem(`gmail_history_${user.id}`)) || [];
-  list.unshift(item);
-  localStorage.setItem(`gmail_history_${user.id}`, JSON.stringify(list));
-  renderGmailHistory();
-
-  try { await saveGmail(item); } catch(e) { console.error("Gmail Firebase save failed", e); alert("Firebase-এ Gmail history save হয়নি। আবার চেষ্টা করুন।"); return; }
-
-  const message = `📧 <b>নতুন জিমেইল সাবমিট রিকোয়েস্ট!</b>\n\n` +
-    `👤 <b>ইউজার:</b> ${user.first_name || "User"} (ID: <code>${firebaseUid}</code>)\n` +
-    `🆔 <b>টাস্ক আইডি:</b> <code>${gId}</code>\n` +
-    `📅 <b>তারিখ:</b> ${date}\n` +
-    `📧 <b>Gmail:</b> <code>${value}</code>\n\n` +
-    `💰 <b>রেট:</b> ৳১৫.০০`;
-
-  /* The Telegram button calls a Vercel serverless endpoint. It does NOT open the app. */
-  const base = location.origin;
-  const keyboard = { inline_keyboard:[[
-    { text:"✅ Accept", callback_data:`gacc_${gId}_${firebaseUid}` },
-    { text:"❌ Rejected", callback_data:`grej_${gId}_${firebaseUid}` }
-  ]]};
-
-  try {
-    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({chat_id:ADMIN_CHAT_ID,text:message,parse_mode:"HTML",reply_markup:keyboard})
-    });
-    const data = await res.json();
-    if (data.ok) { alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); if (input) input.value=""; }
-    else alert("টেলিগ্রাম বটের মেসেজ পাঠাতে সমস্যা হচ্ছে!");
-  } catch(e) { alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।"); }
-};
-
-/* Withdrawal: save the newly-created history entry to Firebase. */
-const oldSubmitWithdrawal = window.submitWithdrawal;
-window.submitWithdrawal = async function() {
-  const before = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
-  await oldSubmitWithdrawal();
-  const after = JSON.parse(localStorage.getItem(`withdraw_history_${user.id}`)) || [];
-  if (after.length > before.length) {
-    try { await saveWithdrawal(after[0]); }
-    catch(e) { console.error("Withdrawal Firebase save failed", e); }
-  }
-};
-
-(async function initFirebase() {
-  try {
-    await ensureUser();
-    /* Load the saved balance BEFORE enabling writes, preventing an old local value from overwriting Firebase. */
-    const snap = await getUserDoc();
-    if (snap.exists()) {
-      const d = snap.data();
-      if (Object.prototype.hasOwnProperty.call(d,"balance")) currentBalance = num(d.balance);
-      if (Object.prototype.hasOwnProperty.call(d,"referralCount")) referCount = parseInt(d.referralCount,10)||0;
-      if (Object.prototype.hasOwnProperty.call(d,"referralBonus")) referBonus = num(d.referralBonus);
-    }
-    localStorage.setItem(`balance_${user.id}`, String(currentBalance));
-    localStorage.setItem(`refCount_${user.id}`, String(referCount));
-    localStorage.setItem(`refBonus_${user.id}`, String(referBonus));
-    if (typeof oldUpdateUI === "function") oldUpdateUI();
-    firebaseReady = true;
-    await registerReferral();
-    watchUser();
-    watchGmail();
-    watchWithdrawals();
-    await saveBalance();
-  } catch(e) {
-    console.error("Firebase initialization error", e);
-    alert("Firebase সংযোগে সমস্যা হয়েছে। Rules/Internet পরীক্ষা করুন।");
-  }
-})();
-</script>
 </body>
     </html>
