@@ -235,7 +235,6 @@
             background: rgba(39, 174, 96, 0.15);
             border-radius: 8px;
         }
-        /* অ্যাডমিন প্যানেল ডিজাইন */
         .admin-item-card {
             background: #081a11;
             border: 1px solid #27ae60;
@@ -287,7 +286,6 @@
                 <div class="balance-amount">৳ <span id="balance-val">0.00</span></div>
             </div>
 
-            <!-- গিফট কোড অপশন -->
             <button class="btn btn-gift" onclick="openGiftModal()">
                 🎁 গিফট কোড রিডিম করুন
             </button>
@@ -377,7 +375,7 @@
             <!-- লকি স্পিন -->
             <div class="card">
                 <h3 style="color: #ffcc00; margin-bottom: 8px;">🌀 লকি স্পিন</h3>
-                <p id="spin-status-text" style="color: #2ecc71; margin-bottom: 8px; font-size: 13px;">✅ আপনার ১টি ফ্রি স্পিন আনলক হয়েছে!</p>
+                <p id="spin-status-text" style="color: #2ecc71; margin-bottom: 8px; font-size: 13px;">✅ স্পিন করুন এবং পুরষ্কার জিতুন!</p>
                 <div class="wheel-container">
                     <div class="wheel-pointer"></div>
                     <canvas id="wheel-canvas" width="400" height="400"></canvas>
@@ -472,7 +470,7 @@
             </div>
         </div>
 
-        <!-- অ্যাডমিন প্যানেল (শুধুমাত্র অ্যাডমিনের জন্য দৃশ্যমান) -->
+        <!-- অ্যাডমিন প্যানেল -->
         <div id="admin" class="page">
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
@@ -507,7 +505,6 @@
             <span class="icon">💳</span>
             <span>উইথড্র</span>
         </button>
-        <!-- অ্যাডমিন বাটন (JS দিয়ে অ্যাডমিন হলে দেখাবে) -->
         <button class="nav-item" id="admin-nav-btn" style="display:none;" onclick="switchTab('admin', this)">
             <span class="icon">🛠️</span>
             <span>অ্যাডমিন</span>
@@ -526,7 +523,6 @@
     </div>
 
     <script>
-        // ১. ফায়ারবেস কনফিগারেশন
         const firebaseConfig = {
             apiKey: "AIzaSyBh2p9Vgy9b8UEBKf5at2UCbqeK_AJPFfk",
             authDomain: "mega-income-bot-9d9fa.firebaseapp.com",
@@ -611,11 +607,8 @@
 
         let currentTaskIndex = 0;
         let taskOpenTimestamp = 0;
-        let completedTasksCount = 0;
-        let lastSpinTime = 0;
 
         function initFirebaseUserSync() {
-            // অ্যাডমিন চেক
             if (String(user.id) === String(ADMIN_CHAT_ID)) {
                 let adminBtn = document.getElementById("admin-nav-btn");
                 if (adminBtn) adminBtn.style.display = "flex";
@@ -628,8 +621,6 @@
                     currentBalance = parseFloat(val.balance || 0);
                     referCount = parseInt(val.refCount || 0);
                     referBonus = parseFloat(val.refBonus || 0);
-                    completedTasksCount = parseInt(val.completedTasksCount || 0);
-                    lastSpinTime = parseInt(val.lastSpinTime || 0);
                     currentTaskIndex = parseInt(val.regTaskIndex || 0);
                 } else {
                     db.ref('users/' + user.id).set({
@@ -637,13 +628,10 @@
                         balance: 0.00,
                         refCount: 0,
                         refBonus: 0.00,
-                        completedTasksCount: 0,
-                        lastSpinTime: 0,
                         regTaskIndex: 0
                     });
                 }
                 updateUI();
-                checkSpinAvailability();
             });
 
             let urlParams = new URLSearchParams(window.location.search);
@@ -684,15 +672,12 @@
                 balance: currentBalance,
                 refCount: referCount,
                 refBonus: referBonus,
-                completedTasksCount: completedTasksCount,
-                lastSpinTime: lastSpinTime,
                 regTaskIndex: currentTaskIndex
             });
         }
 
-        // --- অ্যাডমিন রিয়েলটাইম লিস্ট আপডেট ফাংশনসমূহ ---
+        // --- অ্যাডমিন রিয়েলটাইম লিস্ট ও এপ্রুভাল ফাংশন ---
         function listenAdminData() {
-            // ১. সকল উইথড্র রিকোয়েস্ট মনিটর
             db.ref('withdrawals').on('value', (snapshot) => {
                 let container = document.getElementById("admin-withdraw-list");
                 if (!container) return;
@@ -724,7 +709,6 @@
                 }
             });
 
-            // ২. সকল জিমেইল সাবমিট রিকোয়েস্ট মনিটর
             db.ref('gmail_submits').on('value', (snapshot) => {
                 let container = document.getElementById("admin-gmail-list");
                 if (!container) return;
@@ -764,17 +748,23 @@
 
         function adminRejectWithdraw(key, targetUserId, amount) {
             db.ref('withdrawals/' + key).update({ status: "Rejected" }).then(() => {
-                // রিজেক্ট হলে কাটা ব্যালেন্স ফেরত দেওয়া
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + parseFloat(amount));
                 alert("❌ উইথড্র রিজেক্ট করা হয়েছে এবং ইউজারের টাকা ফেরত দেওয়া হয়েছে!");
             });
         }
 
+        // জিমেইল এপ্রুভালের সময় ১৫ টাকা ও ২৫% রেফার কমিশন প্রদান
         function adminApproveGmail(key, targetUserId) {
-            db.ref('gmail_submits/' + key).update({ status: "Success", amount: 15.00 }).then(() => {
-                // জিমেইল এপ্রুভ হলে ইউজারকে ১৫ টাকা দেওয়া
-                db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + 15.00);
-                alert("✅ জিমেইল টাস্ক সফল হয়েছে এবং ইউজারকে ১৫ টাকা দেওয়া হয়েছে!");
+            let gmailAmount = 15.00;
+
+            db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount }).then(() => {
+                // ১. ইউজারকে ১৫ টাকা দেওয়া
+                db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + gmailAmount);
+
+                // ২. রেফারারকে ২৫% রেফার কমিশন (৩.৭৫ টাকা) দেওয়া (যা মূল ব্যালেন্স ও রেফার বোনাসে যোগ হবে)
+                giveReferralCommissionForUser(targetUserId, gmailAmount);
+
+                alert("✅ জিমেইল টাস্ক সফল হয়েছে! ইউজার ১৫ টাকা পেয়েছে এবং তার রেফারার ৩.৭৫ টাকা কমিশন পেয়েছে।");
             });
         }
 
@@ -818,7 +808,6 @@
             let rewardInBDT = (task.usd * 100) * 0.50; 
             
             currentBalance += rewardInBDT;
-            completedTasksCount++;
             
             giveReferralCommission(rewardInBDT);
             
@@ -827,7 +816,6 @@
 
             updateFirebaseProfile();
             updateUI();
-            checkSpinAvailability();
 
             alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}\nপরবর্তী কাজের লিংক স্বয়ংক্রিয়ভাবে আপডেট করা হয়েছে।`);
             closeRegTaskPage();
@@ -903,12 +891,20 @@
             if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
         }
 
+        // নিজের টাস্কের ক্ষেত্রে রেফার কমিশন
         function giveReferralCommission(earnedAmount) {
-            db.ref('users/' + user.id + '/referrer').once('value').then((snapshot) => {
+            giveReferralCommissionForUser(user.id, earnedAmount);
+        }
+
+        // অ্যাডমিন প্যানেল বা যেকোনো পেজ থেকে নির্দিষ্ট ইউজারের রেফারারকে কমিশন প্রদান
+        function giveReferralCommissionForUser(userId, earnedAmount) {
+            db.ref('users/' + userId + '/referrer').once('value').then((snapshot) => {
                 let myReferrerId = snapshot.val();
                 if (myReferrerId) {
-                    let commission = earnedAmount * 0.25;
+                    let commission = earnedAmount * 0.25; // ২৫% কমিশন
+                    // মূল ব্যালেন্সে যোগ
                     db.ref('users/' + myReferrerId + '/balance').transaction((bal) => (bal || 0) + commission);
+                    // রেফার বোনাসে যোগ
                     db.ref('users/' + myReferrerId + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
                 }
             });
@@ -960,11 +956,9 @@
                     AdController.show().then(() => {
                         let earned = 1.00;
                         currentBalance += earned;
-                        completedTasksCount++;
                         giveReferralCommission(earned);
                         updateFirebaseProfile();
                         updateUI();
-                        checkSpinAvailability();
                         alert("🎉 অভিনন্দন! বিজ্ঞাপন দেখার জন্য ৳১.০০ বোনাস যোগ হয়েছে!");
                     }).catch(() => {
                         alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি।");
@@ -977,35 +971,8 @@
             }
         }
 
-        function checkSpinAvailability() {
-            let nowTime = Date.now();
-            let timeDiff = (nowTime - lastSpinTime) / 1000 / 60;
-            let statusEl = document.getElementById("spin-status-text");
-            if (!statusEl) return;
-
-            if (completedTasksCount >= 3 || timeDiff >= 20) {
-                statusEl.innerHTML = "✅ আপনার ১টি ফ্রি স্পিন আনলক হয়েছে!";
-                statusEl.style.color = "#2ecc71";
-            } else {
-                statusEl.innerHTML = "স্পিন করতে আরও টাস্ক সম্পন্ন করুন বা ২০ মিনিট অপেক্ষা করুন";
-                statusEl.style.color = "#ccc";
-            }
-        }
-
+        // সরাসরি ফ্রি স্পিন করার ব্যবস্থা (কোনো টাইমার ছাড়া)
         function playSpinTask() {
-            let nowTime = Date.now();
-            let timeDiff = (nowTime - lastSpinTime) / 1000 / 60;
-
-            if (completedTasksCount < 3 && timeDiff < 20) {
-                alert("⚠️ ২০ মিনিট সময় অথবা কমপক্ষে ৩টি টাস্ক সম্পন্ন করার পর ফ্রি স্পিন করতে পারবেন!");
-                return;
-            }
-
-            lastSpinTime = nowTime;
-            completedTasksCount = 0;
-            updateFirebaseProfile();
-            checkSpinAvailability();
-
             let totalWeight = spinPrizes.reduce((sum, item) => sum + item.weight, 0);
             let randomNum = Math.random() * totalWeight;
             let currentWeightSum = 0;
