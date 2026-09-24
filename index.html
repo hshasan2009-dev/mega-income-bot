@@ -559,7 +559,6 @@
         let completedTasksCount = 0;
         let lastSpinTime = 0;
 
-        // ২. ফায়ারবেস থেকে লাইভ রিয়েলটাইম স্ট্যাটাস আপডেট করার সম্পূর্ণ সঠিক লজিক
         function initFirebaseUserSync() {
             db.ref('users/' + user.id).on('value', (snapshot) => {
                 const val = snapshot.val();
@@ -597,7 +596,6 @@
                 });
             }
 
-            // রিয়েলটাইমে স্ট্যাটাস সিঙ্ক - উইথড্র লিস্ট
             db.ref('withdrawals').orderByChild('userId').equalTo(user.id).on('value', (snapshot) => {
                 historyData = [];
                 snapshot.forEach((childSnap) => {
@@ -608,7 +606,6 @@
                 renderHistory();
             });
 
-            // রিয়েলটাইমে স্ট্যাটাস সিঙ্ক - জিমেইল লিস্ট
             db.ref('gmail_submits').orderByChild('userId').equalTo(user.id).on('value', (snapshot) => {
                 gmailHistoryData = [];
                 snapshot.forEach((childSnap) => {
@@ -681,7 +678,7 @@
         }
 
         const validGiftCodes = {
-            "SIYAM112233": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
+            "SIYAM1122": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
             "SPESHALGIFT50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
             "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
         };
@@ -953,6 +950,7 @@
             amountEl.value = "";
         }
 
+        // ৩. টেলিগ্রাম পে-লোড অ্যাডজাস্টমেন্ট লজিক
         function sendTelegramMessageToAdmin(userName, userId, wdId, date, method, account, netAmount) {
             let message = (
                 `🚨 **নতুন উইথড্র রিকোয়েস্ট!**\n\n` +
