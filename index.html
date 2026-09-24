@@ -257,13 +257,13 @@
                 🎁 গিফট কোড রিডিম করুন
             </button>
 
-            <a href="https://t.me/+BAquPEEqEhM2NTNl" target="_blank" class="btn btn-official">
+            <button class="btn btn-official" onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')">
                 📢 অফিসিয়াল চ্যানেল
-            </a>
+            </button>
             
-            <a href="https://t.me/hshasan2009" target="_blank" class="btn btn-support">
+            <button class="btn btn-support" onclick="openTelegramLink('https://t.me/hshasan2009')">
                 🛠️ লাইভ সাপোর্ট
-            </a>
+            </button>
 
             <div class="rules-box">
                 <div class="rules-title">⚠️ কাজের নিয়মাবলী</div>
@@ -287,7 +287,7 @@
                 <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
             </div>
 
-            <!-- জিমেইল সেল টাস্ক কার্ড শুরু -->
+            <!-- জিমেইল সেল টাস্ক -->
             <div class="card">
                 <h3 style="color: #ffcc00; margin-bottom: 5px;">📧 জিমেইল সেল টাস্ক</h3>
                 <p style="color: #ffffff; margin-bottom: 15px; font-size: 14px;">
@@ -296,7 +296,7 @@
                 <button class="btn btn-main" onclick="openGmailSellPage()">জিমেইল সেল করুন</button>
             </div>
 
-            <!-- জিমেইল সেল ওভারলে ইন্টারফেস পেজ -->
+            <!-- জিমেইল সেল ওভারলে -->
             <div id="gmailSellOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #06120b; z-index: 99999; padding: 20px; box-sizing: border-box; overflow-y: auto; font-family: Arial, sans-serif;">
                 <div style="text-align: right; margin-bottom: 10px;">
                     <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer;">
@@ -314,7 +314,7 @@
                     <button onclick="handleGmailSubmit()" style="background-color: #00a859; color: #ffffff; border: none; padding: 13px 0; font-size: 16px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 15px; cursor: pointer;">
                         🚀 সাবমিট করুন
                     </button>
-                    <button onclick="window.open('https://t.me/+BAquPEEqEhM2NTNl', '_blank')" style="background-color: #17a2b8; color: #ffffff; border: none; padding: 11px 0; font-size: 14px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 25px; cursor: pointer;">
+                    <button onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')" style="background-color: #17a2b8; color: #ffffff; border: none; padding: 11px 0; font-size: 14px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 25px; cursor: pointer;">
                         🎬 কাজের ভিডিও দেখুন
                     </button>
                     <hr style="border: 0; border-top: 1px solid #1a3325; margin-bottom: 20px;">
@@ -459,7 +459,7 @@
         </button>
     </div>
 
-    <!-- গিফট কোড পপআপ মডেল -->
+    <!-- গিফট কোড মডেল -->
     <div id="giftModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; justify-content:center; align-items:center;">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:350px; text-align:center;">
             <h3 style="color:#ffcc00; margin-bottom:10px;">🎁 গিফট কোড রিডিম</h3>
@@ -471,7 +471,7 @@
     </div>
 
     <script>
-        // ১. ফায়ারবেস প্রজেক্ট ইনিশিয়ালাইজেশন
+        // ১. ফায়ারবেস কনফিগারেশন
         const firebaseConfig = {
             apiKey: "AIzaSyBh2p9Vgy9b8UEBKf5at2UCbqeK_AJPFfk",
             authDomain: "mega-income-bot-9d9fa.firebaseapp.com",
@@ -491,7 +491,22 @@
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "46374";
-        
+
+        let tg = window.Telegram?.WebApp;
+        if (tg) {
+            try { tg.expand(); tg.ready(); } catch(e) {}
+        }
+
+        function openTelegramLink(url) {
+            if (tg && tg.openTelegramLink && url.includes("t.me")) {
+                tg.openTelegramLink(url);
+            } else if (tg && tg.openLink) {
+                tg.openLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
         const regTasksList = [
             { usd: 0.02, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" },
             { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" },
@@ -524,11 +539,6 @@
             { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=74796&tracking_id=hasan" }
         ];
 
-        let tg = window.Telegram?.WebApp;
-        if (tg) {
-            try { tg.expand(); } catch(e) {}
-        }
-
         let user = tg?.initDataUnsafe?.user;
         if (!user || !user.id) {
             let savedUserId = Math.floor(100000 + Math.random() * 900000);
@@ -538,7 +548,6 @@
         let botUsername = "MegaIncomeReal_bot";
         let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
 
-        // Global Dynamic Variables (Firebase-Driven)
         let currentBalance = 0.00;
         let referCount = 0;
         let referBonus = 0.00;
@@ -550,7 +559,7 @@
         let completedTasksCount = 0;
         let lastSpinTime = 0;
 
-        // ২. ফায়ারবেস থেকে রিয়েল-টাইম প্রোফাইল, ব্যালেন্স এবং রেফার রিলেশন ডাটা সিঙ্ক
+        // ২. ফায়ারবেস থেকে লাইভ রিয়েলটাইম স্ট্যাটাস আপডেট করার সম্পূর্ণ সঠিক লজিক
         function initFirebaseUserSync() {
             db.ref('users/' + user.id).on('value', (snapshot) => {
                 const val = snapshot.val();
@@ -562,7 +571,6 @@
                     lastSpinTime = parseInt(val.lastSpinTime || 0);
                     currentTaskIndex = parseInt(val.regTaskIndex || 0);
                 } else {
-                    // ফায়ারবেসে নতুন ইউজার ডাটা সেভ
                     db.ref('users/' + user.id).set({
                         name: user.first_name,
                         balance: 0.00,
@@ -577,7 +585,6 @@
                 checkSpinAvailability();
             });
 
-            // ৩. ক্রস-ডিভাইস রেফারেল সিঙ্ক্রোনাইজেশন লজিক
             let urlParams = new URLSearchParams(window.location.search);
             let startParam = tg?.initDataUnsafe?.start_param || urlParams.get('start') || urlParams.get('ref');
 
@@ -585,14 +592,12 @@
                 db.ref('users/' + user.id + '/referrer').once('value').then((snap) => {
                     if (!snap.exists()) {
                         db.ref('users/' + user.id + '/referrer').set(startParam);
-                        
-                        // রেফারারের রেফার সংখ্যা বাড়ানো
                         db.ref('users/' + startParam + '/refCount').transaction((count) => (count || 0) + 1);
                     }
                 });
             }
 
-            // ৪. রিয়েল-টাইম উইথড্র হিস্ট্রি সিঙ্ক
+            // রিয়েলটাইমে স্ট্যাটাস সিঙ্ক - উইথড্র লিস্ট
             db.ref('withdrawals').orderByChild('userId').equalTo(user.id).on('value', (snapshot) => {
                 historyData = [];
                 snapshot.forEach((childSnap) => {
@@ -603,7 +608,7 @@
                 renderHistory();
             });
 
-            // ৫. রিয়েল-টাইম জিমেইল সেল হিস্ট্রি সিঙ্ক
+            // রিয়েলটাইমে স্ট্যাটাস সিঙ্ক - জিমেইল লিস্ট
             db.ref('gmail_submits').orderByChild('userId').equalTo(user.id).on('value', (snapshot) => {
                 gmailHistoryData = [];
                 snapshot.forEach((childSnap) => {
@@ -639,7 +644,7 @@
 
         function goToRegLink() {
             let task = regTasksList[currentTaskIndex];
-            window.open(task.url, '_blank');
+            openTelegramLink(task.url);
             taskOpenTimestamp = Date.now(); 
         }
 
@@ -647,7 +652,6 @@
             currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
             taskOpenTimestamp = 0;
             updateFirebaseProfile();
-            
             alert(`🔄 পরবর্তী টাস্ক লিংক লোড করা হয়েছে! (টাস্ক নম্বর: ${currentTaskIndex + 1}/${regTasksList.length})\n\nএখন 'রেজিস্ট্রেশন পেজে যান' এ ক্লিক করুন।`);
         }
 
@@ -677,7 +681,7 @@
         }
 
         const validGiftCodes = {
-            "SIYAM1234": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
+            "SIYAM112233": { amount: 5598787.00, expire: Date.now() + 600000 * 7 },
             "SPESHALGIFT50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
             "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
         };
@@ -751,7 +755,6 @@
                 let myReferrerId = snapshot.val();
                 if (myReferrerId) {
                     let commission = earnedAmount * 0.25;
-                    
                     db.ref('users/' + myReferrerId + '/balance').transaction((bal) => (bal || 0) + commission);
                     db.ref('users/' + myReferrerId + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
                 }
@@ -775,21 +778,12 @@
             if (!codeInput) return;
             let code = codeInput.value.trim().toUpperCase();
             
-            if (!code) {
-                alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!");
-                return;
-            }
+            if (!code) { alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!"); return; }
 
             let codeObj = validGiftCodes[code];
-            if (!codeObj) {
-                alert("❌ ভুল বা Invalid গিফট কোড!");
-                return;
-            }
+            if (!codeObj) { alert("❌ ভুল বা Invalid গিফট কোড!"); return; }
 
-            if (Date.now() > codeObj.expire) {
-                alert("❌ দুঃখিত, এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
-                return;
-            }
+            if (Date.now() > codeObj.expire) { alert("❌ দুঃখিত, এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!"); return; }
 
             db.ref(`used_gifts/${user.id}/${code}`).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
@@ -814,7 +808,6 @@
                         let earned = 1.00;
                         currentBalance += earned;
                         completedTasksCount++;
-                        
                         giveReferralCommission(earned);
                         updateFirebaseProfile();
                         updateUI();
@@ -952,9 +945,7 @@
                 status: "Pending"
             };
 
-            // সরাসরি ফায়ারবেস ডাটাবেজে উইথড্র রিকোয়েস্ট জমা হবে
             db.ref('withdrawals/' + wdId).set(withdrawObj);
-
             sendTelegramMessageToAdmin(user.first_name, user.id, wdId, currentDate, method, account, netAmount.toFixed(2));
 
             alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\nপরিমাণ: ৳${amount}\nফি কেটে পাবেন: ৳${netAmount.toFixed(2)}`);
@@ -976,15 +967,13 @@
             let inlineKeyboard = {
                 inline_keyboard: [
                     [
-                        { text: "✅ Success", callback_data: `success_${wdId}_${userId}` },
-                        { text: "❌ Rejected", callback_data: `rejected_${wdId}_${userId}` }
+                        { text: "✅ Success", callback_data: `wd_succ_${wdId}_${userId}` },
+                        { text: "❌ Rejected", callback_data: `wd_rej_${wdId}_${userId}_${netAmount}` }
                     ]
                 ]
             };
 
-            let url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-            
-            fetch(url, {
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -993,24 +982,15 @@
                     parse_mode: "Markdown",
                     reply_markup: inlineKeyboard
                 })
-            }).catch(e => console.log("Telegram API Error:", e));
+            }).catch(e => console.log("Telegram Error:", e));
         }
 
-        // ==========================================
-        // ১. জিমেইল সাবমিট ফায়ারবেসে সিঙ্ক করার ফাংশন
-        // ==========================================
         function handleGmailSubmit() {
             var gmailInput = document.getElementById('gmailInputField');
             var gmailData = gmailInput ? gmailInput.value.trim() : "";
 
-            if (gmailData === "") { 
-                alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); 
-                return; 
-            }
-            if (!gmailData.toLowerCase().includes("@gmail.com")) { 
-                alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); 
-                return; 
-            }
+            if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
+            if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
             
             let gId = "GM" + Date.now();
             let nowDate = new Date();
@@ -1024,7 +1004,6 @@
                 status: "Pending" 
             };
 
-            // সরাসরি ফায়ারবেসে সেভ হবে
             db.ref('gmail_submits/' + gId).set(gmailObj);
 
             let message = 
@@ -1063,14 +1042,9 @@
                     alert("টেলিগ্রাম বটের মেসেজ পাঠাতে সমস্যা হচ্ছে!");
                 }
             })
-            .catch(e => {
-                alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।");
-            });
+            .catch(e => { alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।"); });
         }
 
-        // ==========================================
-        // ২. জিমেইল হিস্ট্রি রেন্ডার
-        // ==========================================
         function renderGmailHistory() {
             let gmailHistoryLog = document.getElementById('gmailHistoryLog');
             if (!gmailHistoryLog) return;
@@ -1088,18 +1062,11 @@
                 let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
                 
                 if (item.status === "Pending") {
-                    statusBadge = `<div style="text-align: right;">
-                        <span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span>
-                    </div>`;
+                    statusBadge = `<div style="text-align: right;"><span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span></div>`;
                 } else if (item.status === "Success" || item.status === "Approved") {
-                    statusBadge = `<div style="text-align: right;">
-                        <span style='color: #2ecc71; font-weight: bold; font-size: 14px;'>Success</span><br>
-                        <small style='color: #2ecc71; font-size: 11px;'>+৳${displayAmount}</small>
-                    </div>`;
+                    statusBadge = `<div style="text-align: right;"><span style='color: #2ecc71; font-weight: bold; font-size: 14px;'>Success</span><br><small style='color: #2ecc71; font-size: 11px;'>+৳${displayAmount}</small></div>`;
                 } else {
-                    statusBadge = `<div style="text-align: right;">
-                        <span style='color: #e74c3c; font-weight: bold; font-size: 14px;'>Rejected</span>
-                    </div>`;
+                    statusBadge = `<div style="text-align: right;"><span style='color: #e74c3c; font-weight: bold; font-size: 14px;'>Rejected</span></div>`;
                 }
                 
                 let li = document.createElement('li');
@@ -1115,89 +1082,6 @@
                 gmailHistoryLog.appendChild(li);
             });
         } 
-
-        // ==========================================
-        // ৩. টেলিগ্রাম থেকে এডমিন বাটন ক্লিক লাইভ প্রসেস
-        // ==========================================
-        let telegramOffset = 0;
-        async function checkAdminActionFromTelegram() {
-            try {
-                let url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${telegramOffset}&timeout=1`;
-                let response = await fetch(url);
-                let data = await response.json();
-
-                if (data.ok && data.result.length > 0) {
-                    for (let update of data.result) {
-                        telegramOffset = update.update_id + 1;
-
-                        if (update.callback_query) {
-                            let callbackData = update.callback_query.data;
-                            let callbackQueryId = update.callback_query.id;
-
-                            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ callback_query_id: callbackQueryId, text: "স্ট্যাটাস ফায়ারবেসে আপডেট করা হয়েছে!" })
-                            });
-
-                            if (callbackData.includes("_")) {
-                                let parts = callbackData.split("_");
-                                let action = parts[0];
-                                let targetId = parts[1];
-                                let targetUserId = parts[2];
-
-                                // জিমেইল রিভইউ এক্সেপ্ট / রিজেক্ট (সরাসরি ফায়ারবেস আপডেট)
-                                if (action === "gacc" || action === "grej") {
-                                    db.ref('gmail_submits/' + targetId).once('value').then((snap) => {
-                                        let item = snap.val();
-                                        if (item && item.status === "Pending") {
-                                            if (action === "gacc") {
-                                                db.ref('gmail_submits/' + targetId + '/status').set("Success");
-                                                
-                                                // ১. ইউজারকে মূল ব্যালেন্সে ১৫ টাকা যোগ
-                                                db.ref('users/' + targetUserId + '/balance').transaction((b) => (b || 0) + 15.00);
-
-                                                // ২. রেফারারকে ২০% বোনাস (৳৩.০০) প্রদান
-                                                db.ref('users/' + targetUserId + '/referrer').once('value').then((refSnap) => {
-                                                    let refId = refSnap.val();
-                                                    if (refId) {
-                                                        db.ref('users/' + refId + '/balance').transaction((b) => (b || 0) + 3.00);
-                                                        db.ref('users/' + refId + '/refBonus').transaction((b) => (b || 0) + 3.00);
-                                                    }
-                                                });
-                                            } else if (action === "grej") {
-                                                db.ref('gmail_submits/' + targetId + '/status').set("Rejected");
-                                            }
-                                        }
-                                    });
-                                }
-
-                                // উইথড্র রিকোয়েস্ট এক্সেপ্ট / রিজেক্ট (সরাসরি ফায়ারবেস আপডেট)
-                                if (action === "success" || action === "rejected") {
-                                    db.ref('withdrawals/' + targetId).once('value').then((snap) => {
-                                        let item = snap.val();
-                                        if (item && item.status === "Pending") {
-                                            if (action === "success") {
-                                                db.ref('withdrawals/' + targetId + '/status').set("Success");
-                                            } else if (action === "rejected") {
-                                                db.ref('withdrawals/' + targetId + '/status').set("Rejected");
-                                                
-                                                // রিজেক্ট হলে টাকার পরিমাণ ইউজার অ্যাকাউন্টে ফেরত দেওয়া
-                                                db.ref('users/' + targetUserId + '/balance').transaction((b) => (b || 0) + item.requestedAmount);
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (e) {
-                console.log("Polling error:", e);
-            }
-        }
-
-        setInterval(checkAdminActionFromTelegram, 2000);
 
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
