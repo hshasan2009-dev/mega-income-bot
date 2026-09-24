@@ -98,10 +98,24 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        .btn-official { background-color: #2980b9; }
-        .btn-support { background-color: #c0392b; }
-        .btn-gift { background: linear-gradient(135deg, #f39c12, #d35400); color: white; }
-        .btn-main { background-color: #f1c40f; color: #000; font-size: 17px; }
+        .btn-official {
+            background-color: #2980b9;
+        }
+
+        .btn-support {
+            background-color: #c0392b;
+        }
+
+        .btn-gift {
+            background: linear-gradient(135deg, #f39c12, #d35400);
+            color: white;
+        }
+
+        .btn-main {
+            background-color: #f1c40f;
+            color: #000;
+            font-size: 17px;
+        }
 
         .rules-box {
             text-align: left;
@@ -203,6 +217,18 @@
             text-align: center;
         }
 
+        .stat-num {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #ccc;
+            margin-top: 2px;
+        }
+
         .history-table {
             width: 100%;
             border-collapse: collapse;
@@ -221,9 +247,20 @@
             color: #f1c40f;
         }
 
-        .badge-pending { color: #f1c40f; font-weight: bold; }
-        .badge-success { color: #2ecc71; font-weight: bold; }
-        .badge-rejected { color: #e74c3c; font-weight: bold; }
+        .badge-pending {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .badge-rejected {
+            color: #e74c3c;
+            font-weight: bold;
+        }
 
         .navbar {
             position: fixed;
@@ -369,6 +406,7 @@
             <script>
             function openGmailSellPage() {
                 document.getElementById('gmailSellOverlay').style.display = 'block';
+                if(window.renderGmailHistory) window.renderGmailHistory();
             }
 
             function closeGmailSellPage() {
@@ -517,7 +555,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDK এবং ক্লাউড রিয়েলটাইম লজিক -->
+    <!-- FIREBASE SDK এবং ডাটা সিঙ্ক স্ক্রিপ্ট -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getDatabase, ref, set, get, update, onValue, push } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
@@ -561,10 +599,8 @@
         window.referLink = referLink;
 
         window.currentBalance = parseFloat(localStorage.getItem("local_bal_" + user.id) || "0.00");
-        window.referCount = 0;
-        window.referBonus = 0.00;
 
-        // ১. রিয়েলটাইম ইউজারের ব্যালেন্স এবং রেফার তথ্য ডাটাবেস লিসেনার
+        // ১. রিয়েলটাইম ইউজার ব্যালেন্স লিসেনার
         const userRef = ref(db, 'users/' + user.id);
         onValue(userRef, (snapshot) => {
             const data = snapshot.val();
@@ -573,11 +609,10 @@
                 localStorage.setItem("local_bal_" + user.id, window.currentBalance);
                 window.referCount = data.refCount || 0;
                 window.referBonus = data.refBonus || 0.00;
-                updateUI();
+                if(window.updateUI) window.updateUI();
             } else {
                 let urlParams = new URLSearchParams(window.location.search);
                 let startParam = tg?.initDataUnsafe?.start_param || urlParams.get('start');
-                
                 set(userRef, {
                     name: user.first_name,
                     balance: window.currentBalance,
@@ -585,20 +620,24 @@
                     refBonus: 0.00,
                     referredBy: (startParam && String(startParam) !== String(user.id)) ? startParam : null
                 });
-
-                if (startParam && String(startParam) !== String(user.id)) {
-                    const refUserRef = ref(db, 'users/' + startParam);
-                    get(refUserRef).then((refSnap) => {
-                        if (refSnap.exists()) {
-                            let rData = refSnap.val();
-                            update(refUserRef, { refCount: (rData.refCount || 0) + 1 });
-                        }
-                    });
-                }
             }
         });
 
-        // ২. রিয়েলটাইম উইথড্র হিস্ট্রি লিসেনার
+        // ২. রিয়েলটাইম জিমেইল হিস্ট্রি লিসেনার (ফায়ারবেস + লোকাল মেমোরি ব্যাকআপ)
+        const gmailRef = ref(db, 'gmails/' + user.id);
+        onValue(gmailRef, (snapshot) => {
+            let data = snapshot.val();
+            let list = [];
+            if (data) {
+                Object.keys(data).forEach(k => {
+                    list.push(data[k]);
+                });
+            }
+            localStorage.setItem("local_gmail_history_" + user.id, JSON.stringify(list));
+            if (window.renderGmailHistory) window.renderGmailHistory();
+        });
+
+        // ৩. উইথড্র হিস্ট্রি লিসেনার
         const withdrawRef = ref(db, 'withdraws/' + user.id);
         onValue(withdrawRef, (snapshot) => {
             let tbody = document.getElementById("history-rows");
@@ -627,64 +666,10 @@
             });
         });
 
-        // ৩. রিয়েলটাইম জিমেইল হিস্ট্রি লিসেনার
-        const gmailRef = ref(db, 'gmails/' + user.id);
-        onValue(gmailRef, (snapshot) => {
-            let gmailHistoryLog = document.getElementById('gmailHistoryLog');
-            if (!gmailHistoryLog) return;
-            gmailHistoryLog.innerHTML = "";
-            let data = snapshot.val();
-            if (!data) {
-                gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
-                return;
-            }
-            Object.keys(data).reverse().forEach(key => {
-                let item = data[key];
-                let statusBadge = "";
-                let displayAmount = "15.00";
-                
-                if (item.status === "Pending") {
-                    statusBadge = `<div style="text-align: right;"><span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span></div>`;
-                } else if (item.status === "Success" || item.status === "Approved" || item.status === "Accept") {
-                    statusBadge = `<div style="text-align: right;"><span style='color: #2ecc71; font-weight: bold; font-size: 14px;'>Success</span><br><small style='color: #2ecc71; font-size: 11px;'>+৳${displayAmount}</small></div>`;
-                } else {
-                    statusBadge = `<div style="text-align: right;"><span style='color: #e74c3c; font-weight: bold; font-size: 14px;'>Rejected</span></div>`;
-                }
-
-                let li = document.createElement('li');
-                li.style.borderBottom = "1px dashed #1a3325";
-                li.style.padding = "8px 0";
-                li.style.display = "flex";
-                li.style.justifyContent = "space-between";
-                li.style.alignItems = "center";
-                li.innerHTML = `<span style='color: #ffffff; font-size: 14px;'>📧 ${item.info}</span>${statusBadge}`;
-                gmailHistoryLog.appendChild(li);
-            });
-        });
-
-        // ক্লাউড হেল্পার ফাংশন
+        // ফায়ারবেস পুশ হেল্পার
         window.saveBalanceToCloud = function(amt) {
             localStorage.setItem("local_bal_" + user.id, amt);
             update(userRef, { balance: amt });
-        };
-
-        window.giveReferralCommission = function(earnedAmount) {
-            get(userRef).then((snap) => {
-                let uData = snap.val();
-                if (uData && uData.referredBy) {
-                    let refUserDb = ref(db, 'users/' + uData.referredBy);
-                    get(refUserDb).then((rSnap) => {
-                        if (rSnap.exists()) {
-                            let rData = rSnap.val();
-                            let commission = earnedAmount * 0.25;
-                            update(refUserDb, {
-                                balance: (rData.balance || 0.00) + commission,
-                                refBonus: (rData.refBonus || 0.00) + commission
-                            });
-                        }
-                    });
-                }
-            });
         };
 
         window.pushGmailToCloud = function(gId, currentDate, gmailData) {
@@ -711,7 +696,7 @@
         };
     </script>
 
-    <!-- ক্লায়েন্ট সাইড স্ক্রিপ্ট -->
+    <!-- মূল ক্লায়েন্ট সাইড স্ক্রিপ্ট -->
     <script>
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
@@ -797,7 +782,6 @@
             completedTasksCount++;
             if (window.user) localStorage.setItem(`tasksCount_${window.user.id}`, completedTasksCount);
             
-            if (window.giveReferralCommission) window.giveReferralCommission(rewardInBDT);
             updateUI();
             checkSpinAvailability();
 
@@ -839,6 +823,7 @@
             updateUI();
             checkSpinAvailability();
             initWheel();
+            renderGmailHistory();
         };
 
         function initWheel() {
@@ -947,8 +932,6 @@
 
                         completedTasksCount++;
                         if (window.user) localStorage.setItem(`tasksCount_${window.user.id}`, completedTasksCount);
-                        
-                        if (window.giveReferralCommission) window.giveReferralCommission(earned);
 
                         updateUI();
                         checkSpinAvailability();
@@ -1020,7 +1003,6 @@
             setTimeout(() => {
                 window.currentBalance += chosenPrize.amount;
                 if (window.saveBalanceToCloud) window.saveBalanceToCloud(window.currentBalance);
-                if (window.giveReferralCommission) window.giveReferralCommission(chosenPrize.amount);
                 updateUI();
                 alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${chosenPrize.amount.toFixed(2)}`);
             }, 3000);
@@ -1086,6 +1068,43 @@
             amountEl.value = "";
         }
 
+        // হিস্ট্রি পারফেক্টলি রেন্ডার করার ফাংশন
+        function renderGmailHistory() {
+            let gmailHistoryLog = document.getElementById('gmailHistoryLog');
+            if (!gmailHistoryLog) return;
+            
+            let uId = window.user ? window.user.id : "guest";
+            let rawData = localStorage.getItem("local_gmail_history_" + uId);
+            let historyList = rawData ? JSON.parse(rawData) : [];
+
+            gmailHistoryLog.innerHTML = "";
+            if (historyList.length === 0) {
+                gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
+                return;
+            }
+
+            historyList.slice().reverse().forEach(item => {
+                let statusBadge = "";
+                if (item.status === "Pending") {
+                    statusBadge = `<div style="text-align: right;"><span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span></div>`;
+                } else if (item.status === "Success" || item.status === "Approved" || item.status === "Accept") {
+                    statusBadge = `<div style="text-align: right;"><span style='color: #2ecc71; font-weight: bold; font-size: 14px;'>Success</span><br><small style='color: #2ecc71; font-size: 11px;'>+৳15.00</small></div>`;
+                } else {
+                    statusBadge = `<div style="text-align: right;"><span style='color: #e74c3c; font-weight: bold; font-size: 14px;'>Rejected</span></div>`;
+                }
+
+                let li = document.createElement('li');
+                li.style.borderBottom = "1px dashed #1a3325";
+                li.style.padding = "8px 0";
+                li.style.display = "flex";
+                li.style.justifyContent = "space-between";
+                li.style.alignItems = "center";
+                li.innerHTML = `<span style='color: #ffffff; font-size: 14px;'>📧 ${item.info}</span>${statusBadge}`;
+                gmailHistoryLog.appendChild(li);
+            });
+        }
+        window.renderGmailHistory = renderGmailHistory;
+
         function handleGmailSubmit() {
             var gmailInput = document.getElementById('gmailInputField');
             var gmailData = gmailInput ? gmailInput.value.trim() : "";
@@ -1103,9 +1122,20 @@
             let nowDate = new Date();
             let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
             
+            // ১. লোকাল ব্যাকআপ হিস্ট্রি
+            let uId = window.user ? window.user.id : "guest";
+            let rawData = localStorage.getItem("local_gmail_history_" + uId);
+            let historyList = rawData ? JSON.parse(rawData) : [];
+            historyList.push({ g_id: gId, date: currentDate, info: gmailData, status: "Pending" });
+            localStorage.setItem("local_gmail_history_" + uId, JSON.stringify(historyList));
+
+            // ২. ফায়ারবেস ক্লাউডে সেভ
             if (window.pushGmailToCloud) {
                 window.pushGmailToCloud(gId, currentDate, gmailData);
             }
+
+            // ৩. স্ক্রিন হিস্ট্রি রেন্ডার
+            renderGmailHistory();
 
             let currentUserId = window.user ? window.user.id : "Unknown";
             let currentUserName = window.user ? window.user.first_name : "User";
@@ -1136,14 +1166,10 @@
                     parse_mode: "HTML",
                     reply_markup: inlineKeyboard
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
+            }).then(() => {
+                alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!");
                 if (gmailInput) gmailInput.value = "";
-                // অটোমেটিক পেজ ব্যাক হবে না, ফলে ইউজার সরাসরি নিচে হিস্ট্রি দেখতে পাবে
-            })
-            .catch(e => {
+            }).catch(() => {
                 alert("অনুরোধটি প্রসেস করা হয়েছে!");
                 if (gmailInput) gmailInput.value = "";
             });
