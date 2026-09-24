@@ -235,6 +235,41 @@
             background: rgba(39, 174, 96, 0.15);
             border-radius: 8px;
         }
+        /* অ্যাডমিন প্যানেল ডিজাইন */
+        .admin-item-card {
+            background: #081a11;
+            border: 1px solid #27ae60;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: left;
+            font-size: 13px;
+        }
+        .admin-btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .btn-approve {
+            background-color: #2ecc71;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-reject {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -437,10 +472,25 @@
             </div>
         </div>
 
+        <!-- অ্যাডমিন প্যানেল (শুধুমাত্র অ্যাডমিনের জন্য দৃশ্যমান) -->
+        <div id="admin" class="page">
+            <div class="card">
+                <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
+                
+                <h4 style="color:#2ecc71; text-align:left; margin-bottom:10px;">💳 উইথড্র রিকোয়েস্টসমূহ</h4>
+                <div id="admin-withdraw-list"></div>
+
+                <hr style="border:0; border-top:1px dashed #27ae60; margin:20px 0;">
+
+                <h4 style="color:#f1c40f; text-align:left; margin-bottom:10px;">📧 জিমেইল সাবমিট রিকোয়েস্টসমূহ</h4>
+                <div id="admin-gmail-list"></div>
+            </div>
+        </div>
+
     </div>
 
     <!-- ন্যাভবার -->
-    <div class="navbar">
+    <div class="navbar" id="app-navbar">
         <button class="nav-item active" onclick="switchTab('home', this)">
             <span class="icon">🏠</span>
             <span>হোম</span>
@@ -456,6 +506,11 @@
         <button class="nav-item" onclick="switchTab('withdraw', this)">
             <span class="icon">💳</span>
             <span>উইথড্র</span>
+        </button>
+        <!-- অ্যাডমিন বাটন (JS দিয়ে অ্যাডমিন হলে দেখাবে) -->
+        <button class="nav-item" id="admin-nav-btn" style="display:none;" onclick="switchTab('admin', this)">
+            <span class="icon">🛠️</span>
+            <span>অ্যাডমিন</span>
         </button>
     </div>
 
@@ -560,6 +615,13 @@
         let lastSpinTime = 0;
 
         function initFirebaseUserSync() {
+            // অ্যাডমিন চেক
+            if (String(user.id) === String(ADMIN_CHAT_ID)) {
+                let adminBtn = document.getElementById("admin-nav-btn");
+                if (adminBtn) adminBtn.style.display = "flex";
+                listenAdminData();
+            }
+
             db.ref('users/' + user.id).on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
@@ -625,6 +687,100 @@
                 completedTasksCount: completedTasksCount,
                 lastSpinTime: lastSpinTime,
                 regTaskIndex: currentTaskIndex
+            });
+        }
+
+        // --- অ্যাডমিন রিয়েলটাইম লিস্ট আপডেট ফাংশনসমূহ ---
+        function listenAdminData() {
+            // ১. সকল উইথড্র রিকোয়েস্ট মনিটর
+            db.ref('withdrawals').on('value', (snapshot) => {
+                let container = document.getElementById("admin-withdraw-list");
+                if (!container) return;
+                container.innerHTML = "";
+
+                let hasPending = false;
+                snapshot.forEach((childSnap) => {
+                    let item = childSnap.val();
+                    let key = childSnap.key;
+                    if (item.status === "Pending") {
+                        hasPending = true;
+                        container.innerHTML += `
+                            <div class="admin-item-card">
+                                <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                <div>📅 <b>তারিখ:</b> ${item.date}</div>
+                                <div>💳 <b>মেথড:</b> ${item.method} (${item.account})</div>
+                                <div>💰 <b>পরিমাণ:</b> ৳${item.requestedAmount} (ফি বাদে: <b>৳${item.netAmount.toFixed(2)}</b>)</div>
+                                <div class="admin-btn-group">
+                                    <button class="btn-approve" onclick="adminApproveWithdraw('${key}')">✅ Approve</button>
+                                    <button class="btn-reject" onclick="adminRejectWithdraw('${key}', '${item.userId}',${item.requestedAmount})">❌ Reject</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (!hasPending) {
+                    container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং উইথড্র রিকোয়েস্ট নেই।</p>";
+                }
+            });
+
+            // ২. সকল জিমেইল সাবমিট রিকোয়েস্ট মনিটর
+            db.ref('gmail_submits').on('value', (snapshot) => {
+                let container = document.getElementById("admin-gmail-list");
+                if (!container) return;
+                container.innerHTML = "";
+
+                let hasPending = false;
+                snapshot.forEach((childSnap) => {
+                    let item = childSnap.val();
+                    let key = childSnap.key;
+                    if (item.status === "Pending") {
+                        hasPending = true;
+                        container.innerHTML += `
+                            <div class="admin-item-card">
+                                <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                <div>📅 <b>তারিখ:</b> ${item.date}</div>
+                                <div>📧 <b>জিমেইল:</b> <code style="color:#ffcc00;">${item.info}</code></div>
+                                <div class="admin-btn-group">
+                                    <button class="btn-approve" onclick="adminApproveGmail('${key}', '${item.userId}')">✅ Accept</button>
+                                    <button class="btn-reject" onclick="adminRejectGmail('${key}')">❌ Reject</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (!hasPending) {
+                    container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং জিমেইল রিকোয়েস্ট নেই।</p>";
+                }
+            });
+        }
+
+        function adminApproveWithdraw(key) {
+            db.ref('withdrawals/' + key).update({ status: "Success" }).then(() => {
+                alert("✅ উইথড্র রিকোয়েস্ট এপ্রুভ করা হয়েছে!");
+            });
+        }
+
+        function adminRejectWithdraw(key, targetUserId, amount) {
+            db.ref('withdrawals/' + key).update({ status: "Rejected" }).then(() => {
+                // রিজেক্ট হলে কাটা ব্যালেন্স ফেরত দেওয়া
+                db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + parseFloat(amount));
+                alert("❌ উইথড্র রিজেক্ট করা হয়েছে এবং ইউজারের টাকা ফেরত দেওয়া হয়েছে!");
+            });
+        }
+
+        function adminApproveGmail(key, targetUserId) {
+            db.ref('gmail_submits/' + key).update({ status: "Success", amount: 15.00 }).then(() => {
+                // জিমেইল এপ্রুভ হলে ইউজারকে ১৫ টাকা দেওয়া
+                db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + 15.00);
+                alert("✅ জিমেইল টাস্ক সফল হয়েছে এবং ইউজারকে ১৫ টাকা দেওয়া হয়েছে!");
+            });
+        }
+
+        function adminRejectGmail(key) {
+            db.ref('gmail_submits/' + key).update({ status: "Rejected" }).then(() => {
+                alert("❌ জিমেইল টাস্ক রিজেক্ট করা হয়েছে!");
             });
         }
 
@@ -943,44 +1099,10 @@
             };
 
             db.ref('withdrawals/' + wdId).set(withdrawObj);
-            sendTelegramMessageToAdmin(user.first_name, user.id, wdId, currentDate, method, account, netAmount.toFixed(2));
 
             alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\nপরিমাণ: ৳${amount}\nফি কেটে পাবেন: ৳${netAmount.toFixed(2)}`);
             accountEl.value = "";
             amountEl.value = "";
-        }
-
-        // ৩. টেলিগ্রাম পে-লোড অ্যাডজাস্টমেন্ট লজিক
-        function sendTelegramMessageToAdmin(userName, userId, wdId, date, method, account, netAmount) {
-            let message = (
-                `🚨 **নতুন উইথড্র রিকোয়েস্ট!**\n\n` +
-                `👤 ইউজার: ${userName} (ID: \`${userId}\`)\n` +
-                `🆔 রিকোয়েস্ট আইডি: \`${wdId}\`\n` +
-                `📅 তারিখ: ${date}\n` +
-                `💳 মাধ্যম: ${method}\n` +
-                `📞 অ্যাকাউন্ট: \`${account}\`\n` +
-                `💰 পরিমাণ: ৳${netAmount}`
-            );
-
-            let inlineKeyboard = {
-                inline_keyboard: [
-                    [
-                        { text: "✅ Success", callback_data: `wd_succ_${wdId}_${userId}` },
-                        { text: "❌ Rejected", callback_data: `wd_rej_${wdId}_${userId}_${netAmount}` }
-                    ]
-                ]
-            };
-
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: ADMIN_CHAT_ID,
-                    text: message,
-                    parse_mode: "Markdown",
-                    reply_markup: inlineKeyboard
-                })
-            }).catch(e => console.log("Telegram Error:", e));
         }
 
         function handleGmailSubmit() {
@@ -1003,44 +1125,8 @@
             };
 
             db.ref('gmail_submits/' + gId).set(gmailObj);
-
-            let message = 
-                `📧 <b>নতুন জিমেইল সাবমিট রিকোয়েস্ট!</b>\n\n` +
-                `👤 <b>ইউজার:</b> ${user.first_name} (ID: <code>${user.id}</code>)\n` +
-                `🆔 <b>টাস্ক আইডি:</b> <code>${gId}</code>\n` +
-                `📅 <b>তারিখ:</b> ${currentDate}\n` +
-                `📧 <b>Gmail:</b> <code>${gmailData}</code>\n\n` +
-                `💰 <b>রেট:</b> ৳১৫.০০`;
-            
-            let inlineKeyboard = {
-                inline_keyboard: [
-                    [
-                        { text: "✅ Accept", callback_data: `gacc_${gId}_${user.id}` },
-                        { text: "❌ Rejected", callback_data: `grej_${gId}_${user.id}` }
-                    ]
-                ]
-            };
-
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: ADMIN_CHAT_ID,
-                    text: message,
-                    parse_mode: "HTML",
-                    reply_markup: inlineKeyboard
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.ok) {
-                    alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
-                    if (gmailInput) gmailInput.value = "";
-                } else {
-                    alert("টেলিগ্রাম বটের মেসেজ পাঠাতে সমস্যা হচ্ছে!");
-                }
-            })
-            .catch(e => { alert("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।"); });
+            alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
+            if (gmailInput) gmailInput.value = "";
         }
 
         function renderGmailHistory() {
