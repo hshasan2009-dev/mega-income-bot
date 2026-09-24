@@ -92,6 +92,11 @@
             text-decoration: none;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
+        .btn:disabled {
+            background-color: #555555 !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
         .btn-official { background-color: #2980b9; }
         .btn-support { background-color: #c0392b; }
         .btn-gift { background: linear-gradient(135deg, #f39c12, #d35400); color: white; }
@@ -144,33 +149,51 @@
             font-size: 14px;
             outline: none;
         }
+        
+        /* প্রফেশনাল স্পিন ডিজাইন */
         .wheel-container {
             position: relative;
-            width: 240px;
-            height: 240px;
+            width: 260px;
+            height: 260px;
             margin: 15px auto;
+            border-radius: 50%;
+            padding: 8px;
+            background: linear-gradient(145deg, #27ae60, #113626);
+            box-shadow: 0 0 20px rgba(39, 174, 96, 0.5), inset 0 0 10px #000;
         }
         .wheel-pointer {
             position: absolute;
-            top: -10px;
+            top: -12px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-bottom: 22px solid #e74c3c;
-            z-index: 20;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 28px solid #ff3333;
+            z-index: 30;
+            filter: drop-shadow(0 3px 3px rgba(0,0,0,0.7));
+        }
+        .wheel-center-cap {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 45px;
+            height: 45px;
+            background: radial-gradient(circle, #ffcc00, #d35400);
+            border-radius: 50%;
+            z-index: 25;
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.8);
         }
         #wheel-canvas {
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            border: 6px solid #f1c40f;
-            box-shadow: 0 0 15px rgba(241, 196, 15, 0.4);
-            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);
         }
+
         .stats-container {
             display: flex;
             gap: 10px;
@@ -375,12 +398,15 @@
             <!-- লকি স্পিন -->
             <div class="card">
                 <h3 style="color: #ffcc00; margin-bottom: 8px;">🌀 লকি স্পিন</h3>
-                <p id="spin-status-text" style="color: #2ecc71; margin-bottom: 8px; font-size: 13px;">✅ স্পিন করুন এবং পুরষ্কার জিতুন!</p>
+                <p id="spin-status-text" style="color: #f39c12; margin-bottom: 8px; font-size: 13px; font-weight: bold;">
+                    টাস্ক বাকি: <span id="tasks-left-count" style="color:#ffcc00;">5</span>টি
+                </p>
                 <div class="wheel-container">
                     <div class="wheel-pointer"></div>
+                    <div class="wheel-center-cap"></div>
                     <canvas id="wheel-canvas" width="400" height="400"></canvas>
                 </div>
-                <button class="btn btn-main" onclick="playSpinTask()" style="margin-top: 15px;">🌀 স্পিন করুন</button>
+                <button class="btn btn-main" id="spin-btn-element" onclick="playSpinTask()" style="margin-top: 15px;">🌀 স্পিন করুন</button>
             </div>
         </div>
 
@@ -602,11 +628,14 @@
         let currentBalance = 0.00;
         let referCount = 0;
         let referBonus = 0.00;
+        let completedTasksCount = 0;
         let historyData = [];
         let gmailHistoryData = [];
 
         let currentTaskIndex = 0;
         let taskOpenTimestamp = 0;
+        let isSpinning = false;
+        let currentWheelRotation = 0;
 
         function initFirebaseUserSync() {
             if (String(user.id) === String(ADMIN_CHAT_ID)) {
@@ -622,13 +651,15 @@
                     referCount = parseInt(val.refCount || 0);
                     referBonus = parseFloat(val.refBonus || 0);
                     currentTaskIndex = parseInt(val.regTaskIndex || 0);
+                    completedTasksCount = parseInt(val.completedTasksCount || 0);
                 } else {
                     db.ref('users/' + user.id).set({
                         name: user.first_name,
                         balance: 0.00,
                         refCount: 0,
                         refBonus: 0.00,
-                        regTaskIndex: 0
+                        regTaskIndex: 0,
+                        completedTasksCount: 0
                     });
                 }
                 updateUI();
@@ -672,11 +703,11 @@
                 balance: currentBalance,
                 refCount: referCount,
                 refBonus: referBonus,
-                regTaskIndex: currentTaskIndex
+                regTaskIndex: currentTaskIndex,
+                completedTasksCount: completedTasksCount
             });
         }
 
-        // --- অ্যাডমিন রিয়েলটাইম লিস্ট ও এপ্রুভাল ফাংশন ---
         function listenAdminData() {
             db.ref('withdrawals').on('value', (snapshot) => {
                 let container = document.getElementById("admin-withdraw-list");
@@ -753,18 +784,15 @@
             });
         }
 
-        // জিমেইল এপ্রুভালের সময় ১৫ টাকা ও ২৫% রেফার কমিশন প্রদান
         function adminApproveGmail(key, targetUserId) {
             let gmailAmount = 15.00;
 
             db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount }).then(() => {
-                // ১. ইউজারকে ১৫ টাকা দেওয়া
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + gmailAmount);
-
-                // ২. রেফারারকে ২৫% রেফার কমিশন (৩.৭৫ টাকা) দেওয়া (যা মূল ব্যালেন্স ও রেফার বোনাসে যোগ হবে)
+                db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
                 giveReferralCommissionForUser(targetUserId, gmailAmount);
 
-                alert("✅ জিমেইল টাস্ক সফল হয়েছে! ইউজার ১৫ টাকা পেয়েছে এবং তার রেফারার ৩.৭৫ টাকা কমিশন পেয়েছে।");
+                alert("✅ জিমেইল টাস্ক সফল হয়েছে, ইউজার ১৫ টাকা এবং তার রেফারার ২৫% কমিশন পেয়েছে!");
             });
         }
 
@@ -808,6 +836,7 @@
             let rewardInBDT = (task.usd * 100) * 0.50; 
             
             currentBalance += rewardInBDT;
+            completedTasksCount += 1; // টাস্ক কাউন্ট বৃদ্ধি
             
             giveReferralCommission(rewardInBDT);
             
@@ -827,12 +856,14 @@
             "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
         };
 
+        // প্রফেশনাল স্পিন স্লাইস ও কন্ট্রোলড ওয়েট (কম অ্যামাউন্টে থামার সম্ভাবনা বেশি)
         const spinPrizes = [
-            { amount: 0.10, label: "৳০.১০", weight: 35 },
-            { amount: 0.25, label: "৳০.২৫", weight: 30 },
-            { amount: 0.50, label: "৳০.৫০", weight: 20 },
-            { amount: 0.75, label: "৳০.৭৫", weight: 10 },
-            { amount: 1.00, label: "৳১.০০", weight: 5 }
+            { amount: 0.10, label: "৳ 0.10", color: "#16a085", weight: 65 },
+            { amount: 0.25, label: "৳ 0.25", color: "#27ae60", weight: 20 },
+            { amount: 0.50, label: "৳ 0.50", color: "#2980b9", weight: 10 },
+            { amount: 0.75, label: "৳ 0.75", color: "#8e44ad", weight: 4 },
+            { amount: 1.00, label: "৳ 1.00", color: "#f39c12", weight: 1 },
+            { amount: 0.10, label: "৳ 0.10", color: "#2c3e50", weight: 65 }
         ];
 
         window.onload = function() {
@@ -840,34 +871,48 @@
             if(refInput) refInput.value = referLink;
             
             initFirebaseUserSync();
-            initWheel();
+            drawProfessionalWheel();
         };
 
-        function initWheel() {
+        // প্রফেশনাল হুইল ড্রয়িং ফাংশন
+        function drawProfessionalWheel() {
             const canvas = document.getElementById("wheel-canvas");
             if (!canvas) return;
             const ctx = canvas.getContext("2d");
-            const center = canvas.width / 2;
-            const radius = canvas.width / 2 - 10;
-            const arcSize = (2 * Math.PI) / spinPrizes.length;
+            const numSlices = spinPrizes.length;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = canvas.width / 2 - 5;
+            const sliceAngle = (2 * Math.PI) / numSlices;
 
-            spinPrizes.forEach((prize, i) => {
-                const angle = i * arcSize;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            spinPrizes.forEach((slice, i) => {
+                const angle = i * sliceAngle;
+                
+                // স্লাইস ব্যাকগ্রাউন্ড
                 ctx.beginPath();
-                ctx.fillStyle = i % 2 === 0 ? "#1b4d3e" : "#143d2c";
-                ctx.moveTo(center, center);
-                ctx.arc(center, center, radius, angle, angle + arcSize, false);
-                ctx.lineTo(center, center);
+                ctx.fillStyle = slice.color;
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, angle, angle + sliceAngle);
+                ctx.lineTo(centerX, centerY);
                 ctx.fill();
+
+                // স্লাইস বর্ডার
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#ffffff";
                 ctx.stroke();
 
+                // টেক্সট রোটেশন ও ড্রয়িং
                 ctx.save();
-                ctx.translate(center, center);
-                ctx.rotate(angle + arcSize / 2);
+                ctx.translate(centerX, centerY);
+                ctx.rotate(angle + sliceAngle / 2);
                 ctx.textAlign = "right";
                 ctx.fillStyle = "#ffffff";
-                ctx.font = "bold 18px sans-serif";
-                ctx.fillText(prize.label, radius - 20, 8);
+                ctx.font = "bold 20px 'Segoe UI', sans-serif";
+                ctx.shadowColor = "rgba(0,0,0,0.8)";
+                ctx.shadowBlur = 4;
+                ctx.fillText(slice.label, radius - 25, 7);
                 ctx.restore();
             });
         }
@@ -885,26 +930,45 @@
             let balEl = document.getElementById("balance-val");
             let refEl = document.getElementById("ref-count");
             let refBonEl = document.getElementById("ref-bonus-val");
+            let statusText = document.getElementById("spin-status-text");
+            let tasksLeftEl = document.getElementById("tasks-left-count");
+            let spinBtn = document.getElementById("spin-btn-element");
 
             if (balEl) balEl.innerText = currentBalance.toFixed(2);
             if (refEl) refEl.innerText = referCount;
             if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
+
+            // ৫টি টাস্ক শর্ত চেক
+            let needed = 5 - (completedTasksCount % 5);
+            if (completedTasksCount > 0 && completedTasksCount % 5 === 0) {
+                needed = 0;
+            }
+
+            if (tasksLeftEl) tasksLeftEl.innerText = needed;
+
+            if (spinBtn) {
+                if (needed === 0 && !isSpinning) {
+                    spinBtn.disabled = false;
+                    spinBtn.innerText = "🌀 স্পিন করুন";
+                    if (statusText) statusText.innerHTML = "🎉 <span style='color:#2ecc71;'>আপনি ১টি ফ্রি স্পিন পেয়েছেন!</span>";
+                } else if (!isSpinning) {
+                    spinBtn.disabled = true;
+                    spinBtn.innerText = "🔒 স্পিন লক করা আছে";
+                    if (statusText) statusText.innerHTML = `টাস্ক বাকি: <span id="tasks-left-count" style="color:#ffcc00;">${needed}</span>টি`;
+                }
+            }
         }
 
-        // নিজের টাস্কের ক্ষেত্রে রেফার কমিশন
         function giveReferralCommission(earnedAmount) {
             giveReferralCommissionForUser(user.id, earnedAmount);
         }
 
-        // অ্যাডমিন প্যানেল বা যেকোনো পেজ থেকে নির্দিষ্ট ইউজারের রেফারারকে কমিশন প্রদান
         function giveReferralCommissionForUser(userId, earnedAmount) {
             db.ref('users/' + userId + '/referrer').once('value').then((snapshot) => {
                 let myReferrerId = snapshot.val();
                 if (myReferrerId) {
-                    let commission = earnedAmount * 0.25; // ২৫% কমিশন
-                    // মূল ব্যালেন্সে যোগ
+                    let commission = earnedAmount * 0.25;
                     db.ref('users/' + myReferrerId + '/balance').transaction((bal) => (bal || 0) + commission);
-                    // রেফার বোনাসে যোগ
                     db.ref('users/' + myReferrerId + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
                 }
             });
@@ -956,6 +1020,7 @@
                     AdController.show().then(() => {
                         let earned = 1.00;
                         currentBalance += earned;
+                        completedTasksCount += 1; // টাস্ক কাউন্ট বৃদ্ধি
                         giveReferralCommission(earned);
                         updateFirebaseProfile();
                         updateUI();
@@ -971,8 +1036,25 @@
             }
         }
 
-        // সরাসরি ফ্রি স্পিন করার ব্যবস্থা (কোনো টাইমার ছাড়া)
+        // কন্ট্রোলড স্পিন অ্যালগরিদম (কম অ্যামাউন্ট বেশি আসার লজিক)
         function playSpinTask() {
+            let needed = 5 - (completedTasksCount % 5);
+            if (completedTasksCount > 0 && completedTasksCount % 5 === 0) {
+                needed = 0;
+            }
+
+            if (needed > 0) {
+                alert(`⚠️ স্পিন খুলতে অন্তত আরও ${needed}টি টাস্ক সম্পন্ন করুন!`);
+                return;
+            }
+
+            if (isSpinning) return;
+            isSpinning = true;
+
+            let spinBtn = document.getElementById("spin-btn-element");
+            if (spinBtn) { spinBtn.disabled = true; spinBtn.innerText = "🌀 ঘুরছে..."; }
+
+            // ওয়েট অনুযায়ী কম অ্যামাউন্ট সিলেক্ট করার লজিক
             let totalWeight = spinPrizes.reduce((sum, item) => sum + item.weight, 0);
             let randomNum = Math.random() * totalWeight;
             let currentWeightSum = 0;
@@ -987,20 +1069,32 @@
             }
 
             let chosenPrize = spinPrizes[selectedIndex];
+            let numSlices = spinPrizes.length;
+            let sliceDeg = 360 / numSlices;
+            
+            // রোটেশন ক্যালকুলেশন
+            let targetSliceAngle = (numSlices - selectedIndex) * sliceDeg - (sliceDeg / 2);
+            let extraRounds = 360 * 5; 
+            currentWheelRotation += extraRounds + (targetSliceAngle - (currentWheelRotation % 360));
+
             let canvas = document.getElementById("wheel-canvas");
             if(canvas) {
-                let arcDeg = 360 / spinPrizes.length;
-                let targetDegree = 1440 + (spinPrizes.length - selectedIndex) * arcDeg - (arcDeg / 2);
-                canvas.style.transform = `rotate(${targetDegree}deg)`;
+                canvas.style.transform = `rotate(${currentWheelRotation}deg)`;
             }
             
             setTimeout(() => {
                 currentBalance += chosenPrize.amount;
+                // স্পিন সফল হলে টাস্ক কাউন্ট রিসেট করার মতো অ্যাডজাস্টমেন্ট
+                completedTasksCount -= 5;
+                if (completedTasksCount < 0) completedTasksCount = 0;
+
                 giveReferralCommission(chosenPrize.amount);
+                isSpinning = false;
+
                 updateFirebaseProfile();
                 updateUI();
                 alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${chosenPrize.amount.toFixed(2)}`);
-            }, 3000);
+            }, 4000);
         }
 
         function copyReferLink() {
