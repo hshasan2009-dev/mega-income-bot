@@ -102,7 +102,6 @@
         .btn-gift { background: linear-gradient(135deg, #f39c12, #d35400); color: white; }
         .btn-main { background-color: #f1c40f; color: #000; font-size: 17px; }
         
-        /* সিম বাটন স্টাইল */
         .btn-gp { background-color: #0080ff; color: #fff; }
         .btn-bl { background-color: #ff6600; color: #fff; }
         .btn-robi { background-color: #e60000; color: #fff; }
@@ -159,6 +158,20 @@
             outline: none;
         }
         
+        .upload-file-box {
+            border: 2px dashed #f1c40f;
+            background: #0d271a;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+        .upload-file-box:hover {
+            background: #113825;
+        }
+
         .wheel-container {
             position: relative;
             width: 260px;
@@ -353,7 +366,7 @@
         <!-- টাস্ক পেজ -->
         <div id="task" class="page">
             
-            <!-- ১. পিন সাবমিট টাস্ক (নতুন কার্ড) -->
+            <!-- ১. পিন সাবমিট টাস্ক -->
             <div class="card" style="border: 2px solid #f1c40f;">
                 <h3 style="color: #ffcc00; margin-bottom: 8px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
                 <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
@@ -398,7 +411,7 @@
             </div>
         </div>
 
-        <!-- 📱 পিন সাবমিট সিলেক্ট মডাল / ওভারলে -->
+        <!-- 📱 পিন সাবমিট সিলেক্ট মডাল -->
         <div id="pinSubmitModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
                 <div style="text-align: right; margin-bottom: 10px;">
@@ -407,12 +420,12 @@
                 <h3 style="color:#ffcc00; margin-bottom:10px;">📱 আপনার অপারেটর বেছে নিন</h3>
                 <p style="color:#ccc; font-size:12px; margin-bottom:15px;">সঠিক সিম বেছে নিয়ে পিন সাবমিট টাস্ক সম্পূর্ণ করুন:</p>
 
-                <button class="btn btn-gp" onclick="selectOperatorTask('GP')">🔵 Grameenphone Pin Offer (৳20)</button>
-                <button class="btn btn-bl" onclick="selectOperatorTask('BL')">🟠 Banglalink Pin Offer (৳20)</button>
-                <button class="btn btn-robi" onclick="selectOperatorTask('Robi')">🔴 Robi Special Pin Offer (৳20)</button>
-                <button class="btn btn-airtel" onclick="selectOperatorTask('Airtel')">🔴 Airtel Special Pin Offer (৳20)</button>
-                <button class="btn btn-teletalk" onclick="selectOperatorTask('Teletalk')">🟢 Teletalk Pin Offer (৳20)</button>
-                <button class="btn btn-wifi" onclick="selectOperatorTask('Wifi')">🌐 Wi-Fi User Offer (৳20)</button>
+                <button class="btn btn-gp" onclick="selectOperatorTask('GP')">🔵 Grameenphone Pin Offer (৳5)</button>
+                <button class="btn btn-bl" onclick="selectOperatorTask('BL')">🟠 Banglalink Pin Offer (৳5)</button>
+                <button class="btn btn-robi" onclick="selectOperatorTask('Robi')">🔴 Robi Special Pin Offer (৳5)</button>
+                <button class="btn btn-airtel" onclick="selectOperatorTask('Airtel')">🔴 Airtel Special Pin Offer (৳5)</button>
+                <button class="btn btn-teletalk" onclick="selectOperatorTask('Teletalk')">🟢 Teletalk Pin Offer (৳5)</button>
+                <button class="btn btn-wifi" onclick="selectOperatorTask('Wifi')">🌐 Wi-Fi User Offer (৳5)</button>
 
                 <hr style="border:0; border-top:1px solid #1a3325; margin:15px 0;">
                 <button onclick="togglePinHistory()" style="background:#495057; color:#fff; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-size:12px;">📜 পিন সাবমিট কাজ রিপোর্ট</button>
@@ -424,7 +437,7 @@
             </div>
         </div>
 
-        <!-- 📱 নির্দিষ্ট পিন অফার ও প্রুফ পেজ মডাল -->
+        <!-- 📱 নির্দিষ্ট পিন অফার ও সরাসরি গ্যালারি প্রুফ আপলোড মডাল -->
         <div id="pinTaskWorkModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
                 <div style="text-align: right; margin-bottom: 10px;">
@@ -433,19 +446,28 @@
                 <h3 id="selectedOpTitle" style="color:#ffcc00; margin-bottom:10px;">অফার ডিটেইলস</h3>
                 
                 <p style="color:#fff; font-size:12px; margin-bottom:5px;"><b>নমুনা পিকচার (Sample Work Screenshot):</b></p>
-                <div style="margin-bottom:12px; border:1px dashed #27ae60; padding:5px; border-radius:8px;">
-                    <img id="sampleWorkImg" src="https://via.placeholder.com/300x150?text=Sample+Screenshot+Here" style="width:100%; max-height:160px; border-radius:6px; object-fit:contain;">
+                <div style="margin-bottom:12px; border:1px dashed #27ae60; padding:5px; border-radius:8px; background: #081a11;">
+                    <img id="sampleWorkImg" src="" style="width:100%; max-height:180px; border-radius:6px; object-fit:contain; display:block; margin:0 auto;" alt="Sample Image">
                 </div>
 
                 <button class="btn btn-main" onclick="openOpLink()" style="margin-bottom:15px;">🌐 অফার লিংকে যান (Click Here)</button>
 
+                <!-- গ্যালারি পিকচার আপলোড অপশন -->
                 <div class="input-group">
-                    <label>আপনার স্ক্রিনশট লিংক (ImgBB / Imgur):</label>
-                    <input type="text" id="pinProofUrlInput" class="input-control" placeholder="https://i.ibb.co/example.jpg">
-                    <span style="color:#aaa; font-size:11px; display:block; margin-top:3px;">* যেকোনো ফটো আপলোডার ওয়েবসাইটে ছবি আপলোড করে লিংকটি দিন।</span>
+                    <label style="font-weight:bold; color:#ffcc00;">📸 আপনার কাজের স্ক্রিনশট সিলেক্ট করুন:</label>
+                    
+                    <input type="file" id="pinProofFileInput" accept="image/*" style="display:none;" onchange="previewUserSelectedImage(event)">
+                    
+                    <div class="upload-file-box" onclick="document.getElementById('pinProofFileInput').click()">
+                        <div id="uploadBoxContent">
+                            <span style="font-size:28px;">➕</span>
+                            <div style="font-size:13px; color:#fff; font-weight:bold; margin-top:5px;">গ্যালারি থেকে ছবি বেছে নিন</div>
+                        </div>
+                        <img id="userSelectedPreview" style="display:none; width:100%; max-height:150px; border-radius:6px; object-fit:contain; margin-top:5px;">
+                    </div>
                 </div>
 
-                <button class="btn btn-gift" onclick="submitPinProof()">🚀 প্রুফ জমা দিন</button>
+                <button class="btn btn-gift" id="submitProofBtn" onclick="submitPinProof()">🚀 প্রুফ জমা দিন</button>
             </div>
         </div>
 
@@ -639,6 +661,20 @@
         const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "46374";
+        
+        // 🔑 আপনার ImgBB API Key যুক্ত করা হয়েছে
+        const IMGBB_API_KEY = "77995b4eeedf7bd18b2fd72007152be2";
+
+        // ====================================================================
+        // 🖼️ প্রতিটি সিমের স্যাম্পল পিকচার লিঙ্ক (পরবর্তীতে ছবি বদলাতে নিচের লিঙ্ক আপডেট করুন)
+        // ====================================================================
+        const GP_SAMPLE_IMAGE       = "https://i.ibb.co/Ng6fxm8p/sample.jpg"; // গ্রামীণফোন (GP) এর জন্য পিক লিঙ্ক
+        const BL_SAMPLE_IMAGE       = "https://i.ibb.co/Ng6fxm8p/sample.jpg"; // বাংলালিংক (BL) এর জন্য পিক লিঙ্ক
+        const ROBI_SAMPLE_IMAGE     = "https://i.ibb.co/Ng6fxm8p/sample.jpg"; // রবি (Robi) এর জন্য পিক লিঙ্ক
+        const AIRTEL_SAMPLE_IMAGE   = "https://i.ibb.co/Ng6fxm8p/sample.jpg"; // এয়ারটেল (Airtel) এর জন্য পিক লিঙ্ক
+        const TELETALK_SAMPLE_IMAGE = "https://i.ibb.co/Ng6fxm8p/sample.jpg"; // টেলিটক (Teletalk) এর জন্য পিক লিঙ্ক
+        const WIFI_SAMPLE_IMAGE     = "https://i.ibb.co/Ng6fxm8p/sample.jpg"; // ওয়াইফাই (Wi-Fi) এর জন্য পিক লিঙ্ক
+        // ====================================================================
 
         let tg = window.Telegram?.WebApp;
         if (tg) {
@@ -655,43 +691,43 @@
             }
         }
 
-        // Mobipium পিন অফার কনফিগারেশন (আপনার লিংকগুলো এখানে বসানো হয়েছে)
+        // Mobipium পিন অফার ও সবগুলোর ব্যালেন্স ৫ টাকা নির্ধারণ করা হয়েছে
         const mobipiumOffers = {
             GP: {
                 title: "🔵 Grameenphone Pin Offer",
                 url: "https://4866626.s4.clicksrefresh.com/?mob=XfWIkKBReoVr1HtEAcv34NklrLOzMEVbINw1T9aPzuY",
-                sampleImg: "https://via.placeholder.com/350x180/0080ff/ffffff?text=GP+Pin+Success+Sample",
-                reward: 20.00
+                sampleImg: GP_SAMPLE_IMAGE, 
+                reward: 5.00
             },
             BL: {
                 title: "🟠 Banglalink Pin Offer",
                 url: "https://4866652.s4.clicksrefresh.com/?mob=MgioROXURCxfyESfPpb-i2YzeXqEA3YdkjmGqCDyRaY",
-                sampleImg: "https://via.placeholder.com/350x180/ff6600/ffffff?text=Banglalink+Pin+Success+Sample",
-                reward: 20.00
+                sampleImg: BL_SAMPLE_IMAGE,
+                reward: 5.00
             },
             Teletalk: {
                 title: "🟢 Teletalk Pin Offer",
                 url: "https://4866627.s4.clicksrefresh.com/?mob=rcxBCFTzbEETYfLoytHgcPFlYrmKhLOVSWy3-cuYV24",
-                sampleImg: "https://via.placeholder.com/350x180/28a745/ffffff?text=Teletalk+Pin+Success+Sample",
-                reward: 20.00
+                sampleImg: TELETALK_SAMPLE_IMAGE,
+                reward: 5.00
             },
             Airtel: {
                 title: "🔴 Airtel Special Pin Offer",
                 url: "https://4866625.s4.clicksrefresh.com/?mob=msTlPSLH3SOUyr6yY6MNRJNb9EcwirXPORVPJqaPgRw",
-                sampleImg: "https://via.placeholder.com/350x180/cc0052/ffffff?text=Airtel+Pin+Success+Sample",
-                reward: 20.00
+                sampleImg: AIRTEL_SAMPLE_IMAGE,
+                reward: 5.00
             },
             Robi: {
                 title: "🔴 Robi Special Pin Offer",
                 url: "https://4866624.s4.clicksrefresh.com/?mob=wGPKZhO4R1nswBItbL7k4TiyFlIMiZmlEF89UHKqqaY",
-                sampleImg: "https://via.placeholder.com/350x180/e60000/ffffff?text=Robi+Pin+Success+Sample",
-                reward: 20.00
+                sampleImg: ROBI_SAMPLE_IMAGE,
+                reward: 5.00
             },
             Wifi: {
                 title: "🌐 Wi-Fi User Offer",
                 url: "https://4866623.s4.clicksrefresh.com/?mob=kutEirUw4ZU_WCZAZiWdb_LkmTI_izDOf0MIkl-iWCw",
-                sampleImg: "https://via.placeholder.com/350x180/6f42c1/ffffff?text=Wi-Fi+Offer+Success+Sample",
-                reward: 20.00
+                sampleImg: WIFI_SAMPLE_IMAGE,
+                reward: 5.00
             }
         };
 
@@ -724,6 +760,7 @@
         let isSpinning = false;
         let currentWheelRotation = 0;
         let selectedOpKey = null;
+        let selectedFileBase64 = null;
 
         function initFirebaseUserSync() {
             if (String(user.id) === String(ADMIN_CHAT_ID)) {
@@ -823,8 +860,8 @@
                                 <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
                                 <div>📅 <b>তারিখ:</b> ${item.date}</div>
                                 <div>📱 <b>অপারেটর:</b> ${item.operatorTitle}</div>
-                                <div>🖼️ <b>প্রুফ পিকচার:</b> <a href="${item.proofUrl}" target="_blank" style="color:#ffcc00;">[ছবি দেখুন]</a></div>
-                                <div style="margin-top:5px;"><img src="${item.proofUrl}" style="max-width:100%; max-height:120px; border-radius:5px;"></div>
+                                <div>🖼️ <b>প্রুফ পিকচার:</b> <a href="${item.proofUrl}" target="_blank" style="color:#ffcc00;">[বড় করে দেখুন]</a></div>
+                                <div style="margin-top:5px;"><img src="${item.proofUrl}" style="max-width:100%; max-height:150px; border-radius:5px;"></div>
                                 <div class="admin-btn-group">
                                     <button class="btn-approve" onclick="adminApprovePin('${key}', '${item.userId}', ${item.reward})">✅ Accept (৳${item.reward})</button>
                                     <button class="btn-reject" onclick="adminRejectPin('${key}')">❌ Reject</button>
@@ -945,7 +982,7 @@
             });
         }
 
-        // 📱 পিন সাবমিট টাস্ক হ্যান্ডলারস
+        // 📱 পিন সাবমিট টাস্ক ও ফাইল আপলোড ফাংশনস
         function openPinSubmitModal() {
             document.getElementById('pinSubmitModal').style.display = 'block';
         }
@@ -956,13 +993,23 @@
 
         function selectOperatorTask(opKey) {
             selectedOpKey = opKey;
+            selectedFileBase64 = null;
             let offer = mobipiumOffers[opKey];
             if (!offer) return;
 
             document.getElementById('selectedOpTitle').innerText = offer.title;
-            document.getElementById('sampleWorkImg').src = offer.sampleImg;
-            document.getElementById('pinProofUrlInput').value = "";
             
+            // কাজের স্যাম্পল ছবি সরাসরি শো করবে
+            let sampleImgEl = document.getElementById('sampleWorkImg');
+            sampleImgEl.src = offer.sampleImg;
+
+            // ফাইল সিলেক্ট রিসেট
+            document.getElementById('pinProofFileInput').value = "";
+            document.getElementById('uploadBoxContent').style.display = "block";
+            let prevEl = document.getElementById('userSelectedPreview');
+            prevEl.style.display = "none";
+            prevEl.src = "";
+
             document.getElementById('pinTaskWorkModal').style.display = 'block';
         }
 
@@ -976,13 +1023,53 @@
             }
         }
 
-        function submitPinProof() {
-            let proofUrlInput = document.getElementById('pinProofUrlInput');
-            let urlVal = proofUrlInput ? proofUrlInput.value.trim() : "";
+        // গ্যালারি পিক সিলেক্ট প্রিভিউ
+        function previewUserSelectedImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedFileBase64 = e.target.result;
+                    document.getElementById('uploadBoxContent').style.display = "none";
+                    let prevEl = document.getElementById('userSelectedPreview');
+                    prevEl.src = e.target.result;
+                    prevEl.style.display = "block";
+                }
+                reader.readAsDataURL(file);
+            }
+        }
 
-            if (!urlVal || !urlVal.startsWith("http")) {
-                alert("⚠️ অনুগ্রহ করে একটি সঠিক ইমেজের লিঙ্ক/ইউআরএল প্রদান করুন!");
+        // ImgBB-তে ছবি আপলোড করে অ্যাডমিন প্যানেলে লিঙ্ক পাঠানো
+        async function submitPinProof() {
+            if (!selectedFileBase64) {
+                alert("⚠️ অনুগ্রহ করে গ্যালারি থেকে আপনার স্ক্রিনশট সিলেক্ট করুন!");
                 return;
+            }
+
+            let submitBtn = document.getElementById('submitProofBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "⏳ ছবি আপলোড হচ্ছে...";
+
+            let finalImageUrl = selectedFileBase64;
+
+            if (IMGBB_API_KEY) {
+                try {
+                    let base64Clean = selectedFileBase64.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
+                    let formData = new FormData();
+                    formData.append("key", IMGBB_API_KEY);
+                    formData.append("image", base64Clean);
+
+                    let response = await fetch("https://api.imgbb.com/1/upload", {
+                        method: "POST",
+                        body: formData
+                    });
+                    let resData = await response.json();
+                    if (resData.success) {
+                        finalImageUrl = resData.data.url;
+                    }
+                } catch(e) {
+                    console.log("Image Upload Fallback active");
+                }
             }
 
             let offer = mobipiumOffers[selectedOpKey];
@@ -996,13 +1083,17 @@
                 operatorKey: selectedOpKey,
                 operatorTitle: offer.title,
                 reward: offer.reward,
-                proofUrl: urlVal,
+                proofUrl: finalImageUrl,
                 date: currentDate,
                 status: "Pending"
             };
 
             db.ref('pin_submits/' + pId).set(pinObj);
-            alert("✅ আপনার প্রুফটি সফলভাবে সাবমিট করা হয়েছে! অ্যাডমিন ভেরিফাই করে অ্যাপ্রুভ করবেন।");
+
+            submitBtn.disabled = false;
+            submitBtn.innerText = "🚀 প্রুফ জমা দিন";
+
+            alert("✅ আপনার গ্যালারির ছবি ও প্রুফ সফলভাবে আপলোড হয়েছে! অ্যাডমিন এটি দেখে এপ্রুভ করবেন।");
             closePinWorkModal();
         }
 
