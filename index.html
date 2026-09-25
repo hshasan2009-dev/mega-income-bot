@@ -101,6 +101,15 @@
         .btn-support { background-color: #c0392b; }
         .btn-gift { background: linear-gradient(135deg, #f39c12, #d35400); color: white; }
         .btn-main { background-color: #f1c40f; color: #000; font-size: 17px; }
+        
+        /* সিম বাটন স্টাইল */
+        .btn-gp { background-color: #0080ff; color: #fff; }
+        .btn-bl { background-color: #ff6600; color: #fff; }
+        .btn-robi { background-color: #e60000; color: #fff; }
+        .btn-airtel { background-color: #cc0052; color: #fff; }
+        .btn-teletalk { background-color: #28a745; color: #fff; }
+        .btn-wifi { background-color: #6f42c1; color: #fff; }
+
         .rules-box {
             text-align: left;
             border: 1px dashed #f39c12;
@@ -150,7 +159,6 @@
             outline: none;
         }
         
-        /* প্রফেশনাল স্পিন ডিজাইন */
         .wheel-container {
             position: relative;
             width: 260px;
@@ -292,6 +300,19 @@
             cursor: pointer;
             flex: 1;
         }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 99999;
+            padding: 15px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -331,19 +352,29 @@
 
         <!-- টাস্ক পেজ -->
         <div id="task" class="page">
+            
+            <!-- ১. পিন সাবমিট টাস্ক (নতুন কার্ড) -->
+            <div class="card" style="border: 2px solid #f1c40f;">
+                <h3 style="color: #ffcc00; margin-bottom: 8px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
+                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
+                <button class="btn btn-main" onclick="openPinSubmitModal()">🚀 পিন সাবমিট কাজ শুরু করুন</button>
+            </div>
+
+            <!-- ২. রেজিস্ট্রেশন টাস্ক -->
             <div class="card">
                 <h3 style="color: #ffcc00; margin-bottom: 8px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
                 <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
                 <button class="btn btn-main" onclick="openRegTaskPage()">রেজিস্ট্রেশন শুরু করুন</button>
             </div>
 
+            <!-- ৩. ভিডিও এডস টাস্ক -->
             <div class="card">
                 <h3 style="color: #ffcc00; margin-bottom: 8px;">📺 ভিডিও এডস টাস্ক</h3>
                 <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
                 <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
             </div>
 
-            <!-- জিমেইল সেল টাস্ক -->
+            <!-- ৪. জিমেইল সেল টাস্ক -->
             <div class="card">
                 <h3 style="color: #ffcc00; margin-bottom: 5px;">📧 জিমেইল সেল টাস্ক</h3>
                 <p style="color: #ffffff; margin-bottom: 15px; font-size: 14px;">
@@ -351,49 +382,6 @@
                 </p>
                 <button class="btn btn-main" onclick="openGmailSellPage()">জিমেইল সেল করুন</button>
             </div>
-
-            <!-- জিমেইল সেল ওভারলে -->
-            <div id="gmailSellOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #06120b; z-index: 99999; padding: 20px; box-sizing: border-box; overflow-y: auto; font-family: Arial, sans-serif;">
-                <div style="text-align: right; margin-bottom: 10px;">
-                    <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer;">
-                        বন্ধ করুন ✖
-                    </button>
-                </div>
-                <h2 style="color: #ffcc00; text-align: center; font-size: 22px; margin: 10px 0 5px 0;">📧 জিমেইল সাবমিট করুন</h2>
-                <p style="color: #a5b3aa; text-align: center; font-size: 13px; margin: 0 0 25px 0;">সঠিক তথ্য সাবমিট করে ভেরিফিকেশনের জন্য অপেক্ষা করুন।</p>
-                <div style="margin: 20px 0; text-align: left; padding: 0 5px;">
-                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 14px; font-weight: bold;">আপনার জিমেইল ও পাসওয়ার্ড লিখুন:</label>
-                    <span style="color: #ffcc00; display: block; margin-bottom: 10px; font-size: 12px;">(নিয়ম: ফার্স্ট নাম:Hasan পাসওয়ার্ড:hasan#1122 নিচে আপনার তৈরি ইমেইল দিয়ে সাবমিট করুন )</span>
-                    <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com : Password" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #00a859; background-color: #0d1e15; color: #ffffff; font-size: 15px; box-sizing: border-box; outline: none;">
-                </div>
-                <div style="margin-top: 20px;">
-                    <button onclick="handleGmailSubmit()" style="background-color: #00a859; color: #ffffff; border: none; padding: 13px 0; font-size: 16px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 15px; cursor: pointer;">
-                        🚀 সাবমিট করুন
-                    </button>
-                    <button onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')" style="background-color: #17a2b8; color: #ffffff; border: none; padding: 11px 0; font-size: 14px; font-weight: bold; border-radius: 8px; width: 100%; margin-bottom: 25px; cursor: pointer;">
-                        🎬 কাজের ভিডিও দেখুন
-                    </button>
-                    <hr style="border: 0; border-top: 1px solid #1a3325; margin-bottom: 20px;">
-                    <div style="text-align: center;">
-                        <button onclick="toggleWorkHistory()" style="background-color: #495057; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">
-                            📜 আমার সাবমিট করা জিমেইল লিস্ট
-                        </button>
-                    </div>
-                </div>
-                <div id="gmailHistorySection" style="display: none; margin-top: 20px; background-color: #0d1e15; padding: 15px; border-radius: 8px; border: 1px solid #1a3325;">
-                    <h4 style="color: #ffcc00; margin: 0 0 12px 0; font-size: 14px; border-bottom: 1px solid #1a3325; padding-bottom: 5px;">আপনার জিমেইল সাবমিট রিপোর্ট:</h4>
-                    <ul id="gmailHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.8;"></ul>
-                </div>
-            </div>
-
-            <script>
-            function openGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'block'; }
-            function closeGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'none'; }
-            function toggleWorkHistory() {
-                var historyPanel = document.getElementById('gmailHistorySection');
-                historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none';
-            }
-            </script>
 
             <!-- লকি স্পিন -->
             <div class="card">
@@ -410,16 +398,94 @@
             </div>
         </div>
 
+        <!-- 📱 পিন সাবমিট সিলেক্ট মডাল / ওভারলে -->
+        <div id="pinSubmitModal" class="modal-overlay">
+            <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
+                <div style="text-align: right; margin-bottom: 10px;">
+                    <button onclick="closePinSubmitModal()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer;">বন্ধ করুন ✖</button>
+                </div>
+                <h3 style="color:#ffcc00; margin-bottom:10px;">📱 আপনার অপারেটর বেছে নিন</h3>
+                <p style="color:#ccc; font-size:12px; margin-bottom:15px;">সঠিক সিম বেছে নিয়ে পিন সাবমিট টাস্ক সম্পূর্ণ করুন:</p>
+
+                <button class="btn btn-gp" onclick="selectOperatorTask('GP')">🔵 Grameenphone Pin Offer (৳20)</button>
+                <button class="btn btn-bl" onclick="selectOperatorTask('BL')">🟠 Banglalink Pin Offer (৳20)</button>
+                <button class="btn btn-robi" onclick="selectOperatorTask('Robi')">🔴 Robi Special Pin Offer (৳20)</button>
+                <button class="btn btn-airtel" onclick="selectOperatorTask('Airtel')">🔴 Airtel Special Pin Offer (৳20)</button>
+                <button class="btn btn-teletalk" onclick="selectOperatorTask('Teletalk')">🟢 Teletalk Pin Offer (৳20)</button>
+                <button class="btn btn-wifi" onclick="selectOperatorTask('Wifi')">🌐 Wi-Fi User Offer (৳20)</button>
+
+                <hr style="border:0; border-top:1px solid #1a3325; margin:15px 0;">
+                <button onclick="togglePinHistory()" style="background:#495057; color:#fff; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-size:12px;">📜 পিন সাবমিট কাজ রিপোর্ট</button>
+                
+                <div id="pinHistorySection" style="display:none; margin-top:15px; text-align:left; background:#0d1e15; padding:10px; border-radius:8px;">
+                    <h5 style="color:#ffcc00; margin-bottom:8px;">আপনার সাবমিট করা প্রুফ লিস্ট:</h5>
+                    <ul id="pinHistoryLog" style="list-style:none; font-size:12px; line-height:1.8;"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📱 নির্দিষ্ট পিন অফার ও প্রুফ পেজ মডাল -->
+        <div id="pinTaskWorkModal" class="modal-overlay">
+            <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
+                <div style="text-align: right; margin-bottom: 10px;">
+                    <button onclick="closePinWorkModal()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer;">বন্ধ করুন ✖</button>
+                </div>
+                <h3 id="selectedOpTitle" style="color:#ffcc00; margin-bottom:10px;">অফার ডিটেইলস</h3>
+                
+                <p style="color:#fff; font-size:12px; margin-bottom:5px;"><b>নমুনা পিকচার (Sample Work Screenshot):</b></p>
+                <div style="margin-bottom:12px; border:1px dashed #27ae60; padding:5px; border-radius:8px;">
+                    <img id="sampleWorkImg" src="https://via.placeholder.com/300x150?text=Sample+Screenshot+Here" style="width:100%; max-height:160px; border-radius:6px; object-fit:contain;">
+                </div>
+
+                <button class="btn btn-main" onclick="openOpLink()" style="margin-bottom:15px;">🌐 অফার লিংকে যান (Click Here)</button>
+
+                <div class="input-group">
+                    <label>আপনার স্ক্রিনশট লিংক (ImgBB / Imgur):</label>
+                    <input type="text" id="pinProofUrlInput" class="input-control" placeholder="https://i.ibb.co/example.jpg">
+                    <span style="color:#aaa; font-size:11px; display:block; margin-top:3px;">* যেকোনো ফটো আপলোডার ওয়েবসাইটে ছবি আপলোড করে লিংকটি দিন।</span>
+                </div>
+
+                <button class="btn btn-gift" onclick="submitPinProof()">🚀 প্রুফ জমা দিন</button>
+            </div>
+        </div>
+
+        <!-- জিমেইল সেল ওভারলে -->
+        <div id="gmailSellOverlay" class="modal-overlay">
+            <div style="background:#06120b; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
+                <div style="text-align: right; margin-bottom: 10px;">
+                    <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer;">বন্ধ করুন ✖</button>
+                </div>
+                <h2 style="color: #ffcc00; text-align: center; font-size: 22px; margin: 10px 0 5px 0;">📧 জিমেইল সাবমিট করুন</h2>
+                <p style="color: #a5b3aa; text-align: center; font-size: 13px; margin: 0 0 25px 0;">সঠিক তথ্য সাবমিট করে ভেরিফিকেশনের জন্য অপেক্ষা করুন।</p>
+                <div style="margin: 20px 0; text-align: left;">
+                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 14px; font-weight: bold;">আপনার জিমেইল ও পাসওয়ার্ড লিখুন:</label>
+                    <span style="color: #ffcc00; display: block; margin-bottom: 10px; font-size: 12px;">(নিয়ম: ফার্স্ট নাম:Hasan পাসওয়ার্ড:hasan#1122 নিচে আপনার তৈরি ইমেইল দিয়ে সাবমিট করুন )</span>
+                    <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com : Password" class="input-control">
+                </div>
+                <div style="margin-top: 20px;">
+                    <button onclick="handleGmailSubmit()" class="btn btn-main" style="margin-bottom:10px;">🚀 সাবমিট করুন</button>
+                    <button onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')" class="btn btn-official" style="margin-bottom:15px;">🎬 কাজের ভিডিও দেখুন</button>
+                    <hr style="border: 0; border-top: 1px solid #1a3325; margin-bottom: 15px;">
+                    <div style="text-align: center;">
+                        <button onclick="toggleWorkHistory()" style="background-color: #495057; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 আমার সাবমিট করা জিমেইল লিস্ট</button>
+                    </div>
+                </div>
+                <div id="gmailHistorySection" style="display: none; margin-top: 20px; background-color: #0d1e15; padding: 15px; border-radius: 8px; border: 1px solid #1a3325;">
+                    <h4 style="color: #ffcc00; margin: 0 0 12px 0; font-size: 14px;">আপনার জিমেইল সাবমিট রিপোর্ট:</h4>
+                    <ul id="gmailHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.8;"></ul>
+                </div>
+            </div>
+        </div>
+
         <!-- রেজিস্ট্রেশন টাস্ক পপআপ -->
-        <div id="reg-task-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2500; justify-content:center; align-items:center;">
-            <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:380px; text-align:center;">
+        <div id="reg-task-modal" class="modal-overlay" style="align-items:center; justify-content:center;">
+            <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:380px; text-align:center; margin:auto;">
                 <h3 style="color:#ffcc00; margin-bottom:10px;">✨ রেজিস্ট্রেশন টাস্ক</h3>
                 <p style="color:#ccc; font-size:13px; margin-bottom:15px;" id="modal-instruction-text">প্রথমে লিংকে ক্লিক করে নিয়ম মেনে কাজটি সম্পূর্ণ করুন:</p>
                 
-                <button class="btn btn-official" onclick="goToRegLink()" style="margin-bottom:10px;" id="btn-goto-link">🌐 রেজিস্ট্রেশন পেজে যান</button>
-                <button class="btn btn-gift" onclick="completeRegTask()" style="margin-bottom:10px;" id="btn-complete">✅ সম্পূর্ণ হয়েছে</button>
+                <button class="btn btn-official" onclick="goToRegLink()" style="margin-bottom:10px;">🌐 রেজিস্ট্রেশন পেজে যান</button>
+                <button class="btn btn-gift" onclick="completeRegTask()" style="margin-bottom:10px;">✅ সম্পূর্ণ হয়েছে</button>
                 <button class="btn btn-support" onclick="changeRegLink()" style="margin-bottom:15px;">🔄 লিংক পরিবর্তন করুন</button>
-                
                 <button class="btn" onclick="closeRegTaskPage()" style="background:#c0392b;">বন্ধ করুন</button>
             </div>
         </div>
@@ -501,6 +567,11 @@
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
                 
+                <h4 style="color:#f1c40f; text-align:left; margin-bottom:10px;">📱 পিন সাবমিট প্রুফসমূহ (Mobipium)</h4>
+                <div id="admin-pin-list"></div>
+
+                <hr style="border:0; border-top:1px dashed #27ae60; margin:20px 0;">
+
                 <h4 style="color:#2ecc71; text-align:left; margin-bottom:10px;">💳 উইথড্র রিকোয়েস্টসমূহ</h4>
                 <div id="admin-withdraw-list"></div>
 
@@ -538,8 +609,8 @@
     </div>
 
     <!-- গিফট কোড মডেল -->
-    <div id="giftModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; justify-content:center; align-items:center;">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:350px; text-align:center;">
+    <div id="giftModal" class="modal-overlay" style="align-items:center; justify-content:center;">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:350px; text-align:center; margin:auto;">
             <h3 style="color:#ffcc00; margin-bottom:10px;">🎁 গিফট কোড রিডিম</h3>
             <p style="color:#ccc; font-size:13px; margin-bottom:15px;">আপনার প্রোমো বা গিফট কোডটি নিচে লিখুন:</p>
             <input type="text" id="gift-code-input" class="input-control" placeholder="যেমন: BONUS50" style="margin-bottom:12px; text-align:center; text-transform:uppercase;">
@@ -584,36 +655,51 @@
             }
         }
 
+        // Mobipium পিন অফার কনফিগারেশন (আপনার লিংকগুলো এখানে বসানো হয়েছে)
+        const mobipiumOffers = {
+            GP: {
+                title: "🔵 Grameenphone Pin Offer",
+                url: "https://4866626.s4.clicksrefresh.com/?mob=XfWIkKBReoVr1HtEAcv34NklrLOzMEVbINw1T9aPzuY",
+                sampleImg: "https://via.placeholder.com/350x180/0080ff/ffffff?text=GP+Pin+Success+Sample",
+                reward: 20.00
+            },
+            BL: {
+                title: "🟠 Banglalink Pin Offer",
+                url: "https://4866652.s4.clicksrefresh.com/?mob=MgioROXURCxfyESfPpb-i2YzeXqEA3YdkjmGqCDyRaY",
+                sampleImg: "https://via.placeholder.com/350x180/ff6600/ffffff?text=Banglalink+Pin+Success+Sample",
+                reward: 20.00
+            },
+            Teletalk: {
+                title: "🟢 Teletalk Pin Offer",
+                url: "https://4866627.s4.clicksrefresh.com/?mob=rcxBCFTzbEETYfLoytHgcPFlYrmKhLOVSWy3-cuYV24",
+                sampleImg: "https://via.placeholder.com/350x180/28a745/ffffff?text=Teletalk+Pin+Success+Sample",
+                reward: 20.00
+            },
+            Airtel: {
+                title: "🔴 Airtel Special Pin Offer",
+                url: "https://4866625.s4.clicksrefresh.com/?mob=msTlPSLH3SOUyr6yY6MNRJNb9EcwirXPORVPJqaPgRw",
+                sampleImg: "https://via.placeholder.com/350x180/cc0052/ffffff?text=Airtel+Pin+Success+Sample",
+                reward: 20.00
+            },
+            Robi: {
+                title: "🔴 Robi Special Pin Offer",
+                url: "https://4866624.s4.clicksrefresh.com/?mob=wGPKZhO4R1nswBItbL7k4TiyFlIMiZmlEF89UHKqqaY",
+                sampleImg: "https://via.placeholder.com/350x180/e60000/ffffff?text=Robi+Pin+Success+Sample",
+                reward: 20.00
+            },
+            Wifi: {
+                title: "🌐 Wi-Fi User Offer",
+                url: "https://4866623.s4.clicksrefresh.com/?mob=kutEirUw4ZU_WCZAZiWdb_LkmTI_izDOf0MIkl-iWCw",
+                sampleImg: "https://via.placeholder.com/350x180/6f42c1/ffffff?text=Wi-Fi+Offer+Success+Sample",
+                reward: 20.00
+            }
+        };
+
         const regTasksList = [
             { usd: 0.02, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" },
             { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" },
             { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=73397&tracking_id=2009" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=36504&tracking_id=2009" },
-            { usd: 0.01, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" },
-            { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54802&tracking_id=2009" },
-            { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75314&tracking_id=2009" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75302&tracking_id=2009" },
-            { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75308&tracking_id=2009" },
-            { usd: 0.02, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75310&tracking_id=2009" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54747&tracking_id=2009" },
-            { usd: 0.05, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=36521&tracking_id=200" },
-            { usd: 0.05, url: "https://trianglerockers.com/1911058/2009" },
-            { usd: 0.05, url: "https://trianglerockers.com/1911060/2009" },
-            { usd: 0.06, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=73397&tracking_id=2009" },
-            { usd: 0.06, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75314&tracking_id=2009" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=75302&tracking_id=2009" },
-            { usd: 0.04, url: "https://www.cpagrip.com/common/offer_feed_rss.php?user_id=2553075&key=dfb55df489650680df75ba377d868beb&ip=&tracking_id=" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" },
-            { usd: 0.099, url: "https://youtube.com/shorts/N6xLxeCEpK4?si=F4ivr6r2SYfZ8DdU" },
-            { usd: 0.05, url: "https://youtube.com/@gaminghasan2009?si=kXhGh58C2_OZUppU" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=74923&tracking_id=hasan" },
-            { usd: 0.06, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=72846&tracking_id=hasan" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54747&tracking_id=hasan" },
-            { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=74968&tracking_id=hasan" },
-            { usd: 0.02, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=71849&tracking_id=hasan" },
-            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=74796&tracking_id=hasan" }
+            { usd: 0.04, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=36504&tracking_id=2009" }
         ];
 
         let user = tg?.initDataUnsafe?.user;
@@ -631,11 +717,13 @@
         let completedTasksCount = 0;
         let historyData = [];
         let gmailHistoryData = [];
+        let pinHistoryData = [];
 
         let currentTaskIndex = 0;
         let taskOpenTimestamp = 0;
         let isSpinning = false;
         let currentWheelRotation = 0;
+        let selectedOpKey = null;
 
         function initFirebaseUserSync() {
             if (String(user.id) === String(ADMIN_CHAT_ID)) {
@@ -696,6 +784,16 @@
                 });
                 renderGmailHistory();
             });
+
+            db.ref('pin_submits').orderByChild('userId').equalTo(user.id).on('value', (snapshot) => {
+                pinHistoryData = [];
+                snapshot.forEach((childSnap) => {
+                    let item = childSnap.val();
+                    item.p_id = childSnap.key;
+                    pinHistoryData.unshift(item);
+                });
+                renderPinHistory();
+            });
         }
 
         function updateFirebaseProfile() {
@@ -709,6 +807,38 @@
         }
 
         function listenAdminData() {
+            db.ref('pin_submits').on('value', (snapshot) => {
+                let container = document.getElementById("admin-pin-list");
+                if (!container) return;
+                container.innerHTML = "";
+
+                let hasPending = false;
+                snapshot.forEach((childSnap) => {
+                    let item = childSnap.val();
+                    let key = childSnap.key;
+                    if (item.status === "Pending") {
+                        hasPending = true;
+                        container.innerHTML += `
+                            <div class="admin-item-card">
+                                <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                <div>📅 <b>তারিখ:</b> ${item.date}</div>
+                                <div>📱 <b>অপারেটর:</b> ${item.operatorTitle}</div>
+                                <div>🖼️ <b>প্রুফ পিকচার:</b> <a href="${item.proofUrl}" target="_blank" style="color:#ffcc00;">[ছবি দেখুন]</a></div>
+                                <div style="margin-top:5px;"><img src="${item.proofUrl}" style="max-width:100%; max-height:120px; border-radius:5px;"></div>
+                                <div class="admin-btn-group">
+                                    <button class="btn-approve" onclick="adminApprovePin('${key}', '${item.userId}', ${item.reward})">✅ Accept (৳${item.reward})</button>
+                                    <button class="btn-reject" onclick="adminRejectPin('${key}')">❌ Reject</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (!hasPending) {
+                    container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং পিন সাবমিট রিকোয়েস্ট নেই।</p>";
+                }
+            });
+
             db.ref('withdrawals').on('value', (snapshot) => {
                 let container = document.getElementById("admin-withdraw-list");
                 if (!container) return;
@@ -771,6 +901,21 @@
             });
         }
 
+        function adminApprovePin(key, targetUserId, reward) {
+            db.ref('pin_submits/' + key).update({ status: "Success" }).then(() => {
+                db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + parseFloat(reward));
+                db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
+                giveReferralCommissionForUser(targetUserId, reward);
+                alert("✅ পিন সাবমিট টাস্ক সফলভাবে Accept করা হয়েছে!");
+            });
+        }
+
+        function adminRejectPin(key) {
+            db.ref('pin_submits/' + key).update({ status: "Rejected" }).then(() => {
+                alert("❌ পিন সাবমিট প্রুফ রিজেক্ট করা হয়েছে!");
+            });
+        }
+
         function adminApproveWithdraw(key) {
             db.ref('withdrawals/' + key).update({ status: "Success" }).then(() => {
                 alert("✅ উইথড্র রিকোয়েস্ট এপ্রুভ করা হয়েছে!");
@@ -780,25 +925,112 @@
         function adminRejectWithdraw(key, targetUserId, amount) {
             db.ref('withdrawals/' + key).update({ status: "Rejected" }).then(() => {
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + parseFloat(amount));
-                alert("❌ উইথড্র রিজেক্ট করা হয়েছে এবং ইউজারের টাকা ফেরত দেওয়া হয়েছে!");
+                alert("❌ উইথড্র রিজেক্ট করা হয়েছে!");
             });
         }
 
         function adminApproveGmail(key, targetUserId) {
             let gmailAmount = 15.00;
-
             db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount }).then(() => {
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + gmailAmount);
                 db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
                 giveReferralCommissionForUser(targetUserId, gmailAmount);
-
-                alert("✅ জিমেইল টাস্ক সফল হয়েছে, ইউজার ১৫ টাকা এবং তার রেফারার ২৫% কমিশন পেয়েছে!");
+                alert("✅ জিমেইল টাস্ক সফল হয়েছে!");
             });
         }
 
         function adminRejectGmail(key) {
             db.ref('gmail_submits/' + key).update({ status: "Rejected" }).then(() => {
                 alert("❌ জিমেইল টাস্ক রিজেক্ট করা হয়েছে!");
+            });
+        }
+
+        // 📱 পিন সাবমিট টাস্ক হ্যান্ডলারস
+        function openPinSubmitModal() {
+            document.getElementById('pinSubmitModal').style.display = 'block';
+        }
+
+        function closePinSubmitModal() {
+            document.getElementById('pinSubmitModal').style.display = 'none';
+        }
+
+        function selectOperatorTask(opKey) {
+            selectedOpKey = opKey;
+            let offer = mobipiumOffers[opKey];
+            if (!offer) return;
+
+            document.getElementById('selectedOpTitle').innerText = offer.title;
+            document.getElementById('sampleWorkImg').src = offer.sampleImg;
+            document.getElementById('pinProofUrlInput').value = "";
+            
+            document.getElementById('pinTaskWorkModal').style.display = 'block';
+        }
+
+        function closePinWorkModal() {
+            document.getElementById('pinTaskWorkModal').style.display = 'none';
+        }
+
+        function openOpLink() {
+            if (selectedOpKey && mobipiumOffers[selectedOpKey]) {
+                openTelegramLink(mobipiumOffers[selectedOpKey].url);
+            }
+        }
+
+        function submitPinProof() {
+            let proofUrlInput = document.getElementById('pinProofUrlInput');
+            let urlVal = proofUrlInput ? proofUrlInput.value.trim() : "";
+
+            if (!urlVal || !urlVal.startsWith("http")) {
+                alert("⚠️ অনুগ্রহ করে একটি সঠিক ইমেজের লিঙ্ক/ইউআরএল প্রদান করুন!");
+                return;
+            }
+
+            let offer = mobipiumOffers[selectedOpKey];
+            let pId = "PIN" + Date.now();
+            let nowDate = new Date();
+            let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+
+            let pinObj = {
+                userId: user.id,
+                userName: user.first_name,
+                operatorKey: selectedOpKey,
+                operatorTitle: offer.title,
+                reward: offer.reward,
+                proofUrl: urlVal,
+                date: currentDate,
+                status: "Pending"
+            };
+
+            db.ref('pin_submits/' + pId).set(pinObj);
+            alert("✅ আপনার প্রুফটি সফলভাবে সাবমিট করা হয়েছে! অ্যাডমিন ভেরিফাই করে অ্যাপ্রুভ করবেন।");
+            closePinWorkModal();
+        }
+
+        function togglePinHistory() {
+            var panel = document.getElementById('pinHistorySection');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function renderPinHistory() {
+            let historyLog = document.getElementById('pinHistoryLog');
+            if (!historyLog) return;
+
+            historyLog.innerHTML = "";
+            if (pinHistoryData.length === 0) {
+                historyLog.innerHTML = "<li style='color: #aaa; padding: 5px 0;'>কোনো পিন সাবমিট কাজ জমা দেওয়া হয়নি।</li>";
+                return;
+            }
+
+            pinHistoryData.forEach(item => {
+                let badge = `<span style='color:#f1c40f;'>Pending</span>`;
+                if (item.status === "Success") badge = `<span style='color:#2ecc71;'>Success (+৳${item.reward})</span>`;
+                if (item.status === "Rejected") badge = `<span style='color:#e74c3c;'>Rejected</span>`;
+
+                let li = document.createElement('li');
+                li.style.borderBottom = "1px dashed #1a3325";
+                li.style.padding = "5px 0";
+                li.innerHTML = `<b>${item.operatorTitle}</b> -${badge}`;
+                historyLog.appendChild(li);
             });
         }
 
@@ -823,7 +1055,7 @@
             currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
             taskOpenTimestamp = 0;
             updateFirebaseProfile();
-            alert(`🔄 পরবর্তী টাস্ক লিংক লোড করা হয়েছে! (টাস্ক নম্বর: ${currentTaskIndex + 1}/${regTasksList.length})\n\nএখন 'রেজিস্ট্রেশন পেজে যান' এ ক্লিক করুন।`);
+            alert(`🔄 পরবর্তী টাস্ক লিংক লোড করা হয়েছে!`);
         }
 
         function completeRegTask() {
@@ -836,17 +1068,16 @@
             let rewardInBDT = (task.usd * 100) * 0.50; 
             
             currentBalance += rewardInBDT;
-            completedTasksCount += 1; // টাস্ক কাউন্ট বৃদ্ধি
+            completedTasksCount += 1;
             
             giveReferralCommission(rewardInBDT);
-            
             taskOpenTimestamp = 0;
             currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
 
             updateFirebaseProfile();
             updateUI();
 
-            alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}\nপরবর্তী কাজের লিংক স্বয়ংক্রিয়ভাবে আপডেট করা হয়েছে।`);
+            alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}`);
             closeRegTaskPage();
         }
 
@@ -856,7 +1087,6 @@
             "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
         };
 
-        // প্রফেশনাল স্পিন স্লাইস ও কন্ট্রোলড ওয়েট (কম অ্যামাউন্টে থামার সম্ভাবনা বেশি)
         const spinPrizes = [
             { amount: 0.10, label: "৳ 0.10", color: "#16a085", weight: 65 },
             { amount: 0.25, label: "৳ 0.25", color: "#27ae60", weight: 20 },
@@ -874,7 +1104,6 @@
             drawProfessionalWheel();
         };
 
-        // প্রফেশনাল হুইল ড্রয়িং ফাংশন
         function drawProfessionalWheel() {
             const canvas = document.getElementById("wheel-canvas");
             if (!canvas) return;
@@ -889,8 +1118,6 @@
 
             spinPrizes.forEach((slice, i) => {
                 const angle = i * sliceAngle;
-                
-                // স্লাইস ব্যাকগ্রাউন্ড
                 ctx.beginPath();
                 ctx.fillStyle = slice.color;
                 ctx.moveTo(centerX, centerY);
@@ -898,12 +1125,10 @@
                 ctx.lineTo(centerX, centerY);
                 ctx.fill();
 
-                // স্লাইস বর্ডার
                 ctx.lineWidth = 2;
                 ctx.strokeStyle = "#ffffff";
                 ctx.stroke();
 
-                // টেক্সট রোটেশন ও ড্রয়িং
                 ctx.save();
                 ctx.translate(centerX, centerY);
                 ctx.rotate(angle + sliceAngle / 2);
@@ -938,7 +1163,6 @@
             if (refEl) refEl.innerText = referCount;
             if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
 
-            // ৫টি টাস্ক শর্ত চেক
             let needed = 5 - (completedTasksCount % 5);
             if (completedTasksCount > 0 && completedTasksCount % 5 === 0) {
                 needed = 0;
@@ -1020,7 +1244,7 @@
                     AdController.show().then(() => {
                         let earned = 1.00;
                         currentBalance += earned;
-                        completedTasksCount += 1; // টাস্ক কাউন্ট বৃদ্ধি
+                        completedTasksCount += 1;
                         giveReferralCommission(earned);
                         updateFirebaseProfile();
                         updateUI();
@@ -1036,7 +1260,6 @@
             }
         }
 
-        // কন্ট্রোলড স্পিন অ্যালগরিদম (কম অ্যামাউন্ট বেশি আসার লজিক)
         function playSpinTask() {
             let needed = 5 - (completedTasksCount % 5);
             if (completedTasksCount > 0 && completedTasksCount % 5 === 0) {
@@ -1054,7 +1277,6 @@
             let spinBtn = document.getElementById("spin-btn-element");
             if (spinBtn) { spinBtn.disabled = true; spinBtn.innerText = "🌀 ঘুরছে..."; }
 
-            // ওয়েট অনুযায়ী কম অ্যামাউন্ট সিলেক্ট করার লজিক
             let totalWeight = spinPrizes.reduce((sum, item) => sum + item.weight, 0);
             let randomNum = Math.random() * totalWeight;
             let currentWeightSum = 0;
@@ -1072,7 +1294,6 @@
             let numSlices = spinPrizes.length;
             let sliceDeg = 360 / numSlices;
             
-            // রোটেশন ক্যালকুলেশন
             let targetSliceAngle = (numSlices - selectedIndex) * sliceDeg - (sliceDeg / 2);
             let extraRounds = 360 * 5; 
             currentWheelRotation += extraRounds + (targetSliceAngle - (currentWheelRotation % 360));
@@ -1084,7 +1305,6 @@
             
             setTimeout(() => {
                 currentBalance += chosenPrize.amount;
-                // স্পিন সফল হলে টাস্ক কাউন্ট রিসেট করার মতো অ্যাডজাস্টমেন্ট
                 completedTasksCount -= 5;
                 if (completedTasksCount < 0) completedTasksCount = 0;
 
@@ -1161,9 +1381,16 @@
 
             db.ref('withdrawals/' + wdId).set(withdrawObj);
 
-            alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!\nপরিমাণ: ৳${amount}\nফি কেটে পাবেন: ৳${netAmount.toFixed(2)}`);
+            alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!`);
             accountEl.value = "";
             amountEl.value = "";
+        }
+
+        function openGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'block'; }
+        function closeGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'none'; }
+        function toggleWorkHistory() {
+            var historyPanel = document.getElementById('gmailHistorySection');
+            historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none';
         }
 
         function handleGmailSubmit() {
@@ -1207,11 +1434,11 @@
                 let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
                 
                 if (item.status === "Pending") {
-                    statusBadge = `<div style="text-align: right;"><span style='color: #f1c40f; font-weight: bold; font-size: 14px;'>Pending</span></div>`;
+                    statusBadge = `<div style="text-align: right;"><span style='color: #f1c40f; font-weight: bold;'>Pending</span></div>`;
                 } else if (item.status === "Success" || item.status === "Approved") {
-                    statusBadge = `<div style="text-align: right;"><span style='color: #2ecc71; font-weight: bold; font-size: 14px;'>Success</span><br><small style='color: #2ecc71; font-size: 11px;'>+৳${displayAmount}</small></div>`;
+                    statusBadge = `<div style="text-align: right;"><span style='color: #2ecc71; font-weight: bold;'>Success (+৳${displayAmount})</span></div>`;
                 } else {
-                    statusBadge = `<div style="text-align: right;"><span style='color: #e74c3c; font-weight: bold; font-size: 14px;'>Rejected</span></div>`;
+                    statusBadge = `<div style="text-align: right;"><span style='color: #e74c3c; font-weight: bold;'>Rejected</span></div>`;
                 }
                 
                 let li = document.createElement('li');
@@ -1221,9 +1448,7 @@
                 li.style.justifyContent = "space-between";
                 li.style.alignItems = "center";
                 
-                li.innerHTML = `
-                    <span style='color: #ffffff; font-size: 14px;'>📧 ${item.info}</span>${statusBadge}
-                `;
+                li.innerHTML = `<span style='color: #ffffff;'>📧 ${item.info}</span>${statusBadge}`;
                 gmailHistoryLog.appendChild(li);
             });
         } 
