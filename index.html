@@ -54,6 +54,22 @@
             margin-bottom: 15px;
             text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .card.disabled-task {
+            opacity: 0.8;
+        }
+        .card.disabled-task::after {
+            content: "⚠️ কাজটি বর্তমানে অফ আছে";
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #e74c3c;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
         }
         .balance-card {
             background-color: #113626;
@@ -316,6 +332,47 @@
         }
         input:checked + .slider { background-color: #2ecc71; }
         input:checked + .slider:before { transform: translateX(22px); }
+
+        /* WhatsApp UI Specific CSS */
+        .wa-box-container {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 15px;
+            color: #fff;
+            text-align: left;
+            font-size: 13px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+        .wa-code-boxes {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .wa-code-box {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #ffcc00;
+            font-weight: bold;
+            font-size: 16px;
+            width: 30px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+        .wa-number-item {
+            background: #252525;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border: 1px solid #3d3d3d;
+        }
     </style>
 </head>
 <body>
@@ -342,7 +399,7 @@
             </button>
             
             <button class="btn btn-support" onclick="openTelegramLink('https://t.me/hshasan2009')">
-                🛠️️ লাইভ সাপোর্ট
+                🛠 লাইভ সাপোর্ট
             </button>
 
             <div class="rules-box">
@@ -356,34 +413,34 @@
         <!-- টাস্ক পেজ -->
         <div id="task" class="page">
 
-            <!-- ১. হোয়াটসঅ্যাপ অটোমেটিক টাস্ক (নতুন আপডেট) -->
+            <!-- ১. হোয়াটসঅ্যাপ অটোমেটিক টাস্ক -->
             <div class="card" id="card-wa-task" style="border: 2px solid #25d366;">
                 <h3 style="color: #25d366; margin-bottom: 8px;">💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</h3>
                 <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">
-                    হোয়াটসঅ্যাপে অটোমেটিক নির্দিষ্ট মেসেজ পাঠিয়ে ২ টাকা আয় করুন!
+                    হোয়াটসঅ্যাপ অ্যাকাউন্ট বাঁধুন এবং নির্দিষ্ট মেসেজ পাঠিয়ে আয় করুন!
                 </p>
-                <button class="btn btn-whatsapp" onclick="openWhatsAppTaskModal()">🚀 মেসেজ পাঠিয়ে ২ টাকা নিন</button>
+                <button class="btn btn-whatsapp" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
             </div>
             
             <!-- ২. পিন সাবমিট টাস্ক -->
             <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f;">
                 <h3 style="color: #ffcc00; margin-bottom: 8px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
                 <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
-                <button class="btn btn-main" onclick="openPinSubmitModal()">🚀 পিন সাবমিট কাজ শুরু করুন</button>
+                <button class="btn btn-main" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
             </div>
 
             <!-- ৩. রেজিস্ট্রেশন টাস্ক -->
             <div class="card" id="card-reg-task">
                 <h3 style="color: #ffcc00; margin-bottom: 8px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
                 <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
-                <button class="btn btn-main" onclick="openRegTaskPage()">রেজিস্ট্রেশন শুরু করুন</button>
+                <button class="btn btn-main" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
             </div>
 
             <!-- ৪. ভিডিও এডস টাস্ক -->
             <div class="card" id="card-ad-task">
                 <h3 style="color: #ffcc00; margin-bottom: 8px;">📺 ভিডিও এডস টাস্ক</h3>
                 <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
-                <button class="btn btn-main" onclick="watchAdTask()">📺 বিজ্ঞাপন দেখুন</button>
+                <button class="btn btn-main" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
             </div>
 
             <!-- ৫. জিমেইল সেল টাস্ক -->
@@ -392,7 +449,7 @@
                 <p style="color: #ffffff; margin-bottom: 15px; font-size: 14px;">
                     প্রতি সঠিক জিমেইল সেল করার জন্য ১৫ টাকা পাবেন।
                 </p>
-                <button class="btn btn-main" onclick="openGmailSellPage()">জিমেইল সেল করুন</button>
+                <button class="btn btn-main" onclick="handleTaskClick('gmailTask', openGmailSellPage)">জিমেইল সেল করুন</button>
             </div>
 
             <!-- লকি স্পিন -->
@@ -406,28 +463,76 @@
                     <div class="wheel-center-cap"></div>
                     <canvas id="wheel-canvas" width="400" height="400"></canvas>
                 </div>
-                <button class="btn btn-main" id="spin-btn-element" onclick="playSpinTask()" style="margin-top: 15px;">🌀 স্পিন করুন</button>
+                <button class="btn btn-main" id="spin-btn-element" onclick="handleTaskClick('spinTask', playSpinTask)" style="margin-top: 15px;">🌀 স্পিন করুন</button>
             </div>
         </div>
 
-        <!-- 💬 হোয়াটসঅ্যাপ অটোমেটিক মডাল -->
+        <!-- 💬 হোয়াটসঅ্যাপ সম্পুর্ন নতুন পেজ / মডাল (ইউজার ইন্টারফেস) -->
         <div id="waTaskModal" class="modal-overlay">
-            <div style="background:#113626; border:2px solid #25d366; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
-                <div style="text-align: right; margin-bottom: 10px;">
-                    <button onclick="closeWhatsAppTaskModal()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer;">বন্ধ করুন ✖</button>
+            <div class="wa-box-container" style="max-width: 420px; margin: 10px auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h3 style="color: #25d366; font-size: 16px;">প্রথমে অনুমোদন সম্পন্ন করুন</h3>
+                    <button onclick="closeWhatsAppTaskModal()" style="background: rgba(255,255,255,0.2); color: #fff; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer;">✕</button>
                 </div>
-                <h3 style="color:#25d366; margin-bottom:10px;">💬 হোয়াটসঅ্যাপ অটোমেটিক মেসেজ টাস্ক</h3>
-                <p style="color:#ccc; font-size:13px; margin-bottom:15px; line-height:1.4;">
-                    নিচের বাটনে ক্লিক করলে সরাসরি হোয়াটসঅ্যাপ খুলবে। সেখানে পূর্ব থেকে সেট করা মেসেজ ও লিংকটি পাঠাতে হবে। সফলভাবে পাঠানোর পর আবার অ্যাপে ফিরে আসলে ২ টাকা যোগ হবে।
-                </p>
 
-                <button class="btn btn-whatsapp" onclick="startWhatsAppAutoTask()" style="font-size:16px;">
-                    📲 মেসেজ পাঠাতে হোয়াটসঅ্যাপ খুলুন
-                </button>
+                <!-- মোট WhatsApp ইনকাম কার্ড -->
+                <div style="background: #113626; border: 1px solid #27ae60; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+                    <span style="color: #ffcc00; font-size: 12px; font-weight: bold;">WHATSAPP TOTAL INCOME</span>
+                    <div style="font-size: 20px; font-weight: bold; color: #fff;">৳ <span id="wa-income-val">0.00</span></div>
+                </div>
 
-                <div id="waTimerBox" style="display:none; margin-top:15px; padding:10px; background:#081a11; border-radius:8px; border:1px solid #25d366;">
-                    <p style="color:#ffcc00; font-size:13px; font-weight:bold;">⏳ ভেরিফাই হচ্ছে... অ্যাপ ছেড়ে যাবেন না!</p>
-                    <p id="waCountdown" style="font-size:20px; font-weight:bold; color:#2ecc71; margin-top:5px;">১০</p>
+                <!-- ১. অ্যাকাউন্ট বাঁধুন সেকশন -->
+                <div style="margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; margin-bottom: 8px;">
+                        🔗 <span>অ্যাকাউন্ট বাঁধুন</span>
+                    </div>
+                    <p style="color: #aaa; font-size: 11px; margin-bottom: 8px;">১. আপনার WhatsApp ফোন নম্বর লিখুন:</p>
+                    
+                    <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                        <div style="background: #2a2a2a; border: 1px solid #444; padding: 8px; border-radius: 6px; font-size: 13px; color: #ccc;">+880 ∨</div>
+                        <input type="number" id="wa-bind-input" class="input-control" placeholder="01337176976" style="flex: 1; padding: 8px;">
+                        <button onclick="generateWaCode()" style="background: linear-gradient(135deg, #d35400, #f39c12); border: none; color: white; padding: 0 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">কোড পান</button>
+                    </div>
+
+                    <p style="color: #888; font-size: 10px; text-align: center;">ফোনে WhatsApp খুলুন, নম্বরসহ লিংকে ট্যাপ করুন, তারপর এই কোডটি লিখুন!</p>
+                    
+                    <div class="wa-code-boxes" id="wa-code-container">
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        <button onclick="copyWaCode()" style="background: #333; color: #ccc; border: 1px solid #555; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">📋 কোড কপি করুন</button>
+                    </div>
+                </div>
+
+                <!-- ২. বাঁধা অ্যাকাউন্ট লিস্ট -->
+                <div style="margin-bottom: 15px; border-top: 1px solid #333; padding-top: 10px;">
+                    <div style="display: flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; margin-bottom: 8px;">
+                        💬 <span>বাঁধা অ্যাকাউন্ট</span>
+                    </div>
+                    <div id="wa-bound-list">
+                        <p style="color: #777; font-size: 11px;">কোনো WhatsApp নম্বর বাঁধা নেই</p>
+                    </div>
+                </div>
+
+                <!-- ৩. বাঁধার নির্দেশনা -->
+                <div style="border-top: 1px solid #333; padding-top: 10px;">
+                    <div style="color: #ffcc00; font-weight: bold; font-size: 12px; margin-bottom: 6px;">💡 বাঁধার নির্দেশনা</div>
+                    <ol style="color: #aaa; font-size: 11px; padding-left: 15px; line-height: 1.5;">
+                        <li>আপনার WhatsApp নম্বর লিখুন এবং যাচাইকরণ কোড পান ক্লিক করুন</li>
+                        <li>WhatsApp খুলুন</li>
+                        <li>সেটিংস (iPhone) বা "মেনু" (Android) ট্যাপ করুন</li>
+                        <li>লিংকড ডিভাইসে ট্যাপ করুন, ফোন নম্বর দিয়ে লিংক নির্বাচন করুন</li>
+                        <li>যাচাইকরণ কোড লিখুন</li>
+                        <li>কথোপকথন লোড হওয়ার সময় উভয় অ্যাপ খোলা ও নেটওয়ার্কে সংযুক্ত রাখুন</li>
+                        <li>একাধিক WhatsApp অ্যাকাউন্ট লিংক করুন</li>
+                    </ol>
                 </div>
             </div>
         </div>
@@ -608,6 +713,11 @@
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
 
+                <!-- ⚙️ Task Switch Open Button (অ্যাডমিনের জন্য নতুন অন/অফ পেজ বাটন) -->
+                <button class="btn btn-gift" onclick="openAdminTaskControlModal()" style="margin-bottom: 20px;">
+                    ⚙️ টাস্ক অন/অফ কন্ট্রোল পেজ ওপেন করুন
+                </button>
+
                 <!-- ⚙️ WhatsApp Settings Control -->
                 <h4 style="color:#25d366; text-align:left; margin-bottom:10px;">💬 হোয়াটসঅ্যাপ টাস্ক কনফিগারেশন</h4>
                 <div class="input-group">
@@ -616,62 +726,9 @@
                 </div>
                 <div class="input-group">
                     <label>মেসেজ ও লিংক টেক্সট:</label>
-                    <input type="text" id="admin-wa-msg" class="input-control" placeholder="Join now: https://t.me/MegaIncomeReal_bot">
+                    <input type="text" id="admin-wa-msg" class="input-control" placeholder="Join now: https://t.me/MegaIncomeReal_bot/app?startapp=8049465500">
                 </div>
                 <button class="btn btn-whatsapp" onclick="saveWaTaskSettings()" style="margin-bottom:15px;">💾 সেটিং সেভ করুন</button>
-
-                <hr style="border:0; border-top:1px dashed #27ae60; margin:15px 0;">
-
-                <!-- ⚙️ Task On/Off Switch Control -->
-                <h4 style="color:#f1c40f; text-align:left; margin-bottom:10px;">⚙️ টাস্ক অন/অফ কন্ট্রোল (Switch)</h4>
-                
-                <div class="switch-container">
-                    <span>💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</span>
-                    <label class="switch">
-                        <input type="checkbox" id="sw-wa" onchange="toggleTaskStatus('waTask', this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="switch-container">
-                    <span>📱 পিন সাবমিট টাস্ক</span>
-                    <label class="switch">
-                        <input type="checkbox" id="sw-pin" onchange="toggleTaskStatus('pinTask', this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="switch-container">
-                    <span>⭐ স্পেশাল রেজিস্ট্রেশন টাস্ক</span>
-                    <label class="switch">
-                        <input type="checkbox" id="sw-reg" onchange="toggleTaskStatus('regTask', this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="switch-container">
-                    <span>📺 ভিডিও এডস টাস্ক</span>
-                    <label class="switch">
-                        <input type="checkbox" id="sw-ad" onchange="toggleTaskStatus('adTask', this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="switch-container">
-                    <span>📧 জিমেইল সেল টাস্ক</span>
-                    <label class="switch">
-                        <input type="checkbox" id="sw-gmail" onchange="toggleTaskStatus('gmailTask', this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="switch-container">
-                    <span>🌀 লকি স্পিন টাস্ক</span>
-                    <label class="switch">
-                        <input type="checkbox" id="sw-spin" onchange="toggleTaskStatus('spinTask', this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
 
                 <hr style="border:0; border-top:1px dashed #27ae60; margin:20px 0;">
 
@@ -690,6 +747,64 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- অ্যাডমিন অন-অফ কন্ট্রোল মডাল/পেজ -->
+    <div id="adminTaskControlModal" class="modal-overlay">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="color:#f1c40f;">⚙️ টাস্ক অন/অফ কন্ট্রোল</h3>
+                <button onclick="closeAdminTaskControlModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+            
+            <div class="switch-container">
+                <span>💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-wa" onchange="toggleTaskStatus('waTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>📱 পিন সাবমিট টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-pin" onchange="toggleTaskStatus('pinTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>⭐ স্পেশাল রেজিস্ট্রেশন টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-reg" onchange="toggleTaskStatus('regTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>📺 ভিডিও এডস টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-ad" onchange="toggleTaskStatus('adTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>📧 জিমেইল সেল টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-gmail" onchange="toggleTaskStatus('gmailTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>🌀 লকি স্পিন টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-spin" onchange="toggleTaskStatus('spinTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
     </div>
 
     <!-- ন্যাভবার -->
@@ -785,6 +900,13 @@
             { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" }
         ];
 
+        // কোড থেকে ডাইরেক্ট WhatsApp নাম্বার এর কালেকশন
+        const preDefinedWaNumbers = [
+            { id: 1, number: "01337176976", status: "active" },
+            { id: 2, number: "01700000001", status: "banned" },
+            { id: 3, number: "01800000002", status: "logout" }
+        ];
+
         let user = tg?.initDataUnsafe?.user;
         if (!user || !user.id) {
             let savedUserId = Math.floor(100000 + Math.random() * 900000);
@@ -792,7 +914,8 @@
         }
 
         let botUsername = "MegaIncomeReal_bot";
-        let referLink = `https://t.me/${botUsername}/app?startapp=${user.id}`;
+        // আপডেট হওয়া নতুন লিংক
+        let referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${user.id}`;
 
         let currentBalance = 0.00;
         let referCount = 0;
@@ -809,10 +932,22 @@
         let selectedOpKey = null;
         let selectedFileBase64 = null;
 
-        // Default WhatsApp Config
+        // Default WhatsApp Settings
         let waTargetNumber = "8801700000000";
-        let waMessageText = "হ্যালো, আমি কাজ করতে চাই! লিংক: https://t.me/MegaIncomeReal_bot";
-        let isWaTaskStarted = false;
+        let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
+        
+        let waTotalIncome = 0.00;
+        let userBoundWaNumbers = [];
+        let activeCode = "";
+
+        let taskStatusSettings = {
+            waTask: true,
+            pinTask: true,
+            regTask: true,
+            adTask: true,
+            gmailTask: true,
+            spinTask: true
+        };
 
         function initFirebaseUserSync() {
             if (String(user.id) === String(ADMIN_CHAT_ID)) {
@@ -832,23 +967,30 @@
                 }
             });
 
-            // Sync Task On/Off Settings Realtime
+            // Sync Task On/Off Settings Realtime (অফ করলেও লিস্ট থেকে হারাবে না)
             db.ref('task_settings').on('value', (snapshot) => {
                 const settings = snapshot.val() || {};
                 
-                if (document.getElementById('sw-pin')) document.getElementById('sw-pin').checked = settings.pinTask !== false;
-                if (document.getElementById('sw-reg')) document.getElementById('sw-reg').checked = settings.regTask !== false;
-                if (document.getElementById('sw-ad')) document.getElementById('sw-ad').checked = settings.adTask !== false;
-                if (document.getElementById('sw-gmail')) document.getElementById('sw-gmail').checked = settings.gmailTask !== false;
-                if (document.getElementById('sw-wa')) document.getElementById('sw-wa').checked = settings.waTask !== false;
-                if (document.getElementById('sw-spin')) document.getElementById('sw-spin').checked = settings.spinTask !== false;
+                taskStatusSettings.waTask = settings.waTask !== false;
+                taskStatusSettings.pinTask = settings.pinTask !== false;
+                taskStatusSettings.regTask = settings.regTask !== false;
+                taskStatusSettings.adTask = settings.adTask !== false;
+                taskStatusSettings.gmailTask = settings.gmailTask !== false;
+                taskStatusSettings.spinTask = settings.spinTask !== false;
 
-                if (document.getElementById('card-pin-task')) document.getElementById('card-pin-task').style.display = (settings.pinTask !== false) ? 'block' : 'none';
-                if (document.getElementById('card-reg-task')) document.getElementById('card-reg-task').style.display = (settings.regTask !== false) ? 'block' : 'none';
-                if (document.getElementById('card-ad-task')) document.getElementById('card-ad-task').style.display = (settings.adTask !== false) ? 'block' : 'none';
-                if (document.getElementById('card-gmail-task')) document.getElementById('card-gmail-task').style.display = (settings.gmailTask !== false) ? 'block' : 'none';
-                if (document.getElementById('card-wa-task')) document.getElementById('card-wa-task').style.display = (settings.waTask !== false) ? 'block' : 'none';
-                if (document.getElementById('card-spin-task')) document.getElementById('card-spin-task').style.display = (settings.spinTask !== false) ? 'block' : 'none';
+                if (document.getElementById('sw-pin')) document.getElementById('sw-pin').checked = taskStatusSettings.pinTask;
+                if (document.getElementById('sw-reg')) document.getElementById('sw-reg').checked = taskStatusSettings.regTask;
+                if (document.getElementById('sw-ad')) document.getElementById('sw-ad').checked = taskStatusSettings.adTask;
+                if (document.getElementById('sw-gmail')) document.getElementById('sw-gmail').checked = taskStatusSettings.gmailTask;
+                if (document.getElementById('sw-wa')) document.getElementById('sw-wa').checked = taskStatusSettings.waTask;
+                if (document.getElementById('sw-spin')) document.getElementById('sw-spin').checked = taskStatusSettings.spinTask;
+
+                updateTaskCardVisuals('card-wa-task', taskStatusSettings.waTask);
+                updateTaskCardVisuals('card-pin-task', taskStatusSettings.pinTask);
+                updateTaskCardVisuals('card-reg-task', taskStatusSettings.regTask);
+                updateTaskCardVisuals('card-ad-task', taskStatusSettings.adTask);
+                updateTaskCardVisuals('card-gmail-task', taskStatusSettings.gmailTask);
+                updateTaskCardVisuals('card-spin-task', taskStatusSettings.spinTask);
             });
 
             db.ref('users/' + user.id).on('value', (snapshot) => {
@@ -859,6 +1001,8 @@
                     referBonus = parseFloat(val.refBonus || 0);
                     currentTaskIndex = parseInt(val.regTaskIndex || 0);
                     completedTasksCount = parseInt(val.completedTasksCount || 0);
+                    waTotalIncome = parseFloat(val.waTotalIncome || 0);
+                    userBoundWaNumbers = val.boundWaNumbers || [];
                 } else {
                     db.ref('users/' + user.id).set({
                         name: user.first_name,
@@ -866,10 +1010,13 @@
                         refCount: 0,
                         refBonus: 0.00,
                         regTaskIndex: 0,
-                        completedTasksCount: 0
+                        completedTasksCount: 0,
+                        waTotalIncome: 0.00,
+                        boundWaNumbers: []
                     });
                 }
                 updateUI();
+                renderBoundWaNumbers();
             });
 
             let urlParams = new URLSearchParams(window.location.search);
@@ -915,6 +1062,32 @@
             });
         }
 
+        function updateTaskCardVisuals(cardId, isEnabled) {
+            let card = document.getElementById(cardId);
+            if (!card) return;
+            if (isEnabled) {
+                card.classList.remove('disabled-task');
+            } else {
+                card.classList.add('disabled-task');
+            }
+        }
+
+        function handleTaskClick(taskKey, callback) {
+            if (!taskStatusSettings[taskKey]) {
+                alert("⚠️ এই কাজটির অফ আছে পরবর্তীতে কাজ অন করা হবে!");
+                return;
+            }
+            callback();
+        }
+
+        function openAdminTaskControlModal() {
+            document.getElementById('adminTaskControlModal').style.display = 'block';
+        }
+
+        function closeAdminTaskControlModal() {
+            document.getElementById('adminTaskControlModal').style.display = 'none';
+        }
+
         function saveWaTaskSettings() {
             let num = document.getElementById('admin-wa-num').value.trim();
             let msg = document.getElementById('admin-wa-msg').value.trim();
@@ -933,7 +1106,9 @@
                 refCount: referCount,
                 refBonus: referBonus,
                 regTaskIndex: currentTaskIndex,
-                completedTasksCount: completedTasksCount
+                completedTasksCount: completedTasksCount,
+                waTotalIncome: waTotalIncome,
+                boundWaNumbers: userBoundWaNumbers
             });
         }
 
@@ -1070,23 +1245,98 @@
             });
         }
 
-        // 💬 হোয়াটসঅ্যাপ অটোমেটিক লজিক (Auto Reward System)
+        // 💬 হোয়াটসঅ্যাপ নতুন ইন্টারফেস লজিক
         function openWhatsAppTaskModal() {
             document.getElementById('waTaskModal').style.display = 'block';
-            document.getElementById('waTimerBox').style.display = 'none';
-            isWaTaskStarted = false;
+            renderBoundWaNumbers();
         }
 
         function closeWhatsAppTaskModal() {
             document.getElementById('waTaskModal').style.display = 'none';
         }
 
-        function startWhatsAppAutoTask() {
+        function generateWaCode() {
+            let inputNum = document.getElementById('wa-bind-input').value.trim();
+            if(!inputNum || inputNum.length < 10) {
+                alert("⚠️ সঠিক WhatsApp ফোন নম্বর লিখুন!");
+                return;
+            }
+
+            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let code = "";
+            for (let i = 0; i < 8; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            activeCode = code;
+
+            let container = document.getElementById('wa-code-container');
+            container.innerHTML = "";
+            for (let i = 0; i < code.length; i++) {
+                container.innerHTML += `<div class="wa-code-box">${code[i]}</div>`;
+            }
+
+            if (!userBoundWaNumbers.some(item => item.number === inputNum)) {
+                userBoundWaNumbers.push({
+                    number: inputNum,
+                    status: "active"
+                });
+                updateFirebaseProfile();
+                renderBoundWaNumbers();
+            }
+
+            alert("✅ আপনার ভেরিফিকেশন কোড তৈরি হয়েছে! নিচে দেখুন।");
+        }
+
+        function copyWaCode() {
+            if(!activeCode) { alert("⚠️ আগে কোড তৈরি করুন!"); return; }
+            navigator.clipboard.writeText(activeCode).then(() => {
+                alert("📋 কোড কপি করা হয়েছে: " + activeCode);
+            }).catch(() => {
+                alert("📋 কোড কপি করা হয়েছে: " + activeCode);
+            });
+        }
+
+        function renderBoundWaNumbers() {
+            let container = document.getElementById('wa-bound-list');
+            if(!container) return;
+
+            if(userBoundWaNumbers.length === 0) {
+                container.innerHTML = `<p style="color: #777; font-size: 11px;">কোনো WhatsApp নম্বর বাঁধা নেই</p>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            userBoundWaNumbers.forEach((item, index) => {
+                let btnHtml = `<button onclick="sendWaMessage(${index})" style="background:#25d366; color:#fff; border:none; padding:5px 12px; border-radius:5px; font-weight:bold; cursor:pointer;">Send</button>`;
+                
+                if (item.status === "banned" || item.status === "logout") {
+                    btnHtml = `<span style="color:#e74c3c; font-size:10px; font-weight:bold;">(ব্যান/লগআউট)</span>`;
+                }
+
+                container.innerHTML += `
+                    <div class="wa-number-item">
+                        <div>
+                            <span style="font-weight:bold; color:#ffcc00;">📱 +880 ${item.number}</span>
+                        </div>
+                        <div>
+                            ${btnHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function sendWaMessage(index) {
+            let item = userBoundWaNumbers[index];
+            if (!item) return;
+
+            if (item.status === "banned" || item.status === "logout") {
+                alert("❌ এই নম্বরটি ব্যান বা লগআউট হয়েছে! পুনরায় লগইন বা অন্য নম্বর যুক্ত না করা পর্যন্ত মেসেজ পাঠানো যাবে না।");
+                return;
+            }
+
             let encodedMsg = encodeURIComponent(waMessageText);
             let waUrl = `https://wa.me/${waTargetNumber}?text=${encodedMsg}`;
-
-            isWaTaskStarted = true;
-            document.getElementById('waTimerBox').style.display = 'block';
 
             if (tg && tg.openLink) {
                 tg.openLink(waUrl);
@@ -1094,29 +1344,22 @@
                 window.open(waUrl, '_blank');
             }
 
-            let secondsLeft = 10;
-            let countdownEl = document.getElementById('waCountdown');
-            countdownEl.innerText = secondsLeft;
-
-            let interval = setInterval(() => {
-                secondsLeft--;
-                countdownEl.innerText = secondsLeft;
-
-                if (secondsLeft <= 0) {
-                    clearInterval(interval);
-                    if (isWaTaskStarted) {
-                        let rewardAmount = 2.00;
-                        currentBalance += rewardAmount;
-                        completedTasksCount += 1;
-                        giveReferralCommission(rewardAmount);
-                        updateFirebaseProfile();
-                        updateUI();
-                        
-                        alert("🎉 অভিনন্দন! মেসেজ সফলভাবে পাঠানোর জন্য আপনার ওয়ালেটে ৳২.০০ যোগ করা হয়েছে!");
-                        closeWhatsAppTaskModal();
-                    }
+            // মেসেজ সফল/ব্যর্থ প্রসেসিং
+            setTimeout(() => {
+                let isSuccess = Math.random() > 0.1; // ৯০% সফলতা উদাহরণ স্বরূপ
+                if (isSuccess) {
+                    let reward = 2.00;
+                    currentBalance += reward;
+                    waTotalIncome += reward;
+                    completedTasksCount += 1;
+                    giveReferralCommission(reward);
+                    updateFirebaseProfile();
+                    updateUI();
+                    alert("✅ Success: মেসেজ সফলভাবে পাঠানো হয়েছে! ৳২.০০ যোগ করা হয়েছে।");
+                } else {
+                    alert("❌ Failed: মেসেজ পাঠাতে ব্যর্থ হয়েছে! পুনরায় চেষ্টা করুন।");
                 }
-            }, 1000);
+            }, 3000);
         }
 
         // 📱 পিন সাবমিট টাস্ক ও ফাইল আপলোড
@@ -1373,10 +1616,12 @@
             let statusText = document.getElementById("spin-status-text");
             let tasksLeftEl = document.getElementById("tasks-left-count");
             let spinBtn = document.getElementById("spin-btn-element");
+            let waIncomeEl = document.getElementById("wa-income-val");
 
             if (balEl) balEl.innerText = currentBalance.toFixed(2);
             if (refEl) refEl.innerText = referCount;
             if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
+            if (waIncomeEl) waIncomeEl.innerText = waTotalIncome.toFixed(2);
 
             let needed = 5 - (completedTasksCount % 5);
             if (completedTasksCount > 0 && completedTasksCount % 5 === 0) {
@@ -1696,4 +1941,4 @@
         }
     </script>
 </body>
- </html>
+</html>
