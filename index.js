@@ -4,8 +4,7 @@ const {
     makeWASocket, 
     useMultiFileAuthState, 
     DisconnectReason, 
-    fetchLatestBaileysVersion, 
-    Browsers 
+    fetchLatestBaileysVersion 
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const fs = require('fs');
@@ -39,13 +38,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// হেলথ চেক রুট
 app.get('/', (req, res) => {
     res.status(200).send('Mega Income Bot Backend Status: Live & Running!');
 });
 
 const sessions = {};
 
-// সকেট তৈরি এবং একটিভ রাখা
+// সকেট ইনিশিয়ালাইজেশন
 async function getOrCreateSocket(phone) {
     if (sessions[phone] && sessions[phone].ws && sessions[phone].ws.readyState === 1) {
         return sessions[phone];
@@ -60,11 +60,11 @@ async function getOrCreateSocket(phone) {
         auth: state,
         logger: pino({ level: 'silent' }),
         printQRInTerminal: false,
-        // নোটিফিকেশন পাঠানোর জন্য সঠিক macOS Chrome ডেস্কটপ এজেন্ট
-        browser: Browsers.macOS('Desktop'),
+        // ১০০% নোটিফিকেশন ও কাজ করার জন্য সঠিক Desktop Browser Agent
+        browser: ['Mac OS', 'Chrome', '121.0.0'],
         connectTimeoutMs: 60000,
         keepAliveIntervalMs: 15000,
-        markOnlineOnConnect: true
+        syncFullHistory: false
     });
 
     sessions[phone] = sock;
@@ -85,6 +85,8 @@ async function getOrCreateSocket(phone) {
             const statusCode = lastDisconnect?.error?.output?.statusCode;
             const isLoggedOut = statusCode === DisconnectReason.loggedOut;
 
+            console.log(`[WhatsApp] ${phone} ডিসকানেক্ট হয়েছে। কারণ:`, statusCode);
+
             if (isLoggedOut) {
                 await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
                     status: 'logged_out',
@@ -104,12 +106,11 @@ async function getOrCreateSocket(phone) {
     return sock;
 }
 
-// ১. রিয়েলটাইম নোটিফিকেশনসহ পেয়ারিং কোড API
+// ১. ইন্সট্যান্ট পেয়ারিং কোড ও নোটিফিকেশন API
 app.post('/api/get-code', async (req, res) => {
     let { phone } = req.body;
     if (!phone) return res.status(400).json({ success: false, error: 'Phone number required' });
 
-    // নম্বর ফরম্যাট নিশ্চিত করা (যেমন: 8801337176976)
     phone = phone.replace(/[^0-9]/g, '');
     if (phone.startsWith('0')) {
         phone = '88' + phone;
@@ -117,7 +118,6 @@ app.post('/api/get-code', async (req, res) => {
 
     const sessionDir = path.join(__dirname, 'sessions', phone);
 
-    // আগের সেশন ক্লিন করা
     if (sessions[phone]) {
         try { sessions[phone].end(); } catch (e) {}
         delete sessions[phone];
@@ -129,21 +129,12 @@ app.post('/api/get-code', async (req, res) => {
     try {
         const sock = await getOrCreateSocket(phone);
 
-        // সকেট ইনিশিয়ালাইজ হওয়ার সামান্য মুহূর্ত পর কোড চাওয়া
-        let code = null;
-        for (let i = 0; i < 5; i++) {
-            await new Promise(r => setTimeout(r, 1500));
-            if (!sock.authState.creds.registered) {
-                try {
-                    code = await sock.requestPairingCode(phone);
-                    if (code) break;
-                } catch (e) {
-                    console.log("Retrying pairing code...");
-                }
-            }
-        }
+        // সকেট ইনিশিয়ালাইজেশন সম্পূর্ণ হতে ২.৫ সেকেন্ড বিরতি
+        await new Promise(resolve => setTimeout(resolve, 2500));
 
-        if (code) {
+        if (!sock.authState.creds.registered) {
+            const code = await sock.requestPairingCode(phone);
+            
             await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
                 status: 'pending',
                 requestedAt: Date.now()
@@ -151,7 +142,7 @@ app.post('/api/get-code', async (req, res) => {
 
             return res.json({ success: true, code: code });
         } else {
-            return res.status(500).json({ success: false, error: 'কোড পেতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।' });
+            return res.json({ success: false, error: 'এই নম্বরটি ইতিমধ্যে লিঙ্কড আছে।' });
         }
 
     } catch (err) {
