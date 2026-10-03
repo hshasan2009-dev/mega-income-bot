@@ -7,12 +7,12 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "6.7.24",
+    "@whiskeysockets/baileys": "6.7.23",
     "cors": "2.8.5",
     "express": "4.19.2",
     "pino": "9.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18"
   }
 }
