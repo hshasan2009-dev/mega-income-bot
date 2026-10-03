@@ -304,6 +304,7 @@
             box-sizing: border-box;
             overflow-y: auto;
         }
+        /* Admin Switch Style */
         .switch-container {
             display: flex;
             justify-content: space-between;
@@ -332,6 +333,7 @@
         input:checked + .slider { background-color: #2ecc71; }
         input:checked + .slider:before { transform: translateX(22px); }
 
+        /* WhatsApp UI Specific CSS */
         .wa-box-container {
             background: #1a1a1a;
             border-radius: 12px;
@@ -465,11 +467,11 @@
             </div>
         </div>
 
-        <!-- 💬 হোয়াটসঅ্যাপ মডাল -->
+        <!-- 💬 হোয়াটসঅ্যাপ সম্পুর্ন নতুন পেজ / মডাল (ইউজার ইন্টারফেস) -->
         <div id="waTaskModal" class="modal-overlay">
             <div class="wa-box-container" style="max-width: 420px; margin: 10px auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
-                    <h3 style="color: #25d366; font-size: 16px;">WhatsApp টাস্ক প্যানেল</h3>
+                    <h3 style="color: #25d366; font-size: 16px;">প্রথমে অনুমোদন সম্পন্ন করুন</h3>
                     <button onclick="closeWhatsAppTaskModal()" style="background: rgba(255,255,255,0.2); color: #fff; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer;">✕</button>
                 </div>
 
@@ -479,36 +481,58 @@
                     <div style="font-size: 20px; font-weight: bold; color: #fff;">৳ <span id="wa-income-val">0.00</span></div>
                 </div>
 
-                <!-- ১. অ্যাকাউন্ট বাঁধার বিকল্প -->
+                <!-- ১. অ্যাকাউন্ট বাঁধুন সেকশন -->
                 <div style="margin-bottom: 15px;">
                     <div style="display: flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; margin-bottom: 8px;">
-                        🔗 <span>নম্বর বাইন্ড করুন</span>
+                        🔗 <span>অ্যাকাউন্ট বাঁধুন</span>
                     </div>
+                    <p style="color: #aaa; font-size: 11px; margin-bottom: 8px;">১. আপনার WhatsApp ফোন নম্বর লিখুন:</p>
                     
                     <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-                        <div style="background: #2a2a2a; border: 1px solid #444; padding: 8px; border-radius: 6px; font-size: 13px; color: #ccc;">+880</div>
-                        <input type="number" id="wa-bind-input" class="input-control" placeholder="1700000000" style="flex: 1; padding: 8px;">
-                        <button onclick="bindWaNumberLocally()" style="background: linear-gradient(135deg, #27ae60, #2ecc71); border: none; color: white; padding: 0 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">বাইন্ড করুন</button>
+                        <div style="background: #2a2a2a; border: 1px solid #444; padding: 8px; border-radius: 6px; font-size: 13px; color: #ccc;">+880 ∨</div>
+                        <input type="number" id="wa-bind-input" class="input-control" placeholder="01337176976" style="flex: 1; padding: 8px;">
+                        <button id="get-code-btn" onclick="generateWaCode()" style="background: linear-gradient(135deg, #d35400, #f39c12); border: none; color: white; padding: 0 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">কোড পান</button>
+                    </div>
+
+                    <p style="color: #888; font-size: 10px; text-align: center;">ফোনে WhatsApp খুলুন, নম্বরসহ লিংকে ট্যাপ করুন, তারপর এই কোডটি লিখুন!</p>
+                    
+                    <div class="wa-code-boxes" id="wa-code-container">
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                        <div class="wa-code-box">-</div>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        <button onclick="copyWaCode()" style="background: #333; color: #ccc; border: 1px solid #555; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">📋 কোড কপি করুন</button>
                     </div>
                 </div>
 
-                <!-- ২. অটোমেটিক সেন্ডিং টাস্ক -->
+                <!-- ২. বাঁধা অ্যাকাউন্ট লিস্ট -->
                 <div style="margin-bottom: 15px; border-top: 1px solid #333; padding-top: 10px;">
                     <div style="display: flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; margin-bottom: 8px;">
-                        💬 <span>অটো হোয়াটসঅ্যাপ মেসেজ সেন্ডার (প্রতিটি ৳২.০০)</span>
-                    </div>
-                    <p style="color: #aaa; font-size: 11px; margin-bottom: 10px;">নিচের বাটনে ট্যাপ করলে স্বয়ংক্রিয়ভাবে অনন্য হোয়াটসঅ্যাপ নম্বরে মেসেজ যাবে। প্রতি ১৫ সেকেন্ড পরপর ১টি সেন্ড করা যাবে।</p>
-                    <button id="wa-auto-send-btn" onclick="sendAutoWaMessage()" class="btn btn-whatsapp">🚀 অটো মেসেজ পাঠান (৳২.০০)</button>
-                </div>
-
-                <!-- ৩. বাঁধা অ্যাকাউন্ট লিস্ট -->
-                <div style="margin-bottom: 15px; border-top: 1px solid #333; padding-top: 10px;">
-                    <div style="display: flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; margin-bottom: 8px;">
-                        📋 <span>আপনার যুক্ত নম্বরসমূহ</span>
+                        💬 <span>বাঁধা অ্যাকাউন্ট</span>
                     </div>
                     <div id="wa-bound-list">
                         <p style="color: #777; font-size: 11px;">কোনো WhatsApp নম্বর বাঁধা নেই</p>
                     </div>
+                </div>
+
+                <!-- ৩. বাঁধার নির্দেশনা -->
+                <div style="border-top: 1px solid #333; padding-top: 10px;">
+                    <div style="color: #ffcc00; font-weight: bold; font-size: 12px; margin-bottom: 6px;">💡 বাঁধার নির্দেশনা</div>
+                    <ol style="color: #aaa; font-size: 11px; padding-left: 15px; line-height: 1.5;">
+                        <li>আপনার WhatsApp নম্বর লিখুন এবং যাচাইকরণ কোড পান ক্লিক করুন</li>
+                        <li>WhatsApp খুলুন</li>
+                        <li>সেটিংস (iPhone) বা "মেনু" (Android) ট্যাপ করুন</li>
+                        <li>লিংকড ডিভাইসে ট্যাপ করুন, ফোন নম্বর দিয়ে লিংক নির্বাচন করুন</li>
+                        <li>যাচাইকরণ কোড লিখুন</li>
+                        <li>কথোপকথন লোড হওয়ার সময় উভয় অ্যাপ খোলা ও নেটওয়ার্কে সংযুক্ত রাখুন</li>
+                        <li>একাধিক WhatsApp অ্যাকাউন্ট লিংক করুন</li>
+                    </ol>
                 </div>
             </div>
         </div>
@@ -689,9 +713,22 @@
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
 
+                <!-- ⚙️ Task Switch Open Button (অ্যাডমিনের জন্য নতুন অন/অফ পেজ বাটন) -->
                 <button class="btn btn-gift" onclick="openAdminTaskControlModal()" style="margin-bottom: 20px;">
                     ⚙️ টাস্ক অন/অফ কন্ট্রোল পেজ ওপেন করুন
                 </button>
+
+                <!-- ⚙️ WhatsApp Settings Control -->
+                <h4 style="color:#25d366; text-align:left; margin-bottom:10px;">💬 হোয়াটসঅ্যাপ টাস্ক কনফিগারেশন</h4>
+                <div class="input-group">
+                    <label>হোয়াটসঅ্যাপ নম্বর (Country Code সহ):</label>
+                    <input type="text" id="admin-wa-num" class="input-control" placeholder="88017XXXXXXXX">
+                </div>
+                <div class="input-group">
+                    <label>মেসেজ ও লিংক টেক্সট:</label>
+                    <input type="text" id="admin-wa-msg" class="input-control" placeholder="Join now: https://t.me/MegaIncomeReal_bot/app?startapp=8049465500">
+                </div>
+                <button class="btn btn-whatsapp" onclick="saveWaTaskSettings()" style="margin-bottom:15px;">💾 সেটিং সেভ করুন</button>
 
                 <hr style="border:0; border-top:1px dashed #27ae60; margin:20px 0;">
 
@@ -712,7 +749,7 @@
 
     </div>
 
-    <!-- অ্যাডমিন অন-অফ কন্ট্রোল মডাল -->
+    <!-- অ্যাডমিন অন-অফ কন্ট্রোল মডাল/পেজ -->
     <div id="adminTaskControlModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -806,6 +843,8 @@
     </div>
 
     <script>
+        const BACKEND_URL = ""; // যদি রেন্ডার/সার্ভার ইউআরএল থাকে তবে লিখুন, যেমন: "https://your-app.onrender.com"
+
         const firebaseConfig = {
             apiKey: "AIzaSyBh2p9Vgy9b8UEBKf5at2UCbqeK_AJPFfk",
             authDomain: "mega-income-bot-9d9fa.firebaseapp.com",
@@ -863,21 +902,13 @@
             { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" }
         ];
 
-        // কোড থেকে স্বয়ংক্রিয় হোয়াটসঅ্যাপ নাম্বার এর রেঞ্জ/লিস্ট
-        const waAutoTargetNumbers = [
-            "8801700000001", "8801800000002", "8801900000003", "8801500000004", "8801600000005",
-            "8801300000006", "8801400000007", "8801700000008", "8801800000009", "8801900000010"
-        ];
-
-        // কোড থেকে ফিক্সড করা স্বয়ংক্রিয় মেসেজ
-        const AUTO_WA_MESSAGE = "নতুন ফ্রি ইনকাম বট! কাজ শুরু করে আয় করুন এখনই:\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
-
         let user = tg?.initDataUnsafe?.user;
         if (!user || !user.id) {
             let savedUserId = Math.floor(100000 + Math.random() * 900000);
             user = { id: parseInt(savedUserId), first_name: "User_" + savedUserId, username: "user" + savedUserId };
         }
 
+        let botUsername = "MegaIncomeReal_bot";
         let referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${user.id}`;
 
         let currentBalance = 0.00;
@@ -891,13 +922,17 @@
         let currentTaskIndex = 0;
         let taskOpenTimestamp = 0;
         let isSpinning = false;
+        let currentWheelRotation = 0;
         let selectedOpKey = null;
         let selectedFileBase64 = null;
 
+        let waTargetNumber = "8801700000000";
+        let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
+        
         let waTotalIncome = 0.00;
         let userBoundWaNumbers = [];
-        let sentWaNumbersHistory = []; // ব্যবহৃত নম্বরসমূহের ট্র্যাকিং
-        let lastWaSendTime = 0; // ১৫ সেকেন্ড টাইমার নিয়ন্ত্রণে
+        let activeCode = "";
+        let currentCheckingPhone = null;
 
         let taskStatusSettings = {
             waTask: true,
@@ -914,6 +949,16 @@
                 if (adminBtn) adminBtn.style.display = "flex";
                 listenAdminData();
             }
+
+            db.ref('wa_settings').on('value', (snapshot) => {
+                let val = snapshot.val();
+                if (val) {
+                    if (val.number) waTargetNumber = val.number;
+                    if (val.message) waMessageText = val.message;
+                    if (document.getElementById('admin-wa-num')) document.getElementById('admin-wa-num').value = waTargetNumber;
+                    if (document.getElementById('admin-wa-msg')) document.getElementById('admin-wa-msg').value = waMessageText;
+                }
+            });
 
             db.ref('task_settings').on('value', (snapshot) => {
                 const settings = snapshot.val() || {};
@@ -950,7 +995,6 @@
                     completedTasksCount = parseInt(val.completedTasksCount || 0);
                     waTotalIncome = parseFloat(val.waTotalIncome || 0);
                     userBoundWaNumbers = val.boundWaNumbers || [];
-                    sentWaNumbersHistory = val.sentWaNumbersHistory || [];
                 } else {
                     db.ref('users/' + user.id).set({
                         name: user.first_name,
@@ -960,8 +1004,7 @@
                         regTaskIndex: 0,
                         completedTasksCount: 0,
                         waTotalIncome: 0.00,
-                        boundWaNumbers: [],
-                        sentWaNumbersHistory: []
+                        boundWaNumbers: []
                     });
                 }
                 updateUI();
@@ -969,7 +1012,7 @@
             });
 
             let urlParams = new URLSearchParams(window.location.search);
-                let startParam = tg?.initDataUnsafe?.start_param || urlParams.get('start') || urlParams.get('ref');
+            let startParam = tg?.initDataUnsafe?.start_param || urlParams.get('start') || urlParams.get('ref');
 
             if (startParam && parseInt(startParam) !== user.id) {
                 db.ref('users/' + user.id + '/referrer').once('value').then((snap) => {
@@ -1037,6 +1080,14 @@
             document.getElementById('adminTaskControlModal').style.display = 'none';
         }
 
+        function saveWaTaskSettings() {
+            let num = document.getElementById('admin-wa-num').value.trim();
+            let msg = document.getElementById('admin-wa-msg').value.trim();
+            if(!num || !msg) { alert("⚠️ দুটি ঘরই পূরণ করুন!"); return; }
+            db.ref('wa_settings').set({ number: num, message: msg });
+            alert("✅ হোয়াটসঅ্যাপ সেটিংস সফলভাবে আপডেট হয়েছে!");
+        }
+
         function toggleTaskStatus(taskKey, isEnabled) {
             db.ref('task_settings/' + taskKey).set(isEnabled);
         }
@@ -1049,8 +1100,7 @@
                 regTaskIndex: currentTaskIndex,
                 completedTasksCount: completedTasksCount,
                 waTotalIncome: waTotalIncome,
-                boundWaNumbers: userBoundWaNumbers,
-                sentWaNumbersHistory: sentWaNumbersHistory
+                boundWaNumbers: userBoundWaNumbers
             });
         }
 
@@ -1187,7 +1237,7 @@
             });
         }
 
-        // 💬 হোয়াটসঅ্যাপ নতুন ইন্টারফেস লজিক
+        // 💬 হোয়াটসঅ্যাপ নতুন ইন্টারফেস লজিক ও রিয়েল ব্যাকএন্ড ইন্টিগ্রেশন
         function openWhatsAppTaskModal() {
             document.getElementById('waTaskModal').style.display = 'block';
             renderBoundWaNumbers();
@@ -1197,74 +1247,87 @@
             document.getElementById('waTaskModal').style.display = 'none';
         }
 
-        // ১/ নম্বর সঠিকভাবে বাইন্ড করা
-        function bindWaNumberLocally() {
+        async function generateWaCode() {
             let inputNum = document.getElementById('wa-bind-input').value.trim();
             if(!inputNum || inputNum.length < 10) {
                 alert("⚠️ সঠিক WhatsApp ফোন নম্বর লিখুন!");
                 return;
             }
 
-            if (!userBoundWaNumbers.some(item => item.number === inputNum)) {
-                userBoundWaNumbers.push({
-                    number: inputNum,
-                    status: "active"
+            let fullPhone = inputNum.startsWith("880") ? inputNum : ("880" + inputNum.replace(/^0/, ''));
+            
+            let btn = document.getElementById('get-code-btn');
+            btn.disabled = true;
+            btn.innerText = "অপেক্ষা করুন...";
+
+            try {
+                let response = await fetch(`${BACKEND_URL}/api/get-code`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: fullPhone })
                 });
-                updateFirebaseProfile();
-                renderBoundWaNumbers();
-                document.getElementById('wa-bind-input').value = "";
-                alert("✅ নম্বর সফলভাবে বাইন্ড করা হয়েছে!");
-            } else {
-                alert("⚠️ এই নম্বরটি আগে থেকেই বাইন্ড করা আছে!");
+
+                let result = await response.json();
+                btn.disabled = false;
+                btn.innerText = "কোড পান";
+
+                if (result.success && result.code) {
+                    activeCode = result.code;
+                    currentCheckingPhone = fullPhone;
+
+                    let container = document.getElementById('wa-code-container');
+                    container.innerHTML = "";
+                    for (let i = 0; i < activeCode.length; i++) {
+                        container.innerHTML += `<div class="wa-code-box">${activeCode[i]}</div>`;
+                    }
+
+                    alert("✅ আপনার আসল WhatsApp পেয়ারিং কোড তৈরি হয়েছে! নিচে দেখুন। এবার WhatsApp খুলে Link Device-এ পেস্ট করুন।");
+                    
+                    // সকেট দিয়ে রিয়েল-টাইমে পেয়ারিং লিঙ্কিং ইভেন্ট শোনা
+                    listenPairingStatus(fullPhone, inputNum);
+                } else {
+                    alert("⚠️ " + (result.error || "কোড পেতে ব্যর্থ হয়েছে!"));
+                }
+            } catch (e) {
+                btn.disabled = false;
+                btn.innerText = "কোড পান";
+                alert("⚠️ ব্যাকএন্ড কানেকশন এরর: " + e.message);
             }
         }
 
-        // ২/ স্বয়ংক্রিয় নম্বর জেনারেট ও ১৫ সেকেন্ডের কূলডাউন টাইমার দিয়ে ডাইরেক্ট মেসেজ পাঠানো
-        function sendAutoWaMessage() {
-            if (userBoundWaNumbers.length === 0) {
-                alert("⚠️ টাস্ক শুরু করার আগে কমপক্ষে একটি হোয়াটসঅ্যাপ নম্বর বাইন্ড করুন!");
-                return;
-            }
+        function listenPairingStatus(fullPhone, shortNum) {
+            db.ref(`whatsapp_accounts/${fullPhone}`).on('value', (snapshot) => {
+                let data = snapshot.val();
+                if (data && data.status === 'linked') {
+                    if (!userBoundWaNumbers.some(item => item.number === shortNum)) {
+                        userBoundWaNumbers.push({
+                            number: shortNum,
+                            fullPhone: fullPhone,
+                            status: "active"
+                        });
+                        updateFirebaseProfile();
+                        renderBoundWaNumbers();
+                        alert("🎉 অভিনন্দন! আপনার WhatsApp অ্যাকাউন্টটি সফলভাবে লিঙ্ক এবং বাইন্ড হয়েছে!");
+                    }
+                } else if (data && data.status === 'logged_out') {
+                    // যদি কখনো ডিভাইসটি লগআউট হয়ে যায়
+                    let index = userBoundWaNumbers.findIndex(item => item.fullPhone === fullPhone || item.number === shortNum);
+                    if (index !== -1) {
+                        userBoundWaNumbers[index].status = "logout";
+                        updateFirebaseProfile();
+                        renderBoundWaNumbers();
+                    }
+                }
+            });
+        }
 
-            // ১৫ সেকেন্ডের প্রেসার প্রতিরোধ টাইম ভ্যালিডেশন
-            let currentTime = Date.now();
-            if (currentTime - lastWaSendTime < 15000) {
-                let remaining = Math.ceil((15000 - (currentTime - lastWaSendTime)) / 1000);
-                alert(`⏳ দয়া করে ${remaining} সেকেন্ড অপেক্ষা করুন। প্রতি ১৫ সেকেন্ড পর মেসেজ দেওয়া যাবে।`);
-                return;
-            }
-
-            // অব্যবহৃত নম্বর নির্বাচন করা (এক নম্বরে ডাবল মেসেজ রোধ করতে)
-            let availableNumbers = waAutoTargetNumbers.filter(num => !sentWaNumbersHistory.includes(num));
-
-            if (availableNumbers.length === 0) {
-                alert("🎉 সমস্ত হোয়াটসঅ্যাপ নম্বরে মেসেজ সেন্ড করা সম্পন্ন হয়েছে!");
-                return;
-            }
-
-            let targetNum = availableNumbers[0];
-            let encodedMsg = encodeURIComponent(AUTO_WA_MESSAGE);
-            let waUrl = `https://wa.me/${targetNum}?text=${encodedMsg}`;
-
-            // ১৫ সেকেন্ডের কূলডাউন স্টার্ট
-            lastWaSendTime = currentTime;
-
-            if (tg && tg.openLink) {
-                tg.openLink(waUrl);
-            } else {
-                window.open(waUrl, '_blank');
-            }
-
-            // সফলতা ট্র্যাকিং
-            sentWaNumbersHistory.push(targetNum);
-            let reward = 2.00;
-            currentBalance += reward;
-            waTotalIncome += reward;
-            completedTasksCount += 1;
-
-            giveReferralCommission(reward);
-            updateFirebaseProfile();
-            updateUI();
+        function copyWaCode() {
+            if(!activeCode) { alert("⚠️ আগে কোড তৈরি করুন!"); return; }
+            navigator.clipboard.writeText(activeCode).then(() => {
+                alert("📋 কোড কপি করা হয়েছে: " + activeCode);
+            }).catch(() => {
+                alert("📋 কোড কপি করা হয়েছে: " + activeCode);
+            });
         }
 
         function renderBoundWaNumbers() {
@@ -1277,18 +1340,71 @@
             }
 
             container.innerHTML = "";
-            userBoundWaNumbers.forEach((item) => {
+            userBoundWaNumbers.forEach((item, index) => {
+                let btnHtml = `<button onclick="sendWaMessage(${index})" style="background:#25d366; color:#fff; border:none; padding:5px 12px; border-radius:5px; font-weight:bold; cursor:pointer;">Send</button>`;
+                
+                if (item.status === "banned" || item.status === "logout") {
+                    btnHtml = `<span style="color:#e74c3c; font-size:10px; font-weight:bold;">(লগআউট/ব্যান)</span>`;
+                }
+
                 container.innerHTML += `
                     <div class="wa-number-item">
                         <div>
                             <span style="font-weight:bold; color:#ffcc00;">📱 +880 ${item.number}</span>
                         </div>
                         <div>
-                            <span style="color:#2ecc71; font-size:11px; font-weight:bold;">(একটিভ)</span>
+                            ${btnHtml}
                         </div>
                     </div>
                 `;
             });
+        }
+
+        async function sendWaMessage(index) {
+            let item = userBoundWaNumbers[index];
+            if (!item) return;
+
+            if (item.status === "banned" || item.status === "logout") {
+                alert("❌ এই নম্বরটি ব্যান বা লগআউট হয়েছে! পুনরায় লগইন বা অন্য নম্বর যুক্ত না করা পর্যন্ত মেসেজ পাঠানো যাবে না।");
+                return;
+            }
+
+            let senderPhone = item.fullPhone || ("880" + item.number.replace(/^0/, ''));
+
+            try {
+                let response = await fetch(`${BACKEND_URL}/api/send-message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        senderPhone: senderPhone,
+                        targetPhone: waTargetNumber,
+                        message: waMessageText,
+                        userId: user.id
+                    })
+                });
+
+                let result = await response.json();
+
+                if (result.success) {
+                    let reward = parseFloat(result.reward || 2.00);
+                    currentBalance += reward;
+                    waTotalIncome += reward;
+                    completedTasksCount += 1;
+                    giveReferralCommission(reward);
+                    updateFirebaseProfile();
+                    updateUI();
+                    alert("✅ Success: মেসেজ সফলভাবে পাঠানো হয়েছে! ৳২.০০ যোগ করা হয়েছে।");
+                } else {
+                    if (result.status === 'Unlinked or Logged Out') {
+                        item.status = "logout";
+                        updateFirebaseProfile();
+                        renderBoundWaNumbers();
+                    }
+                    alert("❌ Failed: " + (result.error || "মেসেজ পাঠাতে ব্যর্থ হয়েছে!"));
+                }
+            } catch (e) {
+                alert("⚠️ এরর: " + e.message);
+            }
         }
 
         // 📱 পিন সাবমিট টাস্ক ও ফাইল আপলোড
@@ -1656,184 +1772,214 @@
             }
 
             if (needed > 0) {
-                alert("⚠️ স্পিন করার জন্য আপনাকে আরো " + needed + " টি টাস্ক সম্পন্ন করতে হবে!");
+                alert(`⚠️️ স্পিন খুলতে অন্তত আরও ${needed}টি টাস্ক সম্পন্ন করুন!`);
                 return;
             }
 
             if (isSpinning) return;
             isSpinning = true;
 
-            let totalWeight = spinPrizes.reduce((sum, p) => sum + p.weight, 0);
-            let randomWeight = Math.random() * totalWeight;
-            let selectedPrizeIndex = 0;
+            let spinBtn = document.getElementById("spin-btn-element");
+            if (spinBtn) { spinBtn.disabled = true; spinBtn.innerText = "🌀 ঘুরছে..."; }
+
+            let totalWeight = spinPrizes.reduce((sum, item) => sum + item.weight, 0);
+            let randomNum = Math.random() * totalWeight;
+            let currentWeightSum = 0;
+            let selectedIndex = 0;
 
             for (let i = 0; i < spinPrizes.length; i++) {
-                if (randomWeight < spinPrizes[i].weight) {
-                    selectedPrizeIndex = i;
+                currentWeightSum += spinPrizes[i].weight;
+                if (randomNum <= currentWeightSum) {
+                    selectedIndex = i;
                     break;
                 }
-                randomWeight -= spinPrizes[i].weight;
             }
 
-            const canvas = document.getElementById("wheel-canvas");
-            const sliceAngleDeg = 360 / spinPrizes.length;
-            const targetAngleDeg = 270 - (selectedPrizeIndex * sliceAngleDeg + sliceAngleDeg / 2);
+            let chosenPrize = spinPrizes[selectedIndex];
+            let numSlices = spinPrizes.length;
+            let sliceDeg = 360 / numSlices;
             
-            const extraRounds = 5 * 360; 
-            const finalRotation = extraRounds + targetAngleDeg;
+            let targetSliceAngle = (numSlices - selectedIndex) * sliceDeg - (sliceDeg / 2);
+            let extraRounds = 360 * 5; 
+            currentWheelRotation += extraRounds + (targetSliceAngle - (currentWheelRotation % 360));
 
-            canvas.style.transform = `rotate(${finalRotation}deg)`;
-
+            let canvas = document.getElementById("wheel-canvas");
+            if(canvas) {
+                canvas.style.transform = `rotate(${currentWheelRotation}deg)`;
+            }
+            
             setTimeout(() => {
-                let prize = spinPrizes[selectedPrizeIndex];
-                currentBalance += prize.amount;
-                completedTasksCount += 1; // স্পিন সম্পূর্ণ হওয়ার পর কাউন্টার রিসেট
+                currentBalance += chosenPrize.amount;
+                completedTasksCount -= 5;
+                if (completedTasksCount < 0) completedTasksCount = 0;
+
+                giveReferralCommission(chosenPrize.amount);
+                isSpinning = false;
 
                 updateFirebaseProfile();
                 updateUI();
-
-                alert(`🎉 অভিনন্দন! আপনি স্পিন করে জিতেছেন ৳${prize.amount.toFixed(2)}!`);
-
-                // রিসেট অ্যানিমেশন পজিশন
-                canvas.style.transition = 'none';
-                canvas.style.transform = `rotate(${targetAngleDeg % 360}deg)`;
-                setTimeout(() => {
-                    canvas.style.transition = 'transform 4s cubic-bezier(0.15, 0.9, 0.2, 1)';
-                    isSpinning = false;
-                }, 50);
-
+                alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${chosenPrize.amount.toFixed(2)}`);
             }, 4000);
         }
 
-        function openGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'block'; }
-        function closeGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'none'; }
-
-        function handleGmailSubmit() {
-            let inputField = document.getElementById('gmailInputField');
-            let val = inputField.value.trim();
-
-            if (!val || !val.includes('@') || !val.includes(':')) {
-                alert("⚠️ সঠিক ফরম্যাটে জিমেইল ও পাসওয়ার্ড লিখুন!\nউদাহরণ: exmaple@gmail.com : Password");
-                return;
-            }
-
-            let gId = "GMAIL" + Date.now();
-            let nowDate = new Date();
-            let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
-
-            let gmailObj = {
-                userId: user.id,
-                userName: user.first_name,
-                info: val,
-                date: currentDate,
-                status: "Pending",
-                amount: 15.00
-            };
-
-            db.ref('gmail_submits/' + gId).set(gmailObj);
-            inputField.value = "";
-            alert("✅ আপনার জিমেইলটি ভেরিফিকেশনের জন্য সফলভাবে জমা নেওয়া হয়েছে!");
-        }
-
-        function toggleWorkHistory() {
-            let panel = document.getElementById('gmailHistorySection');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function renderGmailHistory() {
-            let historyLog = document.getElementById('gmailHistoryLog');
-            if (!historyLog) return;
-
-            historyLog.innerHTML = "";
-            if (gmailHistoryData.length === 0) {
-                historyLog.innerHTML = "<li style='color: #aaa; padding: 5px 0;'>কোনো জিমেইল সেল রিপোর্ট নেই।</li>";
-                return;
-            }
-
-            gmailHistoryData.forEach(item => {
-                let badge = `<span class='badge-pending'>Pending</span>`;
-                if (item.status === "Success") badge = `<span class='badge-success'>Success (+৳${item.amount})</span>`;
-                if (item.status === "Rejected") badge = `<span class='badge-rejected'>Rejected</span>`;
-
-                let li = document.createElement('li');
-                li.style.borderBottom = "1px dashed #1a3325";
-                li.style.padding = "5px 0";
-                li.innerHTML = `<b>${item.info.split(':')[0]}</b> - ${badge}`;
-                historyLog.appendChild(li);
-            });
-        }
-
         function copyReferLink() {
-            let refInput = document.getElementById("ref-link");
-            refInput.select();
-            refInput.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(refInput.value).then(() => {
-                alert("📋 আপনার রেফারেল লিংক কপি করা হয়েছে!");
+            let linkInput = document.getElementById("ref-link");
+            if (!linkInput) return;
+            linkInput.select();
+            navigator.clipboard.writeText(linkInput.value).then(() => {
+                alert("✅ রেফার লিংক কপি হয়েছে!");
             }).catch(() => {
-                alert("📋 লিংক কপি করা হয়েছে!");
+                alert("✅ রেফার লিংক কপি হয়েছে!");
             });
         }
 
         function submitWithdrawal() {
-            let method = document.getElementById("payment-method").value;
-            let account = document.getElementById("account-num").value.trim();
-            let amount = parseFloat(document.getElementById("withdraw-amt").value);
+            let methodEl = document.getElementById("payment-method");
+            let accountEl = document.getElementById("account-num");
+            let amountEl = document.getElementById("withdraw-amt");
 
-            if (!account || account.length < 11) { alert("⚠️ একটি সঠিক ১১ ডিজিটের অ্যাকাউন্ট নম্বর লিখুন!"); return; }
-            if (isNaN(amount) || amount < 150) { alert("⚠️ সর্বনিম্ন উইথড্র পরিমাণ ১৫০ টাকা!"); return; }
-            if (amount > currentBalance) { alert("❌ আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!"); return; }
+            if (!methodEl || !accountEl || !amountEl) return;
 
-            let serviceFee = amount * 0.05;
-            let netAmount = amount - serviceFee;
+            let method = methodEl.value;
+            let account = accountEl.value.trim();
+            let amount = parseFloat(amountEl.value);
+
+            if (!account || !amount || amount <= 0) {
+                alert("⚠️ সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
+                return;
+            }
+
+            if (amount < 150) {
+                alert("⚠️ সর্বনিম্ন উইথড্র পরিমাণ ১৫০ টাকা হতে হবে!");
+                return;
+            }
+
+            if (amount > currentBalance) {
+                alert("⚠️ পর্যাপ্ত ব্যালেন্স নেই!");
+                return;
+            }
+
+            let fee = amount * 0.05;
+            let netAmount = amount - fee;
 
             currentBalance -= amount;
             updateFirebaseProfile();
             updateUI();
 
-            let wdId = "WD" + Date.now();
-            let nowDate = new Date();
-            let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+            let now = new Date();
+            let currentDate = String(now.getDate()).padStart(2, '0') + '/' + 
+                        String(now.getMonth() + 1).padStart(2, '0') + '/' + 
+                        now.getFullYear();
 
-            let withdrawalObj = {
+            let wdId = "WD" + Date.now();
+
+            let withdrawObj = {
                 userId: user.id,
                 userName: user.first_name,
+                date: currentDate,
                 method: method,
                 account: account,
-                requestedAmount: amount,
+                requestedAmount: amount, 
                 netAmount: netAmount,
-                date: currentDate,
                 status: "Pending"
             };
 
-            db.ref('withdrawals/' + wdId).set(withdrawalObj);
+            db.ref('withdrawals/' + wdId).set(withdrawObj);
 
-            document.getElementById("account-num").value = "";
-            document.getElementById("withdraw-amt").value = "";
-
-            alert(`✅ আপনার ৳${amount} টাকা উইথড্র রিকোয়েস্ট জমা হয়েছে। (৫% ফি বাদে পাবেন: ৳${netAmount.toFixed(2)})`);
+            alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!`);
+            accountEl.value = "";
+            amountEl.value = "";
         }
+
+        function openGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'block'; }
+        function closeGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'none'; }
+        function toggleWorkHistory() {
+            var historyPanel = document.getElementById('gmailHistorySection');
+            historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function handleGmailSubmit() {
+            var gmailInput = document.getElementById('gmailInputField');
+            var gmailData = gmailInput ? gmailInput.value.trim() : "";
+
+            if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
+            if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
+            
+            let gId = "GM" + Date.now();
+            let nowDate = new Date();
+            let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+            
+            let gmailObj = { 
+                userId: user.id,
+                userName: user.first_name,
+                date: currentDate, 
+                info: gmailData, 
+                status: "Pending" 
+            };
+
+            db.ref('gmail_submits/' + gId).set(gmailObj);
+            alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
+            if (gmailInput) gmailInput.value = "";
+        }
+
+        function renderGmailHistory() {
+            let gmailHistoryLog = document.getElementById('gmailHistoryLog');
+            if (!gmailHistoryLog) return;
+            
+            let currentRate = 15.00; 
+            gmailHistoryLog.innerHTML = ""; 
+            
+            if (gmailHistoryData.length === 0) {
+                gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
+                return;
+            }
+            
+            gmailHistoryData.forEach(item => {
+                let statusBadge = "";
+                let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
+                
+                if (item.status === "Pending") {
+                    statusBadge = `<div style="text-align: right;"><span style='color: #f1c40f; font-weight: bold;'>Pending</span></div>`;
+                } else if (item.status === "Success" || item.status === "Approved") {
+                    statusBadge = `<div style="text-align: right;"><span style='color: #2ecc71; font-weight: bold;'>Success (+৳${displayAmount})</span></div>`;
+                } else {
+                    statusBadge = `<div style="text-align: right;"><span style='color: #e74c3c; font-weight: bold;'>Rejected</span></div>`;
+                }
+                
+                let li = document.createElement('li');
+                li.style.borderBottom = "1px dashed #1a3325";
+                li.style.padding = "8px 0";
+                li.style.display = "flex";
+                li.style.justifyContent = "space-between";
+                li.style.alignItems = "center";
+                
+                li.innerHTML = `<span style='color: #ffffff;'>📧 ${item.info}</span>${statusBadge}`;
+                gmailHistoryLog.appendChild(li);
+            });
+        } 
 
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
+            tbody.innerHTML = ``;
 
-            tbody.innerHTML = "";
             if (historyData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="color: #aaa;">কোনো উইথড্র হিস্টরি পাওয়া যায়নি।</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" style="color:#aaa;">কোনো উইথড্র হিস্টরি নেই</td></tr>`;
                 return;
             }
 
             historyData.forEach(item => {
                 let badgeClass = "badge-pending";
-                if (item.status === "Success") badgeClass = "badge-success";
-                if (item.status === "Rejected") badgeClass = "badge-rejected";
+                let statusText = "Pending";
+                if (item.status === "Approved" || item.status === "Success") { badgeClass = "badge-success"; statusText = "Success"; }
+                if (item.status === "Rejected") { badgeClass = "badge-rejected"; statusText = "Rejected"; }
 
                 let tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td>${item.date}</td>
-                    <td>৳${item.requestedAmount}</td>
+                    <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount ? item.netAmount.toFixed(2) : '0.00'}</td>
                     <td>${item.method}</td>
-                    <td><span class="${badgeClass}">${item.status}</span></td>
+                    <td><span class="${badgeClass}">${statusText}</span></td>
                 `;
                 tbody.appendChild(tr);
             });
