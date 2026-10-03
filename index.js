@@ -5,7 +5,7 @@ const admin = require('firebase-admin');
 const fs = require('fs');
 const path = require('path');
 
-// ফায়ারবেজ এডমিন ইনিশিয়ালাইজেশন
+// ফায়ারবেজ ইনিশিয়ালাইজেশন
 if (!admin.apps.length) {
     admin.initializeApp({
         databaseURL: "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com"
@@ -23,18 +23,18 @@ app.get('/', (req, res) => {
 
 const sessions = {};
 
-// সকেট তৈরি এবং পেয়ারিং কোড জেনারেশন হ্যান্ডলার
-async function createWhatsAppPairingSession(phone) {
+// ১. সঠিক নিয়মে পেয়ারিং কোড জেনারেটর ফংশন
+function getPairingCode(phone) {
     return new Promise(async (resolve, reject) => {
         const sessionDir = path.join(__dirname, 'sessions', phone);
 
-        // পুরাতন সেশন মুছে ফেলা
+        // পুরাতন সেশন ও মেমোরি ক্লিনআপ
         if (sessions[phone]) {
             try { sessions[phone].end(); } catch (e) {}
             delete sessions[phone];
         }
         if (fs.existsSync(sessionDir)) {
-            fs.rmSync(sessionDir, { recursive: true, force: true });
+            try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch(e) {}
         }
 
         try {
@@ -47,20 +47,38 @@ async function createWhatsAppPairingSession(phone) {
                 printQRInTerminal: false,
                 browser: ["Ubuntu", "Chrome", "20.0.04"],
                 connectTimeoutMs: 60000,
-                defaultQueryTimeoutMs: 60000,
-                keepAliveIntervalMs: 10000
+                defaultQueryTimeoutMs: 60000
             });
 
             sessions[phone] = sock;
-
             sock.ev.on('creds.update', saveCreds);
 
-            // কানেকশন লিসেনার
+            let codeRequested = false;
+
+            // কানেকশন লিসেনার (যেখানে সঠিক সময়ে কোড রিকোয়েস্ট করতে হয়)
             sock.ev.on('connection.update', async (update) => {
-                const { connection, lastDisconnect } = update;
+                const { connection, lastDisconnect, qr } = update;
+
+                // সকেট যখন QR ইমিট করবে (মানে সকেট এখন পেয়ারিং কোড নেওয়ার জন্য সম্পূর্ণ প্রস্তুত)
+                if (qr && !sock.authState.creds.registered && !codeRequested) {
+                    codeRequested = true;
+                    try {
+                        // সকেট রেডি হওয়ার পর পেয়ারিং কোড রিকোয়েস্ট
+                        const code = await sock.requestPairingCode(phone);
+                        
+                        await db.ref(`whatsapp_accounts/${phone}`).set({
+                            status: 'pending',
+                            requestedAt: Date.now()
+                        });
+
+                        resolve({ success: true, code: code });
+                    } catch (codeErr) {
+                        reject(new Error("কোড জেনারেট করতে ব্যর্থ: " + codeErr.message));
+                    }
+                }
 
                 if (connection === 'open') {
-                    console.log(`[WhatsApp] ${phone} লিঙ্কড হয়েছে!`);
+                    console.log(`[WhatsApp] ${phone} নম্বরটি লিঙ্কড হয়েছে!`);
                     await db.ref(`whatsapp_accounts/${phone}`).set({
                         status: 'linked',
                         linkedAt: Date.now()
@@ -79,7 +97,7 @@ async function createWhatsAppPairingSession(phone) {
 
                         delete sessions[phone];
                         if (fs.existsSync(sessionDir)) {
-                            fs.rmSync(sessionDir, { recursive: true, force: true });
+                            try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch(e){}
                         }
                     } else {
                         delete sessions[phone];
@@ -87,25 +105,12 @@ async function createWhatsAppPairingSession(phone) {
                 }
             });
 
-            // সকেট প্রস্তুত হলে কোড নেওয়া
-            setTimeout(async () => {
-                try {
-                    if (!sock.authState.creds.registered) {
-                        const code = await sock.requestPairingCode(phone);
-                        
-                        await db.ref(`whatsapp_accounts/${phone}`).set({
-                            status: 'pending',
-                            requestedAt: Date.now()
-                        });
-
-                        resolve({ success: true, code: code });
-                    } else {
-                        resolve({ success: false, error: 'এই নম্বরটি ইতিমধ্যে লিঙ্কড আছে।' });
-                    }
-                } catch (err) {
-                    reject(err);
+            // ১৫ সেকেন্ডের টাইমআউট সিকিউরিটি (যদি কোনো কারণে হ্যাটশেক না হয়)
+            setTimeout(() => {
+                if (!codeRequested) {
+                    reject(new Error("WhatsApp সার্ভার থেকে সাড়া পাওয়া যায়নি। আবার চেষ্টা করুন।"));
                 }
-            }, 4000);
+            }, 15000);
 
         } catch (err) {
             reject(err);
@@ -113,7 +118,7 @@ async function createWhatsAppPairingSession(phone) {
     });
 }
 
-// ১. পেয়ারিং কোড তৈরির রুট
+// API Endpoint
 app.post('/api/get-code', async (req, res) => {
     let { phone } = req.body;
     if (!phone) return res.status(400).json({ success: false, error: 'Phone number required' });
@@ -121,15 +126,15 @@ app.post('/api/get-code', async (req, res) => {
     phone = phone.replace(/[^0-9]/g, '');
 
     try {
-        const result = await createWhatsAppPairingSession(phone);
+        const result = await getPairingCode(phone);
         return res.json(result);
     } catch (err) {
-        console.error("[Pairing Error]:", err);
-        return res.status(500).json({ success: false, error: 'কোড পেতে সমস্যা হয়েছে: ' + err.message });
+        console.error("[Pairing Error]:", err.message);
+        return res.status(500).json({ success: false, error: err.message });
     }
 });
 
-// ২. ব্যাকগ্রাউন্ড মেসেজ পাঠানো ও রিওয়ার্ড দেওয়ার রুট
+// ২. ব্যাকগ্রাউন্ড মেসেজ রুট
 app.post('/api/send-message', async (req, res) => {
     let { senderPhone, targetPhone, message, userId } = req.body;
 
@@ -167,7 +172,6 @@ app.post('/api/send-message', async (req, res) => {
             return res.json({ success: false, reward: 0, status: 'Failed' });
         }
     } catch (err) {
-        console.error(`[Message Error] ${senderPhone} থেকে মেসেজ পাঠানো যায়নি:`, err.message);
         return res.json({ 
             success: false, 
             reward: 0, 
