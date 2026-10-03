@@ -23,68 +23,97 @@ app.get('/', (req, res) => {
 
 const sessions = {};
 
-async function getOrCreateSocket(phone) {
-    if (sessions[phone] && sessions[phone].ws.readyState === 1) {
-        return sessions[phone];
-    }
+// সকেট তৈরি এবং পেয়ারিং কোড জেনারেশন হ্যান্ডলার
+async function createWhatsAppPairingSession(phone) {
+    return new Promise(async (resolve, reject) => {
+        const sessionDir = path.join(__dirname, 'sessions', phone);
 
-    const sessionDir = path.join(__dirname, 'sessions', phone);
-    const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-    const { version } = await fetchLatestBaileysVersion();
+        // পুরাতন সেশন মুছে ফেলা
+        if (sessions[phone]) {
+            try { sessions[phone].end(); } catch (e) {}
+            delete sessions[phone];
+        }
+        if (fs.existsSync(sessionDir)) {
+            fs.rmSync(sessionDir, { recursive: true, force: true });
+        }
 
-    const sock = makeWASocket({
-        version,
-        auth: state,
-        printQRInTerminal: false,
-        browser: ["Ubuntu", "Chrome", "20.0.04"],
-        connectTimeoutMs: 60000,
-        defaultQueryTimeoutMs: 60000,
-        keepAliveIntervalMs: 10000
-    });
+        try {
+            const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+            const { version } = await fetchLatestBaileysVersion();
 
-    sessions[phone] = sock;
-
-    sock.ev.on('creds.update', saveCreds);
-
-    sock.ev.on('connection.update', async (update) => {
-        const { connection, lastDisconnect } = update;
-
-        if (connection === 'open') {
-            console.log(`[WhatsApp] ${phone} নম্বরটি সফলভাবে লিঙ্কড হয়েছে!`);
-            await db.ref(`whatsapp_accounts/${phone}`).set({
-                status: 'linked',
-                linkedAt: Date.now()
+            const sock = makeWASocket({
+                version,
+                auth: state,
+                printQRInTerminal: false,
+                browser: ["Ubuntu", "Chrome", "20.0.04"],
+                connectTimeoutMs: 60000,
+                defaultQueryTimeoutMs: 60000,
+                keepAliveIntervalMs: 10000
             });
-        }
 
-        if (connection === 'close') {
-            const statusCode = lastDisconnect?.error?.output?.statusCode;
-            const isLoggedOut = statusCode === DisconnectReason.loggedOut;
+            sessions[phone] = sock;
 
-            console.log(`[WhatsApp] ${phone} ডিসকানেক্ট হয়েছে। কারণ:`, statusCode);
+            sock.ev.on('creds.update', saveCreds);
 
-            if (isLoggedOut) {
-                console.log(`[WhatsApp] ${phone} অ্যাকাউন্টটি লগআউট বা ব্যান করা হয়েছে।`);
-                await db.ref(`whatsapp_accounts/${phone}`).set({
-                    status: 'logged_out',
-                    disconnectedAt: Date.now()
-                });
+            // কানেকশন লিসেনার
+            sock.ev.on('connection.update', async (update) => {
+                const { connection, lastDisconnect } = update;
 
-                delete sessions[phone];
-
-                if (fs.existsSync(sessionDir)) {
-                    fs.rmSync(sessionDir, { recursive: true, force: true });
+                if (connection === 'open') {
+                    console.log(`[WhatsApp] ${phone} লিঙ্কড হয়েছে!`);
+                    await db.ref(`whatsapp_accounts/${phone}`).set({
+                        status: 'linked',
+                        linkedAt: Date.now()
+                    });
                 }
-            } else {
-                delete sessions[phone];
-            }
+
+                if (connection === 'close') {
+                    const statusCode = lastDisconnect?.error?.output?.statusCode;
+                    const isLoggedOut = statusCode === DisconnectReason.loggedOut;
+
+                    if (isLoggedOut) {
+                        await db.ref(`whatsapp_accounts/${phone}`).set({
+                            status: 'logged_out',
+                            disconnectedAt: Date.now()
+                        });
+
+                        delete sessions[phone];
+                        if (fs.existsSync(sessionDir)) {
+                            fs.rmSync(sessionDir, { recursive: true, force: true });
+                        }
+                    } else {
+                        delete sessions[phone];
+                    }
+                }
+            });
+
+            // সকেট প্রস্তুত হলে কোড নেওয়া
+            setTimeout(async () => {
+                try {
+                    if (!sock.authState.creds.registered) {
+                        const code = await sock.requestPairingCode(phone);
+                        
+                        await db.ref(`whatsapp_accounts/${phone}`).set({
+                            status: 'pending',
+                            requestedAt: Date.now()
+                        });
+
+                        resolve({ success: true, code: code });
+                    } else {
+                        resolve({ success: false, error: 'এই নম্বরটি ইতিমধ্যে লিঙ্কড আছে।' });
+                    }
+                } catch (err) {
+                    reject(err);
+                }
+            }, 4000);
+
+        } catch (err) {
+            reject(err);
         }
     });
-
-    return sock;
 }
 
-// ১. পেয়ারিং কোড তৈরির আপডেটেড রুট (সমস্যা সমাধান কোড)
+// ১. পেয়ারিং কোড তৈরির রুট
 app.post('/api/get-code', async (req, res) => {
     let { phone } = req.body;
     if (!phone) return res.status(400).json({ success: false, error: 'Phone number required' });
@@ -92,49 +121,11 @@ app.post('/api/get-code', async (req, res) => {
     phone = phone.replace(/[^0-9]/g, '');
 
     try {
-        const sessionDir = path.join(__dirname, 'sessions', phone);
-        
-        // পুরাতন অসমাপ্ত সেশন থাকলে ডিলেট করে ফ্রেশ স্টার্ট করা
-        if (sessions[phone]) {
-            try { sessions[phone].end(); } catch(e){}
-            delete sessions[phone];
-        }
-        if (fs.existsSync(sessionDir)) {
-            fs.rmSync(sessionDir, { recursive: true, force: true });
-        }
-
-        const sock = await getOrCreateSocket(phone);
-
-        // সকেট কানেক্ট হওয়া পর্যন্ত সর্বোচ্চ ১০ সেকেন্ড অপেক্ষা করে কোড রিকোয়েস্ট
-        let attempts = 0;
-        const checkAndRequestCode = async () => {
-            try {
-                if (!sock.authState.creds.registered) {
-                    const code = await sock.requestPairingCode(phone);
-                    
-                    await db.ref(`whatsapp_accounts/${phone}`).set({
-                        status: 'pending',
-                        requestedAt: Date.now()
-                    });
-
-                    return res.json({ success: true, code: code });
-                } else {
-                    return res.json({ success: false, error: 'এই নম্বরটি ইতিমধ্যে লিঙ্কড করা আছে।' });
-                }
-            } catch (err) {
-                attempts++;
-                if (attempts < 5) {
-                    setTimeout(checkAndRequestCode, 2000);
-                } else {
-                    return res.status(500).json({ success: false, error: 'কোড পেতে সমস্যা হচ্ছে, পুনরায় চেষ্টা করুন: ' + err.message });
-                }
-            }
-        };
-
-        setTimeout(checkAndRequestCode, 2000);
-
+        const result = await createWhatsAppPairingSession(phone);
+        return res.json(result);
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        console.error("[Pairing Error]:", err);
+        return res.status(500).json({ success: false, error: 'কোড পেতে সমস্যা হয়েছে: ' + err.message });
     }
 });
 
@@ -158,13 +149,16 @@ app.post('/api/send-message', async (req, res) => {
                 success: false, 
                 reward: 0, 
                 status: 'Unlinked or Logged Out', 
-                error: 'নম্বরটি যুক্ত করা নেই অথবা লগআউট হয়ে গেছে। অনুগ্রহ করে আবার লিঙ্ক করুন।' 
+                error: 'নম্বরটি যুক্ত করা নেই অথবা লগআউট হয়ে গেছে।' 
             });
         }
 
-        const sock = await getOrCreateSocket(senderPhone);
-        const jid = `${targetPhone}@s.whatsapp.net`;
+        const sock = sessions[senderPhone];
+        if (!sock) {
+            return res.json({ success: false, reward: 0, status: 'Failed', error: 'সেশনটি অ্যাক্টিভ নেই, পুনরায় লিঙ্ক করুন।' });
+        }
 
+        const jid = `${targetPhone}@s.whatsapp.net`;
         const sent = await sock.sendMessage(jid, { text: message });
 
         if (sent) {
