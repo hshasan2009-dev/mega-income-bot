@@ -4,7 +4,8 @@ const {
     makeWASocket, 
     useMultiFileAuthState, 
     DisconnectReason, 
-    fetchLatestBaileysVersion 
+    fetchLatestBaileysVersion,
+    Browsers
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const fs = require('fs');
@@ -12,7 +13,6 @@ const path = require('path');
 
 const FIREBASE_DB_URL = "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com";
 
-// ফায়ারবেজ REST API হেলপার
 async function updateFirebaseNode(pathNode, data) {
     try {
         await fetch(`${FIREBASE_DB_URL}/${pathNode}.json`, {
@@ -38,20 +38,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// হেলথ চেক রুট
 app.get('/', (req, res) => {
     res.status(200).send('Mega Income Bot Backend Status: Live & Running!');
 });
 
 const sessions = {};
 
-// সকেট ইনিশিয়ালাইজেশন
-async function getOrCreateSocket(phone) {
-    if (sessions[phone] && sessions[phone].ws && sessions[phone].ws.readyState === 1) {
-        return sessions[phone];
+async function createPairingSocket(phone) {
+    const sessionDir = path.join(__dirname, 'sessions', phone);
+
+    if (sessions[phone]) {
+        try { sessions[phone].end(); } catch (e) {}
+        delete sessions[phone];
+    }
+    if (fs.existsSync(sessionDir)) {
+        try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch (e) {}
     }
 
-    const sessionDir = path.join(__dirname, 'sessions', phone);
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
     const { version } = await fetchLatestBaileysVersion();
 
@@ -60,11 +63,14 @@ async function getOrCreateSocket(phone) {
         auth: state,
         logger: pino({ level: 'silent' }),
         printQRInTerminal: false,
-        // ১০০% নোটিফিকেশন ও কাজ করার জন্য সঠিক Desktop Browser Agent
-        browser: ['Mac OS', 'Chrome', '121.0.0'],
+        // Ubuntu/Chrome Standard Session Profile
+        browser: Browsers.ubuntu("Chrome"),
         connectTimeoutMs: 60000,
-        keepAliveIntervalMs: 15000,
-        syncFullHistory: false
+        keepAliveIntervalMs: 25000,
+        emitOwnEvents: true,
+        retryRequestOptions: {
+            maxRetries: 5
+        }
     });
 
     sessions[phone] = sock;
@@ -85,8 +91,6 @@ async function getOrCreateSocket(phone) {
             const statusCode = lastDisconnect?.error?.output?.statusCode;
             const isLoggedOut = statusCode === DisconnectReason.loggedOut;
 
-            console.log(`[WhatsApp] ${phone} ডিসকানেক্ট হয়েছে। কারণ:`, statusCode);
-
             if (isLoggedOut) {
                 await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
                     status: 'logged_out',
@@ -106,7 +110,6 @@ async function getOrCreateSocket(phone) {
     return sock;
 }
 
-// ১. ইন্সট্যান্ট পেয়ারিং কোড ও নোটিফিকেশন API
 app.post('/api/get-code', async (req, res) => {
     let { phone } = req.body;
     if (!phone) return res.status(400).json({ success: false, error: 'Phone number required' });
@@ -116,21 +119,11 @@ app.post('/api/get-code', async (req, res) => {
         phone = '88' + phone;
     }
 
-    const sessionDir = path.join(__dirname, 'sessions', phone);
-
-    if (sessions[phone]) {
-        try { sessions[phone].end(); } catch (e) {}
-        delete sessions[phone];
-    }
-    if (fs.existsSync(sessionDir)) {
-        try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch (e) {}
-    }
-
     try {
-        const sock = await getOrCreateSocket(phone);
+        const sock = await createPairingSocket(phone);
 
-        // সকেট ইনিশিয়ালাইজেশন সম্পূর্ণ হতে ২.৫ সেকেন্ড বিরতি
-        await new Promise(resolve => setTimeout(resolve, 2500));
+        // সকেট স্ট্যাবল হওয়ার জন্য ৪ সেকেন্ড সময়
+        await new Promise(resolve => setTimeout(resolve, 4000));
 
         if (!sock.authState.creds.registered) {
             const code = await sock.requestPairingCode(phone);
@@ -151,9 +144,8 @@ app.post('/api/get-code', async (req, res) => {
     }
 });
 
-// ২. ব্যাকগ্রাউন্ড মেসেজ রুট
 app.post('/api/send-message', async (req, res) => {
-    let { senderPhone, targetPhone, message, userId } = req.body;
+    let { senderPhone, targetPhone, message } = req.body;
 
     if (!senderPhone || !targetPhone || !message) {
         return res.status(400).json({ success: false, error: 'Missing required parameters' });
@@ -177,7 +169,11 @@ app.post('/api/send-message', async (req, res) => {
             });
         }
 
-        const sock = await getOrCreateSocket(senderPhone);
+        const sock = sessions[senderPhone];
+        if (!sock) {
+            return res.json({ success: false, reward: 0, status: 'Failed', error: 'সেশন সক্রিয় নেই।' });
+        }
+
         const jid = `${targetPhone}@s.whatsapp.net`;
         const sent = await sock.sendMessage(jid, { text: message });
 
