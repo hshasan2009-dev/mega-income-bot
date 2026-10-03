@@ -8,17 +8,33 @@ const {
     Browsers 
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
-const admin = require('firebase-admin');
 const fs = require('fs');
 const path = require('path');
 
-// ফায়ারবেজ এডমিন ইনিশিয়ালাইজেশন
-if (!admin.apps.length) {
-    admin.initializeApp({
-        databaseURL: "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com"
-    });
+const FIREBASE_DB_URL = "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com";
+
+// ফায়ারবেজ REST API হেলপার ফংশন
+async function updateFirebaseNode(pathNode, data) {
+    try {
+        await fetch(`${FIREBASE_DB_URL}/${pathNode}.json`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    } catch (e) {
+        console.error("Firebase update error:", e.message);
+    }
 }
-const db = admin.database();
+
+async function getFirebaseNode(pathNode) {
+    try {
+        const res = await fetch(`${FIREBASE_DB_URL}/${pathNode}.json`);
+        return await res.json();
+    } catch (e) {
+        console.error("Firebase fetch error:", e.message);
+        return null;
+    }
+}
 
 const app = express();
 app.use(cors());
@@ -34,7 +50,6 @@ const sessions = {};
 async function generatePairingCode(phone) {
     const sessionDir = path.join(__dirname, 'sessions', phone);
 
-    // পুরাতন সেশন মুছে ফেলা
     if (sessions[phone]) {
         try { sessions[phone].end(); } catch (e) {}
         delete sessions[phone];
@@ -58,13 +73,12 @@ async function generatePairingCode(phone) {
     sessions[phone] = sock;
     sock.ev.on('creds.update', saveCreds);
 
-    // কানেকশন লিসেনার
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect } = update;
 
         if (connection === 'open') {
             console.log(`[WhatsApp] ${phone} লিঙ্কড হয়েছে!`);
-            await db.ref(`whatsapp_accounts/${phone}`).set({
+            await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
                 status: 'linked',
                 linkedAt: Date.now()
             });
@@ -75,7 +89,7 @@ async function generatePairingCode(phone) {
             const isLoggedOut = statusCode === DisconnectReason.loggedOut;
 
             if (isLoggedOut) {
-                await db.ref(`whatsapp_accounts/${phone}`).set({
+                await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
                     status: 'logged_out',
                     disconnectedAt: Date.now()
                 });
@@ -90,12 +104,11 @@ async function generatePairingCode(phone) {
         }
     });
 
-    // ৩ সেকেন্ড সকেট রেডি হওয়ার পর কোড ফেচ করা
     await new Promise(resolve => setTimeout(resolve, 3000));
 
     if (!sock.authState.creds.registered) {
         const code = await sock.requestPairingCode(phone);
-        await db.ref(`whatsapp_accounts/${phone}`).set({
+        await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
             status: 'pending',
             requestedAt: Date.now()
         });
@@ -133,8 +146,7 @@ app.post('/api/send-message', async (req, res) => {
     targetPhone = targetPhone.replace(/[^0-9]/g, '');
 
     try {
-        const snapshot = await db.ref(`whatsapp_accounts/${senderPhone}`).once('value');
-        const accountData = snapshot.val();
+        const accountData = await getFirebaseNode(`whatsapp_accounts/${senderPhone}`);
 
         if (!accountData || accountData.status !== 'linked') {
             return res.json({ 
