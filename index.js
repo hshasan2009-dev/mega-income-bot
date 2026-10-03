@@ -1,11 +1,18 @@
 const express = require('express');
 const cors = require('cors');
-const { makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
+const { 
+    makeWASocket, 
+    useMultiFileAuthState, 
+    DisconnectReason, 
+    fetchLatestBaileysVersion, 
+    Browsers 
+} = require('@whiskeysockets/baileys');
+const pino = require('pino');
 const admin = require('firebase-admin');
 const fs = require('fs');
 const path = require('path');
 
-// ফায়ারবেজ ইনিশিয়ালাইজেশন
+// ফায়ারবেজ এডমিন ইনিশিয়ালাইজেশন
 if (!admin.apps.length) {
     admin.initializeApp({
         databaseURL: "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com"
@@ -23,99 +30,79 @@ app.get('/', (req, res) => {
 
 const sessions = {};
 
-// ১. সঠিক নিয়মে পেয়ারিং কোড জেনারেটর ফংশন
-function getPairingCode(phone) {
-    return new Promise(async (resolve, reject) => {
-        const sessionDir = path.join(__dirname, 'sessions', phone);
+// পেয়ারিং কোড জেনারেটর
+async function generatePairingCode(phone) {
+    const sessionDir = path.join(__dirname, 'sessions', phone);
 
-        // পুরাতন সেশন ও মেমোরি ক্লিনআপ
-        if (sessions[phone]) {
-            try { sessions[phone].end(); } catch (e) {}
-            delete sessions[phone];
-        }
-        if (fs.existsSync(sessionDir)) {
-            try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch(e) {}
-        }
+    // পুরাতন সেশন মুছে ফেলা
+    if (sessions[phone]) {
+        try { sessions[phone].end(); } catch (e) {}
+        delete sessions[phone];
+    }
+    if (fs.existsSync(sessionDir)) {
+        try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch (e) {}
+    }
 
-        try {
-            const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-            const { version } = await fetchLatestBaileysVersion();
+    const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+    const { version } = await fetchLatestBaileysVersion();
 
-            const sock = makeWASocket({
-                version,
-                auth: state,
-                printQRInTerminal: false,
-                browser: ["Ubuntu", "Chrome", "20.0.04"],
-                connectTimeoutMs: 60000,
-                defaultQueryTimeoutMs: 60000
+    const sock = makeWASocket({
+        version,
+        auth: state,
+        logger: pino({ level: 'silent' }),
+        printQRInTerminal: false,
+        browser: Browsers.ubuntu("Chrome"),
+        connectTimeoutMs: 60000
+    });
+
+    sessions[phone] = sock;
+    sock.ev.on('creds.update', saveCreds);
+
+    // কানেকশন লিসেনার
+    sock.ev.on('connection.update', async (update) => {
+        const { connection, lastDisconnect } = update;
+
+        if (connection === 'open') {
+            console.log(`[WhatsApp] ${phone} লিঙ্কড হয়েছে!`);
+            await db.ref(`whatsapp_accounts/${phone}`).set({
+                status: 'linked',
+                linkedAt: Date.now()
             });
+        }
 
-            sessions[phone] = sock;
-            sock.ev.on('creds.update', saveCreds);
+        if (connection === 'close') {
+            const statusCode = lastDisconnect?.error?.output?.statusCode;
+            const isLoggedOut = statusCode === DisconnectReason.loggedOut;
 
-            let codeRequested = false;
+            if (isLoggedOut) {
+                await db.ref(`whatsapp_accounts/${phone}`).set({
+                    status: 'logged_out',
+                    disconnectedAt: Date.now()
+                });
 
-            // কানেকশন লিসেনার (যেখানে সঠিক সময়ে কোড রিকোয়েস্ট করতে হয়)
-            sock.ev.on('connection.update', async (update) => {
-                const { connection, lastDisconnect, qr } = update;
-
-                // সকেট যখন QR ইমিট করবে (মানে সকেট এখন পেয়ারিং কোড নেওয়ার জন্য সম্পূর্ণ প্রস্তুত)
-                if (qr && !sock.authState.creds.registered && !codeRequested) {
-                    codeRequested = true;
-                    try {
-                        // সকেট রেডি হওয়ার পর পেয়ারিং কোড রিকোয়েস্ট
-                        const code = await sock.requestPairingCode(phone);
-                        
-                        await db.ref(`whatsapp_accounts/${phone}`).set({
-                            status: 'pending',
-                            requestedAt: Date.now()
-                        });
-
-                        resolve({ success: true, code: code });
-                    } catch (codeErr) {
-                        reject(new Error("কোড জেনারেট করতে ব্যর্থ: " + codeErr.message));
-                    }
+                delete sessions[phone];
+                if (fs.existsSync(sessionDir)) {
+                    try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch (e) {}
                 }
-
-                if (connection === 'open') {
-                    console.log(`[WhatsApp] ${phone} নম্বরটি লিঙ্কড হয়েছে!`);
-                    await db.ref(`whatsapp_accounts/${phone}`).set({
-                        status: 'linked',
-                        linkedAt: Date.now()
-                    });
-                }
-
-                if (connection === 'close') {
-                    const statusCode = lastDisconnect?.error?.output?.statusCode;
-                    const isLoggedOut = statusCode === DisconnectReason.loggedOut;
-
-                    if (isLoggedOut) {
-                        await db.ref(`whatsapp_accounts/${phone}`).set({
-                            status: 'logged_out',
-                            disconnectedAt: Date.now()
-                        });
-
-                        delete sessions[phone];
-                        if (fs.existsSync(sessionDir)) {
-                            try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch(e){}
-                        }
-                    } else {
-                        delete sessions[phone];
-                    }
-                }
-            });
-
-            // ১৫ সেকেন্ডের টাইমআউট সিকিউরিটি (যদি কোনো কারণে হ্যাটশেক না হয়)
-            setTimeout(() => {
-                if (!codeRequested) {
-                    reject(new Error("WhatsApp সার্ভার থেকে সাড়া পাওয়া যায়নি। আবার চেষ্টা করুন।"));
-                }
-            }, 15000);
-
-        } catch (err) {
-            reject(err);
+            } else {
+                delete sessions[phone];
+            }
         }
     });
+
+    // ৩ সেকেন্ড সকেট রেডি হওয়ার পর কোড ফেচ করা
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    if (!sock.authState.creds.registered) {
+        const code = await sock.requestPairingCode(phone);
+        await db.ref(`whatsapp_accounts/${phone}`).set({
+            status: 'pending',
+            requestedAt: Date.now()
+        });
+        return code;
+    } else {
+        throw new Error('এই নম্বরটি ইতিমধ্যে লিঙ্কড আছে।');
+    }
 }
 
 // API Endpoint
@@ -126,15 +113,15 @@ app.post('/api/get-code', async (req, res) => {
     phone = phone.replace(/[^0-9]/g, '');
 
     try {
-        const result = await getPairingCode(phone);
-        return res.json(result);
+        const code = await generatePairingCode(phone);
+        return res.json({ success: true, code: code });
     } catch (err) {
         console.error("[Pairing Error]:", err.message);
-        return res.status(500).json({ success: false, error: err.message });
+        return res.status(500).json({ success: false, error: err.message || 'কোড পাওয়া যায়নি, আবার চেষ্টা করুন।' });
     }
 });
 
-// ২. ব্যাকগ্রাউন্ড মেসেজ রুট
+// ব্যাকগ্রাউন্ড মেসেজ রুট
 app.post('/api/send-message', async (req, res) => {
     let { senderPhone, targetPhone, message, userId } = req.body;
 
