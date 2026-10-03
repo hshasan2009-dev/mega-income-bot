@@ -13,7 +13,7 @@ const path = require('path');
 
 const FIREBASE_DB_URL = "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com";
 
-// ফায়ারবেজ REST API হেলপার ফংশন
+// ফায়ারবেজ হেলপার
 async function updateFirebaseNode(pathNode, data) {
     try {
         await fetch(`${FIREBASE_DB_URL}/${pathNode}.json`, {
@@ -31,7 +31,6 @@ async function getFirebaseNode(pathNode) {
         const res = await fetch(`${FIREBASE_DB_URL}/${pathNode}.json`);
         return await res.json();
     } catch (e) {
-        console.error("Firebase fetch error:", e.message);
         return null;
     }
 }
@@ -46,18 +45,13 @@ app.get('/', (req, res) => {
 
 const sessions = {};
 
-// পেয়ারিং কোড জেনারেটর
-async function generatePairingCode(phone) {
+// সকেট তৈরি ও অ্যাক্টিভ রাখা
+async function getOrCreateSocket(phone) {
+    if (sessions[phone] && sessions[phone].ws && sessions[phone].ws.readyState === 1) {
+        return sessions[phone];
+    }
+
     const sessionDir = path.join(__dirname, 'sessions', phone);
-
-    if (sessions[phone]) {
-        try { sessions[phone].end(); } catch (e) {}
-        delete sessions[phone];
-    }
-    if (fs.existsSync(sessionDir)) {
-        try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch (e) {}
-    }
-
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
     const { version } = await fetchLatestBaileysVersion();
 
@@ -67,7 +61,8 @@ async function generatePairingCode(phone) {
         logger: pino({ level: 'silent' }),
         printQRInTerminal: false,
         browser: Browsers.ubuntu("Chrome"),
-        connectTimeoutMs: 60000
+        connectTimeoutMs: 60000,
+        keepAliveIntervalMs: 15000
     });
 
     sessions[phone] = sock;
@@ -99,42 +94,63 @@ async function generatePairingCode(phone) {
                     try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch (e) {}
                 }
             } else {
+                // সাময়িক ডিসকানেক্ট হলে মেমোরি ক্লিয়ার করে রিকানেক্ট সুযোগ রাখা
                 delete sessions[phone];
             }
         }
     });
 
-    await new Promise(resolve => setTimeout(resolve, 3000));
-
-    if (!sock.authState.creds.registered) {
-        const code = await sock.requestPairingCode(phone);
-        await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
-            status: 'pending',
-            requestedAt: Date.now()
-        });
-        return code;
-    } else {
-        throw new Error('এই নম্বরটি ইতিমধ্যে লিঙ্কড আছে।');
-    }
+    return sock;
 }
 
-// API Endpoint
+// ১. সঠিক পেয়ারিং কোড জেনারেটর রুট
 app.post('/api/get-code', async (req, res) => {
     let { phone } = req.body;
     if (!phone) return res.status(400).json({ success: false, error: 'Phone number required' });
 
+    // শুধুমাত্র ডিজিট রাখা (যেমন: 8801337176976)
     phone = phone.replace(/[^0-9]/g, '');
+    if (phone.startsWith('0')) {
+        phone = '88' + phone;
+    }
+
+    const sessionDir = path.join(__dirname, 'sessions', phone);
+
+    // আগের কোনো ইনকমপ্লিট সেশন ফোল্ডার থাকলে রিমুভ করা
+    if (sessions[phone]) {
+        try { sessions[phone].end(); } catch (e) {}
+        delete sessions[phone];
+    }
+    if (fs.existsSync(sessionDir)) {
+        try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch (e) {}
+    }
 
     try {
-        const code = await generatePairingCode(phone);
-        return res.json({ success: true, code: code });
+        const sock = await getOrCreateSocket(phone);
+
+        // সকেট ইনিশিয়ালাইজ হওয়ার জন্য ৪ সেকেন্ড অপেক্ষা
+        await new Promise(r => setTimeout(r, 4000));
+
+        if (!sock.authState.creds.registered) {
+            const code = await sock.requestPairingCode(phone);
+            
+            await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
+                status: 'pending',
+                requestedAt: Date.now()
+            });
+
+            return res.json({ success: true, code: code });
+        } else {
+            return res.json({ success: false, error: 'এই নম্বরটি ইতিমধ্যে লিঙ্কড আছে।' });
+        }
+
     } catch (err) {
         console.error("[Pairing Error]:", err.message);
-        return res.status(500).json({ success: false, error: err.message || 'কোড পাওয়া যায়নি, আবার চেষ্টা করুন।' });
+        return res.status(500).json({ success: false, error: 'কোড পেতে সমস্যা হয়েছে: ' + err.message });
     }
 });
 
-// ব্যাকগ্রাউন্ড মেসেজ রুট
+// ২. ব্যাকগ্রাউন্ড মেসেজ রুট
 app.post('/api/send-message', async (req, res) => {
     let { senderPhone, targetPhone, message, userId } = req.body;
 
@@ -143,7 +159,10 @@ app.post('/api/send-message', async (req, res) => {
     }
 
     senderPhone = senderPhone.replace(/[^0-9]/g, '');
+    if (senderPhone.startsWith('0')) senderPhone = '88' + senderPhone;
+
     targetPhone = targetPhone.replace(/[^0-9]/g, '');
+    if (targetPhone.startsWith('0')) targetPhone = '88' + targetPhone;
 
     try {
         const accountData = await getFirebaseNode(`whatsapp_accounts/${senderPhone}`);
@@ -157,11 +176,7 @@ app.post('/api/send-message', async (req, res) => {
             });
         }
 
-        const sock = sessions[senderPhone];
-        if (!sock) {
-            return res.json({ success: false, reward: 0, status: 'Failed', error: 'সেশনটি অ্যাক্টিভ নেই, পুনরায় লিঙ্ক করুন।' });
-        }
-
+        const sock = await getOrCreateSocket(senderPhone);
         const jid = `${targetPhone}@s.whatsapp.net`;
         const sent = await sock.sendMessage(jid, { text: message });
 
