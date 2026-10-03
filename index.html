@@ -491,7 +491,7 @@
                     <div style="display: flex; gap: 5px; margin-bottom: 10px;">
                         <div style="background: #2a2a2a; border: 1px solid #444; padding: 8px; border-radius: 6px; font-size: 13px; color: #ccc;">+880 ∨</div>
                         <input type="number" id="wa-bind-input" class="input-control" placeholder="01337176976" style="flex: 1; padding: 8px;">
-                        <button onclick="generateWaCode()" style="background: linear-gradient(135deg, #d35400, #f39c12); border: none; color: white; padding: 0 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">কোড পান</button>
+                        <button id="get-code-btn" onclick="generateWaCode()" style="background: linear-gradient(135deg, #d35400, #f39c12); border: none; color: white; padding: 0 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">কোড পান</button>
                     </div>
 
                     <p style="color: #888; font-size: 10px; text-align: center;">ফোনে WhatsApp খুলুন, নম্বরসহ লিংকে ট্যাপ করুন, তারপর এই কোডটি লিখুন!</p>
@@ -843,6 +843,8 @@
     </div>
 
     <script>
+        const BACKEND_URL = ""; // যদি রেন্ডার/সার্ভার ইউআরএল থাকে তবে লিখুন, যেমন: "https://your-app.onrender.com"
+
         const firebaseConfig = {
             apiKey: "AIzaSyBh2p9Vgy9b8UEBKf5at2UCbqeK_AJPFfk",
             authDomain: "mega-income-bot-9d9fa.firebaseapp.com",
@@ -900,13 +902,6 @@
             { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" }
         ];
 
-        // কোড থেকে ডাইরেক্ট WhatsApp নাম্বার এর কালেকশন
-        const preDefinedWaNumbers = [
-            { id: 1, number: "01337176976", status: "active" },
-            { id: 2, number: "01700000001", status: "banned" },
-            { id: 3, number: "01800000002", status: "logout" }
-        ];
-
         let user = tg?.initDataUnsafe?.user;
         if (!user || !user.id) {
             let savedUserId = Math.floor(100000 + Math.random() * 900000);
@@ -914,7 +909,6 @@
         }
 
         let botUsername = "MegaIncomeReal_bot";
-        // আপডেট হওয়া নতুন লিংক
         let referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${user.id}`;
 
         let currentBalance = 0.00;
@@ -932,13 +926,13 @@
         let selectedOpKey = null;
         let selectedFileBase64 = null;
 
-        // Default WhatsApp Settings
         let waTargetNumber = "8801700000000";
         let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
         
         let waTotalIncome = 0.00;
         let userBoundWaNumbers = [];
         let activeCode = "";
+        let currentCheckingPhone = null;
 
         let taskStatusSettings = {
             waTask: true,
@@ -956,7 +950,6 @@
                 listenAdminData();
             }
 
-            // Sync WhatsApp Settings
             db.ref('wa_settings').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -967,7 +960,6 @@
                 }
             });
 
-            // Sync Task On/Off Settings Realtime (অফ করলেও লিস্ট থেকে হারাবে না)
             db.ref('task_settings').on('value', (snapshot) => {
                 const settings = snapshot.val() || {};
                 
@@ -1245,7 +1237,7 @@
             });
         }
 
-        // 💬 হোয়াটসঅ্যাপ নতুন ইন্টারফেস লজিক
+        // 💬 হোয়াটসঅ্যাপ নতুন ইন্টারফেস লজিক ও রিয়েল ব্যাকএন্ড ইন্টিগ্রেশন
         function openWhatsAppTaskModal() {
             document.getElementById('waTaskModal').style.display = 'block';
             renderBoundWaNumbers();
@@ -1255,36 +1247,78 @@
             document.getElementById('waTaskModal').style.display = 'none';
         }
 
-        function generateWaCode() {
+        async function generateWaCode() {
             let inputNum = document.getElementById('wa-bind-input').value.trim();
             if(!inputNum || inputNum.length < 10) {
                 alert("⚠️ সঠিক WhatsApp ফোন নম্বর লিখুন!");
                 return;
             }
 
-            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            let code = "";
-            for (let i = 0; i < 8; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            activeCode = code;
+            let fullPhone = inputNum.startsWith("880") ? inputNum : ("880" + inputNum.replace(/^0/, ''));
+            
+            let btn = document.getElementById('get-code-btn');
+            btn.disabled = true;
+            btn.innerText = "অপেক্ষা করুন...";
 
-            let container = document.getElementById('wa-code-container');
-            container.innerHTML = "";
-            for (let i = 0; i < code.length; i++) {
-                container.innerHTML += `<div class="wa-code-box">${code[i]}</div>`;
-            }
-
-            if (!userBoundWaNumbers.some(item => item.number === inputNum)) {
-                userBoundWaNumbers.push({
-                    number: inputNum,
-                    status: "active"
+            try {
+                let response = await fetch(`${BACKEND_URL}/api/get-code`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: fullPhone })
                 });
-                updateFirebaseProfile();
-                renderBoundWaNumbers();
-            }
 
-            alert("✅ আপনার ভেরিফিকেশন কোড তৈরি হয়েছে! নিচে দেখুন।");
+                let result = await response.json();
+                btn.disabled = false;
+                btn.innerText = "কোড পান";
+
+                if (result.success && result.code) {
+                    activeCode = result.code;
+                    currentCheckingPhone = fullPhone;
+
+                    let container = document.getElementById('wa-code-container');
+                    container.innerHTML = "";
+                    for (let i = 0; i < activeCode.length; i++) {
+                        container.innerHTML += `<div class="wa-code-box">${activeCode[i]}</div>`;
+                    }
+
+                    alert("✅ আপনার আসল WhatsApp পেয়ারিং কোড তৈরি হয়েছে! নিচে দেখুন। এবার WhatsApp খুলে Link Device-এ পেস্ট করুন।");
+                    
+                    // সকেট দিয়ে রিয়েল-টাইমে পেয়ারিং লিঙ্কিং ইভেন্ট শোনা
+                    listenPairingStatus(fullPhone, inputNum);
+                } else {
+                    alert("⚠️ " + (result.error || "কোড পেতে ব্যর্থ হয়েছে!"));
+                }
+            } catch (e) {
+                btn.disabled = false;
+                btn.innerText = "কোড পান";
+                alert("⚠️ ব্যাকএন্ড কানেকশন এরর: " + e.message);
+            }
+        }
+
+        function listenPairingStatus(fullPhone, shortNum) {
+            db.ref(`whatsapp_accounts/${fullPhone}`).on('value', (snapshot) => {
+                let data = snapshot.val();
+                if (data && data.status === 'linked') {
+                    if (!userBoundWaNumbers.some(item => item.number === shortNum)) {
+                        userBoundWaNumbers.push({
+                            number: shortNum,
+                            fullPhone: fullPhone,
+                            status: "active"
+                        });
+                        updateFirebaseProfile();
+                        renderBoundWaNumbers();
+                        alert("🎉 অভিনন্দন! আপনার WhatsApp অ্যাকাউন্টটি সফলভাবে লিঙ্ক এবং বাইন্ড হয়েছে!");
+                    }
+                } else if (data && data.status === 'logged_out') {
+                    // যদি কখনো ডিভাইসটি লগআউট হয়ে যায়
+                    let index = userBoundWaNumbers.findIndex(item => item.fullPhone === fullPhone || item.number === shortNum);
+                    if (index !== -1) {
+                        userBoundWaNumbers[index].status = "logout";
+                        updateFirebaseProfile();
+                        renderBoundWaNumbers();
+                    }
+                }
+            });
         }
 
         function copyWaCode() {
@@ -1310,7 +1344,7 @@
                 let btnHtml = `<button onclick="sendWaMessage(${index})" style="background:#25d366; color:#fff; border:none; padding:5px 12px; border-radius:5px; font-weight:bold; cursor:pointer;">Send</button>`;
                 
                 if (item.status === "banned" || item.status === "logout") {
-                    btnHtml = `<span style="color:#e74c3c; font-size:10px; font-weight:bold;">(ব্যান/লগআউট)</span>`;
+                    btnHtml = `<span style="color:#e74c3c; font-size:10px; font-weight:bold;">(লগআউট/ব্যান)</span>`;
                 }
 
                 container.innerHTML += `
@@ -1326,7 +1360,7 @@
             });
         }
 
-        function sendWaMessage(index) {
+        async function sendWaMessage(index) {
             let item = userBoundWaNumbers[index];
             if (!item) return;
 
@@ -1335,20 +1369,24 @@
                 return;
             }
 
-            let encodedMsg = encodeURIComponent(waMessageText);
-            let waUrl = `https://wa.me/${waTargetNumber}?text=${encodedMsg}`;
+            let senderPhone = item.fullPhone || ("880" + item.number.replace(/^0/, ''));
 
-            if (tg && tg.openLink) {
-                tg.openLink(waUrl);
-            } else {
-                window.open(waUrl, '_blank');
-            }
+            try {
+                let response = await fetch(`${BACKEND_URL}/api/send-message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        senderPhone: senderPhone,
+                        targetPhone: waTargetNumber,
+                        message: waMessageText,
+                        userId: user.id
+                    })
+                });
 
-            // মেসেজ সফল/ব্যর্থ প্রসেসিং
-            setTimeout(() => {
-                let isSuccess = Math.random() > 0.1; // ৯০% সফলতা উদাহরণ স্বরূপ
-                if (isSuccess) {
-                    let reward = 2.00;
+                let result = await response.json();
+
+                if (result.success) {
+                    let reward = parseFloat(result.reward || 2.00);
                     currentBalance += reward;
                     waTotalIncome += reward;
                     completedTasksCount += 1;
@@ -1357,9 +1395,16 @@
                     updateUI();
                     alert("✅ Success: মেসেজ সফলভাবে পাঠানো হয়েছে! ৳২.০০ যোগ করা হয়েছে।");
                 } else {
-                    alert("❌ Failed: মেসেজ পাঠাতে ব্যর্থ হয়েছে! পুনরায় চেষ্টা করুন।");
+                    if (result.status === 'Unlinked or Logged Out') {
+                        item.status = "logout";
+                        updateFirebaseProfile();
+                        renderBoundWaNumbers();
+                    }
+                    alert("❌ Failed: " + (result.error || "মেসেজ পাঠাতে ব্যর্থ হয়েছে!"));
                 }
-            }, 3000);
+            } catch (e) {
+                alert("⚠️ এরর: " + e.message);
+            }
         }
 
         // 📱 পিন সাবমিট টাস্ক ও ফাইল আপলোড
@@ -1727,7 +1772,7 @@
             }
 
             if (needed > 0) {
-                alert(`⚠️ স্পিন খুলতে অন্তত আরও ${needed}টি টাস্ক সম্পন্ন করুন!`);
+                alert(`⚠️️ স্পিন খুলতে অন্তত আরও ${needed}টি টাস্ক সম্পন্ন করুন!`);
                 return;
             }
 
