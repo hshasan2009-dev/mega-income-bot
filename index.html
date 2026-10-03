@@ -843,7 +843,8 @@
     </div>
 
     <script>
-        const BACKEND_URL = ""; // যদি রেন্ডার/সার্ভার ইউআরএল থাকে তবে লিখুন, যেমন: "https://your-app.onrender.com"
+        // আপনার Render ব্যাকএন্ড লাইভ লিঙ্ক
+        const BACKEND_URL = "https://mega-income-bot-1-zuli.onrender.com";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBh2p9Vgy9b8UEBKf5at2UCbqeK_AJPFfk",
@@ -1267,7 +1268,17 @@
                     body: JSON.stringify({ phone: fullPhone })
                 });
 
-                let result = await response.json();
+                let text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch(err) {
+                    btn.disabled = false;
+                    btn.innerText = "কোড পান";
+                    alert("⚠️ ব্যাকএন্ড কানেকশন এরর: ব্যাকএন্ড সার্ভার রেসপন্স দিচ্ছে না। আপনার Render ব্যাকএন্ড সচল আছে কিনা চেক করুন!");
+                    return;
+                }
+
                 btn.disabled = false;
                 btn.innerText = "কোড পান";
 
@@ -1383,7 +1394,14 @@
                     })
                 });
 
-                let result = await response.json();
+                let text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch(err) {
+                    alert("⚠️ ব্যাকএন্ড এরর: সার্ভার রেসপন্স দিচ্ছে না।");
+                    return;
+                }
 
                 if (result.success) {
                     let reward = parseFloat(result.reward || 2.00);
@@ -1772,7 +1790,7 @@
             }
 
             if (needed > 0) {
-                alert(`⚠️️ স্পিন খুলতে অন্তত আরও ${needed}টি টাস্ক সম্পন্ন করুন!`);
+                alert(`⚠️ স্পিন খুলতে অন্তত আরও ${needed}টি টাস্ক সম্পন্ন করুন!`);
                 return;
             }
 
