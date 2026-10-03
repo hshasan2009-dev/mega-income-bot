@@ -8,26 +8,21 @@ const path = require('path');
 // ফায়ারবেজ এডমিন ইনিশিয়ালাইজেশন
 if (!admin.apps.length) {
     admin.initializeApp({
-        databaseURL: "https://mega-income-bot-default-rtdb.firebaseio.com"
+        databaseURL: "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com"
     });
 }
 const db = admin.database();
 
 const app = express();
-
-// CORS ও JSON পার্সার মিডলওয়্যার
 app.use(cors());
 app.use(express.json());
 
-// হোম রুট (যাতে ব্রাউজারে 'Cannot GET /' না দেখায়)
 app.get('/', (req, res) => {
     res.status(200).send('Mega Income Bot Backend Status: Live & Running!');
 });
 
-// সক্রিয় সকেট সেভ রাখার অবজেক্ট
 const sessions = {};
 
-// হোয়াটসঅ্যাপ সকেট কানেকশন ও ইভেন্ট হ্যান্ডলার
 async function getOrCreateSocket(phone) {
     if (sessions[phone] && sessions[phone].ws.readyState === 1) {
         return sessions[phone];
@@ -41,15 +36,16 @@ async function getOrCreateSocket(phone) {
         version,
         auth: state,
         printQRInTerminal: false,
-        browser: ["Ubuntu", "Chrome", "20.0.04"]
+        browser: ["Ubuntu", "Chrome", "20.0.04"],
+        connectTimeoutMs: 60000,
+        defaultQueryTimeoutMs: 60000,
+        keepAliveIntervalMs: 10000
     });
 
     sessions[phone] = sock;
 
-    // ক্রেনডেনশিয়াল আপডেট ইভেন্ট
     sock.ev.on('creds.update', saveCreds);
 
-    // কানেকশন স্টেট আপডেট ইভেন্ট (Login / Logout / Ban Detection)
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect } = update;
 
@@ -88,7 +84,7 @@ async function getOrCreateSocket(phone) {
     return sock;
 }
 
-// ১. আসল পেয়ারিং কোড তৈরির রুট
+// ১. পেয়ারিং কোড তৈরির আপডেটেড রুট (সমস্যা সমাধান কোড)
 app.post('/api/get-code', async (req, res) => {
     let { phone } = req.body;
     if (!phone) return res.status(400).json({ success: false, error: 'Phone number required' });
@@ -96,11 +92,24 @@ app.post('/api/get-code', async (req, res) => {
     phone = phone.replace(/[^0-9]/g, '');
 
     try {
+        const sessionDir = path.join(__dirname, 'sessions', phone);
+        
+        // পুরাতন অসমাপ্ত সেশন থাকলে ডিলেট করে ফ্রেশ স্টার্ট করা
+        if (sessions[phone]) {
+            try { sessions[phone].end(); } catch(e){}
+            delete sessions[phone];
+        }
+        if (fs.existsSync(sessionDir)) {
+            fs.rmSync(sessionDir, { recursive: true, force: true });
+        }
+
         const sock = await getOrCreateSocket(phone);
 
-        if (!sock.authState.creds.registered) {
-            setTimeout(async () => {
-                try {
+        // সকেট কানেক্ট হওয়া পর্যন্ত সর্বোচ্চ ১০ সেকেন্ড অপেক্ষা করে কোড রিকোয়েস্ট
+        let attempts = 0;
+        const checkAndRequestCode = async () => {
+            try {
+                if (!sock.authState.creds.registered) {
                     const code = await sock.requestPairingCode(phone);
                     
                     await db.ref(`whatsapp_accounts/${phone}`).set({
@@ -109,13 +118,21 @@ app.post('/api/get-code', async (req, res) => {
                     });
 
                     return res.json({ success: true, code: code });
-                } catch (codeErr) {
-                    return res.status(500).json({ success: false, error: 'কোড তৈরি করতে ব্যর্থ হয়েছে: ' + codeErr.message });
+                } else {
+                    return res.json({ success: false, error: 'এই নম্বরটি ইতিমধ্যে লিঙ্কড করা আছে।' });
                 }
-            }, 3000);
-        } else {
-            return res.json({ success: false, error: 'এই নম্বরটি ইতিমধ্যে লিঙ্কড করা আছে।' });
-        }
+            } catch (err) {
+                attempts++;
+                if (attempts < 5) {
+                    setTimeout(checkAndRequestCode, 2000);
+                } else {
+                    return res.status(500).json({ success: false, error: 'কোড পেতে সমস্যা হচ্ছে, পুনরায় চেষ্টা করুন: ' + err.message });
+                }
+            }
+        };
+
+        setTimeout(checkAndRequestCode, 2000);
+
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
