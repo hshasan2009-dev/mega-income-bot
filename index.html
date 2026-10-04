@@ -417,7 +417,7 @@
             <div class="card" id="card-wa-task" style="border: 2px solid #25d366;">
                 <h3 style="color: #25d366; margin-bottom: 8px;">💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</h3>
                 <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">
-                    হোয়াটসঅ্যাপ অ্যাকাউন্ট বাঁধুন এবং নির্দিষ্ট মেসেজ পাঠিয়ে আয় করুন!
+                    হোয়াটসঅ্যাপ অ্যাকাউন্ট বাঁধুন এবং অটোমেটিক মেসেজ পাঠিয়ে আয় করুন!
                 </p>
                 <button class="btn btn-whatsapp" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
             </div>
@@ -718,18 +718,6 @@
                     ⚙️ টাস্ক অন/অফ কন্ট্রোল পেজ ওপেন করুন
                 </button>
 
-                <!-- ⚙️ WhatsApp Settings Control -->
-                <h4 style="color:#25d366; text-align:left; margin-bottom:10px;">💬 হোয়াটসঅ্যাপ টাস্ক কনফিগারেশন</h4>
-                <div class="input-group">
-                    <label>হোয়াটসঅ্যাপ নম্বর (Country Code সহ):</label>
-                    <input type="text" id="admin-wa-num" class="input-control" placeholder="88017XXXXXXXX">
-                </div>
-                <div class="input-group">
-                    <label>মেসেজ ও লিংক টেক্সট:</label>
-                    <input type="text" id="admin-wa-msg" class="input-control" placeholder="Join now: https://t.me/MegaIncomeReal_bot/app?startapp=8049465500">
-                </div>
-                <button class="btn btn-whatsapp" onclick="saveWaTaskSettings()" style="margin-bottom:15px;">💾 সেটিং সেভ করুন</button>
-
                 <hr style="border:0; border-top:1px dashed #27ae60; margin:20px 0;">
 
                 <h4 style="color:#f1c40f; text-align:left; margin-bottom:10px;">📱 পিন সাবমিট প্রুফসমূহ (Mobipium)</h4>
@@ -900,13 +888,6 @@
             { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" }
         ];
 
-        // কোড থেকে ডাইরেক্ট WhatsApp নাম্বার এর কালেকশন
-        const preDefinedWaNumbers = [
-            { id: 1, number: "01337176976", status: "active" },
-            { id: 2, number: "01700000001", status: "banned" },
-            { id: 3, number: "01800000002", status: "logout" }
-        ];
-
         let user = tg?.initDataUnsafe?.user;
         if (!user || !user.id) {
             let savedUserId = Math.floor(100000 + Math.random() * 900000);
@@ -914,7 +895,6 @@
         }
 
         let botUsername = "MegaIncomeReal_bot";
-        // আপডেট হওয়া নতুন লিংক
         let referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${user.id}`;
 
         let currentBalance = 0.00;
@@ -932,10 +912,6 @@
         let selectedOpKey = null;
         let selectedFileBase64 = null;
 
-        // Default WhatsApp Settings
-        let waTargetNumber = "8801700000000";
-        let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
-        
         let waTotalIncome = 0.00;
         let userBoundWaNumbers = [];
         let activeCode = "";
@@ -961,18 +937,7 @@
                 listenAdminData();
             }
 
-            // Sync WhatsApp Settings
-            db.ref('wa_settings').on('value', (snapshot) => {
-                let val = snapshot.val();
-                if (val) {
-                    if (val.number) waTargetNumber = val.number;
-                    if (val.message) waMessageText = val.message;
-                    if (document.getElementById('admin-wa-num')) document.getElementById('admin-wa-num').value = waTargetNumber;
-                    if (document.getElementById('admin-wa-msg')) document.getElementById('admin-wa-msg').value = waMessageText;
-                }
-            });
-
-            // Sync Task On/Off Settings Realtime (অফ করলেও লিস্ট থেকে হারাবে না)
+            // Sync Task On/Off Settings Realtime
             db.ref('task_settings').on('value', (snapshot) => {
                 const settings = snapshot.val() || {};
                 
@@ -1091,14 +1056,6 @@
 
         function closeAdminTaskControlModal() {
             document.getElementById('adminTaskControlModal').style.display = 'none';
-        }
-
-        function saveWaTaskSettings() {
-            let num = document.getElementById('admin-wa-num').value.trim();
-            let msg = document.getElementById('admin-wa-msg').value.trim();
-            if(!num || !msg) { alert("⚠️ দুটি ঘরই পূরণ করুন!"); return; }
-            db.ref('wa_settings').set({ number: num, message: msg });
-            alert("✅ হোয়াটসঅ্যাপ সেটিংস সফলভাবে আপডেট হয়েছে!");
         }
 
         function toggleTaskStatus(taskKey, isEnabled) {
@@ -1312,7 +1269,6 @@
 
                 displayWaCode(data.code);
 
-                // Code পাওয়া মানেই bound নয়। শুধু pending থাকবে।
                 alert("✅ WhatsApp লিংক ডিভাইস কোড তৈরি হয়েছে! WhatsApp-এর Linked Devices থেকে এই কোডটি লিখুন।");
 
                 startWhatsAppStatusMonitor();
@@ -1389,7 +1345,6 @@
                     updateFirebaseProfile();
                     renderBoundWaNumbers();
                 } else if (status === 'not_found') {
-                    // Binding সফল হয়নি, তাই bound list-এ নম্বর রাখা হবে না।
                     removeUnlinkedWaNumber(normalized);
                     updateFirebaseProfile();
                     renderBoundWaNumbers();
@@ -1421,7 +1376,6 @@
 
             checkAllWhatsAppStatuses();
 
-            // Backend status realtime-এর কাছাকাছি রাখতে প্রতি 3 সেকেন্ডে check করা হবে।
             setInterval(() => {
                 checkAllWhatsAppStatuses();
             }, 3000);
@@ -1457,6 +1411,7 @@
             });
         }
 
+        // 🚀 আপডেট করা সেন্ড ফাংশন (অটোমেটিক ব্যাকএন্ড হ্যান্ডলিং)
         async function sendWaMessage(index) {
             let item = userBoundWaNumbers[index];
             if (!item) return;
@@ -1467,16 +1422,13 @@
             }
 
             let senderPhone = normalizeWaPhoneForBackend(item.number);
-            let targetPhone = normalizeWaPhoneForBackend(waTargetNumber);
 
             try {
                 const response = await fetch(`${WA_BACKEND_URL}/api/send-message`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        senderPhone: senderPhone,
-                        targetPhone: targetPhone,
-                        message: waMessageText
+                        senderPhone: senderPhone
                     })
                 });
 
@@ -1490,17 +1442,15 @@
                     return;
                 }
 
-                if (data.success && data.status === 'Sent') {
-                    let reward = Number(data.reward || 0);
+                if (data.success && (data.status === 'Sent' || response.ok)) {
+                    let reward = Number(data.reward || 2.00); // ডিফল্ট ২.০০ টাকা ইনকাম
 
-                    if (reward > 0) {
-                        currentBalance += reward;
-                        waTotalIncome += reward;
-                        completedTasksCount += 1;
-                        giveReferralCommission(reward);
-                        updateFirebaseProfile();
-                        updateUI();
-                    }
+                    currentBalance += reward;
+                    waTotalIncome += reward;
+                    completedTasksCount += 1;
+                    giveReferralCommission(reward);
+                    updateFirebaseProfile();
+                    updateUI();
 
                     alert(`✅ Success: মেসেজ সফলভাবে পাঠানো হয়েছে! ৳${reward.toFixed(2)} যোগ করা হয়েছে।`);
                 } else {
@@ -2080,14 +2030,14 @@
                 if (item.status === "Approved" || item.status === "Success") { badgeClass = "badge-success"; statusText = "Success"; }
                 if (item.status === "Rejected") { badgeClass = "badge-rejected"; statusText = "Rejected"; }
 
-                let tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${item.date}</td>
-                    <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount ? item.netAmount.toFixed(2) : '0.00'}</td>
-                    <td>${item.method}</td>
-                    <td><span class="${badgeClass}">${statusText}</span></td>
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.date}</td>
+                        <td>৳${item.requestedAmount}</td>
+                        <td>${item.method}</td>
+                        <td><span class="${badgeClass}">${statusText}</span></td>
+                    </tr>
                 `;
-                tbody.appendChild(tr);
             });
         }
     </script>
