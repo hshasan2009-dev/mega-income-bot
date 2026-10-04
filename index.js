@@ -14,8 +14,9 @@ const pino = require('pino');
 const fs = require('fs');
 const path = require('path');
 
+// ফায়ারবেস URL (সিকিউরিটির জন্য প্রসেস এনভায়রনমেন্ট সাপোর্টসহ)
 const FIREBASE_DB_URL =
-    "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com";
+    process.env.FIREBASE_DB_URL || "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com";
 
 const PORT = process.env.PORT || 3000;
 
@@ -26,7 +27,7 @@ app.use(express.json());
 
 /*
 ====================================================
-FIREBASE
+FIREBASE HELPERS
 ====================================================
 */
 
@@ -44,35 +45,20 @@ async function updateFirebaseNode(pathNode, data) {
         );
 
         if (!response.ok) {
-            console.error(
-                `[Firebase] Update failed: ${response.status}`
-            );
+            console.error(`[Firebase] Update failed: ${response.status}`);
         }
     } catch (error) {
-        console.error(
-            '[Firebase update error]',
-            error.message
-        );
+        console.error('[Firebase update error]', error.message);
     }
 }
 
 async function getFirebaseNode(pathNode) {
     try {
-        const response = await fetch(
-            `${FIREBASE_DB_URL}/${pathNode}.json`
-        );
-
-        if (!response.ok) {
-            return null;
-        }
-
+        const response = await fetch(`${FIREBASE_DB_URL}/${pathNode}.json`);
+        if (!response.ok) return null;
         return await response.json();
     } catch (error) {
-        console.error(
-            '[Firebase read error]',
-            error.message
-        );
-
+        console.error('[Firebase read error]', error.message);
         return null;
     }
 }
@@ -81,40 +67,23 @@ async function getFirebaseNode(pathNode) {
 ====================================================
 PHONE NUMBER NORMALIZATION
 ====================================================
-
-Bangladesh examples:
-
-01337176976
-8801337176976
-+8801337176976
-+880 1337176976
-
-সব একই canonical format হবে:
-
-8801337176976
+ইউজার মিনি অ্যাপ থেকে 017XXXXXXXX বা অন্য যেকোনো বিন্যাসে পাঠালে 
+সেটিকে কান্ট্রি কোডসহ ৮৮০XXXXXXXXXX এ রূপান্তর করা হবে।
 */
 
 function normalizePhone(phone) {
-    if (!phone) {
-        return '';
-    }
+    if (!phone) return '';
 
     let value = String(phone).replace(/\D/g, '');
 
     if (value.startsWith('00880')) {
         value = value.substring(2);
-    }
-
-    if (value.startsWith('8800')) {
+    } else if (value.startsWith('8800')) {
         value = '88' + value.substring(3);
-    }
-
-    if (value.startsWith('0')) {
+    } else if (value.startsWith('0')) {
         value = '880' + value.substring(1);
-    }
-
-    if (value.startsWith('880')) {
-        return value;
+    } else if (!value.startsWith('880') && value.length === 10) {
+        value = '880' + value;
     }
 
     return value;
@@ -122,37 +91,18 @@ function normalizePhone(phone) {
 
 /*
 ====================================================
-SESSION STORAGE
+SESSION & MEMORY STORAGE
 ====================================================
 */
 
 const sessionsRoot = path.join(__dirname, 'sessions');
 
 if (!fs.existsSync(sessionsRoot)) {
-    fs.mkdirSync(sessionsRoot, {
-        recursive: true
-    });
+    fs.mkdirSync(sessionsRoot, { recursive: true });
 }
 
-/*
-====================================================
-ACTIVE SOCKETS
-====================================================
-*/
-
 const sessions = {};
-
-/*
-একই নম্বরে একই সময়ে একাধিক
-pairing request আটকানোর জন্য।
-*/
-
 const pairingLocks = {};
-
-/*
-Pairing status memory
-*/
-
 const pairingStates = {};
 
 /*
@@ -162,36 +112,23 @@ HELPERS
 */
 
 function getSessionDir(phone) {
-    return path.join(
-        sessionsRoot,
-        phone
-    );
+    return path.join(sessionsRoot, phone);
 }
 
 function removeSessionDir(phone) {
     const sessionDir = getSessionDir(phone);
-
     if (fs.existsSync(sessionDir)) {
         try {
-            fs.rmSync(sessionDir, {
-                recursive: true,
-                force: true
-            });
+            fs.rmSync(sessionDir, { recursive: true, force: true });
         } catch (error) {
-            console.error(
-                `[Session remove error] ${phone}:`,
-                error.message
-            );
+            console.error(`[Session remove error] ${phone}:`, error.message);
         }
     }
 }
 
 function closeSocket(phone) {
     const sock = sessions[phone];
-
-    if (!sock) {
-        return;
-    }
+    if (!sock) return;
 
     try {
         sock.end();
@@ -199,12 +136,6 @@ function closeSocket(phone) {
 
     delete sessions[phone];
 }
-
-/*
-====================================================
-CONNECTION ERROR CODE
-====================================================
-*/
 
 function getDisconnectCode(lastDisconnect) {
     return (
@@ -216,15 +147,8 @@ function getDisconnectCode(lastDisconnect) {
 }
 
 function getErrorMessage(error) {
-    if (!error) {
-        return '';
-    }
-
-    return String(
-        error.message ||
-        error.data ||
-        error
-    ).toLowerCase();
+    if (!error) return '';
+    return String(error.message || error.data || error).toLowerCase();
 }
 
 /*
@@ -234,46 +158,34 @@ FIREBASE STATUS HELPERS
 */
 
 async function markPending(phone) {
-    await updateFirebaseNode(
-        `whatsapp_accounts/${phone}`,
-        {
-            status: 'pending',
-            requestedAt: Date.now()
-        }
-    );
+    await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
+        status: 'pending',
+        requestedAt: Date.now()
+    });
 }
 
 async function markLinked(phone) {
-    await updateFirebaseNode(
-        `whatsapp_accounts/${phone}`,
-        {
-            status: 'linked',
-            linkedAt: Date.now(),
-            lastSeenAt: Date.now()
-        }
-    );
+    await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
+        status: 'linked',
+        linkedAt: Date.now(),
+        lastSeenAt: Date.now()
+    });
 }
 
 async function markLoggedOut(phone, reason) {
-    await updateFirebaseNode(
-        `whatsapp_accounts/${phone}`,
-        {
-            status: 'logged_out',
-            disconnectedAt: Date.now(),
-            disconnectReason: reason || 'logged_out'
-        }
-    );
+    await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
+        status: 'logged_out',
+        disconnectedAt: Date.now(),
+        disconnectReason: reason || 'logged_out'
+    });
 }
 
 async function markFailed(phone, reason) {
-    await updateFirebaseNode(
-        `whatsapp_accounts/${phone}`,
-        {
-            status: 'failed',
-            failedAt: Date.now(),
-            error: reason || 'pairing_failed'
-        }
-    );
+    await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
+        status: 'failed',
+        failedAt: Date.now(),
+        error: reason || 'pairing_failed'
+    });
 }
 
 /*
@@ -282,518 +194,141 @@ SOCKET CREATION
 ====================================================
 */
 
-async function createSocket(
-    phone,
-    options = {}
-) {
+async function createSocket(phone, options = {}) {
     const sessionDir = getSessionDir(phone);
-
-    /*
-    নতুন pairing-এর জন্য fresh session দরকার।
-    reconnect-এর সময় session মুছবে না।
-    */
 
     if (options.fresh === true) {
         closeSocket(phone);
         removeSessionDir(phone);
     }
 
-    const authState =
-        await useMultiFileAuthState(sessionDir);
-
+    const authState = await useMultiFileAuthState(sessionDir);
     const state = authState.state;
     const saveCreds = authState.saveCreds;
 
     let version;
-
     try {
-        const latest =
-            await fetchLatestBaileysVersion();
-
+        const latest = await fetchLatestBaileysVersion();
         version = latest.version;
-
-        console.log(
-            `[WhatsApp] ${phone} using WA version: ${version.join('.')}`
-        );
     } catch (error) {
-        console.error(
-            '[WhatsApp] Could not fetch latest version:',
-            error.message
-        );
-
-        /*
-        fallback version
-        */
-        version = [2, 3000, 1035194821];
+        version = [2, 3000, 1015901307];
     }
 
-    /*
-    Pairing-code-এর জন্য official Browser helper।
-    */
-
-    const browser =
-        Browsers.windows('Chrome');
+    // নোটিফিকেশন নিশ্চিত করতে Ubuntu/Chrome ব্রাউজার হেড
+    const browser = Browsers.ubuntu('Chrome');
 
     const sock = makeWASocket({
         version,
-
         auth: {
             creds: state.creds,
-
             keys: makeCacheableSignalKeyStore(
                 state.keys,
-                pino({
-                    level: 'silent'
-                })
+                pino({ level: 'silent' })
             )
         },
-
-        logger: pino({
-            level: 'silent'
-        }),
-
+        logger: pino({ level: 'silent' }),
         browser,
-
         printQRInTerminal: false,
-
         connectTimeoutMs: 60000,
-
         defaultQueryTimeoutMs: 60000,
-
         retryRequestDelayMs: 250,
-
         maxMsgRetryCount: 5,
-
         syncFullHistory: false,
-
         markOnlineOnConnect: true,
-
         generateHighQualityLinkPreview: false,
-
         emitOwnEvents: true
     });
 
     sessions[phone] = sock;
 
-    /*
-    ==================================================
-    EVENT PROCESSOR
+    sock.ev.process(async (events) => {
+        // Credentials update
+        if (events['creds.update']) {
+            try {
+                await saveCreds();
+            } catch (error) {
+                console.error(`[WhatsApp] Credential save error ${phone}:`, error.message);
+            }
+        }
 
-    creds.update আগে save হবে।
-    তারপর connection.update handle হবে।
-    ==================================================
-    */
+        // Connection update
+        if (events['connection.update']) {
+            const update = events['connection.update'];
+            const connection = update.connection;
+            const lastDisconnect = update.lastDisconnect;
+            const statusCode = getDisconnectCode(lastDisconnect);
 
-    sock.ev.process(
-        async (events) => {
-
-            /*
-            ------------------------------------------
-            CREDENTIALS UPDATE
-            ------------------------------------------
-            */
-
-            if (events['creds.update']) {
-                try {
-                    await saveCreds();
-
-                    console.log(
-                        `[WhatsApp] Credentials saved: ${phone}`
-                    );
-                } catch (error) {
-                    console.error(
-                        `[WhatsApp] Credential save error ${phone}:`,
-                        error.message
-                    );
-                }
+            if (update.isNewLogin) {
+                console.log(`[WhatsApp] NEW LOGIN SUCCESS: ${phone}`);
+                await updateFirebaseNode(`whatsapp_accounts/${phone}`, {
+                    status: 'pairing_confirmed',
+                    pairingConfirmedAt: Date.now()
+                });
             }
 
-            /*
-            ------------------------------------------
-            CONNECTION UPDATE
-            ------------------------------------------
-            */
+            if (connection === 'open') {
+                console.log(`[WhatsApp] SUCCESSFULLY LINKED: ${phone}`);
+                if (pairingStates[phone]) {
+                    pairingStates[phone].linked = true;
+                    pairingStates[phone].paired = true;
+                }
+                await markLinked(phone);
+                // সফল হলে মেমরি পরিষ্কার
+                delete pairingStates[phone];
+                return;
+            }
 
-            if (events['connection.update']) {
+            if (connection === 'close') {
+                const errorMessage = getErrorMessage(lastDisconnect && lastDisconnect.error);
+                console.log(`[WhatsApp] Closed: ${phone} | code=${statusCode} | ${errorMessage}`);
 
-                const update =
-                    events['connection.update'];
-
-                const connection =
-                    update.connection;
-
-                const lastDisconnect =
-                    update.lastDisconnect;
-
-                const statusCode =
-                    getDisconnectCode(
-                        lastDisconnect
-                    );
-
-                /*
-                ======================================
-                NEW LOGIN DETECTED
-                ======================================
-                */
-
-                if (update.isNewLogin) {
-
-                    console.log(
-                        `[WhatsApp] NEW LOGIN / PAIR SUCCESS: ${phone}`
-                    );
-
-                    if (pairingStates[phone]) {
-                        pairingStates[phone].paired =
-                            true;
-                    }
-
-                    await updateFirebaseNode(
-                        `whatsapp_accounts/${phone}`,
-                        {
-                            status: 'pairing_confirmed',
-                            pairingConfirmedAt: Date.now()
+                // 515 = RESTART REQUIRED
+                if (statusCode === DisconnectReason.restartRequired) {
+                    delete sessions[phone];
+                    setTimeout(async () => {
+                        try {
+                            if (fs.existsSync(getSessionDir(phone))) {
+                                await createSocket(phone, { fresh: false });
+                            }
+                        } catch (error) {
+                            console.error(`[WhatsApp] 515 reconnect error ${phone}:`, error.message);
                         }
-                    );
-                }
-
-                /*
-                ======================================
-                CONNECTING
-                ======================================
-                */
-
-                if (connection === 'connecting') {
-
-                    console.log(
-                        `[WhatsApp] Connecting: ${phone}`
-                    );
-
-                    if (pairingStates[phone]) {
-                        pairingStates[phone].connecting =
-                            true;
-                    }
-                }
-
-                /*
-                ======================================
-                OPEN = REAL LINKED
-                ======================================
-                */
-
-                if (connection === 'open') {
-
-                    console.log(
-                        `[WhatsApp] SUCCESSFULLY LINKED: ${phone}`
-                    );
-
-                    if (pairingStates[phone]) {
-                        pairingStates[phone].linked =
-                            true;
-
-                        pairingStates[phone].paired =
-                            true;
-                    }
-
-                    await markLinked(phone);
-
+                    }, 1000);
                     return;
                 }
 
-                /*
-                ======================================
-                CONNECTION CLOSED
-                ======================================
-                */
+                // Logged out
+                const isLoggedOut = statusCode === DisconnectReason.loggedOut;
+                const isForbidden = statusCode === DisconnectReason.forbidden;
+                const deviceRemoved = errorMessage.includes('device_removed') || errorMessage.includes('logged out');
 
-                if (connection === 'close') {
+                if (isLoggedOut || isForbidden || deviceRemoved) {
+                    console.log(`[WhatsApp] LOGGED OUT: ${phone}`);
+                    await markLoggedOut(phone, `disconnect_${statusCode || 'unknown'}`);
+                    closeSocket(phone);
+                    removeSessionDir(phone);
+                    delete pairingStates[phone];
+                    return;
+                }
 
-                    const errorMessage =
-                        getErrorMessage(
-                            lastDisconnect &&
-                            lastDisconnect.error
-                        );
-
-                    console.log(
-                        `[WhatsApp] Connection closed: ${phone} | code=${statusCode} | ${errorMessage}`
-                    );
-
-                    /*
-                    ----------------------------------
-                    515 = RESTART REQUIRED
-
-                    এটি logout নয়।
-                    Saved credentials দিয়ে
-                    নতুন socket চালু করতে হবে।
-                    ----------------------------------
-                    */
-
-                    if (
-                        statusCode ===
-                        DisconnectReason.restartRequired
-                    ) {
-
-                        console.log(
-                            `[WhatsApp] 515 restart required: ${phone}`
-                        );
-
-                        delete sessions[phone];
-
-                        /*
-                        কোনো session delete নয়।
-                        কোনো Firebase logout নয়।
-                        */
-
-                        setTimeout(
-                            async () => {
-
-                                try {
-
-                                    const sessionDir =
-                                        getSessionDir(phone);
-
-                                    if (
-                                        !fs.existsSync(
-                                            sessionDir
-                                        )
-                                    ) {
-                                        console.error(
-                                            `[WhatsApp] Session missing after 515: ${phone}`
-                                        );
-
-                                        await markFailed(
-                                            phone,
-                                            'session_missing_after_restart'
-                                        );
-
-                                        return;
-                                    }
-
-                                    console.log(
-                                        `[WhatsApp] Reconnecting with saved credentials: ${phone}`
-                                    );
-
-                                    await createSocket(
-                                        phone,
-                                        {
-                                            fresh: false
-                                        }
-                                    );
-
-                                } catch (error) {
-
-                                    console.error(
-                                        `[WhatsApp] 515 reconnect error ${phone}:`,
-                                        error.message
-                                    );
-
-                                    await markFailed(
-                                        phone,
-                                        error.message
-                                    );
-                                }
-
-                            },
-                            0
-                        );
-
-                        return;
-                    }
-
-                    /*
-                    ----------------------------------
-                    LOGGED OUT / DEVICE REMOVED
-                    ----------------------------------
-                    */
-
-                    const isLoggedOut =
-                        statusCode ===
-                        DisconnectReason.loggedOut;
-
-                    const isForbidden =
-                        statusCode ===
-                        DisconnectReason.forbidden;
-
-                    const deviceRemoved =
-                        errorMessage.includes(
-                            'device_removed'
-                        ) ||
-                        errorMessage.includes(
-                            'logged out'
-                        );
-
-                    if (
-                        isLoggedOut ||
-                        isForbidden ||
-                        deviceRemoved
-                    ) {
-
-                        console.log(
-                            `[WhatsApp] LOGGED OUT / REMOVED: ${phone}`
-                        );
-
-                        await markLoggedOut(
-                            phone,
-                            `disconnect_${statusCode || 'unknown'}`
-                        );
-
-                        delete sessions[phone];
-
-                        if (
-                            pairingStates[phone]
-                        ) {
-                            pairingStates[phone].linked =
-                                false;
+                // Temporary reconnect for existing active session
+                if (!isLoggedOut && fs.existsSync(getSessionDir(phone))) {
+                    delete sessions[phone];
+                    setTimeout(async () => {
+                        try {
+                            if (fs.existsSync(getSessionDir(phone))) {
+                                await createSocket(phone, { fresh: false });
+                            }
+                        } catch (error) {
+                            console.error(`[WhatsApp] Reconnect error ${phone}:`, error.message);
                         }
-
-                        removeSessionDir(
-                            phone
-                        );
-
-                        return;
-                    }
-
-                    /*
-                    ----------------------------------
-                    OTHER TEMPORARY CONNECTION ERRORS
-
-                    Pairing-এর সময় 400/408 ইত্যাদি
-                    হলে pending pairing failed।
-                    ----------------------------------
-                    */
-
-                    if (
-                        pairingStates[phone] &&
-                        pairingStates[phone].waitingForPairing
-                    ) {
-
-                        /*
-                        যদি pairing এখনো complete না হয়ে
-                        connection বন্ধ হয়ে যায়, তাহলে
-                        pending request failed ধরা হবে।
-                        */
-
-                        if (
-                            !pairingStates[phone].paired
-                        ) {
-
-                            await markFailed(
-                                phone,
-                                `pairing_connection_closed_${statusCode || 'unknown'}`
-                            );
-
-                            pairingStates[phone].failed =
-                                true;
-                        }
-                    }
-
-                    /*
-                    ----------------------------------
-                    LINKED SESSION-এর temporary
-                    disconnect হলে reconnect
-                    ----------------------------------
-                    */
-
-                    if (
-                        pairingStates[phone] &&
-                        pairingStates[phone].paired
-                    ) {
-
-                        delete sessions[phone];
-
-                        setTimeout(
-                            async () => {
-
-                                try {
-
-                                    /*
-                                    session এখনো থাকলে
-                                    reconnect করবে।
-                                    */
-
-                                    if (
-                                        fs.existsSync(
-                                            getSessionDir(
-                                                phone
-                                            )
-                                        )
-                                    ) {
-
-                                        console.log(
-                                            `[WhatsApp] Temporary disconnect, reconnecting: ${phone}`
-                                        );
-
-                                        await createSocket(
-                                            phone,
-                                            {
-                                                fresh: false
-                                            }
-                                        );
-                                    }
-
-                                } catch (error) {
-
-                                    console.error(
-                                        `[WhatsApp] Reconnect error ${phone}:`,
-                                        error.message
-                                    );
-                                }
-
-                            },
-                            1000
-                        );
-
-                        return;
-                    }
+                    }, 2000);
                 }
             }
         }
-    );
+    });
 
-    /*
-    ==================================================
-    LOW LEVEL FAILURE EVENT
-
-    Pairing request server-side reject হলে
-    pairing state-কে failed করা হবে।
-    ==================================================
-    */
-
-    if (
-        sock.ws &&
-        typeof sock.ws.on === 'function'
-    ) {
-
-        sock.ws.on(
-            'CB:failure',
-            async (json) => {
-
-                console.error(
-                    `[WhatsApp] Server failure for ${phone}:`,
-                    JSON.stringify(json)
-                );
-
-                if (
-                    pairingStates[phone] &&
-                    pairingStates[phone].waitingForPairing &&
-                    !pairingStates[phone].paired
-                ) {
-
-                    pairingStates[phone].failed =
-                        true;
-
-                    await markFailed(
-                        phone,
-                        'whatsapp_server_rejected_pairing'
-                    );
-                }
-            }
-        );
-    }
-
-    return {
-        sock,
-        state
-    };
+    return { sock, state };
 }
 
 /*
@@ -802,106 +337,46 @@ WAIT FOR SOCKET READY
 ====================================================
 */
 
-async function waitForSocketReady(
-    phone,
-    sock,
-    timeout = 20000
-) {
-    return new Promise(
-        (resolve, reject) => {
+async function waitForSocketReady(phone, sock, timeout = 15000) {
+    return new Promise((resolve, reject) => {
+        let finished = false;
 
-            let finished = false;
-
-            const finish = (
-                error
-            ) => {
-
-                if (finished) {
-                    return;
-                }
-
+        const timer = setTimeout(() => {
+            if (!finished) {
                 finished = true;
+                cleanup();
+                resolve(); // সকেট সম্পূর্ণ কানেক্ট না হলেও পেয়ারিং কোড রিকোয়েস্টে যেন বাধা না পড়ে
+            }
+        }, timeout);
 
-                clearTimeout(timer);
-
-                try {
-                    sock.ev.off(
-                        'connection.update',
-                        listener
-                    );
-                } catch (e) {}
-
-                if (error) {
-                    reject(error);
-                } else {
+        const listener = (update) => {
+            if (update.connection === 'connecting' || update.connection === 'open') {
+                if (!finished) {
+                    finished = true;
+                    cleanup();
                     resolve();
                 }
-            };
-
-            const listener =
-                (update) => {
-
-                    if (
-                        update.connection ===
-                        'connecting'
-                    ) {
-
-                        finish();
+            } else if (update.connection === 'close') {
+                const code = getDisconnectCode(update.lastDisconnect);
+                if (code && code !== DisconnectReason.restartRequired) {
+                    if (!finished) {
+                        finished = true;
+                        cleanup();
+                        reject(new Error(`Connection closed before pairing (code: ${code})`));
                     }
+                }
+            }
+        };
 
-                    if (
-                        update.connection ===
-                        'open'
-                    ) {
+        const cleanup = () => {
+            clearTimeout(timer);
+            try {
+                sock.ev.off('connection.update', listener);
+            } catch (e) {}
+        };
 
-                        finish();
-                    }
-
-                    if (
-                        update.connection ===
-                        'close'
-                    ) {
-
-                        const code =
-                            getDisconnectCode(
-                                update.lastDisconnect
-                            );
-
-                        if (
-                            code &&
-                            code !==
-                            DisconnectReason.restartRequired
-                        ) {
-
-                            finish(
-                                new Error(
-                                    `WhatsApp connection closed before pairing: ${code}`
-                                )
-                            );
-                        }
-                    }
-                };
-
-            const timer =
-                setTimeout(
-                    () => {
-
-                        finish(
-                            new Error(
-                                'WhatsApp socket ready হতে সময় বেশি লাগছে।'
-                            )
-                        );
-
-                    },
-                    timeout
-                );
-
-            sock.ev.on(
-                'connection.update',
-                listener
-            );
-        }
-    );
+        sock.ev.on('connection.update', listener);
+    });
 }
 
 /*
@@ -910,300 +385,97 @@ HOME
 ====================================================
 */
 
-app.get(
-    '/',
-    (req, res) => {
-
-        res.status(200).send(
-            'Mega Income Bot Backend Status: Live & Running!'
-        );
-    }
-);
+app.get('/', (req, res) => {
+    res.status(200).send('Mega Income Bot Backend Status: Live & Running!');
+});
 
 /*
 ====================================================
-GET PAIRING CODE
+GET PAIRING CODE (API)
 ====================================================
 */
 
-app.post(
-    '/api/get-code',
-    async (req, res) => {
+app.post('/api/get-code', async (req, res) => {
+    let rawPhone = req.body && req.body.phone;
+    let phone = normalizePhone(rawPhone);
 
-        let phone =
-            normalizePhone(
-                req.body &&
-                req.body.phone
-            );
-
-        if (!phone) {
-
-            return res.status(400).json({
-                success: false,
-                error: 'Phone number required'
-            });
-        }
-
-        /*
-        একই নম্বরে দ্বিতীয় request আটকানো।
-        */
-
-        if (pairingLocks[phone]) {
-
-            return res.status(409).json({
-                success: false,
-                error:
-                    'এই নম্বরের জন্য ইতিমধ্যে একটি লিংকিং প্রক্রিয়া চলছে।'
-            });
-        }
-
-        pairingLocks[phone] = true;
-
-        try {
-
-            /*
-            ------------------------------------------
-            Firebase-এ আগেই linked থাকলে নতুন code নয়।
-            ------------------------------------------
-            */
-
-            const existing =
-                await getFirebaseNode(
-                    `whatsapp_accounts/${phone}`
-                );
-
-            if (
-                existing &&
-                existing.status === 'linked'
-            ) {
-
-                return res.json({
-                    success: false,
-                    error:
-                        'এই নম্বরটি ইতিমধ্যে বাঁধা আছে।'
-                });
-            }
-
-            /*
-            ------------------------------------------
-            পুরোনো socket বন্ধ
-            ------------------------------------------
-            */
-
-            closeSocket(phone);
-
-            /*
-            ------------------------------------------
-            Fresh pairing state
-            ------------------------------------------
-            */
-
-            pairingStates[phone] = {
-                waitingForPairing: true,
-                connecting: false,
-                paired: false,
-                linked: false,
-                failed: false,
-                requestedAt: Date.now()
-            };
-
-            /*
-            ------------------------------------------
-            Firebase pending
-            ------------------------------------------
-            */
-
-            await markPending(phone);
-
-            /*
-            ------------------------------------------
-            Fresh socket
-            ------------------------------------------
-            */
-
-            const result =
-                await createSocket(
-                    phone,
-                    {
-                        fresh: true
-                    }
-                );
-
-            const sock =
-                result.sock;
-
-            /*
-            ------------------------------------------
-            Socket ready হওয়া পর্যন্ত অপেক্ষা
-            ------------------------------------------
-            */
-
-            await waitForSocketReady(
-                phone,
-                sock,
-                20000
-            );
-
-            /*
-            ------------------------------------------
-            Already registered?
-            ------------------------------------------
-            */
-
-            if (
-                sock.authState &&
-                sock.authState.creds &&
-                sock.authState.creds.registered
-            ) {
-
-                await markLinked(phone);
-
-                return res.json({
-                    success: false,
-                    error:
-                        'এই নম্বরটি ইতিমধ্যে WhatsApp-এ linked আছে।'
-                });
-            }
-
-            /*
-            ------------------------------------------
-            একটি মাত্র pairing request
-            ------------------------------------------
-            */
-
-            if (
-                pairingStates[phone].codeRequested
-            ) {
-
-                return res.status(409).json({
-                    success: false,
-                    error:
-                        'Pairing code ইতিমধ্যে তৈরি হয়েছে।'
-                });
-            }
-
-            pairingStates[phone].codeRequested =
-                true;
-
-            console.log(
-                `[WhatsApp] Requesting pairing code: ${phone}`
-            );
-
-            let code;
-
-            try {
-
-                code =
-                    await sock.requestPairingCode(
-                        phone
-                    );
-
-            } catch (error) {
-
-                console.error(
-                    `[WhatsApp] Pairing code request failed ${phone}:`,
-                    error.message
-                );
-
-                await markFailed(
-                    phone,
-                    error.message
-                );
-
-                delete pairingStates[phone];
-
-                return res.status(500).json({
-                    success: false,
-                    error:
-                        'WhatsApp pairing code তৈরি করতে পারেনি। আবার চেষ্টা করুন।'
-                });
-            }
-
-            /*
-            ------------------------------------------
-            IMPORTANT:
-
-            Baileys-এর requestPairingCode বর্তমানে
-            server rejection-এর আগেই code return
-            করতে পারে।
-
-            তাই অতি অল্প সময় server failure
-            detect করার সুযোগ দেওয়া হচ্ছে।
-
-            1.5 sec-এর মধ্যে server failure হলে
-            code দেখানো হবে না।
-            ------------------------------------------
-            */
-
-            await new Promise(
-                resolve =>
-                    setTimeout(
-                        resolve,
-                        1500
-                    )
-            );
-
-            if (
-                pairingStates[phone] &&
-                pairingStates[phone].failed
-            ) {
-
-                delete pairingStates[phone];
-
-                return res.status(400).json({
-                    success: false,
-                    error:
-                        'WhatsApp server এই pairing request গ্রহণ করেনি। আবার কোড নিন।'
-                });
-            }
-
-            /*
-            ------------------------------------------
-            Code format
-            ------------------------------------------
-            */
-
-            const cleanCode =
-                String(code)
-                    .replace(/\s+/g, '')
-                    .toUpperCase();
-
-            console.log(
-                `[WhatsApp] Pairing code generated for ${phone}: ${cleanCode}`
-            );
-
-            return res.json({
-                success: true,
-                code: cleanCode,
-                phone: phone,
-                status: 'pending'
-            });
-
-        } catch (error) {
-
-            console.error(
-                `[Pairing Error] ${phone}:`,
-                error
-            );
-
-            await markFailed(
-                phone,
-                error.message
-            );
-
-            return res.status(500).json({
-                success: false,
-                error:
-                    'কোড পেতে সমস্যা হয়েছে: ' +
-                    error.message
-            });
-
-        } finally {
-
-            delete pairingLocks[phone];
-        }
+    if (!phone || phone.length < 11) {
+        return res.status(400).json({
+            success: false,
+            error: 'সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 017XXXXXXXX)'
+        });
     }
-);
+
+    if (pairingLocks[phone]) {
+        return res.status(409).json({
+            success: false,
+            error: 'এই নম্বরের জন্য ইতিমধ্যে একটি কোড জেনারেট হচ্ছে। অনুগ্রহ করে অপেক্ষা করুন।'
+        });
+    }
+
+    pairingLocks[phone] = true;
+
+    try {
+        const existing = await getFirebaseNode(`whatsapp_accounts/${phone}`);
+        if (existing && existing.status === 'linked') {
+            return res.json({
+                success: false,
+                error: 'এই নম্বরটি ইতিমধ্যে যুক্ত করা রয়েছে।'
+            });
+        }
+
+        closeSocket(phone);
+
+        pairingStates[phone] = {
+            waitingForPairing: true,
+            requestedAt: Date.now()
+        };
+
+        await markPending(phone);
+
+        const result = await createSocket(phone, { fresh: true });
+        const sock = result.sock;
+
+        // সকেট তৈরি হওয়া পর্যন্ত অপেক্ষা
+        await waitForSocketReady(phone, sock, 15000);
+
+        if (sock.authState && sock.authState.creds && sock.authState.creds.registered) {
+            await markLinked(phone);
+            return res.json({
+                success: false,
+                error: 'এই নম্বরটি ইতিমধ্যে WhatsApp-এ linked আছে।'
+            });
+        }
+
+        console.log(`[WhatsApp] Requesting pairing code for: ${phone}`);
+
+        // কোড রিকোয়েস্ট (সরাসরি কোড পাওয়ার জন্য রিয়েল-টাইমে ওয়েট করবে)
+        const code = await sock.requestPairingCode(phone);
+
+        const cleanCode = String(code).replace(/\s+/g, '').toUpperCase();
+
+        console.log(`[WhatsApp] Pairing code generated for ${phone}: ${cleanCode}`);
+
+        return res.json({
+            success: true,
+            code: cleanCode,
+            phone: phone,
+            status: 'pending'
+        });
+
+    } catch (error) {
+        console.error(`[Pairing Error] ${phone}:`, error);
+        await markFailed(phone, error.message);
+        delete pairingStates[phone];
+
+        return res.status(500).json({
+            success: false,
+            error: 'কোড পেতে সমস্যা হয়েছে। আবার চেষ্টা করুন: ' + error.message
+        });
+    } finally {
+        delete pairingLocks[phone];
+    }
+});
 
 /*
 ====================================================
@@ -1211,57 +483,33 @@ CHECK WHATSAPP ACCOUNT STATUS
 ====================================================
 */
 
-app.get(
-    '/api/whatsapp-status/:phone',
-    async (req, res) => {
+app.get('/api/whatsapp-status/:phone', async (req, res) => {
+    const phone = normalizePhone(req.params.phone);
 
-        const phone =
-            normalizePhone(
-                req.params.phone
-            );
-
-        if (!phone) {
-
-            return res.status(400).json({
-                success: false,
-                error:
-                    'Invalid phone number'
-            });
-        }
-
-        const firebaseData =
-            await getFirebaseNode(
-                `whatsapp_accounts/${phone}`
-            );
-
-        const sock =
-            sessions[phone];
-
-        let liveStatus =
-            firebaseData &&
-            firebaseData.status
-                ? firebaseData.status
-                : 'not_linked';
-
-        if (
-            sock &&
-            sock.user
-        ) {
-            liveStatus = 'linked';
-        }
-
-        return res.json({
-            success: true,
-            phone,
-            status: liveStatus,
-            connected: !!sock,
-            linked: !!(
-                sock &&
-                sock.user
-            )
+    if (!phone) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid phone number'
         });
     }
-);
+
+    const firebaseData = await getFirebaseNode(`whatsapp_accounts/${phone}`);
+    const sock = sessions[phone];
+
+    let liveStatus = firebaseData && firebaseData.status ? firebaseData.status : 'not_linked';
+
+    if (sock && sock.user) {
+        liveStatus = 'linked';
+    }
+
+    return res.json({
+        success: true,
+        phone,
+        status: liveStatus,
+        connected: !!sock,
+        linked: !!(sock && sock.user)
+    });
+});
 
 /*
 ====================================================
@@ -1269,159 +517,99 @@ SEND MESSAGE
 ====================================================
 */
 
-app.post(
-    '/api/send-message',
-    async (req, res) => {
+app.post('/api/send-message', async (req, res) => {
+    let senderPhone = normalizePhone(req.body && req.body.senderPhone);
+    let targetPhone = normalizePhone(req.body && req.body.targetPhone);
+    const message = req.body && req.body.message;
 
-        let senderPhone =
-            normalizePhone(
-                req.body &&
-                req.body.senderPhone
-            );
+    if (!senderPhone || !targetPhone || !message) {
+        return res.status(400).json({
+            success: false,
+            error: 'সবগুলো তথ্য সঠিকভাবে পূরণ করুন'
+        });
+    }
 
-        let targetPhone =
-            normalizePhone(
-                req.body &&
-                req.body.targetPhone
-            );
+    try {
+        const accountData = await getFirebaseNode(`whatsapp_accounts/${senderPhone}`);
 
-        const message =
-            req.body &&
-            req.body.message;
-
-        if (
-            !senderPhone ||
-            !targetPhone ||
-            !message
-        ) {
-
-            return res.status(400).json({
-                success: false,
-                error:
-                    'Missing required parameters'
-            });
-        }
-
-        try {
-
-            /*
-            ------------------------------------------
-            Firebase status check
-            ------------------------------------------
-            */
-
-            const accountData =
-                await getFirebaseNode(
-                    `whatsapp_accounts/${senderPhone}`
-                );
-
-            if (
-                !accountData ||
-                accountData.status !== 'linked'
-            ) {
-
-                return res.json({
-                    success: false,
-                    reward: 0,
-                    status:
-                        'Unlinked or Logged Out',
-                    error:
-                        'নম্বরটি যুক্ত করা নেই অথবা লগআউট হয়ে গেছে।'
-                });
-            }
-
-            /*
-            ------------------------------------------
-            Live socket
-            ------------------------------------------
-            */
-
-            const sock =
-                sessions[senderPhone];
-
-            if (!sock) {
-
-                return res.json({
-                    success: false,
-                    reward: 0,
-                    status: 'Failed',
-                    error:
-                        'WhatsApp সেশন সক্রিয় নেই।'
-                });
-            }
-
-            /*
-            ------------------------------------------
-            WhatsApp JID
-            ------------------------------------------
-            */
-
-            const jid =
-                `${targetPhone}@s.whatsapp.net`;
-
-            /*
-            ------------------------------------------
-            Send
-            ------------------------------------------
-            */
-
-            const sent =
-                await sock.sendMessage(
-                    jid,
-                    {
-                        text: String(message)
-                    }
-                );
-
-            if (sent) {
-
-                return res.json({
-                    success: true,
-                    reward: 2,
-                    status: 'Sent'
-                });
-            }
-
+        if (!accountData || accountData.status !== 'linked') {
             return res.json({
                 success: false,
                 reward: 0,
-                status: 'Failed'
+                status: 'Unlinked or Logged Out',
+                error: 'নম্বরটি যুক্ত করা নেই অথবা লগআউট হয়ে গেছে।'
             });
+        }
 
-        } catch (error) {
+        const sock = sessions[senderPhone];
 
-            console.error(
-                '[Send Message Error]',
-                error.message
-            );
-
+        if (!sock) {
             return res.json({
                 success: false,
                 reward: 0,
                 status: 'Failed',
-                error:
-                    error.message
+                error: 'WhatsApp সেশন সক্রিয় নেই।'
             });
         }
+
+        const jid = `${targetPhone}@s.whatsapp.net`;
+        const sent = await sock.sendMessage(jid, { text: String(message) });
+
+        if (sent) {
+            return res.json({
+                success: true,
+                reward: 2,
+                status: 'Sent'
+            });
+        }
+
+        return res.json({
+            success: false,
+            reward: 0,
+            status: 'Failed'
+        });
+
+    } catch (error) {
+        console.error('[Send Message Error]', error.message);
+        return res.json({
+            success: false,
+            reward: 0,
+            status: 'Failed',
+            error: error.message
+        });
     }
-);
+});
 
 /*
 ====================================================
-SERVER
+RESTORE EXISTING SESSIONS ON SERVER STARTUP
+====================================================
+সার্ভার রিস্টার্ট হলেও যেন লিঙ্ক থাকা নম্বরগুলোর সেশন বাদ না পড়ে
+*/
+
+async function restoreSessions() {
+    try {
+        const files = fs.readdirSync(sessionsRoot);
+        for (const file of files) {
+            const sessionPath = path.join(sessionsRoot, file);
+            if (fs.statSync(sessionPath).isDirectory()) {
+                console.log(`[Restore] Reconnecting saved session for: ${file}`);
+                await createSocket(file, { fresh: false });
+            }
+        }
+    } catch (error) {
+        console.error('[Restore Error]', error.message);
+    }
+}
+
+/*
+====================================================
+SERVER INIT
 ====================================================
 */
 
-app.listen(
-    PORT,
-    () => {
-
-        console.log(
-            `Mega Income Bot Backend running on port ${PORT}`
-        );
-
-        console.log(
-            'WhatsApp pairing backend initialized.'
-        );
-    }
-);
+app.listen(PORT, () => {
+    console.log(`Mega Income Bot Backend running on port ${PORT}`);
+    // সার্ভার চালু হওয়ার পর পুরোনো সেশনগুলো রি-কানেক্ট করবে
+    restoreSessions();
+});
