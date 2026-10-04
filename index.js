@@ -14,7 +14,7 @@ const pino = require('pino');
 const fs = require('fs');
 const path = require('path');
 
-// ফায়ারবেস URL (সিকিউরিটির জন্য প্রসেস এনভায়রনমেন্ট সাপোর্টসহ)
+// ফায়ারবেস URL (সিকিউরিটির জন্য Environment Variable সহ)
 const FIREBASE_DB_URL =
     process.env.FIREBASE_DB_URL || "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com";
 
@@ -67,8 +67,8 @@ async function getFirebaseNode(pathNode) {
 ====================================================
 PHONE NUMBER NORMALIZATION
 ====================================================
-ইউজার মিনি অ্যাপ থেকে 017XXXXXXXX বা অন্য যেকোনো বিন্যাসে পাঠালে 
-সেটিকে কান্ট্রি কোডসহ ৮৮০XXXXXXXXXX এ রূপান্তর করা হবে।
+ইউজার ১১ ডিজিটের নম্বর দিলে (যেমন: 01337176976)
+সেটিকে কান্ট্রি কোডসহ canonical format (8801337176976)-এ রূপান্তর করবে।
 */
 
 function normalizePhone(phone) {
@@ -214,8 +214,8 @@ async function createSocket(phone, options = {}) {
         version = [2, 3000, 1015901307];
     }
 
-    // নোটিফিকেশন নিশ্চিত করতে Ubuntu/Chrome ব্রাউজার হেড
-    const browser = Browsers.ubuntu('Chrome');
+    // নোটিফিকেশন নিশ্চিত করতে macOS Desktop ব্রাউজার ওয়াটসঅ্যাপ গ্রহণ করে
+    const browser = Browsers.macOS('Desktop');
 
     const sock = makeWASocket({
         version,
@@ -273,7 +273,6 @@ async function createSocket(phone, options = {}) {
                     pairingStates[phone].paired = true;
                 }
                 await markLinked(phone);
-                // সফল হলে মেমরি পরিষ্কার
                 delete pairingStates[phone];
                 return;
             }
@@ -297,7 +296,7 @@ async function createSocket(phone, options = {}) {
                     return;
                 }
 
-                // Logged out
+                // Logged out / device removed
                 const isLoggedOut = statusCode === DisconnectReason.loggedOut;
                 const isForbidden = statusCode === DisconnectReason.forbidden;
                 const deviceRemoved = errorMessage.includes('device_removed') || errorMessage.includes('logged out');
@@ -311,7 +310,7 @@ async function createSocket(phone, options = {}) {
                     return;
                 }
 
-                // Temporary reconnect for existing active session
+                // Temporary reconnect
                 if (!isLoggedOut && fs.existsSync(getSessionDir(phone))) {
                     delete sessions[phone];
                     setTimeout(async () => {
@@ -333,11 +332,11 @@ async function createSocket(phone, options = {}) {
 
 /*
 ====================================================
-WAIT FOR SOCKET READY
+WAIT FOR SOCKET STABLE
 ====================================================
 */
 
-async function waitForSocketReady(phone, sock, timeout = 15000) {
+async function waitForSocketReady(phone, sock, timeout = 25000) {
     return new Promise((resolve, reject) => {
         let finished = false;
 
@@ -345,7 +344,8 @@ async function waitForSocketReady(phone, sock, timeout = 15000) {
             if (!finished) {
                 finished = true;
                 cleanup();
-                resolve(); // সকেট সম্পূর্ণ কানেক্ট না হলেও পেয়ারিং কোড রিকোয়েস্টে যেন বাধা না পড়ে
+                // টাইমআউট হলেও যেন রিকোয়েস্ট পুরোপুরি ব্লক না হয়ে চেষ্টা করতে পারে
+                resolve();
             }
         }, timeout);
 
@@ -362,7 +362,7 @@ async function waitForSocketReady(phone, sock, timeout = 15000) {
                     if (!finished) {
                         finished = true;
                         cleanup();
-                        reject(new Error(`Connection closed before pairing (code: ${code})`));
+                        reject(new Error(`কানেকশন সংযোগ বিচ্ছিন্ন হয়েছে (Code: ${code})`));
                     }
                 }
             }
@@ -391,7 +391,7 @@ app.get('/', (req, res) => {
 
 /*
 ====================================================
-GET PAIRING CODE (API)
+GET PAIRING CODE
 ====================================================
 */
 
@@ -402,14 +402,14 @@ app.post('/api/get-code', async (req, res) => {
     if (!phone || phone.length < 11) {
         return res.status(400).json({
             success: false,
-            error: 'সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 017XXXXXXXX)'
+            error: 'সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 01337176976)'
         });
     }
 
     if (pairingLocks[phone]) {
         return res.status(409).json({
             success: false,
-            error: 'এই নম্বরের জন্য ইতিমধ্যে একটি কোড জেনারেট হচ্ছে। অনুগ্রহ করে অপেক্ষা করুন।'
+            error: 'এই নম্বরের জন্য প্রসেসিং চলছে। অনুগ্রহ করে অপেক্ষা করুন।'
         });
     }
 
@@ -433,11 +433,15 @@ app.post('/api/get-code', async (req, res) => {
 
         await markPending(phone);
 
+        // সকেট তৈরি
         const result = await createSocket(phone, { fresh: true });
         const sock = result.sock;
 
-        // সকেট তৈরি হওয়া পর্যন্ত অপেক্ষা
-        await waitForSocketReady(phone, sock, 15000);
+        // সকেট কানেকশন সম্পূর্ণ তৈরি হওয়া পর্যন্ত প্রমিজ হোল্ড
+        await waitForSocketReady(phone, sock, 25000);
+
+        // সকেট কানেক্টের পর ২ সেকেন্ড ডিলে দেওয়া হচ্ছে যেন WhatsApp সার্ভার রিকোয়েস্ট গ্রহণ করে
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         if (sock.authState && sock.authState.creds && sock.authState.creds.registered) {
             await markLinked(phone);
@@ -449,9 +453,8 @@ app.post('/api/get-code', async (req, res) => {
 
         console.log(`[WhatsApp] Requesting pairing code for: ${phone}`);
 
-        // কোড রিকোয়েস্ট (সরাসরি কোড পাওয়ার জন্য রিয়েল-টাইমে ওয়েট করবে)
+        // আসল পেয়ারিং কোড চাওয়া
         const code = await sock.requestPairingCode(phone);
-
         const cleanCode = String(code).replace(/\s+/g, '').toUpperCase();
 
         console.log(`[WhatsApp] Pairing code generated for ${phone}: ${cleanCode}`);
@@ -470,7 +473,7 @@ app.post('/api/get-code', async (req, res) => {
 
         return res.status(500).json({
             success: false,
-            error: 'কোড পেতে সমস্যা হয়েছে। আবার চেষ্টা করুন: ' + error.message
+            error: 'কোড পেতে সমস্যা হয়েছে: ' + (error.message || 'Connection Closed')
         });
     } finally {
         delete pairingLocks[phone];
@@ -584,7 +587,6 @@ app.post('/api/send-message', async (req, res) => {
 ====================================================
 RESTORE EXISTING SESSIONS ON SERVER STARTUP
 ====================================================
-সার্ভার রিস্টার্ট হলেও যেন লিঙ্ক থাকা নম্বরগুলোর সেশন বাদ না পড়ে
 */
 
 async function restoreSessions() {
@@ -610,6 +612,5 @@ SERVER INIT
 
 app.listen(PORT, () => {
     console.log(`Mega Income Bot Backend running on port ${PORT}`);
-    // সার্ভার চালু হওয়ার পর পুরোনো সেশনগুলো রি-কানেক্ট করবে
     restoreSessions();
 });
