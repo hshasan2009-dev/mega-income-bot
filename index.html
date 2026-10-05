@@ -714,17 +714,14 @@
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
 
                 <!-- ⚙️ Task Switch Open Button (অ্যাডমিনের জন্য নতুন অন/অফ পেজ বাটন) -->
-                <button class="btn btn-gift" onclick="openAdminTaskControlModal()" style="margin-bottom: 20px;">
+                <button class="btn btn-gift" onclick="openAdminTaskControlModal()" style="margin-bottom: 12px;">
                     ⚙️ টাস্ক অন/অফ কন্ট্রোল পেজ ওপেন করুন
                 </button>
 
-                <!-- ⚙️ WhatsApp Settings Control (নম্বর অপশন তুলে নেওয়া হয়েছে) -->
-                <h4 style="color:#25d366; text-align:left; margin-bottom:10px;">💬 হোয়াটসঅ্যাপ টাস্ক কনফিগারেশন</h4>
-                <div class="input-group">
-                    <label>মেসেজ ও লিংক টেক্সট:</label>
-                    <input type="text" id="admin-wa-msg" class="input-control" placeholder="Join now: https://t.me/MegaIncomeReal_bot/app?startapp=8049465500">
-                </div>
-                <button class="btn btn-whatsapp" onclick="saveWaTaskSettings()" style="margin-bottom:15px;">💾 সেটিং সেভ করুন</button>
+                <!-- 💬 WhatsApp Task & Country Settings Button -->
+                <button class="btn btn-whatsapp" onclick="openAdminWaSettingsModal()" style="margin-bottom: 20px;">
+                    💬 WhatsApp টাস্ক & কান্ট্রি সেটিংস
+                </button>
 
                 <hr style="border:0; border-top:1px dashed #27ae60; margin:20px 0;">
 
@@ -743,6 +740,92 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- 💬 WhatsApp Task & Country Control Modal (অ্যাডমিনদের জন্য নতুন মডাল) -->
+    <div id="adminWaSettingsModal" class="modal-overlay">
+        <div style="background:#113626; border:2px solid #25d366; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
+                <h3 style="color:#25d366; font-size:16px;">💬 WhatsApp টাস্ক & কান্ট্রি কনফিগারেশন</h3>
+                <button onclick="closeAdminWaSettingsModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+            
+            <div class="input-group">
+                <label style="color:#ffcc00; font-weight:bold;">মেসেজ ও লিংক টেক্সট:</label>
+                <textarea id="admin-wa-msg" class="input-control" rows="3" placeholder="Join now: https://t.me/MegaIncomeReal_bot/app?startapp=8049465500"></textarea>
+            </div>
+            
+            <button class="btn btn-whatsapp" onclick="saveWaTaskSettings()" style="margin-bottom:15px;">💾 মেসেজ সেভ করুন</button>
+
+            <hr style="border:0; border-top:1px dashed #27ae60; margin:15px 0;">
+
+            <h4 style="color:#f1c40f; text-align:left; margin-bottom:10px; font-size:14px;">🌍 হোয়াটসঅ্যাপ কান্ট্রি অন/অফ তালিকা:</h4>
+            <p style="color:#ccc; font-size:11px; margin-bottom:10px;">যে যে কান্ট্রি অন রাখবেন, সুধু সেই দেশের নম্বর জেনারেট হবে।</p>
+
+            <div class="switch-container">
+                <span>🇧🇩 Bangladesh (+880)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-country-BD" onchange="toggleCountryStatus('BD', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>🇺🇸 United States (+1)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-country-US" onchange="toggleCountryStatus('US', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>🇲🇾 Malaysia (+60)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-country-MY" onchange="toggleCountryStatus('MY', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>🇧🇷 Brazil (+55)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-country-BR" onchange="toggleCountryStatus('BR', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>🇬🇧 United Kingdom (+44)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-country-GB" onchange="toggleCountryStatus('GB', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>🇸🇦 Saudi Arabia (+966)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-country-SA" onchange="toggleCountryStatus('SA', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>🇦🇪 UAE (+971)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-country-AE" onchange="toggleCountryStatus('AE', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>🇮🇳 India (+91)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-country-IN" onchange="toggleCountryStatus('IN', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
     </div>
 
     <!-- অ্যাডমিন অন-অফ কন্ট্রোল মডাল/পেজ -->
@@ -923,6 +1006,18 @@
         // Default WhatsApp Message Settings
         let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
         
+        // Country On/Off Settings (Default BD enabled)
+        let waCountrySettings = {
+            BD: true,
+            US: false,
+            MY: false,
+            BR: false,
+            GB: false,
+            SA: false,
+            AE: false,
+            IN: false
+        };
+
         let waTotalIncome = 0.00;
         let userBoundWaNumbers = [];
         let activeCode = "";
@@ -949,12 +1044,24 @@
                 listenAdminData();
             }
 
-            // Sync WhatsApp Settings
+            // Sync WhatsApp Message Settings
             db.ref('wa_settings').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
                     if (val.message) waMessageText = val.message;
                     if (document.getElementById('admin-wa-msg')) document.getElementById('admin-wa-msg').value = waMessageText;
+                }
+            });
+
+            // Sync WhatsApp Country Settings Realtime
+            db.ref('wa_country_settings').on('value', (snapshot) => {
+                let val = snapshot.val();
+                if (val) {
+                    waCountrySettings = Object.assign(waCountrySettings, val);
+                    for (let cCode in waCountrySettings) {
+                        let swElem = document.getElementById('sw-country-' + cCode);
+                        if (swElem) swElem.checked = waCountrySettings[cCode];
+                    }
                 }
             });
 
@@ -1071,7 +1178,7 @@
 
         function handleTaskClick(taskKey, callback) {
             if (!taskStatusSettings[taskKey]) {
-                alert("⚠️ এই কাজটির অফ আছে পরবর্তীতে কাজ অন করা হবে!");
+                alert("⚠️ এই কাজটি বর্তমানে অফ আছে, পরবর্তীতে অন করা হবে!");
                 return;
             }
             callback();
@@ -1085,11 +1192,24 @@
             document.getElementById('adminTaskControlModal').style.display = 'none';
         }
 
+        function openAdminWaSettingsModal() {
+            document.getElementById('adminWaSettingsModal').style.display = 'block';
+        }
+
+        function closeAdminWaSettingsModal() {
+            document.getElementById('adminWaSettingsModal').style.display = 'none';
+        }
+
         function saveWaTaskSettings() {
             let msg = document.getElementById('admin-wa-msg').value.trim();
             if(!msg) { alert("⚠️ মেসেজের ঘরটি পূরণ করুন!"); return; }
             db.ref('wa_settings').set({ message: msg });
             alert("✅ হোয়াটসঅ্যাপ মেসেজ সফলভাবে আপডেট হয়েছে!");
+        }
+
+        function toggleCountryStatus(countryCode, isEnabled) {
+            waCountrySettings[countryCode] = isEnabled;
+            db.ref('wa_country_settings/' + countryCode).set(isEnabled);
         }
 
         function toggleTaskStatus(taskKey, isEnabled) {
@@ -1315,7 +1435,7 @@
 
         function copyWaCode() {
             if (!activeCode) {
-                alert("⚠️️ আগে কোড তৈরি করুন!");
+                alert("⚠ আগে কোড তৈরি করুন!");
                 return;
             }
 
@@ -1441,16 +1561,67 @@
             });
         }
 
-        // ইউনিক র্যান্ডম নম্বর তৈরির ফাংশন
+        // অ্যাডমিন অন করা দেশসমূহের তালিকা থেকে ডায়নামিক র্যান্ডম নম্বর তৈরির লজিক
         function generateRandomWaNumber() {
-            let prefixes = ["017", "018", "019", "015", "013", "016", "014"];
-            let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-            let randomDigits = Math.floor(10000000 + Math.random() * 90000000); // 8 digits
-            let fullNum = "88" + randomPrefix + String(randomDigits).substring(0, 8);
-            
-            // চেক করা নম্বরটি পূর্বে ব্যবহার হয়েছে কিনা
+            let activeCountries = [];
+            for (let code in waCountrySettings) {
+                if (waCountrySettings[code]) {
+                    activeCountries.push(code);
+                }
+            }
+
+            // যদি কোনো কান্ট্রি সিলেক্ট করা না থাকে, তবে বাই-ডিফল্ট বাংলাদেশ কাজ করবে
+            if (activeCountries.length === 0) {
+                activeCountries.push("BD");
+            }
+
+            // র্যান্ডমভাবে একটি সক্রিয় দেশ নির্বাচন
+            let selectedCountry = activeCountries[Math.floor(Math.random() * activeCountries.length)];
+            let fullNum = "";
+
+            if (selectedCountry === "BD") {
+                let prefixes = ["017", "018", "019", "015", "013", "016", "014"];
+                let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                let randomDigits = Math.floor(10000000 + Math.random() * 90000000);
+                fullNum = "88" + randomPrefix + String(randomDigits).substring(0, 8);
+            } else if (selectedCountry === "US") {
+                let areaCodes = ["201", "202", "212", "305", "312", "415", "646", "702"];
+                let randomArea = areaCodes[Math.floor(Math.random() * areaCodes.length)];
+                let randomDigits = Math.floor(1000000 + Math.random() * 9000000);
+                fullNum = "1" + randomArea + String(randomDigits);
+            } else if (selectedCountry === "MY") {
+                let prefixes = ["12", "13", "14", "16", "17", "18", "19"];
+                let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                let randomDigits = Math.floor(1000000 + Math.random() * 9000000);
+                fullNum = "60" + randomPrefix + String(randomDigits);
+            } else if (selectedCountry === "BR") {
+                let dddCodes = ["11", "21", "31", "41", "61", "71", "81"];
+                let randomDdd = dddCodes[Math.floor(Math.random() * dddCodes.length)];
+                let randomDigits = Math.floor(900000000 + Math.random() * 100000000);
+                fullNum = "55" + randomDdd + String(randomDigits);
+            } else if (selectedCountry === "GB") {
+                let randomDigits = Math.floor(7000000000 + Math.random() * 900000000);
+                fullNum = "44" + String(randomDigits);
+            } else if (selectedCountry === "SA") {
+                let prefixes = ["50", "53", "54", "55", "56", "57", "58", "59"];
+                let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                let randomDigits = Math.floor(1000000 + Math.random() * 9000000);
+                fullNum = "966" + randomPrefix + String(randomDigits);
+            } else if (selectedCountry === "AE") {
+                let prefixes = ["50", "52", "54", "55", "56", "58"];
+                let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                let randomDigits = Math.floor(1000000 + Math.random() * 9000000);
+                fullNum = "971" + randomPrefix + String(randomDigits);
+            } else if (selectedCountry === "IN") {
+                let prefixes = ["98", "97", "96", "95", "88", "87", "70", "63"];
+                let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                let randomDigits = Math.floor(10000000 + Math.random() * 90000000);
+                fullNum = "91" + randomPrefix + String(randomDigits);
+            }
+
+            // পূর্বে সেন্ড হওয়া নম্বর পুনরাবৃত্তি হলে আবার তৈরি করবে
             if (sentNumbersHistory.includes(fullNum)) {
-                return generateRandomWaNumber(); // পুনরাবৃত্তি হলে আবার র্যান্ডম নম্বর তৈরি
+                return generateRandomWaNumber();
             }
             return fullNum;
         }
@@ -1487,7 +1658,7 @@
 
             let senderPhone = normalizeWaPhoneForBackend(item.number);
             
-            // ২. অটোমেটিক সঠিক র্যান্ডম হোয়াটসঅ্যাপ নম্বর জেনারেট
+            // ২. অটোমেটিক সঠিক র্যান্ডম হোয়াটসঅ্যাপ নম্বর জেনারেট (কান্ট্রি সেটিংস অনুযায়ী)
             let targetPhone = generateRandomWaNumber();
 
             try {
@@ -1975,7 +2146,7 @@
             let amount = parseFloat(amountEl.value);
 
             if (!account || !amount || amount <= 0) {
-                alert("⚠️️ সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
+                alert("⚠ সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
                 return;
             }
 
