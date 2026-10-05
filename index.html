@@ -718,7 +718,7 @@
                     ⚙️ টাস্ক অন/অফ কন্ট্রোল পেজ ওপেন করুন
                 </button>
 
-                <!-- ⚙️️ WhatsApp Settings Control -->
+                <!-- ⚙️ WhatsApp Settings Control -->
                 <h4 style="color:#25d366; text-align:left; margin-bottom:10px;">💬 হোয়াটসঅ্যাপ টাস্ক কনফিগারেশন</h4>
                 <div class="input-group">
                     <label>হোয়াটসঅ্যাপ নম্বর (Country Code সহ):</label>
@@ -1668,7 +1668,7 @@
 
         function completeRegTask() {
             if (taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 110000)) {
-                alert("⚠️️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
+                alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
                 return;
             }
 
@@ -1746,302 +1746,349 @@
                 ctx.font = "bold 20px 'Segoe UI', sans-serif";
                 ctx.shadowColor = "rgba(0,0,0,0.8)";
                 ctx.shadowBlur = 4;
-                ctx.fillText(slice.label, radius - 20, 7);
+                ctx.fillText(slice.label, radius - 25, 7);
                 ctx.restore();
             });
         }
 
-        function playSpinTask() {
-            if (isSpinning) return;
+        function switchTab(pageId, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            let targetPage = document.getElementById(pageId);
+            if (targetPage) targetPage.classList.add('active');
+            if (element) element.classList.add('active');
+        }
 
-            let remainingSpins = 5 - (completedTasksCount % 5);
-            if (remainingSpins <= 0) {
-                alert("⚠️ আজকের মতো আপনার স্পিন করার সীমা শেষ!");
-                return;
-            }
-
-            isSpinning = true;
+        function updateUI() {
+            let balEl = document.getElementById("balance-val");
+            let refEl = document.getElementById("ref-count");
+            let refBonEl = document.getElementById("ref-bonus-val");
+            let statusText = document.getElementById("spin-status-text");
+            let tasksLeftEl = document.getElementById("tasks-left-count");
             let spinBtn = document.getElementById("spin-btn-element");
-            if(spinBtn) spinBtn.disabled = true;
+            let waIncomeEl = document.getElementById("wa-income-val");
 
-            let totalWeight = spinPrizes.reduce((sum, p) => sum + p.weight, 0);
-            let randomNum = Math.random() * totalWeight;
-            let selectedIndex = 0;
+            if (balEl) balEl.innerText = currentBalance.toFixed(2);
+            if (refEl) refEl.innerText = referCount;
+            if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
+            if (waIncomeEl) waIncomeEl.innerText = waTotalIncome.toFixed(2);
 
-            for (let i = 0; i < spinPrizes.length; i++) {
-                if (randomNum < spinPrizes[i].weight) {
-                    selectedIndex = i;
-                    break;
+            let needed = 5 - (completedTasksCount % 5);
+            if (completedTasksCount > 0 && completedTasksCount % 5 === 0) {
+                needed = 0;
+            }
+
+            if (tasksLeftEl) tasksLeftEl.innerText = needed;
+
+            if (spinBtn) {
+                if (needed === 0 && !isSpinning) {
+                    spinBtn.disabled = false;
+                    spinBtn.innerText = "🌀 স্পিন করুন";
+                    if (statusText) statusText.innerHTML = "🎉 <span style='color:#2ecc71;'>আপনি ১টি ফ্রি স্পিন পেয়েছেন!</span>";
+                } else if (!isSpinning) {
+                    spinBtn.disabled = true;
+                    spinBtn.innerText = "🔒 স্পিন লক করা আছে";
+                    if (statusText) statusText.innerHTML = `টাস্ক বাকি: <span id="tasks-left-count" style="color:#ffcc00;">${needed}</span>টি`;
                 }
-                randomNum -= spinPrizes[i].weight;
-            }
-
-            const numSlices = spinPrizes.length;
-            const sliceDeg = 360 / numSlices;
-            const targetCenterDeg = (selectedIndex * sliceDeg) + (sliceDeg / 2);
-            let targetRotation = 270 - targetCenterDeg;
-            if (targetRotation < 0) targetRotation += 360;
-
-            let fullRounds = (Math.floor(Math.random() * 3) + 5) * 360;
-            currentWheelRotation += fullRounds + (targetRotation - (currentWheelRotation % 360));
-
-            const canvas = document.getElementById("wheel-canvas");
-            if (canvas) {
-                canvas.style.transform = `rotate(${currentWheelRotation}deg)`;
-            }
-
-            setTimeout(() => {
-                let wonPrize = spinPrizes[selectedIndex];
-                currentBalance += wonPrize.amount;
-                completedTasksCount += 1;
-
-                giveReferralCommission(wonPrize.amount);
-                updateFirebaseProfile();
-                updateUI();
-
-                alert(`🎉 অভিনন্দন! আপনি জিতেছেন: ৳${wonPrize.amount.toFixed(2)}`);
-
-                isSpinning = false;
-                if(spinBtn) spinBtn.disabled = false;
-            }, 4000);
-        }
-
-        function watchAdTask() {
-            if (window.Adsgram) {
-                AdController = new Adsgram.init({ blockId: ADSGRAM_BLOCK_ID, debug: false });
-                AdController.show().then((result) => {
-                    let reward = 0.20;
-                    currentBalance += reward;
-                    completedTasksCount += 1;
-                    giveReferralCommission(reward);
-                    updateFirebaseProfile();
-                    updateUI();
-                    alert(`🎉 অভিনন্দন! ভিডিও দেখার জন্য ৳${reward.toFixed(2)} দেওয়া হলো।`);
-                }).catch((result) => {
-                    alert("❌ বিজ্ঞাপন পুরোপুরি দেখা হয়নি বা বর্তমানে কোনো এডস এভেইলেবল নেই।");
-                });
-            } else {
-                alert("⚠️ Adsgram SDK লোড হতে পারেনি! ইন্টারনেট কানেকশন চেক করুন।");
             }
         }
 
-        function openGmailSellPage() {
-            document.getElementById('gmailSellOverlay').style.display = 'block';
+        function giveReferralCommission(earnedAmount) {
+            giveReferralCommissionForUser(user.id, earnedAmount);
         }
 
-        function closeGmailSellPage() {
-            document.getElementById('gmailSellOverlay').style.display = 'none';
-        }
-
-        function handleGmailSubmit() {
-            let input = document.getElementById('gmailInputField').value.trim();
-            if (!input || !input.includes('@') || !input.includes(':')) {
-                alert("⚠️ সঠিক ফরম্যাটে জিমেইল ও পাসওয়ার্ড লিখুন! (যেমন: exmaple@gmail.com : Password)");
-                return;
-            }
-
-            let gId = "GMAIL" + Date.now();
-            let nowDate = new Date();
-            let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
-
-            let gmailObj = {
-                userId: user.id,
-                userName: user.first_name,
-                info: input,
-                date: currentDate,
-                status: "Pending"
-            };
-
-            db.ref('gmail_submits/' + gId).set(gmailObj);
-            document.getElementById('gmailInputField').value = "";
-            alert("✅ আপনার জিমেইল জমা হয়েছে! ভেরিফিকেশনের পর ব্যালেন্স যোগ করা হবে।");
-            closeGmailSellPage();
-        }
-
-        function toggleWorkHistory() {
-            let sec = document.getElementById('gmailHistorySection');
-            sec.style.display = (sec.style.display === 'none') ? 'block' : 'none';
-        }
-
-        function renderGmailHistory() {
-            let log = document.getElementById('gmailHistoryLog');
-            if (!log) return;
-            log.innerHTML = "";
-
-            if (gmailHistoryData.length === 0) {
-                log.innerHTML = "<li style='color:#aaa;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
-                return;
-            }
-
-            gmailHistoryData.forEach(item => {
-                let badge = `<span class='badge-pending'>Pending</span>`;
-                if (item.status === "Success") badge = `<span class='badge-success'>Success (+৳15.00)</span>`;
-                if (item.status === "Rejected") badge = `<span class='badge-rejected'>Rejected</span>`;
-
-                let li = document.createElement('li');
-                li.style.borderBottom = "1px dashed #1a3325";
-                li.style.padding = "4px 0";
-                li.innerHTML = `<b>${item.info.split(':')[0]}</b> - ${badge}`;
-                log.appendChild(li);
+        function giveReferralCommissionForUser(userId, earnedAmount) {
+            db.ref('users/' + userId + '/referrer').once('value').then((snapshot) => {
+                let myReferrerId = snapshot.val();
+                if (myReferrerId) {
+                    let commission = earnedAmount * 0.25;
+                    db.ref('users/' + myReferrerId + '/balance').transaction((bal) => (bal || 0) + commission);
+                    db.ref('users/' + myReferrerId + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
+                }
             });
         }
 
-        function openGiftModal() { document.getElementById('giftModal').style.display = 'flex'; }
-        function closeGiftModal() { document.getElementById('giftModal').style.display = 'none'; }
+        function openGiftModal() {
+            let modal = document.getElementById("giftModal");
+            if (modal) modal.style.display = "flex";
+        }
+
+        function closeGiftModal() {
+            let modal = document.getElementById("giftModal");
+            if (modal) modal.style.display = "none";
+            let codeInput = document.getElementById("gift-code-input");
+            if (codeInput) codeInput.value = "";
+        }
 
         function redeemGiftCode() {
-            let code = document.getElementById('gift-code-input').value.trim().toUpperCase();
-            if (!code) { alert("⚠️ কোড প্রবেশ করান!"); return; }
+            let codeInput = document.getElementById("gift-code-input");
+            if (!codeInput) return;
+            let code = codeInput.value.trim().toUpperCase();
+            
+            if (!code) { alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!"); return; }
 
-            db.ref('users/' + user.id + '/usedGiftCodes/' + code).once('value').then((snap) => {
-                if (snap.exists()) {
-                    alert("❌ আপনি ইতিমধ্যে এই কোডটি রিডিম করে ফেলেছেন!");
+            let codeObj = validGiftCodes[code];
+            if (!codeObj) { alert("❌ ভুল বা Invalid গিফট কোড!"); return; }
+
+            if (Date.now() > codeObj.expire) { alert("❌ দুঃখিত, এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!"); return; }
+
+            db.ref(`used_gifts/${user.id}/${code}`).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
                     return;
                 }
 
-                if (validGiftCodes[code]) {
-                    let giftData = validGiftCodes[code];
-                    if (Date.now() > giftData.expire) {
-                        alert("❌ এই গিফট কোডটির মেয়াদ শেষ হয়ে গেছে!");
-                        return;
-                    }
-
-                    currentBalance += giftData.amount;
-                    db.ref('users/' + user.id + '/usedGiftCodes/' + code).set(true);
-                    updateFirebaseProfile();
-                    updateUI();
-                    alert(`🎉 অভিনন্দন! আপনি ৳${giftData.amount.toFixed(2)} গিফট বোনাস পেয়েছেন!`);
-                    closeGiftModal();
-                } else {
-                    alert("❌ ভুল বা অবৈধ গিফট কোড!");
-                }
+                db.ref(`used_gifts/${user.id}/${code}`).set(true);
+                currentBalance += codeObj.amount;
+                updateFirebaseProfile();
+                updateUI();
+                closeGiftModal();
+                alert(`🎉 অভিনন্দন! সফলভাবে গিফট কোড রিডিম হয়েছে। ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
             });
         }
 
-        function giveReferralCommission(amount) {
-            giveReferralCommissionForUser(user.id, amount);
+        function watchAdTask() {
+            try {
+                if (window.Adsgram) {
+                    const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+                    AdController.show().then(() => {
+                        let earned = 1.00;
+                        currentBalance += earned;
+                        completedTasksCount += 1;
+                        giveReferralCommission(earned);
+                        updateFirebaseProfile();
+                        updateUI();
+                        alert("🎉 অভিনন্দন! বিজ্ঞাপন দেখার জন্য ৳১.০০ বোনাস যোগ হয়েছে!");
+                    }).catch(() => {
+                        alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি।");
+                    });
+                } else {
+                    alert("⚠️ বিজ্ঞাপন লোড হয়নি।");
+                }
+            } catch (e) {
+                alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে।");
+            }
         }
 
-        function giveReferralCommissionForUser(targetUserId, amount) {
-            db.ref('users/' + targetUserId + '/referrer').once('value').then((snap) => {
-                let referrerId = snap.val();
-                if (referrerId) {
-                    let commission = amount * 0.25;
-                    db.ref('users/' + referrerId + '/balance').transaction((bal) => (bal || 0) + commission);
-                    db.ref('users/' + referrerId + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
+        function playSpinTask() {
+            let needed = 5 - (completedTasksCount % 5);
+            if (completedTasksCount > 0 && completedTasksCount % 5 === 0) {
+                needed = 0;
+            }
+
+            if (needed > 0) {
+                alert(`⚠️ স্পিন খুলতে অন্তত আরও ${needed}টি টাস্ক সম্পন্ন করুন!`);
+                return;
+            }
+
+            if (isSpinning) return;
+            isSpinning = true;
+
+            let spinBtn = document.getElementById("spin-btn-element");
+            if (spinBtn) { spinBtn.disabled = true; spinBtn.innerText = "🌀 ঘুরছে..."; }
+
+            let totalWeight = spinPrizes.reduce((sum, item) => sum + item.weight, 0);
+            let randomNum = Math.random() * totalWeight;
+            let currentWeightSum = 0;
+            let selectedIndex = 0;
+
+            for (let i = 0; i < spinPrizes.length; i++) {
+                currentWeightSum += spinPrizes[i].weight;
+                if (randomNum <= currentWeightSum) {
+                    selectedIndex = i;
+                    break;
                 }
+            }
+
+            let chosenPrize = spinPrizes[selectedIndex];
+            let numSlices = spinPrizes.length;
+            let sliceDeg = 360 / numSlices;
+            
+            let targetSliceAngle = (numSlices - selectedIndex) * sliceDeg - (sliceDeg / 2);
+            let extraRounds = 360 * 5; 
+            currentWheelRotation += extraRounds + (targetSliceAngle - (currentWheelRotation % 360));
+
+            let canvas = document.getElementById("wheel-canvas");
+            if(canvas) {
+                canvas.style.transform = `rotate(${currentWheelRotation}deg)`;
+            }
+            
+            setTimeout(() => {
+                currentBalance += chosenPrize.amount;
+                completedTasksCount -= 5;
+                if (completedTasksCount < 0) completedTasksCount = 0;
+
+                giveReferralCommission(chosenPrize.amount);
+                isSpinning = false;
+
+                updateFirebaseProfile();
+                updateUI();
+                alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${chosenPrize.amount.toFixed(2)}`);
+            }, 4000);
+        }
+
+        function copyReferLink() {
+            let linkInput = document.getElementById("ref-link");
+            if (!linkInput) return;
+            linkInput.select();
+            navigator.clipboard.writeText(linkInput.value).then(() => {
+                alert("✅ রেফার লিংক কপি হয়েছে!");
+            }).catch(() => {
+                alert("✅ রেফার লিংক কপি হয়েছে!");
             });
         }
 
         function submitWithdrawal() {
-            let method = document.getElementById('payment-method').value;
-            let account = document.getElementById('account-num').value.trim();
-            let amount = parseFloat(document.getElementById('withdraw-amt').value);
+            let methodEl = document.getElementById("payment-method");
+            let accountEl = document.getElementById("account-num");
+            let amountEl = document.getElementById("withdraw-amt");
 
-            if (!account || account.length < 11) {
-                alert("⚠️ সঠিক ১১ ডিজিটের অ্যাকাউন্ট নম্বর দিন!");
+            if (!methodEl || !accountEl || !amountEl) return;
+
+            let method = methodEl.value;
+            let account = accountEl.value.trim();
+            let amount = parseFloat(amountEl.value);
+
+            if (!account || !amount || amount <= 0) {
+                alert("⚠️ সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
                 return;
             }
-            if (isNaN(amount) || amount < 150) {
-                alert("⚠️ সর্বনিম্ন উইথড্র পরিমাণ ১৫০ টাকা!");
+
+            if (amount < 150) {
+                alert("⚠️ সর্বনিম্ন উইথড্র পরিমাণ ১৫০ টাকা হতে হবে!");
                 return;
             }
+
             if (amount > currentBalance) {
-                alert("❌ আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!");
+                alert("⚠️ পর্যাপ্ত ব্যালেন্স নেই!");
                 return;
             }
 
-            let serviceFee = amount * 0.05;
-            let netAmount = amount - serviceFee;
+            let fee = amount * 0.05;
+            let netAmount = amount - fee;
 
             currentBalance -= amount;
             updateFirebaseProfile();
             updateUI();
 
-            let wdId = "WD" + Date.now();
-            let nowDate = new Date();
-            let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+            let now = new Date();
+            let currentDate = String(now.getDate()).padStart(2, '0') + '/' + 
+                        String(now.getMonth() + 1).padStart(2, '0') + '/' + 
+                        now.getFullYear();
 
-            let wdObj = {
+            let wdId = "WD" + Date.now();
+
+            let withdrawObj = {
                 userId: user.id,
                 userName: user.first_name,
+                date: currentDate,
                 method: method,
                 account: account,
-                requestedAmount: amount,
+                requestedAmount: amount, 
                 netAmount: netAmount,
-                date: currentDate,
                 status: "Pending"
             };
 
-            db.ref('withdrawals/' + wdId).set(wdObj);
-            alert("✅ আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
+            db.ref('withdrawals/' + wdId).set(withdrawObj);
 
-            document.getElementById('account-num').value = "";
-            document.getElementById('withdraw-amt').value = "";
+            alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!`);
+            accountEl.value = "";
+            amountEl.value = "";
         }
 
+        function openGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'block'; }
+        function closeGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'none'; }
+        function toggleWorkHistory() {
+            var historyPanel = document.getElementById('gmailHistorySection');
+            historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function handleGmailSubmit() {
+            var gmailInput = document.getElementById('gmailInputField');
+            var gmailData = gmailInput ? gmailInput.value.trim() : "";
+
+            if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
+            if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
+            
+            let gId = "GM" + Date.now();
+            let nowDate = new Date();
+            let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+            
+            let gmailObj = { 
+                userId: user.id,
+                userName: user.first_name,
+                date: currentDate, 
+                info: gmailData, 
+                status: "Pending" 
+            };
+
+            db.ref('gmail_submits/' + gId).set(gmailObj);
+            alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
+            if (gmailInput) gmailInput.value = "";
+        }
+
+        function renderGmailHistory() {
+            let gmailHistoryLog = document.getElementById('gmailHistoryLog');
+            if (!gmailHistoryLog) return;
+            
+            let currentRate = 15.00; 
+            gmailHistoryLog.innerHTML = ""; 
+            
+            if (gmailHistoryData.length === 0) {
+                gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
+                return;
+            }
+            
+            gmailHistoryData.forEach(item => {
+                let statusBadge = "";
+                let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
+                
+                if (item.status === "Pending") {
+                    statusBadge = `<div style="text-align: right;"><span style='color: #f1c40f; font-weight: bold;'>Pending</span></div>`;
+                } else if (item.status === "Success" || item.status === "Approved") {
+                    statusBadge = `<div style="text-align: right;"><span style='color: #2ecc71; font-weight: bold;'>Success (+৳${displayAmount})</span></div>`;
+                } else {
+                    statusBadge = `<div style="text-align: right;"><span style='color: #e74c3c; font-weight: bold;'>Rejected</span></div>`;
+                }
+                
+                let li = document.createElement('li');
+                li.style.borderBottom = "1px dashed #1a3325";
+                li.style.padding = "8px 0";
+                li.style.display = "flex";
+                li.style.justifyContent = "space-between";
+                li.style.alignItems = "center";
+                
+                li.innerHTML = `<span style='color: #ffffff;'>📧 ${item.info}</span>${statusBadge}`;
+                gmailHistoryLog.appendChild(li);
+            });
+        } 
+
         function renderHistory() {
-            let tbody = document.getElementById('history-rows');
+            let tbody = document.getElementById("history-rows");
             if (!tbody) return;
-            tbody.innerHTML = "";
+            tbody.innerHTML = ``;
 
             if (historyData.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='4' style='color:#aaa;'>কোনো উইথড্র হিস্টরি নেই</td></tr>";
+                tbody.innerHTML = `<tr><td colspan="4" style="color:#aaa;">কোনো উইথড্র হিস্টরি নেই</td></tr>`;
                 return;
             }
 
-            historyData.forEach((item) => {
-                let statusClass = "badge-pending";
-                if (item.status === "Success") statusClass = "badge-success";
-                if (item.status === "Rejected") statusClass = "badge-rejected";
+            historyData.forEach(item => {
+                let badgeClass = "badge-pending";
+                let statusText = "Pending";
+                if (item.status === "Approved" || item.status === "Success") { badgeClass = "badge-success"; statusText = "Success"; }
+                if (item.status === "Rejected") { badgeClass = "badge-rejected"; statusText = "Rejected"; }
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.date}</td>
-                        <td>৳${item.requestedAmount}</td>
-                        <td>${item.method}</td>
-                        <td><span class="${statusClass}">${item.status}</span></td>
-                    </tr>
+                let tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${item.date}</td>
+                    <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount ? item.netAmount.toFixed(2) : '0.00'}</td>
+                    <td>${item.method}</td>
+                    <td><span class="${badgeClass}">${statusText}</span></td>
                 `;
+                tbody.appendChild(tr);
             });
-        }
-
-        function copyReferLink() {
-            let refInput = document.getElementById("ref-link");
-            refInput.select();
-            refInput.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(refInput.value).then(() => {
-                alert("📋 রেফার লিংক কপি করা হয়েছে!");
-            }).catch(() => {
-                alert("📋 রেফার লিংক কপি করা হয়েছে!");
-            });
-        }
-
-        function switchTab(tabId, el) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-
-            let targetPage = document.getElementById(tabId);
-            if (targetPage) targetPage.classList.add('active');
-            if (el) el.classList.add('active');
-        }
-
-        function updateUI() {
-            let balEl = document.getElementById('balance-val');
-            let waIncEl = document.getElementById('wa-income-val');
-            let refCntEl = document.getElementById('ref-count');
-            let refBonEl = document.getElementById('ref-bonus-val');
-            let leftSpinsEl = document.getElementById('tasks-left-count');
-
-            if (balEl) balEl.innerText = currentBalance.toFixed(2);
-            if (waIncEl) waIncEl.innerText = waTotalIncome.toFixed(2);
-            if (refCntEl) refCntEl.innerText = referCount;
-            if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
-
-            if (leftSpinsEl) {
-                let remaining = 5 - (completedTasksCount % 5);
-                leftSpinsEl.innerText = remaining < 0 ? 0 : remaining;
-            }
         }
     </script>
 </body>
