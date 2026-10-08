@@ -248,27 +248,22 @@ async function createSocket(phone, options = {}) {
             if (connection === 'close') {
                 console.log(`[WhatsApp] Closed: ${phone} | code=${statusCode}`);
 
-                if (statusCode === DisconnectReason.restartRequired) {
-                    delete sessions[phone];
-                    setTimeout(async () => {
-                        if (fs.existsSync(getSessionDir(phone))) {
-                            await createSocket(phone, { fresh: false });
-                        }
-                    }, 1000);
-                    return;
-                }
+                // ১. শুধুমাত্র হোয়াটসঅ্যাপ থেকে সত্যিকারের অ্যাকাউন্ট ব্যান/লগআউট হলে (statusCode 401 বা loggedOut) মুছে ফেলা হবে
+                const isExplicitLoggedOut = (statusCode === DisconnectReason.loggedOut) || (statusCode === 401) || (statusCode === 403);
 
-                if (statusCode === DisconnectReason.loggedOut) {
-                    await markLoggedOut(phone, 'logged_out');
+                if (isExplicitLoggedOut) {
+                    console.log(`[WhatsApp] Permanently Logged Out or Banned: ${phone}`);
+                    await markLoggedOut(phone, 'logged_out_or_banned');
                     closeSocket(phone);
                     removeSessionDir(phone);
                     return;
                 }
 
+                // ২. নেটওয়ার্ক ড্রপ, রিস্টার্ট বা অন্য সকল কারণে সেশন বজায় থাকবে এবং রি-কানেক্ট চেষ্টা করবে
+                delete sessions[phone];
                 if (fs.existsSync(getSessionDir(phone))) {
-                    delete sessions[phone];
                     setTimeout(async () => {
-                        if (fs.existsSync(getSessionDir(phone))) {
+                        if (fs.existsSync(getSessionDir(phone)) && !sessions[phone]) {
                             await createSocket(phone, { fresh: false });
                         }
                     }, 3000);
@@ -447,7 +442,15 @@ app.post('/api/send-message', async (req, res) => {
     }
 
     try {
-        const sock = sessions[senderPhone];
+        let sock = sessions[senderPhone];
+
+        // ১. যদি সকেটের সংযোগ না থাকে কিন্তু সেশন ফোল্ডার থাকে, তবে সকেট পুনরায় চালু করার চেষ্টা
+        if (!sock && fs.existsSync(getSessionDir(senderPhone))) {
+            const reCreated = await createSocket(senderPhone, { fresh: false });
+            sock = reCreated.sock;
+            await waitForConnection(sock, 10000);
+        }
+
         if (!sock) {
             return res.json({ success: false, reward: 0, status: 'Failed', error: 'Session inactive' });
         }
@@ -459,7 +462,15 @@ app.post('/api/send-message', async (req, res) => {
         return res.json({ success: false, reward: 0, status: 'Failed' });
 
     } catch (error) {
-        return res.json({ success: false, reward: 0, status: 'Failed', error: error.message });
+        console.error(`[Send Message Error] ${senderPhone}:`, error.message);
+
+        // ২. মেসেজ পাঠানোর সময় নেটওয়ার্ক টাইমাউট বা মেসেজ ফেল হলে সেশন ডিলেট করা হবে না
+        return res.json({ 
+            success: false, 
+            reward: 0, 
+            status: 'Failed', 
+            error: 'Message send failed, retry later: ' + error.message 
+        });
     }
 });
 
