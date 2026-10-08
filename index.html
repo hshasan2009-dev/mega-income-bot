@@ -377,6 +377,16 @@
 </head>
 <body>
 
+    <!-- 🚫 ইউজার ব্যান এলার্ট পপআপ (যদি ইউজার ব্যান থাকে) -->
+    <div id="bannedUserOverlay" class="modal-overlay" style="z-index: 999999; background: rgba(10, 5, 5, 0.98); align-items: center; justify-content: center;">
+        <div style="background: linear-gradient(145deg, #2c0b0e, #1a0507); border: 2px solid #e74c3c; border-radius: 16px; padding: 25px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4); margin: auto;">
+            <div style="font-size: 50px; margin-bottom: 10px;">🚫</div>
+            <h2 style="color: #ff4d4d; font-size: 20px; margin-bottom: 12px; font-weight: bold;">অ্যাকাউন্ট ব্যান করা হয়েছে!</h2>
+            <p style="color: #e0e0e0; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">আপনার অ্যাকাউন্টটি সাময়িকভাবে ব্যান করা হয়েছে। আপনি আর কোনো ফিচার ব্যবহার করতে পারবেন না।</p>
+            <button class="btn btn-support" onclick="openTelegramLink('https://t.me/hshasan2009')" style="margin-bottom:0;">🛠 সাপোর্টে যোগাযোগ করুন</button>
+        </div>
+    </div>
+
     <div class="top-title-bar">
         🚀 Mega Income Bot
     </div>
@@ -713,36 +723,115 @@
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
 
-                <!-- ⚙️ Task Switch Open Button (অ্যাডমিনের জন্য নতুন অন/অফ পেজ বাটন) -->
+                <!-- ⚙️ Task Switch Open Button -->
                 <button class="btn btn-gift" onclick="openAdminTaskControlModal()" style="margin-bottom: 12px;">
                     ⚙️ টাস্ক অন/অফ কন্ট্রোল পেজ ওপেন করুন
                 </button>
 
                 <!-- 💬 WhatsApp Task & Country Settings Button -->
-                <button class="btn btn-whatsapp" onclick="openAdminWaSettingsModal()" style="margin-bottom: 20px;">
+                <button class="btn btn-whatsapp" onclick="openAdminWaSettingsModal()" style="margin-bottom: 12px;">
                     💬 WhatsApp টাস্ক & কান্ট্রি সেটিংস
                 </button>
 
-                <hr style="border:0; border-top:1px dashed #27ae60; margin:20px 0;">
+                <!-- 🚫 User Ban Control Button -->
+                <button class="btn btn-support" onclick="openAdminUserBanModal()" style="margin-bottom: 12px;">
+                    🚫 User Ban Control
+                </button>
 
-                <h4 style="color:#f1c40f; text-align:left; margin-bottom:10px;">📱 পিন সাবমিট প্রুফসমূহ (Mobipium)</h4>
-                <div id="admin-pin-list"></div>
+                <!-- 💳 Withdraw Requests List Button -->
+                <button class="btn btn-main" onclick="openAdminWithdrawModal()" style="margin-bottom: 12px;">
+                    💳 Withdraw Requests List
+                </button>
 
-                <hr style="border:0; border-top:1px dashed #27ae60; margin:20px 0;">
+                <!-- 📧 Gmail Submit Requests List Button -->
+                <button class="btn btn-official" onclick="openAdminGmailModal()" style="margin-bottom: 12px;">
+                    📧 Gmail Submit Requests List
+                </button>
 
-                <h4 style="color:#2ecc71; text-align:left; margin-bottom:10px;">💳 উইথড্র রিকোয়েস্টসমূহ</h4>
-                <div id="admin-withdraw-list"></div>
+                <!-- 📱 Pin Submit Requests List Button -->
+                <button class="btn btn-bl" onclick="openAdminPinModal()" style="margin-bottom: 15px;">
+                    📱 Pin Submit Requests List
+                </button>
 
-                <hr style="border:0; border-top:1px dashed #27ae60; margin:20px 0;">
-
-                <h4 style="color:#f1c40f; text-align:left; margin-bottom:10px;">📧 জিমেইল সাবমিট রিকোয়েস্টসমূহ</h4>
-                <div id="admin-gmail-list"></div>
             </div>
         </div>
 
     </div>
 
-    <!-- 💬 WhatsApp Task & Country Control Modal (অ্যাডমিনদের জন্য নতুন মডাল) -->
+    <!-- 🚫 User Ban Control Modal (নতুন ইউজার ব্যান পেজ) -->
+    <div id="adminUserBanModal" class="modal-overlay">
+        <div style="background: linear-gradient(135deg, #102a1d, #08150f); border: 2px solid #e74c3c; padding: 20px; border-radius: 12px; width: 100%; max-width: 440px; margin: 20px auto; color: #fff; box-shadow: 0 5px 20px rgba(0,0,0,0.6);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e74c3c; padding-bottom:8px;">
+                <h3 style="color:#e74c3c; font-size:16px;">🚫 ইউজার ব্যান ও সার্চ কন্ট্রোল</h3>
+                <button onclick="closeAdminUserBanModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+
+            <!-- ইউজার আইডি সার্চ সেকশন -->
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <input type="number" id="ban-search-userid" class="input-control" placeholder="User ID লিখুন (ex: 123456)" style="flex:1;">
+                <button onclick="searchUserForBan()" style="background:#27ae60; color:#fff; border:none; padding:0 15px; border-radius:8px; font-weight:bold; cursor:pointer;">🔍 Search</button>
+            </div>
+
+            <!-- সার্চ রেজাল্ট ডিটেইলস কার্ড -->
+            <div id="user-search-result-card" style="display:none; background: #081a11; border: 1px solid #27ae60; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: left;">
+                <div style="font-size: 13px; color: #ffcc00; font-weight: bold; margin-bottom: 6px;">👤 ইউজার ডিটেইলস:</div>
+                <div style="font-size: 12px; color: #ddd; line-height: 1.6;">
+                    <div><b>Full Name:</b> <span id="searched-fullname" style="color:#fff;">-</span></div>
+                    <div><b>User ID:</b> <span id="searched-userid" style="color:#2ecc71;">-</span></div>
+                    <div><b>Current Balance:</b> ৳<span id="searched-balance" style="color:#f1c40f;">0.00</span></div>
+                    <div><b>Total Refer:</b> <span id="searched-refer" style="color:#3498db;">0</span></div>
+                    <div><b>Status:</b> <span id="searched-status-badge" style="font-weight:bold;">-</span></div>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 10px;">
+                    <button id="btn-action-ban" onclick="executeBanUser()" style="background:#e74c3c; color:#fff; border:none; padding:8px; border-radius:6px; flex:1; font-weight:bold; cursor:pointer;">🚫 Ban User</button>
+                    <button id="btn-action-unban" onclick="executeUnbanUser()" style="background:#2ecc71; color:#fff; border:none; padding:8px; border-radius:6px; flex:1; font-weight:bold; cursor:pointer;">✅ Unban User</button>
+                </div>
+            </div>
+
+            <hr style="border:0; border-top:1px dashed #27ae60; margin:15px 0;">
+
+            <!-- ব্যান ইউজার লিস্ট -->
+            <h4 style="color:#ffcc00; text-align:left; margin-bottom:10px; font-size:14px;">📜 ব্যান ইউজারদের তালিকা:</h4>
+            <div id="banned-users-list" style="max-height: 250px; overflow-y: auto;">
+                <p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💳 Withdraw Requests List Full Page Modal -->
+    <div id="adminWithdrawModal" class="modal-overlay">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
+                <h3 style="color:#2ecc71; font-size:16px;">💳 উইথড্র রিকোয়েস্টসমূহ</h3>
+                <button onclick="closeAdminWithdrawModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+            <div id="admin-withdraw-list"></div>
+        </div>
+    </div>
+
+    <!-- 📧 Gmail Submit Requests List Full Page Modal -->
+    <div id="adminGmailModal" class="modal-overlay">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
+                <h3 style="color:#f1c40f; font-size:16px;">📧 জিমেইল সাবমিট রিকোয়েস্টসমূহ</h3>
+                <button onclick="closeAdminGmailModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+            <div id="admin-gmail-list"></div>
+        </div>
+    </div>
+
+    <!-- 📱 Pin Submit Requests List Full Page Modal -->
+    <div id="adminPinModal" class="modal-overlay">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
+                <h3 style="color:#ffcc00; font-size:16px;">📱 পিন সাবমিট প্রুফসমূহ (Mobipium)</h3>
+                <button onclick="closeAdminPinModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+            <div id="admin-pin-list"></div>
+        </div>
+    </div>
+
+    <!-- 💬 WhatsApp Task & Country Control Modal -->
     <div id="adminWaSettingsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #25d366; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -985,6 +1074,9 @@
             user = { id: parseInt(savedUserId), first_name: "User_" + savedUserId, username: "user" + savedUserId };
         }
 
+        // পুরো নাম পেতে
+        let userFullName = user.first_name + (user.last_name ? " " + user.last_name : "");
+
         let botUsername = "MegaIncomeReal_bot";
         let referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${user.id}`;
 
@@ -1002,6 +1094,8 @@
         let currentWheelRotation = 0;
         let selectedOpKey = null;
         let selectedFileBase64 = null;
+
+        let searchedTargetUserId = null;
 
         // Default WhatsApp Message Settings
         let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
@@ -1038,10 +1132,22 @@
         };
 
         function initFirebaseUserSync() {
+            // Check Ban Realtime
+            db.ref('users/' + user.id + '/isBanned').on('value', (snapshot) => {
+                if (snapshot.val() === true) {
+                    let overlay = document.getElementById('bannedUserOverlay');
+                    if (overlay) overlay.style.display = 'flex';
+                } else {
+                    let overlay = document.getElementById('bannedUserOverlay');
+                    if (overlay) overlay.style.display = 'none';
+                }
+            });
+
             if (String(user.id) === String(ADMIN_CHAT_ID)) {
                 let adminBtn = document.getElementById("admin-nav-btn");
                 if (adminBtn) adminBtn.style.display = "flex";
                 listenAdminData();
+                listenBannedUsersList();
             }
 
             // Sync WhatsApp Message Settings
@@ -1107,16 +1213,24 @@
                     completedTasksCount = parseInt(val.completedTasksCount || 0);
                     waTotalIncome = parseFloat(val.waTotalIncome || 0);
                     userBoundWaNumbers = val.boundWaNumbers || [];
+
+                    // Save Full Name
+                    db.ref('users/' + user.id).update({
+                        fullName: userFullName,
+                        name: user.first_name
+                    });
                 } else {
                     db.ref('users/' + user.id).set({
                         name: user.first_name,
+                        fullName: userFullName,
                         balance: 0.00,
                         refCount: 0,
                         refBonus: 0.00,
                         regTaskIndex: 0,
                         completedTasksCount: 0,
                         waTotalIncome: 0.00,
-                        boundWaNumbers: []
+                        boundWaNumbers: [],
+                        isBanned: false
                     });
                 }
                 updateUI();
@@ -1198,6 +1312,136 @@
 
         function closeAdminWaSettingsModal() {
             document.getElementById('adminWaSettingsModal').style.display = 'none';
+        }
+
+        // Admin Request Pages Toggle Functions
+        function openAdminWithdrawModal() {
+            document.getElementById('adminWithdrawModal').style.display = 'block';
+        }
+        function closeAdminWithdrawModal() {
+            document.getElementById('adminWithdrawModal').style.display = 'none';
+        }
+
+        function openAdminGmailModal() {
+            document.getElementById('adminGmailModal').style.display = 'block';
+        }
+        function closeAdminGmailModal() {
+            document.getElementById('adminGmailModal').style.display = 'none';
+        }
+
+        function openAdminPinModal() {
+            document.getElementById('adminPinModal').style.display = 'block';
+        }
+        function closeAdminPinModal() {
+            document.getElementById('adminPinModal').style.display = 'none';
+        }
+
+        function openAdminUserBanModal() {
+            document.getElementById('adminUserBanModal').style.display = 'block';
+        }
+        function closeAdminUserBanModal() {
+            document.getElementById('adminUserBanModal').style.display = 'none';
+        }
+
+        // Ban Feature Functions
+        function searchUserForBan() {
+            let inputId = document.getElementById('ban-search-userid').value.trim();
+            if (!inputId) {
+                alert("⚠️ ইউজার এর আইডি প্রদান করুন!");
+                return;
+            }
+
+            db.ref('users/' + inputId).once('value').then((snapshot) => {
+                if (!snapshot.exists()) {
+                    alert("❌ এই আইডি দিয়ে কোনো ইউজার পাওয়া যায়নি!");
+                    document.getElementById('user-search-result-card').style.display = 'none';
+                    searchedTargetUserId = null;
+                    return;
+                }
+
+                let val = snapshot.val();
+                searchedTargetUserId = inputId;
+
+                let nameToShow = val.fullName || val.name || ("User_" + inputId);
+                let balToShow = parseFloat(val.balance || 0).toFixed(2);
+                let refToShow = parseInt(val.refCount || 0);
+                let isBanned = val.isBanned === true;
+
+                document.getElementById('searched-fullname').innerText = nameToShow;
+                document.getElementById('searched-userid').innerText = inputId;
+                document.getElementById('searched-balance').innerText = balToShow;
+                document.getElementById('searched-refer').innerText = refToShow;
+
+                let statusBadge = document.getElementById('searched-status-badge');
+                if (isBanned) {
+                    statusBadge.innerText = "BANNED 🚫";
+                    statusBadge.style.color = "#e74c3c";
+                    document.getElementById('btn-action-ban').style.display = "none";
+                    document.getElementById('btn-action-unban').style.display = "block";
+                } else {
+                    statusBadge.innerText = "ACTIVE ✅";
+                    statusBadge.style.color = "#2ecc71";
+                    document.getElementById('btn-action-ban').style.display = "block";
+                    document.getElementById('btn-action-unban').style.display = "none";
+                }
+
+                document.getElementById('user-search-result-card').style.display = 'block';
+            });
+        }
+
+        function executeBanUser() {
+            if (!searchedTargetUserId) return;
+            db.ref('users/' + searchedTargetUserId + '/isBanned').set(true).then(() => {
+                alert("🚫 ইউজার একাউন্ট সফলভাবে ব্যান করা হয়েছে!");
+                searchUserForBan();
+            });
+        }
+
+        function executeUnbanUser() {
+            if (!searchedTargetUserId) return;
+            db.ref('users/' + searchedTargetUserId + '/isBanned').set(false).then(() => {
+                alert("✅ ইউজার একাউন্ট Unban করা হয়েছে!");
+                searchUserForBan();
+            });
+        }
+
+        function unbanSpecificUser(targetId) {
+            db.ref('users/' + targetId + '/isBanned').set(false).then(() => {
+                alert("✅ ইউজার একাউন্ট Unban করা হয়েছে!");
+            });
+        }
+
+        function listenBannedUsersList() {
+            db.ref('users').on('value', (snapshot) => {
+                let container = document.getElementById('banned-users-list');
+                if (!container) return;
+
+                container.innerHTML = "";
+                let bannedCount = 0;
+
+                snapshot.forEach((childSnap) => {
+                    let uId = childSnap.key;
+                    let uVal = childSnap.val();
+
+                    if (uVal && uVal.isBanned === true) {
+                        bannedCount++;
+                        let uName = uVal.fullName || uVal.name || ("User_" + uId);
+                        container.innerHTML += `
+                            <div style="background:#081a11; border:1px solid #e74c3c; border-radius:6px; padding:8px 10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                                <div>
+                                    <span style="color:#ffcc00; font-weight:bold;">${bannedCount}.${uName}</span>
+                                    <span style="color:#aaa; font-size:10px; display:block;">ID: ${uId}</span>
+                                </div>
+                                <button onclick="unbanSpecificUser('${uId}')" style="background:#2ecc71; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-weight:bold; cursor:pointer;">Unban</button>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (bannedCount === 0) {
+                    container.innerHTML = `<p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>`;
+                }
+            });
         }
 
         function saveWaTaskSettings() {
