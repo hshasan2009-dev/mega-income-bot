@@ -622,14 +622,20 @@
         <!-- জিমেইল সেল ওভারলে -->
         <div id="gmailSellOverlay" class="modal-overlay">
             <div style="background:#113626; border: 2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
+                
+                <!-- একদম উপরে ডানপাশে বন্ধ করুন বাটন ও হেডার -->
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27ae60; padding-bottom: 8px; margin-bottom: 15px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 28px; height: 28px;" alt="Gmail">
                         <h2 style="color: #ffcc00; font-size: 18px; margin: 0;">Gmail Sell</h2>
                     </div>
-                    <div style="background: #a3e4d7; color: #0c2317; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 13px;">Rate: ৳15</div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="background: #a3e4d7; color: #0c2317; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 13px;">Rate: ৳15</div>
+                        <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">বন্ধ করুন ✖</button>
+                    </div>
                 </div>
 
+                <!-- পাসওয়ার্ড এবং কপি বক্স -->
                 <div style="background: linear-gradient(135deg, #fef9e7, #fcf3cf); border: 1.5px dashed #f39c12; border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: left;">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                         <span style="color: #b9770e; font-size: 13px; font-weight: bold;">🔑 Password to use:</span>
@@ -638,8 +644,10 @@
                     <div id="display-gmail-password" style="color: #c0392b; font-size: 16px; font-weight: bold; word-break: break-all;">hasan#1122</div>
                 </div>
 
+                <!-- ফার্স্ট নাম এবং জিমেইল ইনপুট ঘর -->
                 <div style="margin: 15px 0; text-align: left;">
-                    <label id="display-gmail-name-label" style="color: #ffffff; display: block; margin-bottom: 6px; font-size: 13px; font-weight: bold;">👤 First Name: Hasan</label>
+                    <div id="display-gmail-name-label" style="color: #ffcc00; font-size: 14px; font-weight: bold; margin-bottom: 6px;">👤 First Name: Hasan</div>
+                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 13px;">আপনার জিমেইল লিখুন (পাসওয়ার্ড বা অন্য কিছু নয়):</label>
                     <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com" class="input-control">
                 </div>
 
@@ -650,10 +658,6 @@
                     <div style="text-align: center;">
                         <button onclick="toggleWorkHistory()" style="background-color: #495057; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 আমার সাবমিট করা জিমেইল লিস্ট</button>
                     </div>
-                </div>
-
-                <div style="text-align: right; margin-top: 15px;">
-                    <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer;">বন্ধ করুন ✖</button>
                 </div>
 
                 <div id="gmailHistorySection" style="display: none; margin-top: 20px; background-color: #0d1e15; padding: 15px; border-radius: 8px; border: 1px solid #1a3325;">
