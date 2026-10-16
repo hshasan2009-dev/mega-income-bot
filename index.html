@@ -424,50 +424,64 @@
         <div id="task" class="page">
 
             <!-- ১. হোয়াটসঅ্যাপ অটোমেটিক টাস্ক -->
-            <div class="card" id="card-wa-task" style="border: 2px solid #25d366;">
-                <h3 style="color: #25d366; margin-bottom: 8px;">💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</h3>
-                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">
-                    হোয়াটসঅ্যাপ অ্যাকাউন্ট বাঁধুন এবং নির্দিষ্ট মেসেজ পাঠিয়ে আয় করুন!
-                </p>
-                <button class="btn btn-whatsapp" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
+            <div class="card" id="card-wa-task" style="border: 2px solid #25d366; display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="WhatsApp Logo">
+                <div style="flex-grow: 1;">
+                    <h3 style="color: #25d366; margin-bottom: 4px;">💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</h3>
+                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">হোয়াটসঅ্যাপ অ্যাকাউন্ট বাঁধুন এবং নির্দিষ্ট মেসেজ পাঠিয়ে আয় করুন!</p>
+                    <button class="btn btn-whatsapp" style="width: auto; padding: 8px 14px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
+                </div>
             </div>
             
             <!-- ২. পিন সাবমিট টাস্ক -->
-            <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f;">
-                <h3 style="color: #ffcc00; margin-bottom: 8px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
-                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
-                <button class="btn btn-main" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
+            <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f; display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Pin Logo">
+                <div style="flex-grow: 1;">
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
+                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
+                    <button class="btn btn-main" style="width: auto; padding: 8px 14px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
+                </div>
             </div>
 
             <!-- ৩. রেজিস্ট্রেশন টাস্ক -->
-            <div class="card" id="card-reg-task">
-                <h3 style="color: #ffcc00; margin-bottom: 8px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
-                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
-                <button class="btn btn-main" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
+            <div class="card" id="card-reg-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Registration Logo">
+                <div style="flex-grow: 1;">
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
+                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
+                    <button class="btn btn-main" style="width: auto; padding: 8px 14px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
+                </div>
             </div>
 
             <!-- ৪. ভিডিও এডস টাস্ক -->
-            <div class="card" id="card-ad-task">
-                <h3 style="color: #ffcc00; margin-bottom: 8px;">📺 ভিডিও এডস টাস্ক</h3>
-                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
-                <button class="btn btn-main" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
+            <div class="card" id="card-ad-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/2983/2983797.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Video Ads Logo">
+                <div style="flex-grow: 1;">
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📺 ভিডিও এডস টাস্ক</h3>
+                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
+                    <button class="btn btn-main" style="width: auto; padding: 8px 14px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
+                </div>
             </div>
 
             <!-- ৫. জিমেইল সেল টাস্ক -->
-            <div class="card" id="card-gmail-task">
-                <h3 style="color: #ffcc00; margin-bottom: 5px;">📧 জিমেইল সেল টাস্ক</h3>
-                <p style="color: #ffffff; margin-bottom: 15px; font-size: 14px;">
-                    প্রতি সঠিক জিমেইল সেল করার জন্য ১৫ টাকা পাবেন।
-                </p>
-                <button class="btn btn-main" onclick="handleTaskClick('gmailTask', openGmailSellPage)">জিমেইল সেল করুন</button>
+            <div class="card" id="card-gmail-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Gmail Logo">
+                <div style="flex-grow: 1;">
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📧 জিমেইল সেল টাস্ক</h3>
+                    <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক জিমেইল সেল করার জন্য ১৫ টাকা পাবেন।</p>
+                    <button class="btn btn-main" style="width: auto; padding: 8px 14px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('gmailTask', openGmailSellPage)">জিমেইল সেল করুন</button>
+                </div>
             </div>
 
             <!-- লকি স্পিন -->
             <div class="card" id="card-spin-task">
-                <h3 style="color: #ffcc00; margin-bottom: 8px;">🌀 লকি স্পিন</h3>
-                <p id="spin-status-text" style="color: #f39c12; margin-bottom: 8px; font-size: 13px; font-weight: bold;">
-                    টাস্ক বাকি: <span id="tasks-left-count" style="color:#ffcc00;">5</span>টি
-                </p>
+                <div style="display: flex; align-items: center; text-align: left; gap: 12px; margin-bottom: 10px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3132/3132693.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Spin Logo">
+                    <div>
+                        <h3 style="color: #ffcc00; margin-bottom: 2px;">🌀 লকি স্পিন</h3>
+                        <p id="spin-status-text" style="color: #f39c12; font-size: 12px; font-weight: bold;">টাস্ক বাকি: <span id="tasks-left-count" style="color:#ffcc00;">5</span>টি</p>
+                    </div>
+                </div>
                 <div class="wheel-container">
                     <div class="wheel-pointer"></div>
                     <div class="wheel-center-cap"></div>
@@ -607,18 +621,29 @@
 
         <!-- জিমেইল সেল ওভারলে -->
         <div id="gmailSellOverlay" class="modal-overlay">
-            <div style="background:#06120b; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
-                <div style="text-align: right; margin-bottom: 10px;">
-                    <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer;">বন্ধ করুন ✖</button>
+            <div style="background:#113626; border: 2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27ae60; padding-bottom: 8px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 28px; height: 28px;" alt="Gmail">
+                        <h2 style="color: #ffcc00; font-size: 18px; margin: 0;">Gmail Sell</h2>
+                    </div>
+                    <div style="background: #a3e4d7; color: #0c2317; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 13px;">Rate: ৳15</div>
                 </div>
-                <h2 style="color: #ffcc00; text-align: center; font-size: 22px; margin: 10px 0 5px 0;">📧 জিমেইল সাবমিট করুন</h2>
-                <p style="color: #a5b3aa; text-align: center; font-size: 13px; margin: 0 0 25px 0;">সঠিক তথ্য সাবমিট করে ভেরিফিকেশনের জন্য অপেক্ষা করুন।</p>
-                <div style="margin: 20px 0; text-align: left;">
-                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 14px; font-weight: bold;">আপনার জিমেইল ও পাসওয়ার্ড লিখুন:</label>
-                    <span style="color: #ffcc00; display: block; margin-bottom: 10px; font-size: 12px;">(নিয়ম: ফার্স্ট নাম:Hasan পাসওয়ার্ড:hasan#1122 নিচে আপনার তৈরি ইমেইল দিয়ে সাবমিট করুন )</span>
-                    <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com : Password" class="input-control">
+
+                <div style="background: linear-gradient(135deg, #fef9e7, #fcf3cf); border: 1.5px dashed #f39c12; border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: left;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #b9770e; font-size: 13px; font-weight: bold;">🔑 Password to use:</span>
+                        <button onclick="copyDynamicPassword()" style="background: #e5e8e8; border: 1px solid #bdc3c7; color: #333; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
+                    </div>
+                    <div id="display-gmail-password" style="color: #c0392b; font-size: 16px; font-weight: bold; word-break: break-all;">hasan#1122</div>
                 </div>
-                <div style="margin-top: 20px;">
+
+                <div style="margin: 15px 0; text-align: left;">
+                    <label id="display-gmail-name-label" style="color: #ffffff; display: block; margin-bottom: 6px; font-size: 13px; font-weight: bold;">👤 First Name: Hasan</label>
+                    <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com" class="input-control">
+                </div>
+
+                <div style="margin-top: 15px;">
                     <button onclick="handleGmailSubmit()" class="btn btn-main" style="margin-bottom:10px;">🚀 সাবমিট করুন</button>
                     <button onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')" class="btn btn-official" style="margin-bottom:15px;">🎬 কাজের ভিডিও দেখুন</button>
                     <hr style="border: 0; border-top: 1px solid #1a3325; margin-bottom: 15px;">
@@ -626,6 +651,11 @@
                         <button onclick="toggleWorkHistory()" style="background-color: #495057; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 আমার সাবমিট করা জিমেইল লিস্ট</button>
                     </div>
                 </div>
+
+                <div style="text-align: right; margin-top: 15px;">
+                    <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer;">বন্ধ করুন ✖</button>
+                </div>
+
                 <div id="gmailHistorySection" style="display: none; margin-top: 20px; background-color: #0d1e15; padding: 15px; border-radius: 8px; border: 1px solid #1a3325;">
                     <h4 style="color: #ffcc00; margin: 0 0 12px 0; font-size: 14px;">আপনার জিমেইল সাবমিট রিপোর্ট:</h4>
                     <ul id="gmailHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.8;"></ul>
@@ -733,6 +763,11 @@
                     💬 WhatsApp টাস্ক & কান্ট্রি সেটিংস
                 </button>
 
+                <!-- 📧 Admin Gmail Credentials Setting Button -->
+                <button class="btn btn-official" onclick="openAdminGmailCredentialsModal()" style="margin-bottom: 12px;">
+                    📧 Gmail টাস্ক নাম ও পাসওয়ার্ড সেটআপ
+                </button>
+
                 <!-- 🚫 User Ban Control Button -->
                 <button class="btn btn-support" onclick="openAdminUserBanModal()" style="margin-bottom: 12px;">
                     🚫 User Ban Control
@@ -756,6 +791,28 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- 📧 Admin Gmail Credentials Control Modal -->
+    <div id="adminGmailCredentialsModal" class="modal-overlay">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto; color:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
+                <h3 style="color:#ffcc00; font-size:16px;">📧 জিমেইল নাম ও পাসওয়ার্ড সেটআপ</h3>
+                <button onclick="closeAdminGmailCredentialsModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+            
+            <div class="input-group">
+                <label style="color:#ffcc00; font-weight:bold;">First Name (নাম):</label>
+                <input type="text" id="admin-set-gmail-name" class="input-control" placeholder="যেমন: Hasan">
+            </div>
+
+            <div class="input-group">
+                <label style="color:#ffcc00; font-weight:bold;">Password (পাসওয়ার্ড):</label>
+                <input type="text" id="admin-set-gmail-pass" class="input-control" placeholder="যেমন: hasan#1122">
+            </div>
+            
+            <button class="btn btn-main" onclick="saveAdminGmailCredentials()" style="margin-bottom:15px;">💾 সেভ করুন</button>
+        </div>
     </div>
 
     <!-- 🚫 User Ban Control Modal (নতুন ইউজার ব্যান পেজ) -->
@@ -1131,6 +1188,10 @@
             spinTask: true
         };
 
+        // Gmail Admin Dynamic Credentials
+        let dynamicGmailName = "Hasan";
+        let dynamicGmailPass = "hasan#1122";
+
         function initFirebaseUserSync() {
             // Check Ban Realtime
             db.ref('users/' + user.id + '/isBanned').on('value', (snapshot) => {
@@ -1149,6 +1210,21 @@
                 listenAdminData();
                 listenBannedUsersList();
             }
+
+            // Sync Gmail Dynamic Credentials
+            db.ref('gmail_admin_credentials').on('value', (snapshot) => {
+                let val = snapshot.val();
+                if (val) {
+                    if (val.name) dynamicGmailName = val.name;
+                    if (val.password) dynamicGmailPass = val.password;
+                    
+                    if (document.getElementById('display-gmail-password')) document.getElementById('display-gmail-password').innerText = dynamicGmailPass;
+                    if (document.getElementById('display-gmail-name-label')) document.getElementById('display-gmail-name-label').innerText = "👤 First Name: " + dynamicGmailName;
+                    
+                    if (document.getElementById('admin-set-gmail-name')) document.getElementById('admin-set-gmail-name').value = dynamicGmailName;
+                    if (document.getElementById('admin-set-gmail-pass')) document.getElementById('admin-set-gmail-pass').value = dynamicGmailPass;
+                }
+            });
 
             // Sync WhatsApp Message Settings
             db.ref('wa_settings').on('value', (snapshot) => {
@@ -1312,6 +1388,38 @@
 
         function closeAdminWaSettingsModal() {
             document.getElementById('adminWaSettingsModal').style.display = 'none';
+        }
+
+        function openAdminGmailCredentialsModal() {
+            document.getElementById('adminGmailCredentialsModal').style.display = 'block';
+        }
+
+        function closeAdminGmailCredentialsModal() {
+            document.getElementById('adminGmailCredentialsModal').style.display = 'none';
+        }
+
+        function saveAdminGmailCredentials() {
+            let nameVal = document.getElementById('admin-set-gmail-name').value.trim();
+            let passVal = document.getElementById('admin-set-gmail-pass').value.trim();
+            if (!nameVal || !passVal) {
+                alert("⚠️ নাম এবং পাসওয়ার্ড উভয় ঘর পূরণ করুন!");
+                return;
+            }
+            db.ref('gmail_admin_credentials').set({
+                name: nameVal,
+                password: passVal
+            }).then(() => {
+                alert("✅ জিমেইল নাম ও পাসওয়ার্ড সফলভাবে আপডেট হয়েছে!");
+                closeAdminGmailCredentialsModal();
+            });
+        }
+
+        function copyDynamicPassword() {
+            navigator.clipboard.writeText(dynamicGmailPass).then(() => {
+                alert("📋 পাসওয়ার্ড কপি করা হয়েছে: " + dynamicGmailPass);
+            }).catch(() => {
+                alert("📋 পাসওয়ার্ড কপি করা হয়েছে: " + dynamicGmailPass);
+            });
         }
 
         // Admin Request Pages Toggle Functions
@@ -2448,23 +2556,36 @@
             var gmailData = gmailInput ? gmailInput.value.trim() : "";
 
             if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
-            if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
             
-            let gId = "GM" + Date.now();
-            let nowDate = new Date();
-            let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
-            
-            let gmailObj = { 
-                userId: user.id,
-                userName: user.first_name,
-                date: currentDate, 
-                info: gmailData, 
-                status: "Pending" 
-            };
+            // পাসওয়ার্ড বা অন্য কিছু সাবমিট রোধ করার জন্য সঠিক ইমেইল ভ্যালিডেশন
+            if (gmailData.includes(":") || gmailData.includes(" ") || !gmailData.toLowerCase().endsWith("@gmail.com")) { 
+                alert("⚠️ শুধু সঠিক জিমেইল অ্যাড্রেস সাবমিট করুন (পাসওয়ার্ড বা অন্য কিছু দেওয়া নিষেধ)!"); 
+                return; 
+            }
 
-            db.ref('gmail_submits/' + gId).set(gmailObj);
-            alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
-            if (gmailInput) gmailInput.value = "";
+            // ডুপ্লিকেট সাবমিট রোধ করার জন্য চেক (পূর্বে এই জিমেইল সাবমিট করা হয়েছে কি না)
+            db.ref('gmail_submits').orderByChild('info').equalTo(gmailData).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    alert("❌ এই জিমেইলটি ইতিমধ্যে একবার সাবমিট করা হয়েছে! একটি জিমেইল দ্বিতীয়বার সাবমিট করা যাবে না।");
+                    return;
+                }
+
+                let gId = "GM" + Date.now();
+                let nowDate = new Date();
+                let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+                
+                let gmailObj = { 
+                    userId: user.id,
+                    userName: user.first_name,
+                    date: currentDate, 
+                    info: gmailData, 
+                    status: "Pending" 
+                };
+
+                db.ref('gmail_submits/' + gId).set(gmailObj);
+                alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
+                if (gmailInput) gmailInput.value = "";
+            });
         }
 
         function renderGmailHistory() {
