@@ -430,17 +430,23 @@
             <div class="auth-logo">
                 <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" alt="Logo">
             </div>
-            <div class="auth-title" id="authScreenTitle">Mega Income Bot</div>
+            <div class="auth-title">Mega Income Bot</div>
             <div class="auth-subtitle" id="authScreenSubtitle">Welcome Back! Log in to your account.</div>
 
             <div class="input-group">
                 <label id="authInputLabel">PHONE OR USERNAME</label>
-                <input type="text" id="authUserInput" class="input-control" placeholder="hasan@gmail.com">
+                <input type="text" id="authUserInput" class="input-control" placeholder="017XXXXXXXX বা Username">
             </div>
 
             <div class="input-group">
                 <label>PASSWORD</label>
                 <input type="password" id="authPasswordInput" class="input-control" placeholder="••••••••">
+            </div>
+
+            <!-- রেফার কোড ফিল্ড (সাইন আপ মোডে দেখাবে এবং লক থাকবে) -->
+            <div class="input-group" id="authReferGroup" style="display: none;">
+                <label>REFERRAL CODE (AUTO)</label>
+                <input type="text" id="authReferInput" class="input-control" readonly style="background-color: #081a11; color: #f1c40f; cursor: not-allowed;">
             </div>
 
             <button class="btn btn-main" id="authSubmitBtn" onclick="handleAuthSubmit()" style="margin-top: 15px;">LOG IN</button>
@@ -966,7 +972,7 @@
             <!-- ব্যান ইউজার লিস্ট -->
             <h4 style="color:#ffcc00; text-align:left; margin-bottom:10px; font-size:14px;">📜 ব্যান ইউজারদের তালিকা:</h4>
             <div id="banned-users-list" style="max-height: 250px; overflow-y: auto;">
-                <p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
+                <p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
             </div>
         </div>
     </div>
@@ -1241,15 +1247,16 @@
             { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" }
         ];
 
+        let urlParams = new URLSearchParams(window.location.search);
+        let startParam = tg?.initDataUnsafe?.start_param || urlParams.get('start') || urlParams.get('ref') || "";
+
         let user = tg?.initDataUnsafe?.user;
         if (!user || !user.id) {
             let savedUserId = Math.floor(100000 + Math.random() * 900000);
             user = { id: parseInt(savedUserId), first_name: "User_" + savedUserId, username: "user" + savedUserId };
         }
 
-        // পুরো নাম পেতে
         let userFullName = user.first_name + (user.last_name ? " " + user.last_name : "");
-
         let botUsername = "MegaIncomeReal_bot";
         let referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${user.id}`;
 
@@ -1265,97 +1272,113 @@
         let taskOpenTimestamp = 0;
         let selectedOpKey = null;
         let selectedFileBase64 = null;
-
         let searchedTargetUserId = null;
 
-        // Default WhatsApp Message Settings
         let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
-        
-        // Country On/Off Settings (Default BD enabled)
-        let waCountrySettings = {
-            BD: true,
-            US: false,
-            MY: false,
-            BR: false,
-            GB: false,
-            SA: false,
-            AE: false,
-            IN: false
-        };
-
+        let waCountrySettings = { BD: true, US: false, MY: false, BR: false, GB: false, SA: false, AE: false, IN: false };
         let waTotalIncome = 0.00;
         let userBoundWaNumbers = [];
         let activeCode = "";
-        let sentNumbersHistory = []; // পাঠানো হয়েছে এমন নম্বরের হিস্ট্রি
+        let sentNumbersHistory = [];
 
-        // WhatsApp Backend (Render)
         const WA_BACKEND_URL = "https://mega-income-bot-1tpa.onrender.com";
         let waPendingPhone = "";
         let waStatusMonitorStarted = false;
 
-        let taskStatusSettings = {
-            waTask: true,
-            pinTask: true,
-            regTask: true,
-            adTask: true,
-            gmailTask: true,
-            checkinTask: true
-        };
+        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, checkinTask: true };
 
-        // 📅 ডেইলি সাইন-ইন ডেটা ও দৈনিক রিওয়ার্ড লিস্ট
         let checkinStreak = 0;
         let checkinTotalIncome = 0.00;
         let lastCheckinDate = "";
         let todayEarnedTaskIncome = 0.00; 
-
-        // নির্দিষ্ট এমাউন্ট লিস্ট
         const dailyRewards = [1.00, 2.00, 3.00, 3.50, 4.00, 5.00, 6.00, 6.50, 7.00, 7.50, 8.00, 9.00, 9.50, 10.00];
 
-        // Gmail Admin Dynamic Credentials
         let dynamicGmailName = "Hasan";
         let dynamicGmailPass = "hasan#1122";
 
-        // Auth Mode State (Log In vs Sign Up)
+        // Auth Mode (Log In vs Sign Up)
         let isSignUpMode = false;
 
         function toggleAuthMode(event) {
             event.preventDefault();
             isSignUpMode = !isSignUpMode;
-            let titleEl = document.getElementById('authScreenTitle');
             let subTitleEl = document.getElementById('authScreenSubtitle');
             let submitBtn = document.getElementById('authSubmitBtn');
             let toggleText = document.getElementById('authToggleText');
             let toggleLink = document.getElementById('authToggleLink');
+            let referGroup = document.getElementById('authReferGroup');
 
             if (isSignUpMode) {
-                titleEl.innerText = "Mega Income Bot";
                 subTitleEl.innerText = "Create a new account to start earning.";
                 submitBtn.innerText = "SIGN UP";
                 toggleText.innerText = "Already have an account?";
                 toggleLink.innerText = "Log In";
+                referGroup.style.display = "block";
+                document.getElementById('authReferInput').value = startParam || "কোনো রেফার কোড নেই";
             } else {
-                titleEl.innerText = "Mega Income Bot";
                 subTitleEl.innerText = "Welcome Back! Log in to your account.";
                 submitBtn.innerText = "LOG IN";
                 toggleText.innerText = "Don't have an account?";
                 toggleLink.innerText = "Sign Up";
+                referGroup.style.display = "none";
             }
         }
 
+        // রিয়েল সাইন ইন ও সাইন আপ লজিক
         function handleAuthSubmit() {
             let inputVal = document.getElementById('authUserInput').value.trim();
             let passVal = document.getElementById('authPasswordInput').value.trim();
 
             if (!inputVal || !passVal) {
-                alert("⚠️ দয়া করে সঠিক তথ্য প্রদান করুন!");
+                alert("⚠️ দয়া করে সঠিক নম্বর/ইউজারনেম এবং পাসওয়ার্ড প্রদান করুন!");
                 return;
             }
 
-            document.getElementById('authScreen').style.display = 'none';
+            // ফায়ারবেসে ইউজার অ্যাকাউন্ট চেক বা তৈরি করা
+            let safeKey = inputVal.replace(/[^a-zA-Z0-9]/g, "_");
+            let userRef = db.ref('custom_accounts/' + safeKey);
+
+            userRef.once('value').then((snapshot) => {
+                if (isSignUpMode) {
+                    if (snapshot.exists()) {
+                        alert("❌ এই নম্বর বা ইউজারনেম দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট রয়েছে! অনুগ্রহ করে লগইন করুন।");
+                        return;
+                    }
+                    // নতুন অ্যাকাউন্ট তৈরি
+                    let newUserData = {
+                        loginId: inputVal,
+                        password: passVal,
+                        telegramId: user.id,
+                        balance: 0.00,
+                        referrer: startParam || ""
+                    };
+                    userRef.set(newUserData).then(() => {
+                        if (startParam && parseInt(startParam) !== user.id) {
+                            db.ref('users/' + startParam + '/refCount').transaction((count) => (count || 0) + 1);
+                        }
+                        alert("✅ সফলভাবে অ্যাকাউন্ট তৈরি (Sign Up) হয়েছে!");
+                        document.getElementById('authScreen').style.display = 'none';
+                        initFirebaseUserSync();
+                    });
+                } else {
+                    // লগইন লজিক
+                    if (!snapshot.exists()) {
+                        alert("❌ এই অ্যাকাউন্টটি পাওয়া যায়নি! প্রথমে Sign Up করুন।");
+                        return;
+                    }
+                    let data = snapshot.val();
+                    if (data.password !== passVal) {
+                        alert("❌ পাসওয়ার্ড ভুল হয়েছে!");
+                        return;
+                    }
+                    alert("✅ সফলভাবে Log In হয়েছে!");
+                    document.getElementById('authScreen').style.display = 'none';
+                    initFirebaseUserSync();
+                }
+            });
         }
 
         function initFirebaseUserSync() {
-            // Check Ban Realtime
             db.ref('users/' + user.id + '/isBanned').on('value', (snapshot) => {
                 if (snapshot.val() === true) {
                     let overlay = document.getElementById('bannedUserOverlay');
@@ -1373,31 +1396,26 @@
                 listenBannedUsersList();
             }
 
-            // Sync Gmail Dynamic Credentials
             db.ref('gmail_admin_credentials').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
                     if (val.name) dynamicGmailName = val.name;
                     if (val.password) dynamicGmailPass = val.password;
-                    
                     if (document.getElementById('display-gmail-password')) document.getElementById('display-gmail-password').innerText = dynamicGmailPass;
                     if (document.getElementById('display-gmail-name-val')) document.getElementById('display-gmail-name-val').innerText = dynamicGmailName;
-                    
                     if (document.getElementById('admin-set-gmail-name')) document.getElementById('admin-set-gmail-name').value = dynamicGmailName;
                     if (document.getElementById('admin-set-gmail-pass')) document.getElementById('admin-set-gmail-pass').value = dynamicGmailPass;
                 }
             });
 
-            // Sync WhatsApp Message Settings
             db.ref('wa_settings').on('value', (snapshot) => {
                 let val = snapshot.val();
-                if (val) {
-                    if (val.message) waMessageText = val.message;
+                if (val && val.message) {
+                    waMessageText = val.message;
                     if (document.getElementById('admin-wa-msg')) document.getElementById('admin-wa-msg').value = waMessageText;
                 }
             });
 
-            // Sync WhatsApp Country Settings Realtime
             db.ref('wa_country_settings').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -1409,16 +1427,12 @@
                 }
             });
 
-            // Global Sent Phone History Load
             db.ref('wa_sent_history').on('value', (snapshot) => {
-                let val = snapshot.val() || {};
-                sentNumbersHistory = Object.keys(val);
+                sentNumbersHistory = Object.keys(snapshot.val() || {});
             });
 
-            // Sync Task On/Off Settings Realtime
             db.ref('task_settings').on('value', (snapshot) => {
                 const settings = snapshot.val() || {};
-                
                 taskStatusSettings.waTask = settings.waTask !== false;
                 taskStatusSettings.pinTask = settings.pinTask !== false;
                 taskStatusSettings.regTask = settings.regTask !== false;
@@ -1451,18 +1465,12 @@
                     completedTasksCount = parseInt(val.completedTasksCount || 0);
                     waTotalIncome = parseFloat(val.waTotalIncome || 0);
                     userBoundWaNumbers = val.boundWaNumbers || [];
-
-                    // Daily checkin fields
                     checkinStreak = parseInt(val.checkinStreak || 0);
                     checkinTotalIncome = parseFloat(val.checkinTotalIncome || 0);
                     lastCheckinDate = val.lastCheckinDate || "";
                     todayEarnedTaskIncome = parseFloat(val.todayEarnedTaskIncome || 0);
 
-                    // Save Full Name
-                    db.ref('users/' + user.id).update({
-                        fullName: userFullName,
-                        name: user.first_name
-                    });
+                    db.ref('users/' + user.id).update({ fullName: userFullName, name: user.first_name });
                 } else {
                     db.ref('users/' + user.id).set({
                         name: user.first_name,
@@ -1484,9 +1492,6 @@
                 updateUI();
                 renderBoundWaNumbers();
             });
-
-            let urlParams = new URLSearchParams(window.location.search);
-            let startParam = tg?.initDataUnsafe?.start_param || urlParams.get('start') || urlParams.get('ref');
 
             if (startParam && parseInt(startParam) !== user.id) {
                 db.ref('users/' + user.id + '/referrer').once('value').then((snap) => {
@@ -1531,11 +1536,8 @@
         function updateTaskCardVisuals(cardId, isEnabled) {
             let card = document.getElementById(cardId);
             if (!card) return;
-            if (isEnabled) {
-                card.classList.remove('disabled-task');
-            } else {
-                card.classList.add('disabled-task');
-            }
+            if (isEnabled) card.classList.remove('disabled-task');
+            else card.classList.add('disabled-task');
         }
 
         function handleTaskClick(taskKey, callback) {
@@ -1546,98 +1548,43 @@
             callback();
         }
 
-        function openAdminTaskControlModal() {
-            document.getElementById('adminTaskControlModal').style.display = 'block';
-        }
-
-        function closeAdminTaskControlModal() {
-            document.getElementById('adminTaskControlModal').style.display = 'none';
-        }
-
-        function openAdminWaSettingsModal() {
-            document.getElementById('adminWaSettingsModal').style.display = 'block';
-        }
-
-        function closeAdminWaSettingsModal() {
-            document.getElementById('adminWaSettingsModal').style.display = 'none';
-        }
-
-        function openAdminGmailCredentialsModal() {
-            document.getElementById('adminGmailCredentialsModal').style.display = 'block';
-        }
-
-        function closeAdminGmailCredentialsModal() {
-            document.getElementById('adminGmailCredentialsModal').style.display = 'none';
-        }
+        function openAdminTaskControlModal() { document.getElementById('adminTaskControlModal').style.display = 'block'; }
+        function closeAdminTaskControlModal() { document.getElementById('adminTaskControlModal').style.display = 'none'; }
+        function openAdminWaSettingsModal() { document.getElementById('adminWaSettingsModal').style.display = 'block'; }
+        function closeAdminWaSettingsModal() { document.getElementById('adminWaSettingsModal').style.display = 'none'; }
+        function openAdminGmailCredentialsModal() { document.getElementById('adminGmailCredentialsModal').style.display = 'block'; }
+        function closeAdminGmailCredentialsModal() { document.getElementById('adminGmailCredentialsModal').style.display = 'none'; }
 
         function saveAdminGmailCredentials() {
             let nameVal = document.getElementById('admin-set-gmail-name').value.trim();
             let passVal = document.getElementById('admin-set-gmail-pass').value.trim();
-            if (!nameVal || !passVal) {
-                alert("⚠️ নাম এবং পাসওয়ার্ড উভয় ঘর পূরণ করুন!");
-                return;
-            }
-            db.ref('gmail_admin_credentials').set({
-                name: nameVal,
-                password: passVal
-            }).then(() => {
+            if (!nameVal || !passVal) { alert("⚠️ নাম এবং পাসওয়ার্ড উভয় ঘর পূরণ করুন!"); return; }
+            db.ref('gmail_admin_credentials').set({ name: nameVal, password: passVal }).then(() => {
                 alert("✅ জিমেইল নাম ও পাসওয়ার্ড সফলভাবে আপডেট হয়েছে!");
                 closeAdminGmailCredentialsModal();
             });
         }
 
         function copyDynamicName() {
-            navigator.clipboard.writeText(dynamicGmailName).then(() => {
-                alert("📋 First Name কপি করা হয়েছে: " + dynamicGmailName);
-            }).catch(() => {
-                alert("📋 First Name কপি করা হয়েছে: " + dynamicGmailName);
-            });
+            navigator.clipboard.writeText(dynamicGmailName).then(() => { alert("📋 First Name কপি করা হয়েছে: " + dynamicGmailName); });
         }
 
         function copyDynamicPassword() {
-            navigator.clipboard.writeText(dynamicGmailPass).then(() => {
-                alert("📋 পাসওয়ার্ড কপি করা হয়েছে: " + dynamicGmailPass);
-            }).catch(() => {
-                alert("📋 পাসওয়ার্ড কপি করা হয়েছে: " + dynamicGmailPass);
-            });
+            navigator.clipboard.writeText(dynamicGmailPass).then(() => { alert("📋 পাসওয়ার্ড কপি করা হয়েছে: " + dynamicGmailPass); });
         }
 
-        // Admin Request Pages Toggle Functions
-        function openAdminWithdrawModal() {
-            document.getElementById('adminWithdrawModal').style.display = 'block';
-        }
-        function closeAdminWithdrawModal() {
-            document.getElementById('adminWithdrawModal').style.display = 'none';
-        }
+        function openAdminWithdrawModal() { document.getElementById('adminWithdrawModal').style.display = 'block'; }
+        function closeAdminWithdrawModal() { document.getElementById('adminWithdrawModal').style.display = 'none'; }
+        function openAdminGmailModal() { document.getElementById('adminGmailModal').style.display = 'block'; }
+        function closeAdminGmailModal() { document.getElementById('adminGmailModal').style.display = 'none'; }
+        function openAdminPinModal() { document.getElementById('adminPinModal').style.display = 'block'; }
+        function closeAdminPinModal() { document.getElementById('adminPinModal').style.display = 'none'; }
+        function openAdminUserBanModal() { document.getElementById('adminUserBanModal').style.display = 'block'; }
+        function closeAdminUserBanModal() { document.getElementById('adminUserBanModal').style.display = 'none'; }
 
-        function openAdminGmailModal() {
-            document.getElementById('adminGmailModal').style.display = 'block';
-        }
-        function closeAdminGmailModal() {
-            document.getElementById('adminGmailModal').style.display = 'none';
-        }
-
-        function openAdminPinModal() {
-            document.getElementById('adminPinModal').style.display = 'block';
-        }
-        function closeAdminPinModal() {
-            document.getElementById('adminPinModal').style.display = 'none';
-        }
-
-        function openAdminUserBanModal() {
-            document.getElementById('adminUserBanModal').style.display = 'block';
-        }
-        function closeAdminUserBanModal() {
-            document.getElementById('adminUserBanModal').style.display = 'none';
-        }
-
-        // Ban Feature Functions
         function searchUserForBan() {
             let inputId = document.getElementById('ban-search-userid').value.trim();
-            if (!inputId) {
-                alert("⚠️ ইউজার এর আইডি প্রদান করুন!");
-                return;
-            }
+            if (!inputId) { alert("⚠️ ইউজার এর আইডি প্রদান করুন!"); return; }
 
             db.ref('users/' + inputId).once('value').then((snapshot) => {
                 if (!snapshot.exists()) {
@@ -1646,22 +1593,15 @@
                     searchedTargetUserId = null;
                     return;
                 }
-
                 let val = snapshot.val();
                 searchedTargetUserId = inputId;
-
-                let nameToShow = val.fullName || val.name || ("User_" + inputId);
-                let balToShow = parseFloat(val.balance || 0).toFixed(2);
-                let refToShow = parseInt(val.refCount || 0);
-                let isBanned = val.isBanned === true;
-
-                document.getElementById('searched-fullname').innerText = nameToShow;
+                document.getElementById('searched-fullname').innerText = val.fullName || val.name || ("User_" + inputId);
                 document.getElementById('searched-userid').innerText = inputId;
-                document.getElementById('searched-balance').innerText = balToShow;
-                document.getElementById('searched-refer').innerText = refToShow;
+                document.getElementById('searched-balance').innerText = parseFloat(val.balance || 0).toFixed(2);
+                document.getElementById('searched-refer').innerText = parseInt(val.refCount || 0);
 
                 let statusBadge = document.getElementById('searched-status-badge');
-                if (isBanned) {
+                if (val.isBanned === true) {
                     statusBadge.innerText = "BANNED 🚫";
                     statusBadge.style.color = "#e74c3c";
                     document.getElementById('btn-action-ban').style.display = "none";
@@ -1672,7 +1612,6 @@
                     document.getElementById('btn-action-ban').style.display = "block";
                     document.getElementById('btn-action-unban').style.display = "none";
                 }
-
                 document.getElementById('user-search-result-card').style.display = 'block';
             });
         }
@@ -1694,41 +1633,29 @@
         }
 
         function unbanSpecificUser(targetId) {
-            db.ref('users/' + targetId + '/isBanned').set(false).then(() => {
-                alert("✅ ইউজার একাউন্ট Unban করা হয়েছে!");
-            });
+            db.ref('users/' + targetId + '/isBanned').set(false).then(() => { alert("✅ ইউজার একাউন্ট Unban করা হয়েছে!"); });
         }
 
         function listenBannedUsersList() {
             db.ref('users').on('value', (snapshot) => {
                 let container = document.getElementById('banned-users-list');
                 if (!container) return;
-
                 container.innerHTML = "";
                 let bannedCount = 0;
-
                 snapshot.forEach((childSnap) => {
                     let uId = childSnap.key;
                     let uVal = childSnap.val();
-
                     if (uVal && uVal.isBanned === true) {
                         bannedCount++;
-                        let uName = uVal.fullName || uVal.name || ("User_" + uId);
                         container.innerHTML += `
                             <div style="background:#081a11; border:1px solid #e74c3c; border-radius:6px; padding:8px 10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
-                                <div>
-                                    <span style="color:#ffcc00; font-weight:bold;">${bannedCount}.${uName}</span>
-                                    <span style="color:#aaa; font-size:10px; display:block;">ID: ${uId}</span>
-                                </div>
+                                <div><span style="color:#ffcc00; font-weight:bold;">${bannedCount}.${uVal.fullName || uVal.name}</span><span style="color:#aaa; font-size:10px; display:block;">ID: ${uId}</span></div>
                                 <button onclick="unbanSpecificUser('${uId}')" style="background:#2ecc71; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-weight:bold; cursor:pointer;">Unban</button>
                             </div>
                         `;
                     }
                 });
-
-                if (bannedCount === 0) {
-                    container.innerHTML = `<p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>`;
-                }
+                if (bannedCount === 0) container.innerHTML = `<p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>`;
             });
         }
 
@@ -1769,7 +1696,6 @@
                 let container = document.getElementById("admin-pin-list");
                 if (!container) return;
                 container.innerHTML = "";
-
                 let hasPending = false;
                 snapshot.forEach((childSnap) => {
                     let item = childSnap.val();
@@ -1791,7 +1717,6 @@
                         `;
                     }
                 });
-
                 if (!hasPending) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং পিন সাবমিট রিকোয়েস্ট নেই।</p>";
             });
 
@@ -1799,7 +1724,6 @@
                 let container = document.getElementById("admin-withdraw-list");
                 if (!container) return;
                 container.innerHTML = "";
-
                 let hasPending = false;
                 snapshot.forEach((childSnap) => {
                     let item = childSnap.val();
@@ -1820,7 +1744,6 @@
                         `;
                     }
                 });
-
                 if (!hasPending) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং উইথড্র রিকোয়েস্ট নেই।</p>";
             });
 
@@ -1828,7 +1751,6 @@
                 let container = document.getElementById("admin-gmail-list");
                 if (!container) return;
                 container.innerHTML = "";
-
                 let hasPending = false;
                 snapshot.forEach((childSnap) => {
                     let item = childSnap.val();
@@ -1848,7 +1770,6 @@
                         `;
                     }
                 });
-
                 if (!hasPending) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং জিমেইল রিকোয়েস্ট নেই।</p>";
             });
         }
@@ -1863,18 +1784,8 @@
             });
         }
 
-        function adminRejectPin(key) {
-            db.ref('pin_submits/' + key).update({ status: "Rejected" }).then(() => {
-                alert("❌ পিন সাবমিট প্রুফ রিজেক্ট করা হয়েছে!");
-            });
-        }
-
-        function adminApproveWithdraw(key) {
-            db.ref('withdrawals/' + key).update({ status: "Success" }).then(() => {
-                alert("✅ উইথড্র রিকোয়েস্ট এপ্রুভ করা হয়েছে!");
-            });
-        }
-
+        function adminRejectPin(key) { db.ref('pin_submits/' + key).update({ status: "Rejected" }).then(() => { alert("❌ পিন সাবমিট প্রুফ রিজেক্ট করা হয়েছে!"); }); }
+        function adminApproveWithdraw(key) { db.ref('withdrawals/' + key).update({ status: "Success" }).then(() => { alert("✅ উইথড্র রিকোয়েস্ট এপ্রুভ করা হয়েছে!"); }); }
         function adminRejectWithdraw(key, targetUserId, amount) {
             db.ref('withdrawals/' + key).update({ status: "Rejected" }).then(() => {
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + parseFloat(amount));
@@ -1893,21 +1804,10 @@
             });
         }
 
-        function adminRejectGmail(key) {
-            db.ref('gmail_submits/' + key).update({ status: "Rejected" }).then(() => {
-                alert("❌ জিমেইল টাস্ক রিজেক্ট করা হয়েছে!");
-            });
-        }
+        function adminRejectGmail(key) { db.ref('gmail_submits/' + key).update({ status: "Rejected" }).then(() => { alert("❌ জিমেইল টাস্ক রিজেক্ট করা হয়েছে!"); }); }
 
-        // 💬 হোয়াটসঅ্যাপ নতুন ইন্টারফেস লজিক
-        function openWhatsAppTaskModal() {
-            document.getElementById('waTaskModal').style.display = 'block';
-            renderBoundWaNumbers();
-        }
-
-        function closeWhatsAppTaskModal() {
-            document.getElementById('waTaskModal').style.display = 'none';
-        }
+        function openWhatsAppTaskModal() { document.getElementById('waTaskModal').style.display = 'block'; renderBoundWaNumbers(); }
+        function closeWhatsAppTaskModal() { document.getElementById('waTaskModal').style.display = 'none'; }
 
         function normalizeWaPhoneForBackend(phone) {
             phone = String(phone || '').replace(/[^0-9]/g, '');
@@ -1919,7 +1819,6 @@
             activeCode = String(code || '').replace(/\s+/g, '').toUpperCase();
             let container = document.getElementById('wa-code-container');
             if (!container) return;
-
             container.innerHTML = '';
             for (let i = 0; i < activeCode.length; i++) {
                 container.innerHTML += `<div class="wa-code-box">${activeCode[i]}</div>`;
@@ -1928,86 +1827,55 @@
 
         async function generateWaCode() {
             let inputNum = document.getElementById('wa-bind-input').value.trim();
-            if (!inputNum || inputNum.length < 10) {
-                alert("⚠️ সঠিক WhatsApp ফোন নম্বর লিখুন!");
-                return;
-            }
-
+            if (!inputNum || inputNum.length < 10) { alert("⚠️ সঠিক WhatsApp ফোন নম্বর লিখুন!"); return; }
             let phone = normalizeWaPhoneForBackend(inputNum);
             waPendingPhone = phone;
             activeCode = "";
-
             let container = document.getElementById('wa-code-container');
             if (container) {
                 container.innerHTML = '';
-                for (let i = 0; i < 8; i++) {
-                    container.innerHTML += `<div class="wa-code-box">-</div>`;
-                }
+                for (let i = 0; i < 8; i++) { container.innerHTML += `<div class="wa-code-box">-</div>`; }
             }
-
             try {
                 const response = await fetch(`${WA_BACKEND_URL}/api/get-code`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ phone: inputNum })
                 });
-
                 const data = await response.json();
-
                 if (!response.ok || !data.success || !data.code) {
                     alert("❌ " + (data.error || "WhatsApp pairing code পাওয়া যায়নি!"));
                     return;
                 }
-
                 displayWaCode(data.code);
-
-                alert("✅ WhatsApp লিংক ডিভাইস কোড তৈরি হয়েছে! WhatsApp-এর Linked Devices থেকে এই কোডটি লিখুন।");
-
+                alert("✅ WhatsApp লিংক ডিভাইস কোড তৈরি হয়েছে!");
                 startWhatsAppStatusMonitor();
                 checkWhatsAppNumberStatus(phone);
             } catch (error) {
-                console.error('WhatsApp pairing error:', error);
-                alert("❌ WhatsApp সার্ভারের সাথে সংযোগ করা যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।");
+                alert("❌ WhatsApp সার্ভারের সাথে সংযোগ করা যায়নি।");
             }
         }
 
         function copyWaCode() {
-            if (!activeCode) {
-                alert("⚠ আগে কোড তৈরি করুন!");
-                return;
-            }
-
-            navigator.clipboard.writeText(activeCode).then(() => {
-                alert("📋 কোড কপি করা হয়েছে: " + activeCode);
-            }).catch(() => {
-                alert("📋 কোড কপি করা হয়েছে: " + activeCode);
-            });
+            if (!activeCode) { alert("⚠ আগে কোড তৈরি করুন!"); return; }
+            navigator.clipboard.writeText(activeCode).then(() => { alert("📋 কোড কপি করা হয়েছে: " + activeCode); });
         }
 
         function addOrUpdateBoundWaNumber(phone, status) {
             phone = String(phone || '').replace(/[^0-9]/g, '');
             if (phone.startsWith('88')) phone = phone.substring(2);
-
             let existing = userBoundWaNumbers.find(item => {
                 let n = String(item.number || '').replace(/[^0-9]/g, '');
                 if (n.startsWith('88')) n = n.substring(2);
                 return n === phone;
             });
-
-            if (existing) {
-                existing.status = status;
-            } else if (status === 'active') {
-                userBoundWaNumbers.push({
-                    number: phone,
-                    status: 'active'
-                });
-            }
+            if (existing) existing.status = status;
+            else if (status === 'active') userBoundWaNumbers.push({ number: phone, status: 'active' });
         }
 
         function removeUnlinkedWaNumber(phone) {
             phone = String(phone || '').replace(/[^0-9]/g, '');
             if (phone.startsWith('88')) phone = phone.substring(2);
-
             userBoundWaNumbers = userBoundWaNumbers.filter(item => {
                 let n = String(item.number || '').replace(/[^0-9]/g, '');
                 if (n.startsWith('88')) n = n.substring(2);
@@ -2018,15 +1886,10 @@
         async function checkWhatsAppNumberStatus(phone) {
             try {
                 const normalized = normalizeWaPhoneForBackend(phone);
-                const response = await fetch(`${WA_BACKEND_URL}/api/whatsapp-status/${normalized}`, {
-                    method: 'GET'
-                });
-
+                const response = await fetch(`${WA_BACKEND_URL}/api/whatsapp-status/${normalized}`, { method: 'GET' });
                 if (!response.ok) return null;
-
                 const data = await response.json();
                 const status = data.status || 'unknown';
-
                 if (status === 'linked') {
                     addOrUpdateBoundWaNumber(normalized, 'active');
                     updateFirebaseProfile();
@@ -2037,181 +1900,96 @@
                     updateFirebaseProfile();
                     renderBoundWaNumbers();
                 }
-
                 return status;
-            } catch (error) {
-                console.error('WhatsApp status check error:', error);
-                return null;
-            }
+            } catch (error) { return null; }
         }
 
         async function checkAllWhatsAppStatuses() {
             if (!Array.isArray(userBoundWaNumbers)) return;
-
             const currentNumbers = userBoundWaNumbers.map(item => item.number);
-            for (const phone of currentNumbers) {
-                await checkWhatsAppNumberStatus(phone);
-            }
-
-            if (waPendingPhone) {
-                await checkWhatsAppNumberStatus(waPendingPhone);
-            }
+            for (const phone of currentNumbers) { await checkWhatsAppNumberStatus(phone); }
+            if (waPendingPhone) { await checkWhatsAppNumberStatus(waPendingPhone); }
         }
 
         function startWhatsAppStatusMonitor() {
             if (waStatusMonitorStarted) return;
             waStatusMonitorStarted = true;
-
             checkAllWhatsAppStatuses();
-
-            setInterval(() => {
-                checkAllWhatsAppStatuses();
-            }, 3000);
+            setInterval(() => { checkAllWhatsAppStatuses(); }, 3000);
         }
 
-        // সুধুমাত্র Active নম্বরগুলো শো করানোর আপডেট
         function renderBoundWaNumbers() {
             let container = document.getElementById('wa-bound-list');
             if (!container) return;
-
-            // শুধুমাত্র active স্ট্যাটাসের নম্বরগুলো ফিল্টার
             let activeNumbers = userBoundWaNumbers.filter(item => item.status === 'active');
-
             if (activeNumbers.length === 0) {
                 container.innerHTML = `<p style="color: #777; font-size: 11px;">কোনো সফলভাবে বাইন্ড করা WhatsApp নম্বর নেই</p>`;
                 return;
             }
-
             container.innerHTML = "";
             activeNumbers.forEach((item) => {
                 let actualIndex = userBoundWaNumbers.findIndex(x => x.number === item.number);
-                
                 container.innerHTML += `
                     <div class="wa-number-item">
-                        <div>
-                            <span style="font-weight:bold; color:#ffcc00;">📱 +880 ${item.number}</span>
-                        </div>
-                        <div>
-                            <button id="send-btn-${actualIndex}" onclick="sendWaMessage(${actualIndex}, this)" style="background:#25d366; color:#fff; border:none; padding:5px 12px; border-radius:5px; font-weight:bold; cursor:pointer;">Send</button>
-                        </div>
+                        <div><span style="font-weight:bold; color:#ffcc00;">📱 +880 ${item.number}</span></div>
+                        <div><button id="send-btn-${actualIndex}" onclick="sendWaMessage(${actualIndex}, this)" style="background:#25d366; color:#fff; border:none; padding:5px 12px; border-radius:5px; font-weight:bold; cursor:pointer;">Send</button></div>
                     </div>
                 `;
             });
         }
 
-        // অ্যাডমিন অন করা দেশসমূহের তালিকা থেকে ডায়নামিক র্যান্ডম নম্বর তৈরির লজিক
         function generateRandomWaNumber() {
             let activeCountries = [];
-            for (let code in waCountrySettings) {
-                if (waCountrySettings[code]) {
-                    activeCountries.push(code);
-                }
-            }
-
-            // যদি কোনো কান্ট্রি সিলেক্ট করা না থাকে, তবে বাই-ডিফল্ট বাংলাদেশ কাজ করবে
-            if (activeCountries.length === 0) {
-                activeCountries.push("BD");
-            }
-
-            // র্যান্ডমভাবে একটি সক্রিয় দেশ নির্বাচন
+            for (let code in waCountrySettings) { if (waCountrySettings[code]) activeCountries.push(code); }
+            if (activeCountries.length === 0) activeCountries.push("BD");
             let selectedCountry = activeCountries[Math.floor(Math.random() * activeCountries.length)];
             let fullNum = "";
-
             if (selectedCountry === "BD") {
                 let prefixes = ["017", "018", "019", "015", "013", "016", "014"];
                 let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-                let randomDigits = Math.floor(10000000 + Math.random() * 90000000);
-                fullNum = "88" + randomPrefix + String(randomDigits).substring(0, 8);
+                fullNum = "88" + randomPrefix + String(Math.floor(10000000 + Math.random() * 90000000)).substring(0, 8);
             } else if (selectedCountry === "US") {
                 let areaCodes = ["201", "202", "212", "305", "312", "415", "646", "702"];
-                let randomArea = areaCodes[Math.floor(Math.random() * areaCodes.length)];
-                let randomDigits = Math.floor(1000000 + Math.random() * 9000000);
-                fullNum = "1" + randomArea + String(randomDigits);
+                fullNum = "1" + areaCodes[Math.floor(Math.random() * areaCodes.length)] + String(Math.floor(1000000 + Math.random() * 9000000));
             } else if (selectedCountry === "MY") {
-                let prefixes = ["12", "13", "14", "16", "17", "18", "19"];
-                let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-                let randomDigits = Math.floor(1000000 + Math.random() * 9000000);
-                fullNum = "60" + randomPrefix + String(randomDigits);
+                fullNum = "60" + ["12", "13", "14", "16", "17", "18", "19"][Math.floor(Math.random() * 7)] + String(Math.floor(1000000 + Math.random() * 9000000));
             } else if (selectedCountry === "BR") {
-                let dddCodes = ["11", "21", "31", "41", "61", "71", "81"];
-                let randomDdd = dddCodes[Math.floor(Math.random() * dddCodes.length)];
-                let randomDigits = Math.floor(900000000 + Math.random() * 100000000);
-                fullNum = "55" + randomDdd + String(randomDigits);
+                fullNum = "55" + ["11", "21", "31", "41", "61", "71", "81"][Math.floor(Math.random() * 7)] + String(Math.floor(900000000 + Math.random() * 100000000));
             } else if (selectedCountry === "GB") {
-                let randomDigits = Math.floor(7000000000 + Math.random() * 900000000);
-                fullNum = "44" + String(randomDigits);
+                fullNum = "44" + String(Math.floor(7000000000 + Math.random() * 900000000));
             } else if (selectedCountry === "SA") {
-                let prefixes = ["50", "53", "54", "55", "56", "57", "58", "59"];
-                let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-                let randomDigits = Math.floor(1000000 + Math.random() * 9000000);
-                fullNum = "966" + randomPrefix + String(randomDigits);
+                fullNum = "966" + ["50", "53", "54", "55", "56", "57", "58", "59"][Math.floor(Math.random() * 8)] + String(Math.floor(1000000 + Math.random() * 9000000));
             } else if (selectedCountry === "AE") {
-                let prefixes = ["50", "52", "54", "55", "56", "58"];
-                let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-                let randomDigits = Math.floor(1000000 + Math.random() * 9000000);
-                fullNum = "971" + randomPrefix + String(randomDigits);
+                fullNum = "971" + ["50", "52", "54", "55", "56", "58"][Math.floor(Math.random() * 6)] + String(Math.floor(1000000 + Math.random() * 9000000));
             } else if (selectedCountry === "IN") {
-                let prefixes = ["98", "97", "96", "95", "88", "87", "70", "63"];
-                let randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-                let randomDigits = Math.floor(10000000 + Math.random() * 90000000);
-                fullNum = "91" + randomPrefix + String(randomDigits);
+                fullNum = "91" + ["98", "97", "96", "95", "88", "87", "70", "63"][Math.floor(Math.random() * 8)] + String(Math.floor(10000000 + Math.random() * 90000000));
             }
-
-            // পূর্বে সেন্ড হওয়া নম্বর পুনরাবৃত্তি হলে আবার তৈরি করবে
-            if (sentNumbersHistory.includes(fullNum)) {
-                return generateRandomWaNumber();
-            }
+            if (sentNumbersHistory.includes(fullNum)) return generateRandomWaNumber();
             return fullNum;
         }
 
-        // সেন্ড বাটন ও অটো র্যান্ডম সেন্ড আপডেট
         async function sendWaMessage(index, btnElem) {
             let item = userBoundWaNumbers[index];
-            if (!item) return;
-
-            if (item.status !== "active") {
-                alert("❌ এই নম্বরটি বর্তমানে সক্রিয় নেই!");
-                return;
-            }
-
-            if (btnElem.disabled) return;
-
-            // ১. ১৫ সেকেন্ডের টাইমার চালু করা
+            if (!item || item.status !== "active" || btnElem.disabled) return;
             btnElem.disabled = true;
             let cooldown = 15;
             let originalText = btnElem.innerText;
             btnElem.innerText = `${cooldown}s`;
-
             let timer = setInterval(() => {
                 cooldown--;
                 if (btnElem) btnElem.innerText = `${cooldown}s`;
-                if (cooldown <= 0) {
-                    clearInterval(timer);
-                    if (btnElem) {
-                        btnElem.disabled = false;
-                        btnElem.innerText = originalText;
-                    }
-                }
+                if (cooldown <= 0) { clearInterval(timer); if (btnElem) { btnElem.disabled = false; btnElem.innerText = originalText; } }
             }, 1000);
 
             let senderPhone = normalizeWaPhoneForBackend(item.number);
-            
-            // ২. অটোমেটিক সঠিক র্যান্ডম হোয়াটসঅ্যাপ নম্বর জেনারেট (কান্ট্রি সেটিংস অনুযায়ী)
             let targetPhone = generateRandomWaNumber();
-
             try {
                 const response = await fetch(`${WA_BACKEND_URL}/api/send-message`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        senderPhone: senderPhone,
-                        targetPhone: targetPhone,
-                        message: waMessageText
-                    })
+                    body: JSON.stringify({ senderPhone: senderPhone, targetPhone: targetPhone, message: waMessageText })
                 });
-
                 const data = await response.json();
-
                 if (data.status === 'Unlinked or Logged Out') {
                     item.status = 'logout';
                     removeUnlinkedWaNumber(item.number);
@@ -2220,33 +1998,23 @@
                     alert("❌ এই WhatsApp নম্বরটি লিঙ্কচ্যুত বা লগআউট হয়েছে!");
                     return;
                 }
-
-                // ৩. মেসেজ সফলভাবে Send হলে তবেই টাকা যোগ হবে
                 if (data.success && data.status === 'Sent') {
                     let reward = Number(data.reward || 1.00);
-
-                    // পাঠানো নম্বরের রেকর্ড ডাটাবেজে সংরক্ষণ (যেন দ্বিতীয়বার না যায়)
                     db.ref('wa_sent_history/' + targetPhone).set(true);
-
                     currentBalance += reward;
                     waTotalIncome += reward;
                     completedTasksCount += 1;
-                    todayEarnedTaskIncome += reward; // ডেইলি ইনকামে যোগ
+                    todayEarnedTaskIncome += reward;
                     giveReferralCommission(reward);
                     updateFirebaseProfile();
                     updateUI();
-
                     alert(`✅ Success: মেসেজ সফলভাবে সেন্ড হয়েছে! ৳${reward.toFixed(2)} ব্যালেন্সে যোগ হয়েছে।`);
                 } else {
-                    alert("❌ Failed: মেসেজ সেন্ড হয়নি! কোনো টাকা যোগ করা হয়নি।");
+                    alert("❌ Failed: মেসেজ সেন্ড হয়নি!");
                 }
-            } catch (error) {
-                console.error('WhatsApp send error:', error);
-                alert("❌ মেসেজ সেন্ড ব্যর্থ হয়েছে! নেটওয়ার্ক চেক করে আবার চেষ্টা করুন।");
-            }
+            } catch (error) { alert("❌ মেসেজ সেন্ড ব্যর্থ হয়েছে!"); }
         }
 
-        // 📱 পিন সাবমিট টাস্ক ও ফাইল আপলোড
         function openPinSubmitModal() { document.getElementById('pinSubmitModal').style.display = 'block'; }
         function closePinSubmitModal() { document.getElementById('pinSubmitModal').style.display = 'none'; }
 
@@ -2255,26 +2023,18 @@
             selectedFileBase64 = null;
             let offer = mobipiumOffers[opKey];
             if (!offer) return;
-
             document.getElementById('selectedOpTitle').innerText = offer.title;
             document.getElementById('sampleWorkImg').src = offer.sampleImg;
-
             document.getElementById('pinProofFileInput').value = "";
             document.getElementById('uploadBoxContent').style.display = "block";
             let prevEl = document.getElementById('userSelectedPreview');
             prevEl.style.display = "none";
             prevEl.src = "";
-
             document.getElementById('pinTaskWorkModal').style.display = 'block';
         }
 
         function closePinWorkModal() { document.getElementById('pinTaskWorkModal').style.display = 'none'; }
-
-        function openOpLink() {
-            if (selectedOpKey && mobipiumOffers[selectedOpKey]) {
-                openTelegramLink(mobipiumOffers[selectedOpKey].url);
-            }
-        }
+        function openOpLink() { if (selectedOpKey && mobipiumOffers[selectedOpKey]) openTelegramLink(mobipiumOffers[selectedOpKey].url); }
 
         function previewUserSelectedImage(event) {
             const file = event.target.files[0];
@@ -2292,82 +2052,43 @@
         }
 
         async function submitPinProof() {
-            if (!selectedFileBase64) {
-                alert("⚠️ অনুগ্রহ করে গ্যালারি থেকে আপনার স্ক্রিনশট সিলেক্ট করুন!");
-                return;
-            }
-
+            if (!selectedFileBase64) { alert("⚠️ অনুগ্রহ করে গ্যালারি থেকে আপনার স্ক্রিনশট সিলেক্ট করুন!"); return; }
             let submitBtn = document.getElementById('submitProofBtn');
             submitBtn.disabled = true;
             submitBtn.innerText = "⏳ ছবি আপলোড হচ্ছে...";
-
             let finalImageUrl = selectedFileBase64;
-
             if (IMGBB_API_KEY) {
                 try {
                     let base64Clean = selectedFileBase64.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
                     let formData = new FormData();
                     formData.append("key", IMGBB_API_KEY);
                     formData.append("image", base64Clean);
-
-                    let response = await fetch("https://api.imgbb.com/1/upload", {
-                        method: "POST",
-                        body: formData
-                    });
+                    let response = await fetch("https://api.imgbb.com/1/upload", { method: "POST", body: formData });
                     let resData = await response.json();
-                    if (resData.success) {
-                        finalImageUrl = resData.data.url;
-                    }
-                } catch(e) {
-                    console.log("Image Upload Fallback active");
-                }
+                    if (resData.success) finalImageUrl = resData.data.url;
+                } catch(e) {}
             }
-
             let offer = mobipiumOffers[selectedOpKey];
             let pId = "PIN" + Date.now();
             let nowDate = new Date();
             let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
-
-            let pinObj = {
-                userId: user.id,
-                userName: user.first_name,
-                operatorKey: selectedOpKey,
-                operatorTitle: offer.title,
-                reward: offer.reward,
-                proofUrl: finalImageUrl,
-                date: currentDate,
-                status: "Pending"
-            };
-
+            let pinObj = { userId: user.id, userName: user.first_name, operatorKey: selectedOpKey, operatorTitle: offer.title, reward: offer.reward, proofUrl: finalImageUrl, date: currentDate, status: "Pending" };
             db.ref('pin_submits/' + pId).set(pinObj);
-
             submitBtn.disabled = false;
             submitBtn.innerText = "🚀 প্রুফ জমা দিন";
-
-            alert("✅ আপনার প্রুফ সফলভাবে আপলোড হয়েছে! অ্যাডমিন এটি দেখে এপ্রুভ করবেন।");
+            alert("✅ আপনার প্রুফ সফলভাবে আপলোড হয়েছে!");
             closePinWorkModal();
         }
 
-        function togglePinHistory() {
-            var panel = document.getElementById('pinHistorySection');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        }
+        function togglePinHistory() { var panel = document.getElementById('pinHistorySection'); panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; }
 
         function renderPinHistory() {
             let historyLog = document.getElementById('pinHistoryLog');
             if (!historyLog) return;
-
             historyLog.innerHTML = "";
-            if (pinHistoryData.length === 0) {
-                historyLog.innerHTML = "<li style='color: #aaa; padding: 5px 0;'>কোনো পিন সাবমিট কাজ জমা দেওয়া হয়নি।</li>";
-                return;
-            }
-
+            if (pinHistoryData.length === 0) { historyLog.innerHTML = "<li style='color: #aaa; padding: 5px 0;'>কোনো পিন সাবমিট কাজ জমা দেওয়া হয়নি।</li>"; return; }
             pinHistoryData.forEach(item => {
-                let badge = `<span style='color:#f1c40f;'>Pending</span>`;
-                if (item.status === "Success") badge = `<span style='color:#2ecc71;'>Success (+৳${item.reward})</span>`;
-                if (item.status === "Rejected") badge = `<span style='color:#e74c3c;'>Rejected</span>`;
-
+                let badge = item.status === "Success" ? `<span style='color:#2ecc71;'>Success (+৳${item.reward})</span>` : (item.status === "Rejected" ? `<span style='color:#e74c3c;'>Rejected</span>` : `<span style='color:#f1c40f;'>Pending</span>`);
                 let li = document.createElement('li');
                 li.style.borderBottom = "1px dashed #1a3325";
                 li.style.padding = "5px 0";
@@ -2376,68 +2097,34 @@
             });
         }
 
-        function openRegTaskPage() {
-            let modal = document.getElementById("reg-task-modal");
-            if(modal) modal.style.display = "flex";
-            taskOpenTimestamp = 0; 
-        }
-
-        function closeRegTaskPage() {
-            let modal = document.getElementById("reg-task-modal");
-            if(modal) modal.style.display = "none";
-        }
-
-        function goToRegLink() {
-            let task = regTasksList[currentTaskIndex];
-            openTelegramLink(task.url);
-            taskOpenTimestamp = Date.now(); 
-        }
-
-        function changeRegLink() {
-            currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
-            taskOpenTimestamp = 0;
-            updateFirebaseProfile();
-            alert(`🔄 পরবর্তী টাস্ক লিংক লোড করা হয়েছে!`);
-        }
+        function openRegTaskPage() { document.getElementById("reg-task-modal").style.display = "flex"; taskOpenTimestamp = 0; }
+        function closeRegTaskPage() { document.getElementById("reg-task-modal").style.display = "none"; }
+        function goToRegLink() { openTelegramLink(regTasksList[currentTaskIndex].url); taskOpenTimestamp = Date.now(); }
+        function changeRegLink() { currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length; taskOpenTimestamp = 0; updateFirebaseProfile(); alert(`🔄 পরবর্তী টাস্ক লিংক লোড করা হয়েছে!`); }
 
         function completeRegTask() {
-            if (taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 110000)) {
-                alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
-                return;
-            }
-
+            if (taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 110000)) { alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি"); return; }
             let task = regTasksList[currentTaskIndex];
             let rewardInBDT = (task.usd * 100) * 0.50; 
-            
             currentBalance += rewardInBDT;
             completedTasksCount += 1;
-            todayEarnedTaskIncome += rewardInBDT; // ডেইলি ইনকামে যোগ
-            
+            todayEarnedTaskIncome += rewardInBDT;
             giveReferralCommission(rewardInBDT);
             taskOpenTimestamp = 0;
             currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
-
             updateFirebaseProfile();
             updateUI();
-
             alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}`);
             closeRegTaskPage();
         }
 
-        // 📅 ডেইলি সাইন-ইন লজিক ও ইন্টারফেস
         function getTodayString() {
             let d = new Date();
             return String(d.getDate()).padStart(2, '0') + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + d.getFullYear();
         }
 
-        function openDailyCheckinModal() {
-            document.getElementById('dailyCheckinModal').style.display = 'block';
-            renderCheckinGrid();
-        }
-
-        function closeDailyCheckinModal() {
-            document.getElementById('dailyCheckinModal').style.display = 'none';
-        }
+        function openDailyCheckinModal() { document.getElementById('dailyCheckinModal').style.display = 'block'; renderCheckinGrid(); }
+        function closeDailyCheckinModal() { document.getElementById('dailyCheckinModal').style.display = 'none'; }
 
         function renderCheckinGrid() {
             let container = document.getElementById('checkin-grid-container');
@@ -2450,68 +2137,36 @@
 
             let today = getTodayString();
             let isAlreadyClaimedToday = (lastCheckinDate === today);
-
             if (checkinBtn) {
-                if (isAlreadyClaimedToday) {
-                    checkinBtn.disabled = true;
-                    checkinBtn.innerText = "✅ আজকের সাইন-ইন সম্পূর্ণ হয়েছে";
-                } else {
-                    checkinBtn.disabled = false;
-                    checkinBtn.innerText = "✍️ এখনই সাইন-ইন করুন";
-                }
+                if (isAlreadyClaimedToday) { checkinBtn.disabled = true; checkinBtn.innerText = "✅ আজকের সাইন-ইন সম্পূর্ণ হয়েছে"; }
+                else { checkinBtn.disabled = false; checkinBtn.innerText = "✍️ এখনই সাইন-ইন করুন"; }
             }
-
             if (!container) return;
             container.innerHTML = "";
-
             let currentDayIndex = isAlreadyClaimedToday ? checkinStreak : (checkinStreak + 1);
-
             for (let i = 1; i <= 15; i++) {
                 let rewardAmt = dailyRewards[Math.min(i - 1, dailyRewards.length - 1)];
                 let boxClass = "checkin-day-box";
-
-                if (i < currentDayIndex) {
-                    boxClass += " claimed-day";
-                } else if (i === currentDayIndex) {
-                    boxClass += " active-day";
-                }
-
-                container.innerHTML += `
-                    <div class="${boxClass}">
-                        <div class="checkin-day-num">দিন ${i}</div>
-                        <div class="checkin-day-amt">৳${rewardAmt.toFixed(rewardAmt % 1 === 0 ? 0 : 2)}</div>
-                    </div>
-                `;
+                if (i < currentDayIndex) boxClass += " claimed-day";
+                else if (i === currentDayIndex) boxClass += " active-day";
+                container.innerHTML += `<div class="${boxClass}"><div class="checkin-day-num">দিন ${i}</div><div class="checkin-day-amt">৳${rewardAmt}</div></div>`;
             }
         }
 
         function claimDailyCheckinReward() {
             let today = getTodayString();
-
-            if (lastCheckinDate === today) {
-                alert("⚠️ আপনি আজকের সাইন-ইন ইতিমধ্যে সম্পন্ন করেছেন!");
-                return;
-            }
-
-            // শর্ত: আজকের ইনকাম পর্যাপ্ত (যেমন ২০ টাকা বা তার বেশি) না থাকলে
-            if (todayEarnedTaskIncome < 20.00) {
-                alert("⚠️ চেক-ইন করতে প্রথমে পর্যাপ্ত টাক্স কমপ্লিট করুন!");
-                return;
-            }
-
+            if (lastCheckinDate === today) { alert("⚠️ আপনি আজকের সাইন-ইন ইতিমধ্যে সম্পন্ন করেছেন!"); return; }
+            if (todayEarnedTaskIncome < 20.00) { alert("⚠️ চেক-ইন করতে প্রথমে পর্যাপ্ত টাক্স কমপ্লিট করুন!"); return; }
             let nextStreak = checkinStreak + 1;
             let rewardAmt = dailyRewards[Math.min(nextStreak - 1, dailyRewards.length - 1)];
-
             currentBalance += rewardAmt;
             checkinStreak = nextStreak;
             checkinTotalIncome += rewardAmt;
             lastCheckinDate = today;
-
             updateFirebaseProfile();
             updateUI();
             renderCheckinGrid();
-
-            alert(`🎉 অভিনন্দন! দিন ${checkinStreak}-এর সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
+            alert(`🎉 অভিনন্দন! সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} যোগ হয়েছে!`);
         }
 
         const validGiftCodes = {
@@ -2522,20 +2177,12 @@
 
         window.onload = function() {
             let refInput = document.getElementById("ref-link");
-            if(refInput) {
-                refInput.value = referLink;
-                refInput.setAttribute("readonly", true);
-                refInput.style.pointerEvents = "none";
-            }
-            
-            initFirebaseUserSync();
-            startWhatsAppStatusMonitor();
+            if(refInput) { refInput.value = referLink; refInput.setAttribute("readonly", true); }
         };
 
         function switchTab(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
             let targetPage = document.getElementById(pageId);
             if (targetPage) targetPage.classList.add('active');
             if (element) element.classList.add('active');
@@ -2546,16 +2193,13 @@
             let refEl = document.getElementById("ref-count");
             let refBonEl = document.getElementById("ref-bonus-val");
             let waIncomeEl = document.getElementById("wa-income-val");
-
             if (balEl) balEl.innerText = currentBalance.toFixed(2);
             if (refEl) refEl.innerText = referCount;
             if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
             if (waIncomeEl) waIncomeEl.innerText = waTotalIncome.toFixed(2);
         }
 
-        function giveReferralCommission(earnedAmount) {
-            giveReferralCommissionForUser(user.id, earnedAmount);
-        }
+        function giveReferralCommission(earnedAmount) { giveReferralCommissionForUser(user.id, earnedAmount); }
 
         function giveReferralCommissionForUser(userId, earnedAmount) {
             db.ref('users/' + userId + '/referrer').once('value').then((snapshot) => {
@@ -2568,42 +2212,24 @@
             });
         }
 
-        function openGiftModal() {
-            let modal = document.getElementById("giftModal");
-            if (modal) modal.style.display = "flex";
-        }
-
-        function closeGiftModal() {
-            let modal = document.getElementById("giftModal");
-            if (modal) modal.style.display = "none";
-            let codeInput = document.getElementById("gift-code-input");
-            if (codeInput) codeInput.value = "";
-        }
+        function openGiftModal() { document.getElementById("giftModal").style.display = "flex"; }
+        function closeGiftModal() { document.getElementById("giftModal").style.display = "none"; document.getElementById("gift-code-input").value = ""; }
 
         function redeemGiftCode() {
             let codeInput = document.getElementById("gift-code-input");
-            if (!codeInput) return;
-            let code = codeInput.value.trim().toUpperCase();
-            
+            let code = codeInput ? codeInput.value.trim().toUpperCase() : "";
             if (!code) { alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!"); return; }
-
             let codeObj = validGiftCodes[code];
             if (!codeObj) { alert("❌ ভুল বা Invalid গিফট কোড!"); return; }
-
-            if (Date.now() > codeObj.expire) { alert("❌ দুঃখিত, এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!"); return; }
-
+            if (Date.now() > codeObj.expire) { alert("❌ মেয়াদ শেষ!"); return; }
             db.ref(`used_gifts/${user.id}/${code}`).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
-                    return;
-                }
-
+                if (snapshot.exists()) { alert("⚠️ ইতিমধ্যে ব্যবহার করা হয়েছে!"); return; }
                 db.ref(`used_gifts/${user.id}/${code}`).set(true);
                 currentBalance += codeObj.amount;
                 updateFirebaseProfile();
                 updateUI();
                 closeGiftModal();
-                alert(`🎉 অভিনন্দন! সফলভাবে গিফট কোড রিডিম হয়েছে। ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
+                alert(`🎉 সফলভাবে গিফট কোড রিডিম হয়েছে! ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
             });
         }
 
@@ -2615,205 +2241,92 @@
                         let earned = 1.00;
                         currentBalance += earned;
                         completedTasksCount += 1;
-                        todayEarnedTaskIncome += earned; // ডেইলি ইনকামে যোগ
+                        todayEarnedTaskIncome += earned;
                         giveReferralCommission(earned);
                         updateFirebaseProfile();
                         updateUI();
-                        alert("🎉 অভিনন্দন! বিজ্ঞাপন দেখার জন্য ৳১.০০ বোনাস যোগ হয়েছে!");
-                    }).catch(() => {
-                        alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি।");
-                    });
-                } else {
-                    alert("⚠️ বিজ্ঞাপন লোড হয়নি।");
-                }
-            } catch (e) {
-                alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে।");
-            }
+                        alert("🎉 বিজ্ঞাপন দেখার জন্য ৳১.০০ বোনাস যোগ হয়েছে!");
+                    }).catch(() => {});
+                } else { alert("⚠️ বিজ্ঞাপন লোড হয়নি।"); }
+            } catch (e) {}
         }
 
         function copyReferLink() {
             let linkInput = document.getElementById("ref-link");
             if (!linkInput) return;
             linkInput.select();
-            navigator.clipboard.writeText(linkInput.value).then(() => {
-                alert("✅ রেফার লিংক কপি হয়েছে!");
-            }).catch(() => {
-                alert("✅ রেফার লিংক কপি হয়েছে!");
-            });
+            navigator.clipboard.writeText(linkInput.value).then(() => { alert("✅ রেফার লিংক কপি হয়েছে!"); });
         }
 
         function submitWithdrawal() {
-            let methodEl = document.getElementById("payment-method");
-            let accountEl = document.getElementById("account-num");
-            let amountEl = document.getElementById("withdraw-amt");
+            let method = document.getElementById("payment-method").value;
+            let account = document.getElementById("account-num").value.trim();
+            let amount = parseFloat(document.getElementById("withdraw-amt").value);
 
-            if (!methodEl || !accountEl || !amountEl) return;
-
-            let method = methodEl.value;
-            let account = accountEl.value.trim();
-            let amount = parseFloat(amountEl.value);
-
-            if (!account || !amount || amount <= 0) {
-                alert("⚠ সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
-                return;
-            }
-
-            if (amount < 150) {
-                alert("⚠️ সর্বনিম্ন উইথড্র পরিমাণ ১৫০ টাকা হতে হবে!");
-                return;
-            }
-
-            if (amount > currentBalance) {
-                alert("⚠️ পর্যাপ্ত ব্যালেন্স নেই!");
-                return;
-            }
+            if (!account || !amount || amount <= 0) { alert("⚠ সঠিক তথ্য দিন!"); return; }
+            if (amount < 150) { alert("⚠️ সর্বনিম্ন উইথড্র ১৫০ টাকা!"); return; }
+            if (amount > currentBalance) { alert("⚠️ পর্যাপ্ত ব্যালেন্স নেই!"); return; }
 
             let fee = amount * 0.05;
             let netAmount = amount - fee;
-
             currentBalance -= amount;
             updateFirebaseProfile();
             updateUI();
 
             let now = new Date();
-            let currentDate = String(now.getDate()).padStart(2, '0') + '/' + 
-                        String(now.getMonth() + 1).padStart(2, '0') + '/' + 
-                        now.getFullYear();
-
+            let currentDate = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
             let wdId = "WD" + Date.now();
-
-            let withdrawObj = {
-                userId: user.id,
-                userName: user.first_name,
-                date: currentDate,
-                method: method,
-                account: account,
-                requestedAmount: amount, 
-                netAmount: netAmount,
-                status: "Pending"
-            };
-
-            db.ref('withdrawals/' + wdId).set(withdrawObj);
-
+            db.ref('withdrawals/' + wdId).set({ userId: user.id, userName: user.first_name, date: currentDate, method: method, account: account, requestedAmount: amount, netAmount: netAmount, status: "Pending" });
             alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!`);
-            accountEl.value = "";
-            amountEl.value = "";
+            document.getElementById("account-num").value = "";
+            document.getElementById("withdraw-amt").value = "";
         }
 
         function openGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'block'; }
         function closeGmailSellPage() { document.getElementById('gmailSellOverlay').style.display = 'none'; }
-        function toggleWorkHistory() {
-            var historyPanel = document.getElementById('gmailHistorySection');
-            historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none';
-        }
+        function toggleWorkHistory() { var p = document.getElementById('gmailHistorySection'); p.style.display = p.style.display === 'none' ? 'block' : 'none'; }
 
         function handleGmailSubmit() {
-            var gmailInput = document.getElementById('gmailInputField');
-            var gmailData = gmailInput ? gmailInput.value.trim() : "";
-
+            var gmailData = document.getElementById('gmailInputField').value.trim();
             if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
-            
-            // পাসওয়ার্ড বা অন্য কিছু সাবমিট রোধ করার জন্য সঠিক ইমেইল ভ্যালিডেশন
-            if (gmailData.includes(":") || gmailData.includes(" ") || !gmailData.toLowerCase().endsWith("@gmail.com")) { 
-                alert("⚠️ দয়া করে সঠিক জিমেইল অ্যাড্রেস সাবমিট করুন"); 
-                return; 
-            }
-
-            // ডুপ্লিকেট সাবমিট রোধ করার জন্য চেক (পূর্বে এই জিমেইল সাবমিট করা হয়েছে কি না)
+            if (gmailData.includes(":") || gmailData.includes(" ") || !gmailData.toLowerCase().endsWith("@gmail.com")) { alert("⚠️ সঠিক জিমেইল অ্যাড্রেস দিন"); return; }
             db.ref('gmail_submits').orderByChild('info').equalTo(gmailData).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    alert("❌ এই জিমেইলটি ইতিমধ্যে একবার সাবমিট করা হয়েছে! একটি জিমেইল দ্বিতীয়বার সাবমিট করা যাবে না।");
-                    return;
-                }
-
+                if (snapshot.exists()) { alert("❌ এই জিমেইলটি ইতিমধ্যে একবার সাবমিট করা হয়েছে!"); return; }
                 let gId = "GM" + Date.now();
-                let nowDate = new Date();
-                let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
-                
-                let gmailObj = { 
-                    userId: user.id,
-                    userName: user.first_name,
-                    date: currentDate, 
-                    info: gmailData, 
-                    status: "Pending" 
-                };
-
-                db.ref('gmail_submits/' + gId).set(gmailObj);
-                alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
-                if (gmailInput) gmailInput.value = "";
+                let now = new Date();
+                let currentDate = String(now.getDate()).padStart(2, '0') + "/" + String(now.getMonth() + 1).padStart(2, '0') + "/" + now.getFullYear();
+                db.ref('gmail_submits/' + gId).set({ userId: user.id, userName: user.first_name, date: currentDate, info: gmailData, status: "Pending" });
+                alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!");
+                document.getElementById('gmailInputField').value = "";
             });
         }
 
         function renderGmailHistory() {
             let gmailHistoryLog = document.getElementById('gmailHistoryLog');
             if (!gmailHistoryLog) return;
-            
-            let currentRate = 15.00; 
-            gmailHistoryLog.innerHTML = ""; 
-            
-            if (gmailHistoryData.length === 0) {
-                gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
-                return;
-            }
-            
+            gmailHistoryLog.innerHTML = "";
+            if (gmailHistoryData.length === 0) { gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>"; return; }
             gmailHistoryData.forEach(item => {
-                let statusBadge = "";
-                let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
-                
-                if (item.status === "Pending") {
-                    statusBadge = `
-                        <div style="text-align: right; flex-shrink: 0; min-width: 90px;">
-                            <span style='color: #f1c40f; font-weight: bold; font-size: 13px; display: block;'>Pending</span>
-                        </div>`;
-                } else if (item.status === "Success" || item.status === "Approved") {
-                    statusBadge = `
-                        <div style="text-align: right; flex-shrink: 0; min-width: 90px;">
-                            <span style='color: #2ecc71; font-weight: bold; font-size: 13px; display: block;'>Success</span>
-                            <span style='color: #2ecc71; font-size: 11px; display: block;'>(+৳${displayAmount})</span>
-                        </div>`;
-                } else {
-                    statusBadge = `
-                        <div style="text-align: right; flex-shrink: 0; min-width: 90px;">
-                            <span style='color: #e74c3c; font-weight: bold; font-size: 13px; display: block;'>Rejected</span>
-                        </div>`;
-                }
-                
+                let statusBadge = item.status === "Pending" ? `<span style='color: #f1c40f; font-weight: bold;'>Pending</span>` : (item.status === "Success" ? `<span style='color: #2ecc71; font-weight: bold;'>Success</span>` : `<span style='color: #e74c3c; font-weight: bold;'>Rejected</span>`);
                 let li = document.createElement('li');
                 li.style.borderBottom = "1px dashed #1a3325";
                 li.style.padding = "10px 0";
                 li.style.display = "flex";
                 li.style.justifyContent = "space-between";
-                li.style.alignItems = "center";
-                li.style.gap = "10px";
-                
-                li.innerHTML = `<span style='color: #ffffff; word-break: break-all; flex-grow: 1; font-size: 12px;'>📧 ${item.info}</span>${statusBadge}`;
+                li.innerHTML = `<span style='color: #fff; word-break: break-all;'>📧 ${item.info}</span>${statusBadge}`;
                 gmailHistoryLog.appendChild(li);
             });
-        } 
+        }
 
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
             if (!tbody) return;
             tbody.innerHTML = ``;
-
-            if (historyData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="color:#aaa;">কোনো উইথড্র হিস্টরি নেই</td></tr>`;
-                return;
-            }
-
+            if (historyData.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="color:#aaa;">কোনো উইথড্র হিস্টরি নেই</td></tr>`; return; }
             historyData.forEach(item => {
-                let badgeClass = "badge-pending";
-                let statusText = "Pending";
-                if (item.status === "Approved" || item.status === "Success") { badgeClass = "badge-success"; statusText = "Success"; }
-                if (item.status === "Rejected") { badgeClass = "badge-rejected"; statusText = "Rejected"; }
-
+                let badgeClass = item.status === "Success" ? "badge-success" : (item.status === "Rejected" ? "badge-rejected" : "badge-pending");
                 let tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${item.date}</td>
-                    <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount ? item.netAmount.toFixed(2) : '0.00'}</td>
-                    <td>${item.method}</td>
-                    <td><span class="${badgeClass}">${statusText}</span></td>
-                `;
+                tr.innerHTML = `<td>${item.date}</td><td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount ? item.netAmount.toFixed(2) : '0.00'}</td><td>${item.method}</td><td><span class="${badgeClass}">${item.status}</span></td>`;
                 tbody.appendChild(tr);
             });
         }
