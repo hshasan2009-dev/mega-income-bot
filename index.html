@@ -261,7 +261,57 @@
             box-sizing: border-box;
             overflow-y: auto;
         }
-        /* Admin Switch Style */
+        /* Auth Screen Styles */
+        #authScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0c2317;
+            z-index: 9999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .auth-card {
+            background-color: #113626;
+            border: 2px solid #27ae60;
+            border-radius: 16px;
+            padding: 25px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+        .auth-logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 10px auto;
+            background: #1b4d3e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffcc00;
+        }
+        .auth-logo img {
+            width: 36px;
+            height: 36px;
+        }
+        .auth-title {
+            color: #ffcc00;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .auth-subtitle {
+            color: #ccc;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
         .switch-container {
             display: flex;
             justify-content: space-between;
@@ -373,6 +423,34 @@
     </style>
 </head>
 <body>
+
+    <!-- Sign In / Sign Up Screen -->
+    <div id="authScreen">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" alt="Logo">
+            </div>
+            <div class="auth-title" id="authScreenTitle">Mega Income Bot</div>
+            <div class="auth-subtitle" id="authScreenSubtitle">Welcome Back! Log in to your account.</div>
+
+            <div class="input-group">
+                <label id="authInputLabel">PHONE OR USERNAME</label>
+                <input type="text" id="authUserInput" class="input-control" placeholder="hasan@gmail.com">
+            </div>
+
+            <div class="input-group">
+                <label>PASSWORD</label>
+                <input type="password" id="authPasswordInput" class="input-control" placeholder="••••••••">
+            </div>
+
+            <button class="btn btn-main" id="authSubmitBtn" onclick="handleAuthSubmit()" style="margin-top: 15px;">LOG IN</button>
+
+            <div style="margin-top: 15px; font-size: 13px; color: #ccc;">
+                <span id="authToggleText">Don't have an account?</span> 
+                <a href="#" onclick="toggleAuthMode(event)" style="color: #ffcc00; font-weight: bold; text-decoration: none;" id="authToggleLink">Sign Up</a>
+            </div>
+        </div>
+    </div>
 
     <!-- 🚫 ইউজার ব্যান এলার্ট পপআপ (যদি ইউজার ব্যান থাকে) -->
     <div id="bannedUserOverlay" class="modal-overlay" style="z-index: 999999; background: rgba(10, 5, 5, 0.98); align-items: center; justify-content: center;">
@@ -1236,6 +1314,45 @@
         // Gmail Admin Dynamic Credentials
         let dynamicGmailName = "Hasan";
         let dynamicGmailPass = "hasan#1122";
+
+        // Auth Mode State (Log In vs Sign Up)
+        let isSignUpMode = false;
+
+        function toggleAuthMode(event) {
+            event.preventDefault();
+            isSignUpMode = !isSignUpMode;
+            let titleEl = document.getElementById('authScreenTitle');
+            let subTitleEl = document.getElementById('authScreenSubtitle');
+            let submitBtn = document.getElementById('authSubmitBtn');
+            let toggleText = document.getElementById('authToggleText');
+            let toggleLink = document.getElementById('authToggleLink');
+
+            if (isSignUpMode) {
+                titleEl.innerText = "Mega Income Bot";
+                subTitleEl.innerText = "Create a new account to start earning.";
+                submitBtn.innerText = "SIGN UP";
+                toggleText.innerText = "Already have an account?";
+                toggleLink.innerText = "Log In";
+            } else {
+                titleEl.innerText = "Mega Income Bot";
+                subTitleEl.innerText = "Welcome Back! Log in to your account.";
+                submitBtn.innerText = "LOG IN";
+                toggleText.innerText = "Don't have an account?";
+                toggleLink.innerText = "Sign Up";
+            }
+        }
+
+        function handleAuthSubmit() {
+            let inputVal = document.getElementById('authUserInput').value.trim();
+            let passVal = document.getElementById('authPasswordInput').value.trim();
+
+            if (!inputVal || !passVal) {
+                alert("⚠️ দয়া করে সঠিক তথ্য প্রদান করুন!");
+                return;
+            }
+
+            document.getElementById('authScreen').style.display = 'none';
+        }
 
         function initFirebaseUserSync() {
             // Check Ban Realtime
@@ -2405,7 +2522,11 @@
 
         window.onload = function() {
             let refInput = document.getElementById("ref-link");
-            if(refInput) refInput.value = referLink;
+            if(refInput) {
+                refInput.value = referLink;
+                refInput.setAttribute("readonly", true);
+                refInput.style.pointerEvents = "none";
+            }
             
             initFirebaseUserSync();
             startWhatsAppStatusMonitor();
@@ -2698,4 +2819,4 @@
         }
     </script>
 </body>
- </html>
+</html>
