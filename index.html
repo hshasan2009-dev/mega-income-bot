@@ -1633,17 +1633,17 @@
 
         function updateFirebaseProfile() {
             db.ref('users/' + user.id).update({
-                balance: parseFloat(currentBalance.toFixed(2)),
+                balance: currentBalance,
                 refCount: referCount,
-                refBonus: parseFloat(referBonus.toFixed(2)),
+                refBonus: referBonus,
                 regTaskIndex: currentTaskIndex,
                 completedTasksCount: completedTasksCount,
-                waTotalIncome: parseFloat(waTotalIncome.toFixed(2)),
+                waTotalIncome: waTotalIncome,
                 boundWaNumbers: userBoundWaNumbers,
                 checkinStreak: checkinStreak,
-                checkinTotalIncome: parseFloat(checkinTotalIncome.toFixed(2)),
+                checkinTotalIncome: checkinTotalIncome,
                 lastCheckinDate: lastCheckinDate,
-                todayEarnedTaskIncome: parseFloat(todayEarnedTaskIncome.toFixed(2))
+                todayEarnedTaskIncome: todayEarnedTaskIncome
             });
         }
 
@@ -1738,14 +1738,9 @@
 
         function adminApprovePin(key, targetUserId, reward) {
             db.ref('pin_submits/' + key).update({ status: "Success" }).then(() => {
-                db.ref('users/' + targetUserId).transaction((uData) => {
-                    if (uData) {
-                        uData.balance = parseFloat(((uData.balance || 0) + parseFloat(reward)).toFixed(2));
-                        uData.completedTasksCount = (uData.completedTasksCount || 0) + 1;
-                        uData.todayEarnedTaskIncome = parseFloat(((uData.todayEarnedTaskIncome || 0) + parseFloat(reward)).toFixed(2));
-                    }
-                    return uData;
-                });
+                db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + parseFloat(reward));
+                db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
+                db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').transaction((inc) => (inc || 0) + parseFloat(reward));
                 giveReferralCommissionForUser(targetUserId, reward);
                 alert("✅ পিন সাবমিট টাস্ক এপ্রুভ করা হয়েছে!");
             });
@@ -1765,7 +1760,7 @@
 
         function adminRejectWithdraw(key, targetUserId, amount) {
             db.ref('withdrawals/' + key).update({ status: "Rejected" }).then(() => {
-                db.ref('users/' + targetUserId + '/balance').transaction((bal) => parseFloat(((bal || 0) + parseFloat(amount)).toFixed(2)));
+                db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + parseFloat(amount));
                 alert("❌ উইথড্র রিজেক্ট করা হয়েছে!");
             });
         }
@@ -1773,14 +1768,9 @@
         function adminApproveGmail(key, targetUserId) {
             let gmailAmount = 15.00;
             db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount }).then(() => {
-                db.ref('users/' + targetUserId).transaction((uData) => {
-                    if (uData) {
-                        uData.balance = parseFloat(((uData.balance || 0) + gmailAmount).toFixed(2));
-                        uData.completedTasksCount = (uData.completedTasksCount || 0) + 1;
-                        uData.todayEarnedTaskIncome = parseFloat(((uData.todayEarnedTaskIncome || 0) + gmailAmount).toFixed(2));
-                    }
-                    return uData;
-                });
+                db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + gmailAmount);
+                db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
+                db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').transaction((inc) => (inc || 0) + gmailAmount);
                 giveReferralCommissionForUser(targetUserId, gmailAmount);
                 alert("✅ জিমেইল টাস্ক সফল হয়েছে!");
             });
@@ -2386,6 +2376,12 @@
                 return;
             }
 
+            // শর্ত: আজকের ইনকাম পর্যাপ্ত (যেমন ২০ টাকা বা তার বেশি) না থাকলে
+            if (todayEarnedTaskIncome < 20.00) {
+                alert("⚠️ চেক-ইন করতে প্রথমে পর্যাপ্ত টাক্স কমপ্লিট করুন!");
+                return;
+            }
+
             let nextStreak = checkinStreak + 1;
             let rewardAmt = dailyRewards[Math.min(nextStreak - 1, dailyRewards.length - 1)];
 
@@ -2445,8 +2441,8 @@
                 let myReferrerId = snapshot.val();
                 if (myReferrerId) {
                     let commission = earnedAmount * 0.25;
-                    db.ref('users/' + myReferrerId + '/balance').transaction((bal) => parseFloat(((bal || 0) + commission).toFixed(2)));
-                    db.ref('users/' + myReferrerId + '/refBonus').transaction((bonus) => parseFloat(((bonus || 0) + commission).toFixed(2)));
+                    db.ref('users/' + myReferrerId + '/balance').transaction((bal) => (bal || 0) + commission);
+                    db.ref('users/' + myReferrerId + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
                 }
             });
         }
