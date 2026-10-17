@@ -34,6 +34,22 @@
             font-weight: bold;
             border-bottom: 2px solid #27ae60;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        .logout-btn-top {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
         }
         .container {
             padding: 15px;
@@ -261,7 +277,6 @@
             box-sizing: border-box;
             overflow-y: auto;
         }
-        /* Admin Switch Style */
         .switch-container {
             display: flex;
             justify-content: space-between;
@@ -290,7 +305,6 @@
         input:checked + .slider { background-color: #2ecc71; }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* WhatsApp UI Specific CSS */
         .wa-box-container {
             background: #1a1a1a;
             border-radius: 12px;
@@ -331,7 +345,6 @@
             border: 1px solid #3d3d3d;
         }
 
-        /* 📅 Daily Check-in Grid Styling */
         .checkin-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -370,11 +383,128 @@
         .checkin-day-box.active-day .checkin-day-amt {
             color: #ffffff;
         }
+
+        /* 🔐 সাইন-ইন ও সাইন-আপ কার্ড ডিজাইন */
+        .auth-card {
+            background-color: #0c2317;
+            border: 2px solid #27ae60;
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 0 20px rgba(39, 174, 96, 0.2);
+            margin: auto;
+        }
+        .auth-logo {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #2ecc71 0%, #113626 100%);
+            border: 2px solid #ffcc00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 12px auto;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
+        }
+        .auth-title {
+            color: #ffcc00;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .auth-sub {
+            color: #ccc;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+        .auth-label {
+            text-align: left;
+            color: #ccc;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .auth-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #27ae60;
+            background: #113626;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            margin-bottom: 12px;
+        }
+        .auth-btn {
+            background-color: #f1c40f;
+            color: #000;
+            font-weight: bold;
+            font-size: 15px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .auth-switch {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #ccc;
+        }
+        .auth-switch a {
+            color: #ffcc00;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <!-- 🚫 ইউজার ব্যান এলার্ট পপআপ (যদি ইউজার ব্যান থাকে) -->
+    <!-- 🔐 লগইন ও সাইন-আপ ওভারলে মডাল -->
+    <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: #07150d;">
+        <!-- সাইন ইন পেজ -->
+        <div id="loginBox" class="auth-card">
+            <div class="auth-logo">🚀</div>
+            <div class="auth-title">Mega Income Bot</div>
+            <div class="auth-sub">Welcome Back! Log in to your account.</div>
+            
+            <div class="auth-label">PHONE OR USERNAME</div>
+            <input type="text" id="loginUsername" class="auth-input" placeholder="017XXXXXXXX বা Username">
+            
+            <div class="auth-label">PASSWORD</div>
+            <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••">
+            
+            <button class="auth-btn" onclick="handleLogin()">LOG IN</button>
+            <div class="auth-switch">Don't have an account? <a onclick="toggleAuthMode('signup')">Sign Up</a></div>
+        </div>
+
+        <!-- সাইন আপ পেজ -->
+        <div id="signupBox" class="auth-card" style="display: none;">
+            <div class="auth-logo">🚀</div>
+            <div class="auth-title">Mega Income Bot</div>
+            <div class="auth-sub">Create a new account to start earning.</div>
+            
+            <div class="auth-label">PHONE OR USERNAME</div>
+            <input type="text" id="signupUsername" class="auth-input" placeholder="017XXXXXXXX বা Username">
+            
+            <div class="auth-label">PASSWORD</div>
+            <input type="password" id="signupPassword" class="auth-input" placeholder="••••••••">
+            
+            <div class="auth-label">REFERRAL CODE (AUTO)</div>
+            <input type="text" id="signupReferral" class="auth-input" placeholder="কোনো রেফার কোড নেই">
+            
+            <button class="auth-btn" onclick="handleSignup()">SIGN UP</button>
+            <div class="auth-switch">Already have an account? <a onclick="toggleAuthMode('login')">Log In</a></div>
+        </div>
+    </div>
+
+    <!-- 🚫 ইউজার ব্যান এলার্ট পপআপ -->
     <div id="bannedUserOverlay" class="modal-overlay" style="z-index: 999999; background: rgba(10, 5, 5, 0.98); align-items: center; justify-content: center;">
         <div style="background: linear-gradient(145deg, #2c0b0e, #1a0507); border: 2px solid #e74c3c; border-radius: 16px; padding: 25px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4); margin: auto;">
             <div style="font-size: 50px; margin-bottom: 10px;">🚫</div>
@@ -385,7 +515,8 @@
     </div>
 
     <div class="top-title-bar">
-        🚀 Mega Income Bot
+        <span>🚀 Mega Income Bot</span>
+        <button class="logout-btn-top" id="logoutBtn" onclick="handleLogout()">Log Out</button>
     </div>
 
     <div class="container">
@@ -470,7 +601,7 @@
                 </div>
             </div>
 
-            <!-- ৬. ডেইলি সাইন-ইন টাস্ক (স্পিনের জায়গায় নতুন) -->
+            <!-- ৬. ডেইলি সাইন-ইন টাস্ক -->
             <div class="card" id="card-checkin-task" style="border: 2px solid #f39c12; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Daily Checkin Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -489,7 +620,6 @@
                     <button onclick="closeDailyCheckinModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">বন্ধ করুন ✖</button>
                 </div>
 
-                <!-- চেক-ইন স্ট্যাটিস্টিক্স -->
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
                     <div style="flex:1; background:#0d271a; border:1px solid #27ae60; border-radius:8px; padding:10px;">
                         <span style="font-size:11px; color:#aaa; display:block;">বর্তমান স্ট্রিক</span>
@@ -503,7 +633,6 @@
 
                 <p style="font-size:12px; color:#ddd; margin-bottom:10px;">প্রতিদিন নিয়মিত সাইন-ইন করে রিওয়ার্ড আনলক করুন:</p>
 
-                <!-- চেক-ইন দিনসমূহের গ্রিড -->
                 <div class="checkin-grid" id="checkin-grid-container"></div>
 
                 <button class="btn btn-gift" id="btn-do-checkin" onclick="claimDailyCheckinReward()" style="margin-top:15px;">
@@ -512,7 +641,7 @@
             </div>
         </div>
 
-        <!-- 💬 হোয়াটসঅ্যাপ সম্পুর্ন নতুন পেজ / মডাল (ইউজার ইন্টারফেস) -->
+        <!-- 💬 হোয়াটসঅ্যাপ মডাল -->
         <div id="waTaskModal" class="modal-overlay">
             <div class="wa-box-container" style="max-width: 420px; margin: 10px auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
@@ -520,13 +649,11 @@
                     <button onclick="closeWhatsAppTaskModal()" style="background: rgba(255,255,255,0.2); color: #fff; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer;">✕</button>
                 </div>
 
-                <!-- মোট WhatsApp ইনকাম কার্ড -->
                 <div style="background: #113626; border: 1px solid #27ae60; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
                     <span style="color: #ffcc00; font-size: 12px; font-weight: bold;">WHATSAPP TOTAL INCOME</span>
                     <div style="font-size: 20px; font-weight: bold; color: #fff;">৳ <span id="wa-income-val">0.00</span></div>
                 </div>
 
-                <!-- ১. অ্যাকাউন্ট বাঁধুন সেকশন -->
                 <div style="margin-bottom: 15px;">
                     <div style="display: flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; margin-bottom: 8px;">
                         🔗 <span>অ্যাকাউন্ট বাঁধুন</span>
@@ -556,7 +683,6 @@
                     </div>
                 </div>
 
-                <!-- ২. বাঁধা অ্যাকাউন্ট লিস্ট -->
                 <div style="margin-bottom: 15px; border-top: 1px solid #333; padding-top: 10px;">
                     <div style="display: flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; margin-bottom: 8px;">
                         💬 <span>বাঁধা অ্যাকাউন্ট</span>
@@ -566,7 +692,6 @@
                     </div>
                 </div>
 
-                <!-- ৩. বাঁধার নির্দেশনা -->
                 <div style="border-top: 1px solid #333; padding-top: 10px;">
                     <div style="color: #ffcc00; font-weight: bold; font-size: 12px; margin-bottom: 6px;">💡 বাঁধার নির্দেশনা</div>
                     <ol style="color: #aaa; font-size: 11px; padding-left: 15px; line-height: 1.5;">
@@ -643,8 +768,6 @@
         <!-- জিমেইল সেল ওভারলে -->
         <div id="gmailSellOverlay" class="modal-overlay">
             <div style="background:#113626; border: 2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
-                
-                <!-- একদম উপরে ডানপাশে বন্ধ করুন বাটন ও হেডার -->
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27ae60; padding-bottom: 8px; margin-bottom: 15px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 28px; height: 28px;" alt="Gmail">
@@ -656,10 +779,7 @@
                     </div>
                 </div>
 
-                <!-- ফার্স্ট নাম ও পাসওয়ার্ড এবং কপি বক্স -->
                 <div style="background: linear-gradient(135deg, #fef9e7, #fcf3cf); border: 1.5px dashed #f39c12; border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: left;">
-                    
-                    <!-- ফার্স্ট নাম অপশন সোজা ডানে কপি বাটন -->
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #f39c12; padding-bottom: 8px;">
                         <div>
                             <span style="color: #b9770e; font-size: 12px; font-weight: bold; display: block;">👤 First Name:</span>
@@ -668,7 +788,6 @@
                         <button onclick="copyDynamicName()" style="background: #e5e8e8; border: 1px solid #bdc3c7; color: #333; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
                     </div>
 
-                    <!-- পাসওয়ার্ড অপশন সোজা ডানে কপি বাটন -->
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <div>
                             <span style="color: #b9770e; font-size: 12px; font-weight: bold; display: block;">🔑 Password to use:</span>
@@ -676,10 +795,8 @@
                         </div>
                         <button onclick="copyDynamicPassword()" style="background: #e5e8e8; border: 1px solid #bdc3c7; color: #333; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
                     </div>
-
                 </div>
 
-                <!-- জিমেইল ইনপুট ঘর -->
                 <div style="margin: 15px 0; text-align: left;">
                     <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 13px;">আপনার জিমেইল লিখুন (পাসওয়ার্ড বা অন্য কিছু নয়):</label>
                     <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com" class="input-control">
@@ -791,41 +908,33 @@
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
 
-                <!-- ⚙️ Task Switch Open Button -->
                 <button class="btn btn-gift" onclick="openAdminTaskControlModal()" style="margin-bottom: 12px;">
                     ⚙️ টাস্ক অন/অফ কন্ট্রোল পেজ ওপেন করুন
                 </button>
 
-                <!-- 💬 WhatsApp Task & Country Settings Button -->
                 <button class="btn btn-whatsapp" onclick="openAdminWaSettingsModal()" style="margin-bottom: 12px;">
                     💬 WhatsApp টাস্ক & কান্ট্রি সেটিংস
                 </button>
 
-                <!-- 📧 Admin Gmail Credentials Setting Button -->
                 <button class="btn btn-official" onclick="openAdminGmailCredentialsModal()" style="margin-bottom: 12px;">
                     📧 Gmail টাস্ক নাম ও পাসওয়ার্ড সেটআপ
                 </button>
 
-                <!-- 🚫 User Ban Control Button -->
                 <button class="btn btn-support" onclick="openAdminUserBanModal()" style="margin-bottom: 12px;">
                     🚫 User Ban Control
                 </button>
 
-                <!-- 💳 Withdraw Requests List Button -->
                 <button class="btn btn-main" onclick="openAdminWithdrawModal()" style="margin-bottom: 12px;">
                     💳 Withdraw Requests List
                 </button>
 
-                <!-- 📧 Gmail Submit Requests List Button -->
                 <button class="btn btn-official" onclick="openAdminGmailModal()" style="margin-bottom: 12px;">
                     📧 Gmail Submit Requests List
                 </button>
 
-                <!-- 📱 Pin Submit Requests List Button -->
                 <button class="btn btn-bl" onclick="openAdminPinModal()" style="margin-bottom: 15px;">
                     📱 Pin Submit Requests List
                 </button>
-
             </div>
         </div>
 
@@ -853,7 +962,7 @@
         </div>
     </div>
 
-    <!-- 🚫 User Ban Control Modal (নতুন ইউজার ব্যান পেজ) -->
+    <!-- 🚫 User Ban Control Modal -->
     <div id="adminUserBanModal" class="modal-overlay">
         <div style="background: linear-gradient(135deg, #102a1d, #08150f); border: 2px solid #e74c3c; padding: 20px; border-radius: 12px; width: 100%; max-width: 440px; margin: 20px auto; color: #fff; box-shadow: 0 5px 20px rgba(0,0,0,0.6);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e74c3c; padding-bottom:8px;">
@@ -861,13 +970,11 @@
                 <button onclick="closeAdminUserBanModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
 
-            <!-- ইউজার আইডি সার্চ সেকশন -->
             <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                <input type="number" id="ban-search-userid" class="input-control" placeholder="User ID লিখুন (ex: 123456)" style="flex:1;">
+                <input type="text" id="ban-search-userid" class="input-control" placeholder="Username বা Phone লিখুন" style="flex:1;">
                 <button onclick="searchUserForBan()" style="background:#27ae60; color:#fff; border:none; padding:0 15px; border-radius:8px; font-weight:bold; cursor:pointer;">🔍 Search</button>
             </div>
 
-            <!-- সার্চ রেজাল্ট ডিটেইলস কার্ড -->
             <div id="user-search-result-card" style="display:none; background: #081a11; border: 1px solid #27ae60; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: left;">
                 <div style="font-size: 13px; color: #ffcc00; font-weight: bold; margin-bottom: 6px;">👤 ইউজার ডিটেইলস:</div>
                 <div style="font-size: 12px; color: #ddd; line-height: 1.6;">
@@ -885,7 +992,6 @@
 
             <hr style="border:0; border-top:1px dashed #27ae60; margin:15px 0;">
 
-            <!-- ব্যান ইউজার লিস্ট -->
             <h4 style="color:#ffcc00; text-align:left; margin-bottom:10px; font-size:14px;">📜 ব্যান ইউজারদের তালিকা:</h4>
             <div id="banned-users-list" style="max-height: 250px; overflow-y: auto;">
                 <p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
@@ -893,7 +999,7 @@
         </div>
     </div>
 
-    <!-- 💳 Withdraw Requests List Full Page Modal -->
+    <!-- 💳 Withdraw Requests List Modal -->
     <div id="adminWithdrawModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -904,7 +1010,7 @@
         </div>
     </div>
 
-    <!-- 📧 Gmail Submit Requests List Full Page Modal -->
+    <!-- 📧 Gmail Submit Requests List Modal -->
     <div id="adminGmailModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -915,7 +1021,7 @@
         </div>
     </div>
 
-    <!-- 📱 Pin Submit Requests List Full Page Modal -->
+    <!-- 📱 Pin Submit Requests List Modal -->
     <div id="adminPinModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -926,7 +1032,7 @@
         </div>
     </div>
 
-    <!-- 💬 WhatsApp Task & Country Control Modal -->
+    <!-- 💬 WhatsApp Task Settings Modal -->
     <div id="adminWaSettingsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #25d366; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -944,7 +1050,6 @@
             <hr style="border:0; border-top:1px dashed #27ae60; margin:15px 0;">
 
             <h4 style="color:#f1c40f; text-align:left; margin-bottom:10px; font-size:14px;">🌍 হোয়াটসঅ্যাপ কান্ট্রি অন/অফ তালিকা:</h4>
-            <p style="color:#ccc; font-size:11px; margin-bottom:10px;">যে যে কান্ট্রি অন রাখবেন, সুধু সেই দেশের নম্বর জেনারেট হবে।</p>
 
             <div class="switch-container">
                 <span>🇧🇩 Bangladesh (+880)</span>
@@ -1122,7 +1227,6 @@
         }
         const db = firebase.database();
 
-        const BOT_TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
         const ADMIN_CHAT_ID = "8049465500";
         const ADSGRAM_BLOCK_ID = "46374";
         const IMGBB_API_KEY = "77995b4eeedf7bd18b2fd72007152be2";
@@ -1138,6 +1242,13 @@
         if (tg) {
             try { tg.expand(); tg.ready(); } catch(e) {}
         }
+
+        let currentUserKey = localStorage.getItem("loggedInUserKey") || null;
+        let detectedStartParam = null;
+
+        // Auto Catch Referral Parameter
+        let urlParams = new URLSearchParams(window.location.search);
+        detectedStartParam = tg?.initDataUnsafe?.start_param || urlParams.get('startapp') || urlParams.get('start') || urlParams.get('ref');
 
         function openTelegramLink(url) {
             if (tg && tg.openTelegramLink && url.includes("t.me")) {
@@ -1163,18 +1274,7 @@
             { usd: 0.03, url: "https://singingfiles.com/show.php?l=0&u=2553075&id=54746&tracking_id=2009" }
         ];
 
-        let user = tg?.initDataUnsafe?.user;
-        if (!user || !user.id) {
-            let savedUserId = Math.floor(100000 + Math.random() * 900000);
-            user = { id: parseInt(savedUserId), first_name: "User_" + savedUserId, username: "user" + savedUserId };
-        }
-
-        // পুরো নাম পেতে
-        let userFullName = user.first_name + (user.last_name ? " " + user.last_name : "");
-
-        let botUsername = "MegaIncomeReal_bot";
-        let referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${user.id}`;
-
+        let referLink = "";
         let currentBalance = 0.00;
         let referCount = 0;
         let referBonus = 0.00;
@@ -1187,59 +1287,160 @@
         let taskOpenTimestamp = 0;
         let selectedOpKey = null;
         let selectedFileBase64 = null;
-
         let searchedTargetUserId = null;
 
-        // Default WhatsApp Message Settings
         let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
-        
-        // Country On/Off Settings (Default BD enabled)
-        let waCountrySettings = {
-            BD: true,
-            US: false,
-            MY: false,
-            BR: false,
-            GB: false,
-            SA: false,
-            AE: false,
-            IN: false
-        };
+        let waCountrySettings = { BD: true, US: false, MY: false, BR: false, GB: false, SA: false, AE: false, IN: false };
 
         let waTotalIncome = 0.00;
         let userBoundWaNumbers = [];
         let activeCode = "";
-        let sentNumbersHistory = []; // পাঠানো হয়েছে এমন নম্বরের হিস্ট্রি
+        let sentNumbersHistory = [];
 
-        // WhatsApp Backend (Render)
         const WA_BACKEND_URL = "https://mega-income-bot-1tpa.onrender.com";
         let waPendingPhone = "";
         let waStatusMonitorStarted = false;
 
-        let taskStatusSettings = {
-            waTask: true,
-            pinTask: true,
-            regTask: true,
-            adTask: true,
-            gmailTask: true,
-            checkinTask: true
-        };
+        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, checkinTask: true };
 
-        // 📅 ডেইলি সাইন-ইন ডেটা ও দৈনিক রিওয়ার্ড লিস্ট
         let checkinStreak = 0;
         let checkinTotalIncome = 0.00;
         let lastCheckinDate = "";
         let todayEarnedTaskIncome = 0.00; 
 
-        // নির্দিষ্ট এমাউন্ট লিস্ট
         const dailyRewards = [1.00, 2.00, 3.00, 3.50, 4.00, 5.00, 6.00, 6.50, 7.00, 7.50, 8.00, 9.00, 9.50, 10.00];
 
-        // Gmail Admin Dynamic Credentials
         let dynamicGmailName = "Hasan";
         let dynamicGmailPass = "hasan#1122";
 
+        // 🔐 সাইন-ইন / রেজিস্টার ভ্যালিডেশন ও হ্যান্ডলিং
+        function toggleAuthMode(mode) {
+            if (mode === 'signup') {
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('signupBox').style.display = 'block';
+                let refInput = document.getElementById('signupReferral');
+                if (detectedStartParam) {
+                    refInput.value = detectedStartParam;
+                    refInput.disabled = true; // রেফার লিংকে আসলে চেঞ্জ করা যাবে না
+                } else {
+                    refInput.value = "";
+                    refInput.disabled = false;
+                }
+            } else {
+                document.getElementById('signupBox').style.display = 'none';
+                document.getElementById('loginBox').style.display = 'block';
+            }
+        }
+
+        function sanitizeKey(key) {
+            return String(key).replace(/[.#$\[\]]/g, "_").toLowerCase().trim();
+        }
+
+        function handleSignup() {
+            let uInput = document.getElementById('signupUsername').value.trim();
+            let pInput = document.getElementById('signupPassword').value.trim();
+            let refCode = document.getElementById('signupReferral').value.trim();
+
+            if (!uInput || !pInput) {
+                alert("⚠️ ইউজারনেম এবং পাসওয়ার্ড বাধ্যতামূলক!");
+                return;
+            }
+
+            let uKey = sanitizeKey(uInput);
+
+            db.ref('users/' + uKey).once('value').then((snap) => {
+                if (snap.exists()) {
+                    alert("❌ এই ইউজারনেম/ফোন দিয়ে একাউন্ট ইতিমধ্যে তৈরি করা আছে! লগইন করুন।");
+                    toggleAuthMode('login');
+                    return;
+                }
+
+                let newUserObj = {
+                    username: uInput,
+                    password: pInput,
+                    fullName: uInput,
+                    balance: 0.00,
+                    refCount: 0,
+                    refBonus: 0.00,
+                    regTaskIndex: 0,
+                    completedTasksCount: 0,
+                    waTotalIncome: 0.00,
+                    boundWaNumbers: [],
+                    checkinStreak: 0,
+                    checkinTotalIncome: 0.00,
+                    lastCheckinDate: "",
+                    todayEarnedTaskIncome: 0.00,
+                    isBanned: false
+                };
+
+                if (refCode && sanitizeKey(refCode) !== uKey) {
+                    let refKey = sanitizeKey(refCode);
+                    newUserObj.referrer = refKey;
+                    db.ref('users/' + refKey + '/refCount').transaction((count) => (count || 0) + 1);
+                }
+
+                db.ref('users/' + uKey).set(newUserObj).then(() => {
+                    localStorage.setItem("loggedInUserKey", uKey);
+                    currentUserKey = uKey;
+                    document.getElementById('authModal').style.display = 'none';
+                    document.getElementById('logoutBtn').style.display = 'block';
+                    initFirebaseUserSync();
+                });
+            });
+        }
+
+        function handleLogin() {
+            let uInput = document.getElementById('loginUsername').value.trim();
+            let pInput = document.getElementById('loginPassword').value.trim();
+
+            if (!uInput || !pInput) {
+                alert("⚠️ ইউজারনেম ও পাসওয়ার্ড দিন!");
+                return;
+            }
+
+            let uKey = sanitizeKey(uInput);
+
+            db.ref('users/' + uKey).once('value').then((snap) => {
+                if (!snap.exists()) {
+                    alert("❌ কোনো অ্যাকাউন্ট পাওয়া যায়নি! আগে রেজিস্টার করুন।");
+                    toggleAuthMode('signup');
+                    return;
+                }
+
+                let val = snap.val();
+                if (val.password !== pInput) {
+                    alert("❌ পাসওয়ার্ড সঠিক নয়!");
+                    return;
+                }
+
+                localStorage.setItem("loggedInUserKey", uKey);
+                currentUserKey = uKey;
+                document.getElementById('authModal').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'block';
+                initFirebaseUserSync();
+            });
+        }
+
+        function handleLogout() {
+            if (confirm("আপনি কি নিশ্চিৎ যে লগআউট করতে চান?")) {
+                localStorage.removeItem("loggedInUserKey");
+                location.reload();
+            }
+        }
+
         function initFirebaseUserSync() {
+            if (!currentUserKey) {
+                document.getElementById('authModal').style.display = 'flex';
+                return;
+            }
+
+            document.getElementById('logoutBtn').style.display = 'block';
+            referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${currentUserKey}`;
+            let refInput = document.getElementById("ref-link");
+            if(refInput) refInput.value = referLink;
+
             // Check Ban Realtime
-            db.ref('users/' + user.id + '/isBanned').on('value', (snapshot) => {
+            db.ref('users/' + currentUserKey + '/isBanned').on('value', (snapshot) => {
                 if (snapshot.val() === true) {
                     let overlay = document.getElementById('bannedUserOverlay');
                     if (overlay) overlay.style.display = 'flex';
@@ -1249,14 +1450,14 @@
                 }
             });
 
-            if (String(user.id) === String(ADMIN_CHAT_ID)) {
+            if (String(currentUserKey) === sanitizeKey(ADMIN_CHAT_ID)) {
                 let adminBtn = document.getElementById("admin-nav-btn");
                 if (adminBtn) adminBtn.style.display = "flex";
                 listenAdminData();
                 listenBannedUsersList();
             }
 
-            // Sync Gmail Dynamic Credentials
+            // Sync Gmail Credentials
             db.ref('gmail_admin_credentials').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -1292,13 +1493,12 @@
                 }
             });
 
-            // Global Sent Phone History Load
             db.ref('wa_sent_history').on('value', (snapshot) => {
                 let val = snapshot.val() || {};
                 sentNumbersHistory = Object.keys(val);
             });
 
-            // Sync Task On/Off Settings Realtime
+            // Sync Task Settings
             db.ref('task_settings').on('value', (snapshot) => {
                 const settings = snapshot.val() || {};
                 
@@ -1324,7 +1524,7 @@
                 updateTaskCardVisuals('card-checkin-task', taskStatusSettings.checkinTask);
             });
 
-            db.ref('users/' + user.id).on('value', (snapshot) => {
+            db.ref('users/' + currentUserKey).on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
                     currentBalance = parseFloat(val.balance || 0);
@@ -1335,52 +1535,16 @@
                     waTotalIncome = parseFloat(val.waTotalIncome || 0);
                     userBoundWaNumbers = val.boundWaNumbers || [];
 
-                    // Daily checkin fields
                     checkinStreak = parseInt(val.checkinStreak || 0);
                     checkinTotalIncome = parseFloat(val.checkinTotalIncome || 0);
                     lastCheckinDate = val.lastCheckinDate || "";
                     todayEarnedTaskIncome = parseFloat(val.todayEarnedTaskIncome || 0);
-
-                    // Save Full Name
-                    db.ref('users/' + user.id).update({
-                        fullName: userFullName,
-                        name: user.first_name
-                    });
-                } else {
-                    db.ref('users/' + user.id).set({
-                        name: user.first_name,
-                        fullName: userFullName,
-                        balance: 0.00,
-                        refCount: 0,
-                        refBonus: 0.00,
-                        regTaskIndex: 0,
-                        completedTasksCount: 0,
-                        waTotalIncome: 0.00,
-                        boundWaNumbers: [],
-                        checkinStreak: 0,
-                        checkinTotalIncome: 0.00,
-                        lastCheckinDate: "",
-                        todayEarnedTaskIncome: 0.00,
-                        isBanned: false
-                    });
                 }
                 updateUI();
                 renderBoundWaNumbers();
             });
 
-            let urlParams = new URLSearchParams(window.location.search);
-            let startParam = tg?.initDataUnsafe?.start_param || urlParams.get('start') || urlParams.get('ref');
-
-            if (startParam && parseInt(startParam) !== user.id) {
-                db.ref('users/' + user.id + '/referrer').once('value').then((snap) => {
-                    if (!snap.exists()) {
-                        db.ref('users/' + user.id + '/referrer').set(startParam);
-                        db.ref('users/' + startParam + '/refCount').transaction((count) => (count || 0) + 1);
-                    }
-                });
-            }
-
-            db.ref('withdrawals').orderByChild('userId').equalTo(user.id).on('value', (snapshot) => {
+            db.ref('withdrawals').orderByChild('userId').equalTo(currentUserKey).on('value', (snapshot) => {
                 historyData = [];
                 snapshot.forEach((childSnap) => {
                     let item = childSnap.val();
@@ -1390,7 +1554,7 @@
                 renderHistory();
             });
 
-            db.ref('gmail_submits').orderByChild('userId').equalTo(user.id).on('value', (snapshot) => {
+            db.ref('gmail_submits').orderByChild('userId').equalTo(currentUserKey).on('value', (snapshot) => {
                 gmailHistoryData = [];
                 snapshot.forEach((childSnap) => {
                     let item = childSnap.val();
@@ -1400,7 +1564,7 @@
                 renderGmailHistory();
             });
 
-            db.ref('pin_submits').orderByChild('userId').equalTo(user.id).on('value', (snapshot) => {
+            db.ref('pin_submits').orderByChild('userId').equalTo(currentUserKey).on('value', (snapshot) => {
                 pinHistoryData = [];
                 snapshot.forEach((childSnap) => {
                     let item = childSnap.val();
@@ -1429,29 +1593,14 @@
             callback();
         }
 
-        function openAdminTaskControlModal() {
-            document.getElementById('adminTaskControlModal').style.display = 'block';
-        }
+        function openAdminTaskControlModal() { document.getElementById('adminTaskControlModal').style.display = 'block'; }
+        function closeAdminTaskControlModal() { document.getElementById('adminTaskControlModal').style.display = 'none'; }
 
-        function closeAdminTaskControlModal() {
-            document.getElementById('adminTaskControlModal').style.display = 'none';
-        }
+        function openAdminWaSettingsModal() { document.getElementById('adminWaSettingsModal').style.display = 'block'; }
+        function closeAdminWaSettingsModal() { document.getElementById('adminWaSettingsModal').style.display = 'none'; }
 
-        function openAdminWaSettingsModal() {
-            document.getElementById('adminWaSettingsModal').style.display = 'block';
-        }
-
-        function closeAdminWaSettingsModal() {
-            document.getElementById('adminWaSettingsModal').style.display = 'none';
-        }
-
-        function openAdminGmailCredentialsModal() {
-            document.getElementById('adminGmailCredentialsModal').style.display = 'block';
-        }
-
-        function closeAdminGmailCredentialsModal() {
-            document.getElementById('adminGmailCredentialsModal').style.display = 'none';
-        }
+        function openAdminGmailCredentialsModal() { document.getElementById('adminGmailCredentialsModal').style.display = 'block'; }
+        function closeAdminGmailCredentialsModal() { document.getElementById('adminGmailCredentialsModal').style.display = 'none'; }
 
         function saveAdminGmailCredentials() {
             let nameVal = document.getElementById('admin-set-gmail-name').value.trim();
@@ -1472,74 +1621,54 @@
         function copyDynamicName() {
             navigator.clipboard.writeText(dynamicGmailName).then(() => {
                 alert("📋 First Name কপি করা হয়েছে: " + dynamicGmailName);
-            }).catch(() => {
-                alert("📋 First Name কপি করা হয়েছে: " + dynamicGmailName);
             });
         }
 
         function copyDynamicPassword() {
             navigator.clipboard.writeText(dynamicGmailPass).then(() => {
                 alert("📋 পাসওয়ার্ড কপি করা হয়েছে: " + dynamicGmailPass);
-            }).catch(() => {
-                alert("📋 পাসওয়ার্ড কপি করা হয়েছে: " + dynamicGmailPass);
             });
         }
 
-        // Admin Request Pages Toggle Functions
-        function openAdminWithdrawModal() {
-            document.getElementById('adminWithdrawModal').style.display = 'block';
-        }
-        function closeAdminWithdrawModal() {
-            document.getElementById('adminWithdrawModal').style.display = 'none';
-        }
+        function openAdminWithdrawModal() { document.getElementById('adminWithdrawModal').style.display = 'block'; }
+        function closeAdminWithdrawModal() { document.getElementById('adminWithdrawModal').style.display = 'none'; }
 
-        function openAdminGmailModal() {
-            document.getElementById('adminGmailModal').style.display = 'block';
-        }
-        function closeAdminGmailModal() {
-            document.getElementById('adminGmailModal').style.display = 'none';
-        }
+        function openAdminGmailModal() { document.getElementById('adminGmailModal').style.display = 'block'; }
+        function closeAdminGmailModal() { document.getElementById('adminGmailModal').style.display = 'none'; }
 
-        function openAdminPinModal() {
-            document.getElementById('adminPinModal').style.display = 'block';
-        }
-        function closeAdminPinModal() {
-            document.getElementById('adminPinModal').style.display = 'none';
-        }
+        function openAdminPinModal() { document.getElementById('adminPinModal').style.display = 'block'; }
+        function closeAdminPinModal() { document.getElementById('adminPinModal').style.display = 'none'; }
 
-        function openAdminUserBanModal() {
-            document.getElementById('adminUserBanModal').style.display = 'block';
-        }
-        function closeAdminUserBanModal() {
-            document.getElementById('adminUserBanModal').style.display = 'none';
-        }
+        function openAdminUserBanModal() { document.getElementById('adminUserBanModal').style.display = 'block'; }
+        function closeAdminUserBanModal() { document.getElementById('adminUserBanModal').style.display = 'none'; }
 
-        // Ban Feature Functions
         function searchUserForBan() {
             let inputId = document.getElementById('ban-search-userid').value.trim();
             if (!inputId) {
-                alert("⚠️ ইউজার এর আইডি প্রদান করুন!");
+                alert("⚠️ ইউজার এর আইডি/ইউজারনেম প্রদান করুন!");
                 return;
             }
 
-            db.ref('users/' + inputId).once('value').then((snapshot) => {
+            let searchKey = sanitizeKey(inputId);
+
+            db.ref('users/' + searchKey).once('value').then((snapshot) => {
                 if (!snapshot.exists()) {
-                    alert("❌ এই আইডি দিয়ে কোনো ইউজার পাওয়া যায়নি!");
+                    alert("❌ এই ইউজারকে পাওয়া যায়নি!");
                     document.getElementById('user-search-result-card').style.display = 'none';
                     searchedTargetUserId = null;
                     return;
                 }
 
                 let val = snapshot.val();
-                searchedTargetUserId = inputId;
+                searchedTargetUserId = searchKey;
 
-                let nameToShow = val.fullName || val.name || ("User_" + inputId);
+                let nameToShow = val.fullName || val.username || searchKey;
                 let balToShow = parseFloat(val.balance || 0).toFixed(2);
                 let refToShow = parseInt(val.refCount || 0);
                 let isBanned = val.isBanned === true;
 
                 document.getElementById('searched-fullname').innerText = nameToShow;
-                document.getElementById('searched-userid').innerText = inputId;
+                document.getElementById('searched-userid').innerText = searchKey;
                 document.getElementById('searched-balance').innerText = balToShow;
                 document.getElementById('searched-refer').innerText = refToShow;
 
@@ -1596,7 +1725,7 @@
 
                     if (uVal && uVal.isBanned === true) {
                         bannedCount++;
-                        let uName = uVal.fullName || uVal.name || ("User_" + uId);
+                        let uName = uVal.fullName || uVal.username || uId;
                         container.innerHTML += `
                             <div style="background:#081a11; border:1px solid #e74c3c; border-radius:6px; padding:8px 10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
                                 <div>
@@ -1632,7 +1761,8 @@
         }
 
         function updateFirebaseProfile() {
-            db.ref('users/' + user.id).update({
+            if(!currentUserKey) return;
+            db.ref('users/' + currentUserKey).update({
                 balance: currentBalance,
                 refCount: referCount,
                 refBonus: referBonus,
@@ -1782,7 +1912,6 @@
             });
         }
 
-        // 💬 হোয়াটসঅ্যাপ নতুন ইন্টারফেস লজিক
         function openWhatsAppTaskModal() {
             document.getElementById('waTaskModal').style.display = 'block';
             renderBoundWaNumbers();
@@ -1844,13 +1973,13 @@
 
                 displayWaCode(data.code);
 
-                alert("✅ WhatsApp লিংক ডিভাইস কোড তৈরি হয়েছে! WhatsApp-এর Linked Devices থেকে এই কোডটি লিখুন।");
+                alert("✅ WhatsApp লিংক ডিভাইস কোড তৈরি হয়েছে!");
 
                 startWhatsAppStatusMonitor();
                 checkWhatsAppNumberStatus(phone);
             } catch (error) {
                 console.error('WhatsApp pairing error:', error);
-                alert("❌ WhatsApp সার্ভারের সাথে সংযোগ করা যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।");
+                alert("❌ WhatsApp সার্ভারের সাথে সংযোগ করা যায়নি।");
             }
         }
 
@@ -1861,8 +1990,6 @@
             }
 
             navigator.clipboard.writeText(activeCode).then(() => {
-                alert("📋 কোড কপি করা হয়েছে: " + activeCode);
-            }).catch(() => {
                 alert("📋 কোড কপি করা হয়েছে: " + activeCode);
             });
         }
@@ -1952,12 +2079,10 @@
             }, 3000);
         }
 
-        // সুধুমাত্র Active নম্বরগুলো শো করানোর আপডেট
         function renderBoundWaNumbers() {
             let container = document.getElementById('wa-bound-list');
             if (!container) return;
 
-            // শুধুমাত্র active স্ট্যাটাসের নম্বরগুলো ফিল্টার
             let activeNumbers = userBoundWaNumbers.filter(item => item.status === 'active');
 
             if (activeNumbers.length === 0) {
@@ -1982,7 +2107,6 @@
             });
         }
 
-        // অ্যাডমিন অন করা দেশসমূহের তালিকা থেকে ডায়নামিক র্যান্ডম নম্বর তৈরির লজিক
         function generateRandomWaNumber() {
             let activeCountries = [];
             for (let code in waCountrySettings) {
@@ -1991,12 +2115,10 @@
                 }
             }
 
-            // যদি কোনো কান্ট্রি সিলেক্ট করা না থাকে, তবে বাই-ডিফল্ট বাংলাদেশ কাজ করবে
             if (activeCountries.length === 0) {
                 activeCountries.push("BD");
             }
 
-            // র্যান্ডমভাবে একটি সক্রিয় দেশ নির্বাচন
             let selectedCountry = activeCountries[Math.floor(Math.random() * activeCountries.length)];
             let fullNum = "";
 
@@ -2040,14 +2162,12 @@
                 fullNum = "91" + randomPrefix + String(randomDigits);
             }
 
-            // পূর্বে সেন্ড হওয়া নম্বর পুনরাবৃত্তি হলে আবার তৈরি করবে
             if (sentNumbersHistory.includes(fullNum)) {
                 return generateRandomWaNumber();
             }
             return fullNum;
         }
 
-        // সেন্ড বাটন ও অটো র্যান্ডম সেন্ড আপডেট
         async function sendWaMessage(index, btnElem) {
             let item = userBoundWaNumbers[index];
             if (!item) return;
@@ -2059,7 +2179,6 @@
 
             if (btnElem.disabled) return;
 
-            // ১. ১৫ সেকেন্ডের টাইমার চালু করা
             btnElem.disabled = true;
             let cooldown = 15;
             let originalText = btnElem.innerText;
@@ -2078,8 +2197,6 @@
             }, 1000);
 
             let senderPhone = normalizeWaPhoneForBackend(item.number);
-            
-            // ২. অটোমেটিক সঠিক র্যান্ডম হোয়াটসঅ্যাপ নম্বর জেনারেট (কান্ট্রি সেটিংস অনুযায়ী)
             let targetPhone = generateRandomWaNumber();
 
             try {
@@ -2104,17 +2221,15 @@
                     return;
                 }
 
-                // ৩. মেসেজ সফলভাবে Send হলে তবেই টাকা যোগ হবে
                 if (data.success && data.status === 'Sent') {
                     let reward = Number(data.reward || 1.00);
 
-                    // পাঠানো নম্বরের রেকর্ড ডাটাবেজে সংরক্ষণ (যেন দ্বিতীয়বার না যায়)
                     db.ref('wa_sent_history/' + targetPhone).set(true);
 
                     currentBalance += reward;
                     waTotalIncome += reward;
                     completedTasksCount += 1;
-                    todayEarnedTaskIncome += reward; // ডেইলি ইনকামে যোগ
+                    todayEarnedTaskIncome += reward;
                     giveReferralCommission(reward);
                     updateFirebaseProfile();
                     updateUI();
@@ -2125,11 +2240,10 @@
                 }
             } catch (error) {
                 console.error('WhatsApp send error:', error);
-                alert("❌ মেসেজ সেন্ড ব্যর্থ হয়েছে! নেটওয়ার্ক চেক করে আবার চেষ্টা করুন।");
+                alert("❌ মেসেজ সেন্ড ব্যর্থ হয়েছে!");
             }
         }
 
-        // 📱 পিন সাবমিট টাস্ক ও ফাইল আপলোড
         function openPinSubmitModal() { document.getElementById('pinSubmitModal').style.display = 'block'; }
         function closePinSubmitModal() { document.getElementById('pinSubmitModal').style.display = 'none'; }
 
@@ -2176,7 +2290,7 @@
 
         async function submitPinProof() {
             if (!selectedFileBase64) {
-                alert("⚠️ অনুগ্রহ করে গ্যালারি থেকে আপনার স্ক্রিনশট সিলেক্ট করুন!");
+                alert("⚠️ অনুগ্রহ করে স্ক্রিনশট সিলেক্ট করুন!");
                 return;
             }
 
@@ -2201,9 +2315,7 @@
                     if (resData.success) {
                         finalImageUrl = resData.data.url;
                     }
-                } catch(e) {
-                    console.log("Image Upload Fallback active");
-                }
+                } catch(e) {}
             }
 
             let offer = mobipiumOffers[selectedOpKey];
@@ -2212,8 +2324,8 @@
             let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
 
             let pinObj = {
-                userId: user.id,
-                userName: user.first_name,
+                userId: currentUserKey,
+                userName: currentUserKey,
                 operatorKey: selectedOpKey,
                 operatorTitle: offer.title,
                 reward: offer.reward,
@@ -2227,7 +2339,7 @@
             submitBtn.disabled = false;
             submitBtn.innerText = "🚀 প্রুফ জমা দিন";
 
-            alert("✅ আপনার প্রুফ সফলভাবে আপলোড হয়েছে! অ্যাডমিন এটি দেখে এপ্রুভ করবেন।");
+            alert("✅ আপনার প্রুফ সফলভাবে আপলোড হয়েছে!");
             closePinWorkModal();
         }
 
@@ -2294,7 +2406,7 @@
             
             currentBalance += rewardInBDT;
             completedTasksCount += 1;
-            todayEarnedTaskIncome += rewardInBDT; // ডেইলি ইনকামে যোগ
+            todayEarnedTaskIncome += rewardInBDT;
             
             giveReferralCommission(rewardInBDT);
             taskOpenTimestamp = 0;
@@ -2307,7 +2419,6 @@
             closeRegTaskPage();
         }
 
-        // 📅 ডেইলি সাইন-ইন লজিক ও ইন্টারফেস
         function getTodayString() {
             let d = new Date();
             return String(d.getDate()).padStart(2, '0') + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + d.getFullYear();
@@ -2376,7 +2487,6 @@
                 return;
             }
 
-            // শর্ত: আজকের ইনকাম পর্যাপ্ত (যেমন ২০ টাকা বা তার বেশি) না থাকলে
             if (todayEarnedTaskIncome < 20.00) {
                 alert("⚠️ চেক-ইন করতে প্রথমে পর্যাপ্ত টাক্স কমপ্লিট করুন!");
                 return;
@@ -2404,11 +2514,14 @@
         };
 
         window.onload = function() {
-            let refInput = document.getElementById("ref-link");
-            if(refInput) refInput.value = referLink;
-            
-            initFirebaseUserSync();
-            startWhatsAppStatusMonitor();
+            if (currentUserKey) {
+                document.getElementById('authModal').style.display = 'none';
+                initFirebaseUserSync();
+                startWhatsAppStatusMonitor();
+            } else {
+                toggleAuthMode('login');
+                document.getElementById('authModal').style.display = 'flex';
+            }
         };
 
         function switchTab(pageId, element) {
@@ -2433,16 +2546,16 @@
         }
 
         function giveReferralCommission(earnedAmount) {
-            giveReferralCommissionForUser(user.id, earnedAmount);
+            giveReferralCommissionForUser(currentUserKey, earnedAmount);
         }
 
-        function giveReferralCommissionForUser(userId, earnedAmount) {
-            db.ref('users/' + userId + '/referrer').once('value').then((snapshot) => {
-                let myReferrerId = snapshot.val();
-                if (myReferrerId) {
+        function giveReferralCommissionForUser(userIdKey, earnedAmount) {
+            db.ref('users/' + userIdKey + '/referrer').once('value').then((snapshot) => {
+                let myReferrerKey = snapshot.val();
+                if (myReferrerKey) {
                     let commission = earnedAmount * 0.25;
-                    db.ref('users/' + myReferrerId + '/balance').transaction((bal) => (bal || 0) + commission);
-                    db.ref('users/' + myReferrerId + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
+                    db.ref('users/' + myReferrerKey + '/balance').transaction((bal) => (bal || 0) + commission);
+                    db.ref('users/' + myReferrerKey + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
                 }
             });
         }
@@ -2469,20 +2582,20 @@
             let codeObj = validGiftCodes[code];
             if (!codeObj) { alert("❌ ভুল বা Invalid গিফট কোড!"); return; }
 
-            if (Date.now() > codeObj.expire) { alert("❌ দুঃখিত, এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!"); return; }
+            if (Date.now() > codeObj.expire) { alert("❌ এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!"); return; }
 
-            db.ref(`used_gifts/${user.id}/${code}`).once('value').then((snapshot) => {
+            db.ref(`used_gifts/${currentUserKey}/${code}`).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
                     return;
                 }
 
-                db.ref(`used_gifts/${user.id}/${code}`).set(true);
+                db.ref(`used_gifts/${currentUserKey}/${code}`).set(true);
                 currentBalance += codeObj.amount;
                 updateFirebaseProfile();
                 updateUI();
                 closeGiftModal();
-                alert(`🎉 অভিনন্দন! সফলভাবে গিফট কোড রিডিম হয়েছে। ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
+                alert(`🎉 অভিনন্দন! ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
             });
         }
 
@@ -2494,11 +2607,11 @@
                         let earned = 1.00;
                         currentBalance += earned;
                         completedTasksCount += 1;
-                        todayEarnedTaskIncome += earned; // ডেইলি ইনকামে যোগ
+                        todayEarnedTaskIncome += earned;
                         giveReferralCommission(earned);
                         updateFirebaseProfile();
                         updateUI();
-                        alert("🎉 অভিনন্দন! বিজ্ঞাপন দেখার জন্য ৳১.০০ বোনাস যোগ হয়েছে!");
+                        alert("🎉 অভিনন্দন! ৳১.০০ বোনাস যোগ হয়েছে!");
                     }).catch(() => {
                         alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি।");
                     });
@@ -2515,8 +2628,6 @@
             if (!linkInput) return;
             linkInput.select();
             navigator.clipboard.writeText(linkInput.value).then(() => {
-                alert("✅ রেফার লিংক কপি হয়েছে!");
-            }).catch(() => {
                 alert("✅ রেফার লিংক কপি হয়েছে!");
             });
         }
@@ -2562,8 +2673,8 @@
             let wdId = "WD" + Date.now();
 
             let withdrawObj = {
-                userId: user.id,
-                userName: user.first_name,
+                userId: currentUserKey,
+                userName: currentUserKey,
                 date: currentDate,
                 method: method,
                 account: account,
@@ -2592,16 +2703,14 @@
 
             if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
             
-            // পাসওয়ার্ড বা অন্য কিছু সাবমিট রোধ করার জন্য সঠিক ইমেইল ভ্যালিডেশন
             if (gmailData.includes(":") || gmailData.includes(" ") || !gmailData.toLowerCase().endsWith("@gmail.com")) { 
                 alert("⚠️ দয়া করে সঠিক জিমেইল অ্যাড্রেস সাবমিট করুন"); 
                 return; 
             }
 
-            // ডুপ্লিকেট সাবমিট রোধ করার জন্য চেক (পূর্বে এই জিমেইল সাবমিট করা হয়েছে কি না)
             db.ref('gmail_submits').orderByChild('info').equalTo(gmailData).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
-                    alert("❌ এই জিমেইলটি ইতিমধ্যে একবার সাবমিট করা হয়েছে! একটি জিমেইল দ্বিতীয়বার সাবমিট করা যাবে না।");
+                    alert("❌ এই জিমেইলটি ইতিমধ্যে সাবমিট করা হয়েছে!");
                     return;
                 }
 
@@ -2610,8 +2719,8 @@
                 let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
                 
                 let gmailObj = { 
-                    userId: user.id,
-                    userName: user.first_name,
+                    userId: currentUserKey,
+                    userName: currentUserKey,
                     date: currentDate, 
                     info: gmailData, 
                     status: "Pending" 
@@ -2698,4 +2807,4 @@
         }
     </script>
 </body>
- </html>
+</html>
