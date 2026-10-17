@@ -175,6 +175,49 @@
             outline: none;
         }
 
+        .wheel-container {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            margin: 15px auto;
+            border-radius: 50%;
+            padding: 8px;
+            background: linear-gradient(145deg, #27ae60, #113626);
+            box-shadow: 0 0 20px rgba(39, 174, 96, 0.5), inset 0 0 10px #000;
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 28px solid #ff3333;
+            z-index: 30;
+            filter: drop-shadow(0 3px 3px rgba(0,0,0,0.7));
+        }
+        .wheel-center-cap {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 45px;
+            height: 45px;
+            background: radial-gradient(circle, #ffcc00, #d35400);
+            border-radius: 50%;
+            z-index: 25;
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+        #wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);
+        }
+
         .stats-container {
             display: flex;
             gap: 10px;
@@ -330,46 +373,6 @@
             margin-bottom: 8px;
             border: 1px solid #3d3d3d;
         }
-
-        /* 📅 Daily Check-in Grid Styling */
-        .checkin-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin: 15px 0;
-        }
-        .checkin-day-box {
-            background: #0d271a;
-            border: 1px solid #27ae60;
-            border-radius: 8px;
-            padding: 8px 4px;
-            text-align: center;
-            position: relative;
-        }
-        .checkin-day-box.active-day {
-            background: linear-gradient(135deg, #f39c12, #d35400);
-            border-color: #ffcc00;
-            color: #fff;
-            font-weight: bold;
-            box-shadow: 0 0 8px rgba(243, 156, 18, 0.6);
-        }
-        .checkin-day-box.claimed-day {
-            background: #1b4d3e;
-            border-color: #2ecc71;
-            opacity: 0.7;
-        }
-        .checkin-day-num {
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 2px;
-        }
-        .checkin-day-amt {
-            font-size: 11px;
-            color: #ffcc00;
-        }
-        .checkin-day-box.active-day .checkin-day-amt {
-            color: #ffffff;
-        }
     </style>
 </head>
 <body>
@@ -421,94 +424,56 @@
         <div id="task" class="page">
 
             <!-- ১. হোয়াটসঅ্যাপ অটোমেটিক টাস্ক -->
-            <div class="card" id="card-wa-task" style="border: 2px solid #25d366; display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="WhatsApp Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #25d366; margin-bottom: 4px;">💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">হোয়াটসঅ্যাপ অ্যাকাউন্ট বাঁধুন এবং নির্দিষ্ট মেসেজ পাঠিয়ে আয় করুন!</p>
-                    <button class="btn btn-whatsapp" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
-                </div>
+            <div class="card" id="card-wa-task" style="border: 2px solid #25d366;">
+                <h3 style="color: #25d366; margin-bottom: 8px;">💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</h3>
+                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">
+                    হোয়াটসঅ্যাপ অ্যাকাউন্ট বাঁধুন এবং নির্দিষ্ট মেসেজ পাঠিয়ে আয় করুন!
+                </p>
+                <button class="btn btn-whatsapp" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
             </div>
             
             <!-- ২. পিন সাবমিট টাস্ক -->
-            <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f; display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Pin Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
-                </div>
+            <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f;">
+                <h3 style="color: #ffcc00; margin-bottom: 8px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
+                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
+                <button class="btn btn-main" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
             </div>
 
             <!-- ৩. রেজিস্ট্রেশন টাস্ক -->
-            <div class="card" id="card-reg-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Registration Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
-                </div>
+            <div class="card" id="card-reg-task">
+                <h3 style="color: #ffcc00; margin-bottom: 8px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
+                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
+                <button class="btn btn-main" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
             </div>
 
             <!-- ৪. ভিডিও এডস টাস্ক -->
-            <div class="card" id="card-ad-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/2983/2983797.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Video Ads Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📺 ভিডিও এডস টাস্ক</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
-                </div>
+            <div class="card" id="card-ad-task">
+                <h3 style="color: #ffcc00; margin-bottom: 8px;">📺 ভিডিও এডস টাস্ক</h3>
+                <p style="color: #ccc; margin-bottom: 12px; font-size: 13px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
+                <button class="btn btn-main" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
             </div>
 
             <!-- ৫. জিমেইল সেল টাস্ক -->
-            <div class="card" id="card-gmail-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Gmail Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📧 জিমেইল সেল টাস্ক</h3>
-                    <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক জিমেইল সেল করার জন্য ১৫ টাকা পাবেন।</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('gmailTask', openGmailSellPage)">জিমেইল সেল করুন</button>
-                </div>
+            <div class="card" id="card-gmail-task">
+                <h3 style="color: #ffcc00; margin-bottom: 5px;">📧 জিমেইল সেল টাস্ক</h3>
+                <p style="color: #ffffff; margin-bottom: 15px; font-size: 14px;">
+                    প্রতি সঠিক জিমেইল সেল করার জন্য ১৫ টাকা পাবেন।
+                </p>
+                <button class="btn btn-main" onclick="handleTaskClick('gmailTask', openGmailSellPage)">জিমেইল সেল করুন</button>
             </div>
 
-            <!-- ৬. ডেইলি সাইন-ইন টাস্ক (স্পিনের জায়গায় নতুন) -->
-            <div class="card" id="card-checkin-task" style="border: 2px solid #f39c12; display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Daily Checkin Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📅 ডেইলি সাইন-ইন / চেক-ইন</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিদিন সাইন-ইন করে ফ্রি ক্যাশ রিওয়ার্ড নিন!</p>
-                    <button class="btn btn-gift" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('checkinTask', openDailyCheckinModal)">📅 ডেইলি সাইন-ইন করুন</button>
+            <!-- লকি স্পিন -->
+            <div class="card" id="card-spin-task">
+                <h3 style="color: #ffcc00; margin-bottom: 8px;">🌀 লকি স্পিন</h3>
+                <p id="spin-status-text" style="color: #f39c12; margin-bottom: 8px; font-size: 13px; font-weight: bold;">
+                    টাস্ক বাকি: <span id="tasks-left-count" style="color:#ffcc00;">5</span>টি
+                </p>
+                <div class="wheel-container">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel-center-cap"></div>
+                    <canvas id="wheel-canvas" width="400" height="400"></canvas>
                 </div>
-            </div>
-        </div>
-
-        <!-- 📅 ডেইলি সাইন-ইন মডাল/পপআপ -->
-        <div id="dailyCheckinModal" class="modal-overlay">
-            <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center; color:#fff;">
-                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #27ae60; padding-bottom:8px; margin-bottom:15px;">
-                    <h3 style="color:#ffcc00; font-size:18px;">📅 ডেইলি সাইন-ইন</h3>
-                    <button onclick="closeDailyCheckinModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">বন্ধ করুন ✖</button>
-                </div>
-
-                <!-- চেক-ইন স্ট্যাটিস্টিক্স -->
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
-                    <div style="flex:1; background:#0d271a; border:1px solid #27ae60; border-radius:8px; padding:10px;">
-                        <span style="font-size:11px; color:#aaa; display:block;">বর্তমান স্ট্রিক</span>
-                        <span id="checkin-streak-val" style="font-size:18px; font-weight:bold; color:#ffcc00;">0 দিন</span>
-                    </div>
-                    <div style="flex:1; background:#0d271a; border:1px solid #27ae60; border-radius:8px; padding:10px;">
-                        <span style="font-size:11px; color:#aaa; display:block;">মোট চেক-ইন ইনকাম</span>
-                        <span style="font-size:18px; font-weight:bold; color:#2ecc71;">৳ <span id="checkin-total-val">0.00</span></span>
-                    </div>
-                </div>
-
-                <p style="font-size:12px; color:#ddd; margin-bottom:10px;">প্রতিদিন নিয়মিত সাইন-ইন করে রিওয়ার্ড আনলক করুন:</p>
-
-                <!-- চেক-ইন দিনসমূহের গ্রিড -->
-                <div class="checkin-grid" id="checkin-grid-container"></div>
-
-                <button class="btn btn-gift" id="btn-do-checkin" onclick="claimDailyCheckinReward()" style="margin-top:15px;">
-                    ✍️ এখনই সাইন-ইন করুন
-                </button>
+                <button class="btn btn-main" id="spin-btn-element" onclick="handleTaskClick('spinTask', playSpinTask)" style="margin-top: 15px;">🌀 স্পিন করুন</button>
             </div>
         </div>
 
@@ -642,50 +607,18 @@
 
         <!-- জিমেইল সেল ওভারলে -->
         <div id="gmailSellOverlay" class="modal-overlay">
-            <div style="background:#113626; border: 2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
-                
-                <!-- একদম উপরে ডানপাশে বন্ধ করুন বাটন ও হেডার -->
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27ae60; padding-bottom: 8px; margin-bottom: 15px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 28px; height: 28px;" alt="Gmail">
-                        <h2 style="color: #ffcc00; font-size: 18px; margin: 0;">Gmail Sell</h2>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="background: #a3e4d7; color: #0c2317; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 13px;">Rate: ৳15</div>
-                        <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">বন্ধ করুন ✖</button>
-                    </div>
+            <div style="background:#06120b; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
+                <div style="text-align: right; margin-bottom: 10px;">
+                    <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer;">বন্ধ করুন ✖</button>
                 </div>
-
-                <!-- ফার্স্ট নাম ও পাসওয়ার্ড এবং কপি বক্স -->
-                <div style="background: linear-gradient(135deg, #fef9e7, #fcf3cf); border: 1.5px dashed #f39c12; border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: left;">
-                    
-                    <!-- ফার্স্ট নাম অপশন সোজা ডানে কপি বাটন -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #f39c12; padding-bottom: 8px;">
-                        <div>
-                            <span style="color: #b9770e; font-size: 12px; font-weight: bold; display: block;">👤 First Name:</span>
-                            <span id="display-gmail-name-val" style="color: #27ae60; font-size: 15px; font-weight: bold;">Hasan</span>
-                        </div>
-                        <button onclick="copyDynamicName()" style="background: #e5e8e8; border: 1px solid #bdc3c7; color: #333; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
-                    </div>
-
-                    <!-- পাসওয়ার্ড অপশন সোজা ডানে কপি বাটন -->
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <span style="color: #b9770e; font-size: 12px; font-weight: bold; display: block;">🔑 Password to use:</span>
-                            <span id="display-gmail-password" style="color: #c0392b; font-size: 15px; font-weight: bold; word-break: break-all;">hasan#1122</span>
-                        </div>
-                        <button onclick="copyDynamicPassword()" style="background: #e5e8e8; border: 1px solid #bdc3c7; color: #333; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
-                    </div>
-
+                <h2 style="color: #ffcc00; text-align: center; font-size: 22px; margin: 10px 0 5px 0;">📧 জিমেইল সাবমিট করুন</h2>
+                <p style="color: #a5b3aa; text-align: center; font-size: 13px; margin: 0 0 25px 0;">সঠিক তথ্য সাবমিট করে ভেরিফিকেশনের জন্য অপেক্ষা করুন।</p>
+                <div style="margin: 20px 0; text-align: left;">
+                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 14px; font-weight: bold;">আপনার জিমেইল ও পাসওয়ার্ড লিখুন:</label>
+                    <span style="color: #ffcc00; display: block; margin-bottom: 10px; font-size: 12px;">(নিয়ম: ফার্স্ট নাম:Hasan পাসওয়ার্ড:hasan#1122 নিচে আপনার তৈরি ইমেইল দিয়ে সাবমিট করুন )</span>
+                    <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com : Password" class="input-control">
                 </div>
-
-                <!-- জিমেইল ইনপুট ঘর -->
-                <div style="margin: 15px 0; text-align: left;">
-                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 13px;">আপনার জিমেইল লিখুন (পাসওয়ার্ড বা অন্য কিছু নয়):</label>
-                    <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com" class="input-control">
-                </div>
-
-                <div style="margin-top: 15px;">
+                <div style="margin-top: 20px;">
                     <button onclick="handleGmailSubmit()" class="btn btn-main" style="margin-bottom:10px;">🚀 সাবমিট করুন</button>
                     <button onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')" class="btn btn-official" style="margin-bottom:15px;">🎬 কাজের ভিডিও দেখুন</button>
                     <hr style="border: 0; border-top: 1px solid #1a3325; margin-bottom: 15px;">
@@ -693,10 +626,9 @@
                         <button onclick="toggleWorkHistory()" style="background-color: #495057; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 আমার সাবমিট করা জিমেইল লিস্ট</button>
                     </div>
                 </div>
-
                 <div id="gmailHistorySection" style="display: none; margin-top: 20px; background-color: #0d1e15; padding: 15px; border-radius: 8px; border: 1px solid #1a3325;">
                     <h4 style="color: #ffcc00; margin: 0 0 12px 0; font-size: 14px;">আপনার জিমেইল সাবমিট রিপোর্ট:</h4>
-                    <ul id="gmailHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.6; width: 100%;"></ul>
+                    <ul id="gmailHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.8;"></ul>
                 </div>
             </div>
         </div>
@@ -801,11 +733,6 @@
                     💬 WhatsApp টাস্ক & কান্ট্রি সেটিংস
                 </button>
 
-                <!-- 📧 Admin Gmail Credentials Setting Button -->
-                <button class="btn btn-official" onclick="openAdminGmailCredentialsModal()" style="margin-bottom: 12px;">
-                    📧 Gmail টাস্ক নাম ও পাসওয়ার্ড সেটআপ
-                </button>
-
                 <!-- 🚫 User Ban Control Button -->
                 <button class="btn btn-support" onclick="openAdminUserBanModal()" style="margin-bottom: 12px;">
                     🚫 User Ban Control
@@ -829,28 +756,6 @@
             </div>
         </div>
 
-    </div>
-
-    <!-- 📧 Admin Gmail Credentials Control Modal -->
-    <div id="adminGmailCredentialsModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto; color:#fff;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">📧 জিমেইল নাম ও পাসওয়ার্ড সেটআপ</h3>
-                <button onclick="closeAdminGmailCredentialsModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
-            </div>
-            
-            <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">First Name (নাম):</label>
-                <input type="text" id="admin-set-gmail-name" class="input-control" placeholder="যেমন: Hasan">
-            </div>
-
-            <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">Password (পাসওয়ার্ড):</label>
-                <input type="text" id="admin-set-gmail-pass" class="input-control" placeholder="যেমন: hasan#1122">
-            </div>
-            
-            <button class="btn btn-main" onclick="saveAdminGmailCredentials()" style="margin-bottom:15px;">💾 সেভ করুন</button>
-        </div>
     </div>
 
     <!-- 🚫 User Ban Control Modal (নতুন ইউজার ব্যান পেজ) -->
@@ -1061,9 +966,9 @@
             </div>
 
             <div class="switch-container">
-                <span>📅 ডেইলি সাইন-ইন টাস্ক</span>
+                <span>🌀 লকি স্পিন টাস্ক</span>
                 <label class="switch">
-                    <input type="checkbox" id="sw-checkin" onchange="toggleTaskStatus('checkinTask', this.checked)">
+                    <input type="checkbox" id="sw-spin" onchange="toggleTaskStatus('spinTask', this.checked)">
                     <span class="slider"></span>
                 </label>
             </div>
@@ -1185,6 +1090,8 @@
 
         let currentTaskIndex = 0;
         let taskOpenTimestamp = 0;
+        let isSpinning = false;
+        let currentWheelRotation = 0;
         let selectedOpKey = null;
         let selectedFileBase64 = null;
 
@@ -1211,7 +1118,7 @@
         let sentNumbersHistory = []; // পাঠানো হয়েছে এমন নম্বরের হিস্ট্রি
 
         // WhatsApp Backend (Render)
-        const WA_BACKEND_URL = "https://mega-income-bot-1tpa.onrender.com";
+        const WA_BACKEND_URL = "https://mega-income-bot-1-zuli.onrender.com";
         let waPendingPhone = "";
         let waStatusMonitorStarted = false;
 
@@ -1221,21 +1128,8 @@
             regTask: true,
             adTask: true,
             gmailTask: true,
-            checkinTask: true
+            spinTask: true
         };
-
-        // 📅 ডেইলি সাইন-ইন ডেটা ও দৈনিক রিওয়ার্ড লিস্ট
-        let checkinStreak = 0;
-        let checkinTotalIncome = 0.00;
-        let lastCheckinDate = "";
-        let todayEarnedTaskIncome = 0.00; 
-
-        // নির্দিষ্ট এমাউন্ট লিস্ট
-        const dailyRewards = [1.00, 2.00, 3.00, 3.50, 4.00, 5.00, 6.00, 6.50, 7.00, 7.50, 8.00, 9.00, 9.50, 10.00];
-
-        // Gmail Admin Dynamic Credentials
-        let dynamicGmailName = "Hasan";
-        let dynamicGmailPass = "hasan#1122";
 
         function initFirebaseUserSync() {
             // Check Ban Realtime
@@ -1255,21 +1149,6 @@
                 listenAdminData();
                 listenBannedUsersList();
             }
-
-            // Sync Gmail Dynamic Credentials
-            db.ref('gmail_admin_credentials').on('value', (snapshot) => {
-                let val = snapshot.val();
-                if (val) {
-                    if (val.name) dynamicGmailName = val.name;
-                    if (val.password) dynamicGmailPass = val.password;
-                    
-                    if (document.getElementById('display-gmail-password')) document.getElementById('display-gmail-password').innerText = dynamicGmailPass;
-                    if (document.getElementById('display-gmail-name-val')) document.getElementById('display-gmail-name-val').innerText = dynamicGmailName;
-                    
-                    if (document.getElementById('admin-set-gmail-name')) document.getElementById('admin-set-gmail-name').value = dynamicGmailName;
-                    if (document.getElementById('admin-set-gmail-pass')) document.getElementById('admin-set-gmail-pass').value = dynamicGmailPass;
-                }
-            });
 
             // Sync WhatsApp Message Settings
             db.ref('wa_settings').on('value', (snapshot) => {
@@ -1307,21 +1186,21 @@
                 taskStatusSettings.regTask = settings.regTask !== false;
                 taskStatusSettings.adTask = settings.adTask !== false;
                 taskStatusSettings.gmailTask = settings.gmailTask !== false;
-                taskStatusSettings.checkinTask = settings.checkinTask !== false;
+                taskStatusSettings.spinTask = settings.spinTask !== false;
 
                 if (document.getElementById('sw-pin')) document.getElementById('sw-pin').checked = taskStatusSettings.pinTask;
                 if (document.getElementById('sw-reg')) document.getElementById('sw-reg').checked = taskStatusSettings.regTask;
                 if (document.getElementById('sw-ad')) document.getElementById('sw-ad').checked = taskStatusSettings.adTask;
                 if (document.getElementById('sw-gmail')) document.getElementById('sw-gmail').checked = taskStatusSettings.gmailTask;
                 if (document.getElementById('sw-wa')) document.getElementById('sw-wa').checked = taskStatusSettings.waTask;
-                if (document.getElementById('sw-checkin')) document.getElementById('sw-checkin').checked = taskStatusSettings.checkinTask;
+                if (document.getElementById('sw-spin')) document.getElementById('sw-spin').checked = taskStatusSettings.spinTask;
 
                 updateTaskCardVisuals('card-wa-task', taskStatusSettings.waTask);
                 updateTaskCardVisuals('card-pin-task', taskStatusSettings.pinTask);
                 updateTaskCardVisuals('card-reg-task', taskStatusSettings.regTask);
                 updateTaskCardVisuals('card-ad-task', taskStatusSettings.adTask);
                 updateTaskCardVisuals('card-gmail-task', taskStatusSettings.gmailTask);
-                updateTaskCardVisuals('card-checkin-task', taskStatusSettings.checkinTask);
+                updateTaskCardVisuals('card-spin-task', taskStatusSettings.spinTask);
             });
 
             db.ref('users/' + user.id).on('value', (snapshot) => {
@@ -1334,12 +1213,6 @@
                     completedTasksCount = parseInt(val.completedTasksCount || 0);
                     waTotalIncome = parseFloat(val.waTotalIncome || 0);
                     userBoundWaNumbers = val.boundWaNumbers || [];
-
-                    // Daily checkin fields
-                    checkinStreak = parseInt(val.checkinStreak || 0);
-                    checkinTotalIncome = parseFloat(val.checkinTotalIncome || 0);
-                    lastCheckinDate = val.lastCheckinDate || "";
-                    todayEarnedTaskIncome = parseFloat(val.todayEarnedTaskIncome || 0);
 
                     // Save Full Name
                     db.ref('users/' + user.id).update({
@@ -1357,10 +1230,6 @@
                         completedTasksCount: 0,
                         waTotalIncome: 0.00,
                         boundWaNumbers: [],
-                        checkinStreak: 0,
-                        checkinTotalIncome: 0.00,
-                        lastCheckinDate: "",
-                        todayEarnedTaskIncome: 0.00,
                         isBanned: false
                     });
                 }
@@ -1443,46 +1312,6 @@
 
         function closeAdminWaSettingsModal() {
             document.getElementById('adminWaSettingsModal').style.display = 'none';
-        }
-
-        function openAdminGmailCredentialsModal() {
-            document.getElementById('adminGmailCredentialsModal').style.display = 'block';
-        }
-
-        function closeAdminGmailCredentialsModal() {
-            document.getElementById('adminGmailCredentialsModal').style.display = 'none';
-        }
-
-        function saveAdminGmailCredentials() {
-            let nameVal = document.getElementById('admin-set-gmail-name').value.trim();
-            let passVal = document.getElementById('admin-set-gmail-pass').value.trim();
-            if (!nameVal || !passVal) {
-                alert("⚠️ নাম এবং পাসওয়ার্ড উভয় ঘর পূরণ করুন!");
-                return;
-            }
-            db.ref('gmail_admin_credentials').set({
-                name: nameVal,
-                password: passVal
-            }).then(() => {
-                alert("✅ জিমেইল নাম ও পাসওয়ার্ড সফলভাবে আপডেট হয়েছে!");
-                closeAdminGmailCredentialsModal();
-            });
-        }
-
-        function copyDynamicName() {
-            navigator.clipboard.writeText(dynamicGmailName).then(() => {
-                alert("📋 First Name কপি করা হয়েছে: " + dynamicGmailName);
-            }).catch(() => {
-                alert("📋 First Name কপি করা হয়েছে: " + dynamicGmailName);
-            });
-        }
-
-        function copyDynamicPassword() {
-            navigator.clipboard.writeText(dynamicGmailPass).then(() => {
-                alert("📋 পাসওয়ার্ড কপি করা হয়েছে: " + dynamicGmailPass);
-            }).catch(() => {
-                alert("📋 পাসওয়ার্ড কপি করা হয়েছে: " + dynamicGmailPass);
-            });
         }
 
         // Admin Request Pages Toggle Functions
@@ -1639,11 +1468,7 @@
                 regTaskIndex: currentTaskIndex,
                 completedTasksCount: completedTasksCount,
                 waTotalIncome: waTotalIncome,
-                boundWaNumbers: userBoundWaNumbers,
-                checkinStreak: checkinStreak,
-                checkinTotalIncome: checkinTotalIncome,
-                lastCheckinDate: lastCheckinDate,
-                todayEarnedTaskIncome: todayEarnedTaskIncome
+                boundWaNumbers: userBoundWaNumbers
             });
         }
 
@@ -1722,7 +1547,7 @@
                             <div class="admin-item-card">
                                 <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
                                 <div>📅 <b>তারিখ:</b> ${item.date}</div>
-                                <div>📧 <b>জিমেইল:</b> <code style="color:#ffcc00; word-break: break-all;">${item.info}</code></div>
+                                <div>📧 <b>জিমেইল:</b> <code style="color:#ffcc00;">${item.info}</code></div>
                                 <div style="display:flex; gap:8px; margin-top:8px;">
                                     <button onclick="adminApproveGmail('${key}', '${item.userId}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Accept</button>
                                     <button onclick="adminRejectGmail('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">❌ Reject</button>
@@ -1740,7 +1565,6 @@
             db.ref('pin_submits/' + key).update({ status: "Success" }).then(() => {
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + parseFloat(reward));
                 db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
-                db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').transaction((inc) => (inc || 0) + parseFloat(reward));
                 giveReferralCommissionForUser(targetUserId, reward);
                 alert("✅ পিন সাবমিট টাস্ক এপ্রুভ করা হয়েছে!");
             });
@@ -1770,7 +1594,6 @@
             db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount }).then(() => {
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + gmailAmount);
                 db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
-                db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').transaction((inc) => (inc || 0) + gmailAmount);
                 giveReferralCommissionForUser(targetUserId, gmailAmount);
                 alert("✅ জিমেইল টাস্ক সফল হয়েছে!");
             });
@@ -2114,7 +1937,6 @@
                     currentBalance += reward;
                     waTotalIncome += reward;
                     completedTasksCount += 1;
-                    todayEarnedTaskIncome += reward; // ডেইলি ইনকামে যোগ
                     giveReferralCommission(reward);
                     updateFirebaseProfile();
                     updateUI();
@@ -2294,7 +2116,6 @@
             
             currentBalance += rewardInBDT;
             completedTasksCount += 1;
-            todayEarnedTaskIncome += rewardInBDT; // ডেইলি ইনকামে যোগ
             
             giveReferralCommission(rewardInBDT);
             taskOpenTimestamp = 0;
@@ -2307,109 +2128,67 @@
             closeRegTaskPage();
         }
 
-        // 📅 ডেইলি সাইন-ইন লজিক ও ইন্টারফেস
-        function getTodayString() {
-            let d = new Date();
-            return String(d.getDate()).padStart(2, '0') + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + d.getFullYear();
-        }
-
-        function openDailyCheckinModal() {
-            document.getElementById('dailyCheckinModal').style.display = 'block';
-            renderCheckinGrid();
-        }
-
-        function closeDailyCheckinModal() {
-            document.getElementById('dailyCheckinModal').style.display = 'none';
-        }
-
-        function renderCheckinGrid() {
-            let container = document.getElementById('checkin-grid-container');
-            let streakValEl = document.getElementById('checkin-streak-val');
-            let totalValEl = document.getElementById('checkin-total-val');
-            let checkinBtn = document.getElementById('btn-do-checkin');
-
-            if (streakValEl) streakValEl.innerText = `${checkinStreak} দিন`;
-            if (totalValEl) totalValEl.innerText = checkinTotalIncome.toFixed(2);
-
-            let today = getTodayString();
-            let isAlreadyClaimedToday = (lastCheckinDate === today);
-
-            if (checkinBtn) {
-                if (isAlreadyClaimedToday) {
-                    checkinBtn.disabled = true;
-                    checkinBtn.innerText = "✅ আজকের সাইন-ইন সম্পূর্ণ হয়েছে";
-                } else {
-                    checkinBtn.disabled = false;
-                    checkinBtn.innerText = "✍️ এখনই সাইন-ইন করুন";
-                }
-            }
-
-            if (!container) return;
-            container.innerHTML = "";
-
-            let currentDayIndex = isAlreadyClaimedToday ? checkinStreak : (checkinStreak + 1);
-
-            for (let i = 1; i <= 15; i++) {
-                let rewardAmt = dailyRewards[Math.min(i - 1, dailyRewards.length - 1)];
-                let boxClass = "checkin-day-box";
-
-                if (i < currentDayIndex) {
-                    boxClass += " claimed-day";
-                } else if (i === currentDayIndex) {
-                    boxClass += " active-day";
-                }
-
-                container.innerHTML += `
-                    <div class="${boxClass}">
-                        <div class="checkin-day-num">দিন ${i}</div>
-                        <div class="checkin-day-amt">৳${rewardAmt.toFixed(rewardAmt % 1 === 0 ? 0 : 2)}</div>
-                    </div>
-                `;
-            }
-        }
-
-        function claimDailyCheckinReward() {
-            let today = getTodayString();
-
-            if (lastCheckinDate === today) {
-                alert("⚠️ আপনি আজকের সাইন-ইন ইতিমধ্যে সম্পন্ন করেছেন!");
-                return;
-            }
-
-            // শর্ত: আজকের ইনকাম পর্যাপ্ত (যেমন ২০ টাকা বা তার বেশি) না থাকলে
-            if (todayEarnedTaskIncome < 20.00) {
-                alert("⚠️ চেক-ইন করতে প্রথমে পর্যাপ্ত টাক্স কমপ্লিট করুন!");
-                return;
-            }
-
-            let nextStreak = checkinStreak + 1;
-            let rewardAmt = dailyRewards[Math.min(nextStreak - 1, dailyRewards.length - 1)];
-
-            currentBalance += rewardAmt;
-            checkinStreak = nextStreak;
-            checkinTotalIncome += rewardAmt;
-            lastCheckinDate = today;
-
-            updateFirebaseProfile();
-            updateUI();
-            renderCheckinGrid();
-
-            alert(`🎉 অভিনন্দন! দিন ${checkinStreak}-এর সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
-        }
-
         const validGiftCodes = {
             "SIYAM1122": { amount: 50.00, expire: Date.now() + 600000 * 7 },
             "SPESHALGIFT50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
             "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
         };
 
+        const spinPrizes = [
+            { amount: 0.15, label: "৳ 0.15", color: "#16a085", weight: 65 },
+            { amount: 0.25, label: "৳ 0.25", color: "#27ae60", weight: 64 },
+            { amount: 0.50, label: "৳ 0.50", color: "#2980b9", weight: 10 },
+            { amount: 1.00, label: "৳ 1.00", color: "#8e44ad", weight: 4 },
+            { amount: 3.00, label: "৳ 3.00", color: "#f39c12", weight: 1 },
+            { amount: 0.10, label: "৳ 0.10", color: "#2c3e50", weight: 65 }
+        ];
+
         window.onload = function() {
             let refInput = document.getElementById("ref-link");
             if(refInput) refInput.value = referLink;
             
             initFirebaseUserSync();
+            drawProfessionalWheel();
             startWhatsAppStatusMonitor();
         };
+
+        function drawProfessionalWheel() {
+            const canvas = document.getElementById("wheel-canvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            const numSlices = spinPrizes.length;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = canvas.width / 2 - 5;
+            const sliceAngle = (2 * Math.PI) / numSlices;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            spinPrizes.forEach((slice, i) => {
+                const angle = i * sliceAngle;
+                ctx.beginPath();
+                ctx.fillStyle = slice.color;
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, angle, angle + sliceAngle);
+                ctx.lineTo(centerX, centerY);
+                ctx.fill();
+
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#ffffff";
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(angle + sliceAngle / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 20px 'Segoe UI', sans-serif";
+                ctx.shadowColor = "rgba(0,0,0,0.8)";
+                ctx.shadowBlur = 4;
+                ctx.fillText(slice.label, radius - 25, 7);
+                ctx.restore();
+            });
+        }
 
         function switchTab(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -2424,12 +2203,34 @@
             let balEl = document.getElementById("balance-val");
             let refEl = document.getElementById("ref-count");
             let refBonEl = document.getElementById("ref-bonus-val");
+            let statusText = document.getElementById("spin-status-text");
+            let tasksLeftEl = document.getElementById("tasks-left-count");
+            let spinBtn = document.getElementById("spin-btn-element");
             let waIncomeEl = document.getElementById("wa-income-val");
 
             if (balEl) balEl.innerText = currentBalance.toFixed(2);
             if (refEl) refEl.innerText = referCount;
             if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
             if (waIncomeEl) waIncomeEl.innerText = waTotalIncome.toFixed(2);
+
+            let needed = 5 - (completedTasksCount % 5);
+            if (completedTasksCount > 0 && completedTasksCount % 5 === 0) {
+                needed = 0;
+            }
+
+            if (tasksLeftEl) tasksLeftEl.innerText = needed;
+
+            if (spinBtn) {
+                if (needed === 0 && !isSpinning) {
+                    spinBtn.disabled = false;
+                    spinBtn.innerText = "🌀 স্পিন করুন";
+                    if (statusText) statusText.innerHTML = "🎉 <span style='color:#2ecc71;'>আপনি ১টি ফ্রি স্পিন পেয়েছেন!</span>";
+                } else if (!isSpinning) {
+                    spinBtn.disabled = true;
+                    spinBtn.innerText = "🔒 স্পিন লক করা আছে";
+                    if (statusText) statusText.innerHTML = `টাস্ক বাকি: <span id="tasks-left-count" style="color:#ffcc00;">${needed}</span>টি`;
+                }
+            }
         }
 
         function giveReferralCommission(earnedAmount) {
@@ -2494,7 +2295,6 @@
                         let earned = 1.00;
                         currentBalance += earned;
                         completedTasksCount += 1;
-                        todayEarnedTaskIncome += earned; // ডেইলি ইনকামে যোগ
                         giveReferralCommission(earned);
                         updateFirebaseProfile();
                         updateUI();
@@ -2508,6 +2308,63 @@
             } catch (e) {
                 alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে।");
             }
+        }
+
+        function playSpinTask() {
+            let needed = 5 - (completedTasksCount % 5);
+            if (completedTasksCount > 0 && completedTasksCount % 5 === 0) {
+                needed = 0;
+            }
+
+            if (needed > 0) {
+                alert(`⚠️ স্পিন খুলতে অন্তত আরও ${needed}টি টাস্ক সম্পন্ন করুন!`);
+                return;
+            }
+
+            if (isSpinning) return;
+            isSpinning = true;
+
+            let spinBtn = document.getElementById("spin-btn-element");
+            if (spinBtn) { spinBtn.disabled = true; spinBtn.innerText = "🌀 ঘুরছে..."; }
+
+            let totalWeight = spinPrizes.reduce((sum, item) => sum + item.weight, 0);
+            let randomNum = Math.random() * totalWeight;
+            let currentWeightSum = 0;
+            let selectedIndex = 0;
+
+            for (let i = 0; i < spinPrizes.length; i++) {
+                currentWeightSum += spinPrizes[i].weight;
+                if (randomNum <= currentWeightSum) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
+            let chosenPrize = spinPrizes[selectedIndex];
+            let numSlices = spinPrizes.length;
+            let sliceDeg = 360 / numSlices;
+            
+            let targetSliceAngle = (numSlices - selectedIndex) * sliceDeg - (sliceDeg / 2);
+            let extraRounds = 360 * 5; 
+            currentWheelRotation += extraRounds + (targetSliceAngle - (currentWheelRotation % 360));
+
+            let canvas = document.getElementById("wheel-canvas");
+            if(canvas) {
+                canvas.style.transform = `rotate(${currentWheelRotation}deg)`;
+            }
+            
+            setTimeout(() => {
+                currentBalance += chosenPrize.amount;
+                completedTasksCount -= 5;
+                if (completedTasksCount < 0) completedTasksCount = 0;
+
+                giveReferralCommission(chosenPrize.amount);
+                isSpinning = false;
+
+                updateFirebaseProfile();
+                updateUI();
+                alert(`🎉 অভিনন্দন! স্পিন করে পেয়েছেন ৳${chosenPrize.amount.toFixed(2)}`);
+            }, 4000);
         }
 
         function copyReferLink() {
@@ -2591,36 +2448,23 @@
             var gmailData = gmailInput ? gmailInput.value.trim() : "";
 
             if (gmailData === "") { alert("অনুগ্রহ করে ফাঁকা ঘরটি পূরণ করুন!"); return; }
+            if (!gmailData.toLowerCase().includes("@gmail.com")) { alert("Your Email Wrong, শেষে @gmail.com থাকতে হবে!"); return; }
             
-            // পাসওয়ার্ড বা অন্য কিছু সাবমিট রোধ করার জন্য সঠিক ইমেইল ভ্যালিডেশন
-            if (gmailData.includes(":") || gmailData.includes(" ") || !gmailData.toLowerCase().endsWith("@gmail.com")) { 
-                alert("⚠️ শুধু সঠিক জিমেইল অ্যাড্রেস সাবমিট করুন (পাসওয়ার্ড বা অন্য কিছু দেওয়া নিষেধ)!"); 
-                return; 
-            }
+            let gId = "GM" + Date.now();
+            let nowDate = new Date();
+            let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+            
+            let gmailObj = { 
+                userId: user.id,
+                userName: user.first_name,
+                date: currentDate, 
+                info: gmailData, 
+                status: "Pending" 
+            };
 
-            // ডুপ্লিকেট সাবমিট রোধ করার জন্য চেক (পূর্বে এই জিমেইল সাবমিট করা হয়েছে কি না)
-            db.ref('gmail_submits').orderByChild('info').equalTo(gmailData).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    alert("❌ এই জিমেইলটি ইতিমধ্যে একবার সাবমিট করা হয়েছে! একটি জিমেইল দ্বিতীয়বার সাবমিট করা যাবে না।");
-                    return;
-                }
-
-                let gId = "GM" + Date.now();
-                let nowDate = new Date();
-                let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
-                
-                let gmailObj = { 
-                    userId: user.id,
-                    userName: user.first_name,
-                    date: currentDate, 
-                    info: gmailData, 
-                    status: "Pending" 
-                };
-
-                db.ref('gmail_submits/' + gId).set(gmailObj);
-                alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
-                if (gmailInput) gmailInput.value = "";
-            });
+            db.ref('gmail_submits/' + gId).set(gmailObj);
+            alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
+            if (gmailInput) gmailInput.value = "";
         }
 
         function renderGmailHistory() {
@@ -2640,32 +2484,21 @@
                 let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
                 
                 if (item.status === "Pending") {
-                    statusBadge = `
-                        <div style="text-align: right; flex-shrink: 0; min-width: 90px;">
-                            <span style='color: #f1c40f; font-weight: bold; font-size: 13px; display: block;'>Pending</span>
-                        </div>`;
+                    statusBadge = `<div style="text-align: right;"><span style='color: #f1c40f; font-weight: bold;'>Pending</span></div>`;
                 } else if (item.status === "Success" || item.status === "Approved") {
-                    statusBadge = `
-                        <div style="text-align: right; flex-shrink: 0; min-width: 90px;">
-                            <span style='color: #2ecc71; font-weight: bold; font-size: 13px; display: block;'>Success</span>
-                            <span style='color: #2ecc71; font-size: 11px; display: block;'>(+৳${displayAmount})</span>
-                        </div>`;
+                    statusBadge = `<div style="text-align: right;"><span style='color: #2ecc71; font-weight: bold;'>Success (+৳${displayAmount})</span></div>`;
                 } else {
-                    statusBadge = `
-                        <div style="text-align: right; flex-shrink: 0; min-width: 90px;">
-                            <span style='color: #e74c3c; font-weight: bold; font-size: 13px; display: block;'>Rejected</span>
-                        </div>`;
+                    statusBadge = `<div style="text-align: right;"><span style='color: #e74c3c; font-weight: bold;'>Rejected</span></div>`;
                 }
                 
                 let li = document.createElement('li');
                 li.style.borderBottom = "1px dashed #1a3325";
-                li.style.padding = "10px 0";
+                li.style.padding = "8px 0";
                 li.style.display = "flex";
                 li.style.justifyContent = "space-between";
                 li.style.alignItems = "center";
-                li.style.gap = "10px";
                 
-                li.innerHTML = `<span style='color: #ffffff; word-break: break-all; flex-grow: 1; font-size: 12px;'>📧 ${item.info}</span>${statusBadge}`;
+                li.innerHTML = `<span style='color: #ffffff;'>📧 ${item.info}</span>${statusBadge}`;
                 gmailHistoryLog.appendChild(li);
             });
         } 
@@ -2698,4 +2531,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
