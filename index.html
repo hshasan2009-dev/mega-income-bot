@@ -428,7 +428,7 @@
 <body>
 
     <!-- Sign In / Sign Up Screen -->
-    <div id="authScreen" style="display:none;">
+    <div id="authScreen" style="display:flex;">
         <div class="auth-card">
             <div class="auth-logo">
                 <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" alt="Logo">
@@ -976,7 +976,7 @@
             <!-- ব্যান ইউজার লিস্ট -->
             <h4 style="color:#ffcc00; text-align:left; margin-bottom:10px; font-size:14px;">📜 ব্যান ইউজারদের তালিকা:</h4>
             <div id="banned-users-list" style="max-height: 250px; overflow-y: auto;">
-                <p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
+                <p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
             </div>
         </div>
     </div>
@@ -1327,7 +1327,7 @@
             }
         }
 
-        // সঠিক ও কাজ করার মতো Sign Up এবং Log In লজিক
+        // সুনির্দিষ্ট এবং নিখুঁত অথেন্টিকেশন লজিক
         function handleAuthSubmit() {
             let inputVal = document.getElementById('authUserInput').value.trim();
             let passVal = document.getElementById('authPasswordInput').value.trim();
@@ -1354,8 +1354,9 @@
                         referrer: startParam || ""
                     };
                     userRef.set(newUserData).then(() => {
-                        localStorage.setItem('mega_logged_user', safeKey);
+                        localStorage.setItem('mega_logged_account', safeKey);
                         if (startParam && parseInt(startParam) !== user.id) {
+                            db.ref('users/' + user.id + '/referrer').set(startParam);
                             db.ref('users/' + startParam + '/refCount').transaction((count) => (count || 0) + 1);
                         }
                         alert("✅ সফলভাবে অ্যাকাউন্ট তৈরি (Sign Up) হয়েছে!");
@@ -1372,7 +1373,7 @@
                         alert("❌ পাসওয়ার্ড ভুল হয়েছে!");
                         return;
                     }
-                    localStorage.setItem('mega_logged_user', safeKey);
+                    localStorage.setItem('mega_logged_account', safeKey);
                     alert("✅ সফলভাবে Log In হয়েছে!");
                     document.getElementById('authScreen').style.display = 'none';
                     initFirebaseUserSync();
@@ -1381,15 +1382,15 @@
         }
 
         function logoutAccount() {
-            localStorage.removeItem('mega_logged_user');
+            localStorage.removeItem('mega_logged_account');
             document.getElementById('authScreen').style.display = 'flex';
             document.getElementById('authUserInput').value = "";
             document.getElementById('authPasswordInput').value = "";
         }
 
         window.onload = function() {
-            let loggedUser = localStorage.getItem('mega_logged_user');
-            if (!loggedUser) {
+            let loggedAccount = localStorage.getItem('mega_logged_account');
+            if (!loggedAccount) {
                 document.getElementById('authScreen').style.display = 'flex';
             } else {
                 document.getElementById('authScreen').style.display = 'none';
@@ -1515,15 +1516,6 @@
                 updateUI();
                 renderBoundWaNumbers();
             });
-
-            if (startParam && parseInt(startParam) !== user.id) {
-                db.ref('users/' + user.id + '/referrer').once('value').then((snap) => {
-                    if (!snap.exists()) {
-                        db.ref('users/' + user.id + '/referrer').set(startParam);
-                        db.ref('users/' + startParam + '/refCount').transaction((count) => (count || 0) + 1);
-                    }
-                });
-            }
 
             db.ref('withdrawals').orderByChild('userId').equalTo(user.id).on('value', (snapshot) => {
                 historyData = [];
