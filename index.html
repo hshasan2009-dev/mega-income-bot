@@ -673,9 +673,9 @@
                     </div>
                 </div>
 
-                <div id="gmailHistorySection" style="display: none; margin-top: 20px; background-color: #0d1e15; padding: 15px; border-radius: 8px; border: 1px solid #1a3325; overflow-x: auto;">
+                <div id="gmailHistorySection" style="display: none; margin-top: 20px; background-color: #0d1e15; padding: 15px; border-radius: 8px; border: 1px solid #1a3325;">
                     <h4 style="color: #ffcc00; margin: 0 0 12px 0; font-size: 14px;">আপনার জিমেইল সাবমিট রিপোর্ট:</h4>
-                    <ul id="gmailHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.8; width: 100%;"></ul>
+                    <ul id="gmailHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.6; width: 100%;"></ul>
                 </div>
             </div>
         </div>
@@ -2630,21 +2630,32 @@
                 let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
                 
                 if (item.status === "Pending") {
-                    statusBadge = `<div style="text-align: right; flex-shrink: 0; margin-left: 10px;"><span style='color: #f1c40f; font-weight: bold;'>Pending</span></div>`;
+                    statusBadge = `
+                        <div style="text-align: right; flex-shrink: 0; min-width: 90px;">
+                            <span style='color: #f1c40f; font-weight: bold; font-size: 13px; display: block;'>Pending</span>
+                        </div>`;
                 } else if (item.status === "Success" || item.status === "Approved") {
-                    statusBadge = `<div style="text-align: right; flex-shrink: 0; margin-left: 10px;"><span style='color: #2ecc71; font-weight: bold;'>Success (+৳${displayAmount})</span></div>`;
+                    statusBadge = `
+                        <div style="text-align: right; flex-shrink: 0; min-width: 90px;">
+                            <span style='color: #2ecc71; font-weight: bold; font-size: 13px; display: block;'>Success</span>
+                            <span style='color: #2ecc71; font-size: 11px; display: block;'>(+৳${displayAmount})</span>
+                        </div>`;
                 } else {
-                    statusBadge = `<div style="text-align: right; flex-shrink: 0; margin-left: 10px;"><span style='color: #e74c3c; font-weight: bold;'>Rejected</span></div>`;
+                    statusBadge = `
+                        <div style="text-align: right; flex-shrink: 0; min-width: 90px;">
+                            <span style='color: #e74c3c; font-weight: bold; font-size: 13px; display: block;'>Rejected</span>
+                        </div>`;
                 }
                 
                 let li = document.createElement('li');
                 li.style.borderBottom = "1px dashed #1a3325";
-                li.style.padding = "8px 0";
+                li.style.padding = "10px 0";
                 li.style.display = "flex";
                 li.style.justifyContent = "space-between";
                 li.style.alignItems = "center";
+                li.style.gap = "10px";
                 
-                li.innerHTML = `<span style='color: #ffffff; word-break: break-all;'>📧 ${item.info}</span>${statusBadge}`;
+                li.innerHTML = `<span style='color: #ffffff; word-break: break-all; flex-grow: 1; font-size: 12px;'>📧 ${item.info}</span>${statusBadge}`;
                 gmailHistoryLog.appendChild(li);
             });
         } 
