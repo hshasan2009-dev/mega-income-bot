@@ -34,6 +34,9 @@
             font-weight: bold;
             border-bottom: 2px solid #27ae60;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .container {
             padding: 15px;
@@ -425,7 +428,7 @@
 <body>
 
     <!-- Sign In / Sign Up Screen -->
-    <div id="authScreen">
+    <div id="authScreen" style="display:none;">
         <div class="auth-card">
             <div class="auth-logo">
                 <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" alt="Logo">
@@ -469,7 +472,8 @@
     </div>
 
     <div class="top-title-bar">
-        🚀 Mega Income Bot
+        <span>🚀 Mega Income Bot</span>
+        <button onclick="logoutAccount()" style="background: #e74c3c; color: #fff; border: none; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">🚪 Log Out</button>
     </div>
 
     <div class="container">
@@ -972,7 +976,7 @@
             <!-- ব্যান ইউজার লিস্ট -->
             <h4 style="color:#ffcc00; text-align:left; margin-bottom:10px; font-size:14px;">📜 ব্যান ইউজারদের তালিকা:</h4>
             <div id="banned-users-list" style="max-height: 250px; overflow-y: auto;">
-                <p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
+                <p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
             </div>
         </div>
     </div>
@@ -1296,7 +1300,6 @@
         let dynamicGmailName = "Hasan";
         let dynamicGmailPass = "hasan#1122";
 
-        // Auth Mode (Log In vs Sign Up)
         let isSignUpMode = false;
 
         function toggleAuthMode(event) {
@@ -1324,7 +1327,7 @@
             }
         }
 
-        // রিয়েল সাইন ইন ও সাইন আপ লজিক
+        // সঠিক ও কাজ করার মতো Sign Up এবং Log In লজিক
         function handleAuthSubmit() {
             let inputVal = document.getElementById('authUserInput').value.trim();
             let passVal = document.getElementById('authPasswordInput').value.trim();
@@ -1334,7 +1337,6 @@
                 return;
             }
 
-            // ফায়ারবেসে ইউজার অ্যাকাউন্ট চেক বা তৈরি করা
             let safeKey = inputVal.replace(/[^a-zA-Z0-9]/g, "_");
             let userRef = db.ref('custom_accounts/' + safeKey);
 
@@ -1344,7 +1346,6 @@
                         alert("❌ এই নম্বর বা ইউজারনেম দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট রয়েছে! অনুগ্রহ করে লগইন করুন।");
                         return;
                     }
-                    // নতুন অ্যাকাউন্ট তৈরি
                     let newUserData = {
                         loginId: inputVal,
                         password: passVal,
@@ -1353,6 +1354,7 @@
                         referrer: startParam || ""
                     };
                     userRef.set(newUserData).then(() => {
+                        localStorage.setItem('mega_logged_user', safeKey);
                         if (startParam && parseInt(startParam) !== user.id) {
                             db.ref('users/' + startParam + '/refCount').transaction((count) => (count || 0) + 1);
                         }
@@ -1361,7 +1363,6 @@
                         initFirebaseUserSync();
                     });
                 } else {
-                    // লগইন লজিক
                     if (!snapshot.exists()) {
                         alert("❌ এই অ্যাকাউন্টটি পাওয়া যায়নি! প্রথমে Sign Up করুন।");
                         return;
@@ -1371,12 +1372,34 @@
                         alert("❌ পাসওয়ার্ড ভুল হয়েছে!");
                         return;
                     }
+                    localStorage.setItem('mega_logged_user', safeKey);
                     alert("✅ সফলভাবে Log In হয়েছে!");
                     document.getElementById('authScreen').style.display = 'none';
                     initFirebaseUserSync();
                 }
             });
         }
+
+        function logoutAccount() {
+            localStorage.removeItem('mega_logged_user');
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('authUserInput').value = "";
+            document.getElementById('authPasswordInput').value = "";
+        }
+
+        window.onload = function() {
+            let loggedUser = localStorage.getItem('mega_logged_user');
+            if (!loggedUser) {
+                document.getElementById('authScreen').style.display = 'flex';
+            } else {
+                document.getElementById('authScreen').style.display = 'none';
+                initFirebaseUserSync();
+            }
+
+            let refInput = document.getElementById("ref-link");
+            if(refInput) { refInput.value = referLink; refInput.setAttribute("readonly", true); }
+            startWhatsAppStatusMonitor();
+        };
 
         function initFirebaseUserSync() {
             db.ref('users/' + user.id + '/isBanned').on('value', (snapshot) => {
@@ -2173,11 +2196,6 @@
             "SIYAM1122": { amount: 50.00, expire: Date.now() + 600000 * 7 },
             "SPESHALGIFT50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
             "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
-        };
-
-        window.onload = function() {
-            let refInput = document.getElementById("ref-link");
-            if(refInput) { refInput.value = referLink; refInput.setAttribute("readonly", true); }
         };
 
         function switchTab(pageId, element) {
