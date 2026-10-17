@@ -462,6 +462,15 @@
             text-decoration: none;
             cursor: pointer;
         }
+        .forgot-pass-link {
+            display: block;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #e74c3c;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -481,6 +490,7 @@
             <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••">
             
             <button class="auth-btn" onclick="handleLogin()">LOG IN</button>
+            <a class="forgot-pass-link" onclick="openTelegramLink('https://t.me/hshasan2009')">🔑 Forgot Password? Contact Support</a>
             <div class="auth-switch">Don't have an account? <a onclick="toggleAuthMode('signup')">Sign Up</a></div>
         </div>
 
@@ -849,6 +859,11 @@
                         <div class="stat-label">মোট রেফার বোনাস</div>
                     </div>
                 </div>
+
+                <div class="input-group">
+                    <label>আপনার ইউনিক রেফার কোড (ID):</label>
+                    <input type="text" id="user-ref-code" class="input-control" readonly style="font-weight:bold; color:#ffcc00; text-align:center;" value="তৈরি হচ্ছে...">
+                </div>
                 
                 <div class="input-group">
                     <label>আপনার রেফার লিংক:</label>
@@ -924,6 +939,11 @@
                     🚫 User Ban Control
                 </button>
 
+                <!-- ✏️ অ্যাকাউন্ট তথ্য এডিট ও রিকভারি বাটন -->
+                <button class="btn btn-gift" onclick="openAdminAccountEditModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #27ae60, #113626); border: 1px solid #2ecc71;">
+                    ✏️ অ্যাকাউন্ট তথ্য এডিট ও রিকভারি
+                </button>
+
                 <button class="btn btn-main" onclick="openAdminWithdrawModal()" style="margin-bottom: 12px;">
                     💳 Withdraw Requests List
                 </button>
@@ -938,6 +958,47 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- ✏️ Admin User Edit & Recovery Modal -->
+    <div id="adminAccountEditModal" class="modal-overlay">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
+                <h3 style="color:#ffcc00; font-size:16px;">✏️ অ্যাকাউন্ট তথ্য এডিট ও রিকভারি</h3>
+                <button onclick="closeAdminAccountEditModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <input type="text" id="edit-search-userid" class="input-control" placeholder="User ID / Phone / Username লিখুন" style="flex:1;">
+                <button onclick="searchUserForEdit()" style="background:#27ae60; color:#fff; border:none; padding:0 15px; border-radius:8px; font-weight:bold; cursor:pointer;">🔍 Search</button>
+            </div>
+
+            <div id="user-edit-card" style="display:none; background:#081a11; border:1px solid #27ae60; padding:15px; border-radius:8px; text-align:left;">
+                <div style="font-size:13px; color:#ffcc00; font-weight:bold; margin-bottom:10px;">👤 ইউজার ডিটেইলস সম্পাদন করুন:</div>
+                
+                <div class="input-group">
+                    <label style="color:#aaa;">ইউজারনেম / ফোন নম্বর:</label>
+                    <input type="text" id="edit-field-username" class="input-control">
+                </div>
+
+                <div class="input-group">
+                    <label style="color:#aaa;">নতুন পাসওয়ার্ড:</label>
+                    <input type="text" id="edit-field-password" class="input-control" placeholder="নতুন পাসওয়ার্ড দিন">
+                </div>
+
+                <div class="input-group">
+                    <label style="color:#aaa;">১০-ডিজিট রেফার কোড (User ID):</label>
+                    <input type="text" id="edit-field-refcode" class="input-control">
+                </div>
+
+                <div class="input-group">
+                    <label style="color:#aaa;">ব্যালেন্স (৳):</label>
+                    <input type="number" id="edit-field-balance" class="input-control">
+                </div>
+
+                <button onclick="saveUserEditChanges()" class="btn btn-main" style="margin-top:10px;">💾 আপডেট সেভ করুন</button>
+            </div>
+        </div>
     </div>
 
     <!-- 📧 Admin Gmail Credentials Control Modal -->
@@ -1244,9 +1305,9 @@
         }
 
         let currentUserKey = localStorage.getItem("loggedInUserKey") || null;
+        let userReferralCode = "";
         let detectedStartParam = null;
 
-        // Auto Catch Referral Parameter
         let urlParams = new URLSearchParams(window.location.search);
         detectedStartParam = tg?.initDataUnsafe?.start_param || urlParams.get('startapp') || urlParams.get('start') || urlParams.get('ref');
 
@@ -1258,6 +1319,11 @@
             } else {
                 window.open(url, '_blank');
             }
+        }
+
+        // 🎲 ১০ ডিজিটের ইউনিক র্যান্ডম ইউজার আইডি জেনারেটর
+        function generate10DigitRandomId() {
+            return Math.floor(1000000000 + Math.random() * 9000000000).toString();
         }
 
         const mobipiumOffers = {
@@ -1288,6 +1354,7 @@
         let selectedOpKey = null;
         let selectedFileBase64 = null;
         let searchedTargetUserId = null;
+        let searchedEditTargetUserKey = null;
 
         let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
         let waCountrySettings = { BD: true, US: false, MY: false, BR: false, GB: false, SA: false, AE: false, IN: false };
@@ -1313,7 +1380,6 @@
         let dynamicGmailName = "Hasan";
         let dynamicGmailPass = "hasan#1122";
 
-        // 🔐 সাইন-ইন / রেজিস্টার ভ্যালিডেশন ও হ্যান্ডলিং
         function toggleAuthMode(mode) {
             if (mode === 'signup') {
                 document.getElementById('loginBox').style.display = 'none';
@@ -1321,7 +1387,7 @@
                 let refInput = document.getElementById('signupReferral');
                 if (detectedStartParam) {
                     refInput.value = detectedStartParam;
-                    refInput.disabled = true; // রেফার লিংকে আসলে চেঞ্জ করা যাবে না
+                    refInput.disabled = true;
                 } else {
                     refInput.value = "";
                     refInput.disabled = false;
@@ -1342,7 +1408,7 @@
             let refCode = document.getElementById('signupReferral').value.trim();
 
             if (!uInput || !pInput) {
-                alert("⚠️ ইউজারনেম এবং পাসওয়ার্ড বাধ্যতামূলক!");
+                alert("⚠️ ইউজারনেম/ফোন এবং পাসওয়ার্ড বাধ্যতামূলক!");
                 return;
             }
 
@@ -1355,10 +1421,14 @@
                     return;
                 }
 
+                // ১০ ডিজিটের ইউনিক রেফার কোড তৈরি
+                let randomRefCode = generate10DigitRandomId();
+
                 let newUserObj = {
                     username: uInput,
                     password: pInput,
                     fullName: uInput,
+                    refCode: randomRefCode,
                     balance: 0.00,
                     refCount: 0,
                     refBonus: 0.00,
@@ -1373,10 +1443,14 @@
                     isBanned: false
                 };
 
-                if (refCode && sanitizeKey(refCode) !== uKey) {
-                    let refKey = sanitizeKey(refCode);
-                    newUserObj.referrer = refKey;
-                    db.ref('users/' + refKey + '/refCount').transaction((count) => (count || 0) + 1);
+                if (refCode) {
+                    newUserObj.referrer = refCode;
+                    // রেফারারের লিংক/কোড আপডেট
+                    db.ref('users').orderByChild('refCode').equalTo(refCode).once('value', (refSnap) => {
+                        refSnap.forEach(cSnap => {
+                            db.ref('users/' + cSnap.key + '/refCount').transaction((count) => (count || 0) + 1);
+                        });
+                    });
                 }
 
                 db.ref('users/' + uKey).set(newUserObj).then(() => {
@@ -1394,7 +1468,7 @@
             let pInput = document.getElementById('loginPassword').value.trim();
 
             if (!uInput || !pInput) {
-                alert("⚠️ ইউজারনেম ও পাসওয়ার্ড দিন!");
+                alert("⚠️ ইউজারনেম/ফোন ও পাসওয়ার্ড দিন!");
                 return;
             }
 
@@ -1435,9 +1509,6 @@
             }
 
             document.getElementById('logoutBtn').style.display = 'block';
-            referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${currentUserKey}`;
-            let refInput = document.getElementById("ref-link");
-            if(refInput) refInput.value = referLink;
 
             // Check Ban Realtime
             db.ref('users/' + currentUserKey + '/isBanned').on('value', (snapshot) => {
@@ -1539,6 +1610,20 @@
                     checkinTotalIncome = parseFloat(val.checkinTotalIncome || 0);
                     lastCheckinDate = val.lastCheckinDate || "";
                     todayEarnedTaskIncome = parseFloat(val.todayEarnedTaskIncome || 0);
+
+                    // রেফার কোড চেক ও জেনারেট
+                    if (!val.refCode) {
+                        userReferralCode = generate10DigitRandomId();
+                        db.ref('users/' + currentUserKey + '/refCode').set(userReferralCode);
+                    } else {
+                        userReferralCode = val.refCode;
+                    }
+
+                    referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${userReferralCode}`;
+                    let refInput = document.getElementById("ref-link");
+                    if(refInput) refInput.value = referLink;
+                    let refCodeInput = document.getElementById("user-ref-code");
+                    if(refCodeInput) refCodeInput.value = userReferralCode;
                 }
                 updateUI();
                 renderBoundWaNumbers();
@@ -1601,6 +1686,62 @@
 
         function openAdminGmailCredentialsModal() { document.getElementById('adminGmailCredentialsModal').style.display = 'block'; }
         function closeAdminGmailCredentialsModal() { document.getElementById('adminGmailCredentialsModal').style.display = 'none'; }
+
+        function openAdminAccountEditModal() { document.getElementById('adminAccountEditModal').style.display = 'block'; }
+        function closeAdminAccountEditModal() { document.getElementById('adminAccountEditModal').style.display = 'none'; }
+
+        // ✏️ অ্যাডমিন ইউজার এডিট ও রিকভারি সার্চ লজিক
+        function searchUserForEdit() {
+            let searchInput = document.getElementById('edit-search-userid').value.trim();
+            if (!searchInput) {
+                alert("⚠️ অনুসন্ধানের জন্য ফোন, নাম বা ইউজার আইডি লিখুন!");
+                return;
+            }
+
+            let searchKey = sanitizeKey(searchInput);
+
+            db.ref('users/' + searchKey).once('value').then((snap) => {
+                let val = snap.val();
+                if (!val) {
+                    alert("❌ কোনো ইউজার পাওয়া যায়নি!");
+                    document.getElementById('user-edit-card').style.display = 'none';
+                    searchedEditTargetUserKey = null;
+                    return;
+                }
+
+                searchedEditTargetUserKey = searchKey;
+                document.getElementById('edit-field-username').value = val.username || val.fullName || searchKey;
+                document.getElementById('edit-field-password').value = val.password || "";
+                document.getElementById('edit-field-refcode').value = val.refCode || "";
+                document.getElementById('edit-field-balance').value = val.balance || 0;
+
+                document.getElementById('user-edit-card').style.display = 'block';
+            });
+        }
+
+        function saveUserEditChanges() {
+            if (!searchedEditTargetUserKey) return;
+
+            let newUsername = document.getElementById('edit-field-username').value.trim();
+            let newPassword = document.getElementById('edit-field-password').value.trim();
+            let newRefCode = document.getElementById('edit-field-refcode').value.trim();
+            let newBalance = parseFloat(document.getElementById('edit-field-balance').value) || 0;
+
+            if (!newUsername || !newPassword || !newRefCode) {
+                alert("⚠️ সবগুলো তথ্য সঠিকভাবে পূরণ করুন!");
+                return;
+            }
+
+            db.ref('users/' + searchedEditTargetUserKey).update({
+                username: newUsername,
+                password: newPassword,
+                refCode: newRefCode,
+                balance: newBalance
+            }).then(() => {
+                alert("✅ ইউজার তথ্য ও পাসওয়ার্ড সফলভাবে আপডেট করা হয়েছে!");
+                closeAdminAccountEditModal();
+            });
+        }
 
         function saveAdminGmailCredentials() {
             let nameVal = document.getElementById('admin-set-gmail-name').value.trim();
@@ -2551,11 +2692,15 @@
 
         function giveReferralCommissionForUser(userIdKey, earnedAmount) {
             db.ref('users/' + userIdKey + '/referrer').once('value').then((snapshot) => {
-                let myReferrerKey = snapshot.val();
-                if (myReferrerKey) {
+                let myReferrerCode = snapshot.val();
+                if (myReferrerCode) {
                     let commission = earnedAmount * 0.25;
-                    db.ref('users/' + myReferrerKey + '/balance').transaction((bal) => (bal || 0) + commission);
-                    db.ref('users/' + myReferrerKey + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
+                    db.ref('users').orderByChild('refCode').equalTo(myReferrerCode).once('value', (refSnap) => {
+                        refSnap.forEach(cSnap => {
+                            db.ref('users/' + cSnap.key + '/balance').transaction((bal) => (bal || 0) + commission);
+                            db.ref('users/' + cSnap.key + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
+                        });
+                    });
                 }
             });
         }
