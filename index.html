@@ -1658,7 +1658,13 @@
                     checkinStreak = parseInt(val.checkinStreak || 0);
                     checkinTotalIncome = parseFloat(val.checkinTotalIncome || 0);
                     lastCheckinDate = val.lastCheckinDate || "";
-                    todayEarnedTaskIncome = parseFloat(val.todayEarnedTaskIncome || 0);
+                    
+                    let today = getTodayString();
+                    if (val.lastEarnedDate !== today) {
+                        todayEarnedTaskIncome = 0.00;
+                    } else {
+                        todayEarnedTaskIncome = parseFloat(val.todayEarnedTaskIncome || 0);
+                    }
 
                     // রেফার কোড চেক ও জেনারেট
                     if (!val.refCode) {
@@ -2002,6 +2008,7 @@
 
         function updateFirebaseProfile() {
             if(!currentUserKey) return;
+            let today = getTodayString();
             db.ref('users/' + currentUserKey).update({
                 balance: currentBalance,
                 refCount: referCount,
@@ -2013,7 +2020,8 @@
                 checkinStreak: checkinStreak,
                 checkinTotalIncome: checkinTotalIncome,
                 lastCheckinDate: lastCheckinDate,
-                todayEarnedTaskIncome: todayEarnedTaskIncome
+                todayEarnedTaskIncome: todayEarnedTaskIncome,
+                lastEarnedDate: today
             });
         }
 
@@ -2110,7 +2118,17 @@
             db.ref('pin_submits/' + key).update({ status: "Success" }).then(() => {
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + parseFloat(reward));
                 db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
-                db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').transaction((inc) => (inc || 0) + parseFloat(reward));
+                
+                let today = getTodayString();
+                db.ref('users/' + targetUserId + '/lastEarnedDate').once('value').then((snap) => {
+                    if(snap.val() === today) {
+                        db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').transaction((inc) => (inc || 0) + parseFloat(reward));
+                    } else {
+                        db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').set(parseFloat(reward));
+                        db.ref('users/' + targetUserId + '/lastEarnedDate').set(today);
+                    }
+                });
+
                 giveReferralCommissionForUser(targetUserId, reward);
                 alert("✅ পিন সাবমিট টাস্ক এপ্রুভ করা হয়েছে!");
             });
@@ -2140,7 +2158,17 @@
             db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount }).then(() => {
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + gmailAmount);
                 db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
-                db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').transaction((inc) => (inc || 0) + gmailAmount);
+                
+                let today = getTodayString();
+                db.ref('users/' + targetUserId + '/lastEarnedDate').once('value').then((snap) => {
+                    if(snap.val() === today) {
+                        db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').transaction((inc) => (inc || 0) + gmailAmount);
+                    } else {
+                        db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').set(gmailAmount);
+                        db.ref('users/' + targetUserId + '/lastEarnedDate').set(today);
+                    }
+                });
+
                 giveReferralCommissionForUser(targetUserId, gmailAmount);
                 alert("✅ জিমেইল টাস্ক সফল হয়েছে!");
             });
@@ -2469,7 +2497,14 @@
                     currentBalance += reward;
                     waTotalIncome += reward;
                     completedTasksCount += 1;
-                    todayEarnedTaskIncome += reward;
+                    
+                    let today = getTodayString();
+                    if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
+                        todayEarnedTaskIncome = reward;
+                    } else {
+                        todayEarnedTaskIncome += reward;
+                    }
+
                     giveReferralCommission(reward);
                     updateFirebaseProfile();
                     updateUI();
@@ -2646,8 +2681,14 @@
             
             currentBalance += rewardInBDT;
             completedTasksCount += 1;
-            todayEarnedTaskIncome += rewardInBDT;
             
+            let today = getTodayString();
+            if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
+                todayEarnedTaskIncome = rewardInBDT;
+            } else {
+                todayEarnedTaskIncome += rewardInBDT;
+            }
+
             giveReferralCommission(rewardInBDT);
             taskOpenTimestamp = 0;
             currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
@@ -2727,8 +2768,8 @@
                 return;
             }
 
-            if (todayEarnedTaskIncome < 20.00) {
-                alert("⚠️ চেক-ইন করতে প্রথমে পর্যাপ্ত টাক্স কমপ্লিট করুন!");
+            if (todayEarnedTaskIncome < 1.00) {
+                alert("⚠️ চেক-ইন করতে প্রথমে আজকের নির্দিষ্ট টাক্স কমপ্লিট করুন!");
                 return;
             }
 
@@ -2748,8 +2789,8 @@
         }
 
         const validGiftCodes = {
-            "HASAN11223": { amount: 50000.00, expire: Date.now() + 600000 * 7 },
-            "ADMINGIFT50@": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
+            "SIYAM1122": { amount: 50.00, expire: Date.now() + 600000 * 7 },
+            "SPESHALGIFT50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
             "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
         };
 
@@ -2851,7 +2892,14 @@
                         let earned = 1.00;
                         currentBalance += earned;
                         completedTasksCount += 1;
-                        todayEarnedTaskIncome += earned;
+                        
+                        let today = getTodayString();
+                        if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
+                            todayEarnedTaskIncome = earned;
+                        } else {
+                            todayEarnedTaskIncome += earned;
+                        }
+
                         giveReferralCommission(earned);
                         updateFirebaseProfile();
                         updateUI();
