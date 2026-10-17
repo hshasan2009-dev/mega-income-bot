@@ -23,6 +23,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ব্রাউজারে সরাসরি লিংকে গেলে Cannot GET / আসার সমাধান হিসেবে রুট রাউট যোগ করা হলো
+app.get('/', (req, res) => {
+    res.send('🚀 WhatsApp Bot Backend Server is Running Successfully!');
+});
+
 /*
 ====================================================
 FIREBASE HELPERS
