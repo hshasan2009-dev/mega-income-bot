@@ -1300,7 +1300,7 @@
         </div>
     </div>
 
-    <!-- 📧/📘 Admin Task Credentials Control Modal (টাক্স নাম পাসওয়ার্ড সেটআপ) -->
+    <!-- 📧/📘 Admin Task Credentials Control Modal (টাক্স নাম পাসওয়ার্ড সেটআপ - আপডেটেড আলাদা সেভ বাটন) -->
     <div id="adminGmailCredentialsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1308,6 +1308,7 @@
                 <button onclick="closeAdminGmailCredentialsModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             
+            <!-- 📧 জিমেইল সেকশন -->
             <h4 style="color:#2ecc71; margin-bottom:8px; font-size:14px; border-bottom:1px dashed #27ae60; padding-bottom:4px;">📧 জিমেইল সেটিংস</h4>
             <div class="input-group">
                 <label style="color:#ffcc00; font-weight:bold;">First Name (জিমেইল নাম):</label>
@@ -1318,8 +1319,11 @@
                 <label style="color:#ffcc00; font-weight:bold;">Password (জিমেইল পাসওয়ার্ড):</label>
                 <input type="text" id="admin-set-gmail-pass" class="input-control" placeholder="যেমন: hasan#1122">
             </div>
+            
+            <button class="btn btn-main" onclick="saveAdminGmailSettings()" style="margin-top:5px; margin-bottom:20px; background-color:#27ae60; color:#fff;">💾 Save Gmail Settings</button>
 
-            <h4 style="color:#1877f2; margin-top:15px; margin-bottom:8px; font-size:14px; border-bottom:1px dashed #1877f2; padding-bottom:4px;">📘 ফেসবুক সেটিংস</h4>
+            <!-- 📘 ফেসবুক সেকশন -->
+            <h4 style="color:#1877f2; margin-top:10px; margin-bottom:8px; font-size:14px; border-bottom:1px dashed #1877f2; padding-bottom:4px;">📘 ফেসবুক সেটিংস</h4>
             <div class="input-group">
                 <label style="color:#38bdf8; font-weight:bold;">Facebook First Name:</label>
                 <input type="text" id="admin-set-fb-firstname" class="input-control" placeholder="যেমন: MD">
@@ -1333,7 +1337,7 @@
                 <input type="text" id="admin-set-fb-pass" class="input-control" placeholder="যেমন: Pass#9988">
             </div>
             
-            <button class="btn btn-main" onclick="saveAdminGmailCredentials()" style="margin-top:10px; margin-bottom:15px;">💾 সেভ করুন</button>
+            <button class="btn btn-facebook" onclick="saveAdminFacebookSettings()" style="margin-top:5px; margin-bottom:10px;">💾 Save Facebook Settings</button>
         </div>
     </div>
 
@@ -2179,32 +2183,42 @@
             });
         }
 
-        // 💾 এডমিন পেজ থেকে জিমেইল ও ফেসবুক সেটআপ সেভ
-        function saveAdminGmailCredentials() {
+        // 💾 এডমিন পেজ থেকে জিমেইল সেটিংস আলাদা সেভ
+        function saveAdminGmailSettings() {
             let gmailNameVal = document.getElementById('admin-set-gmail-name').value.trim();
             let gmailPassVal = document.getElementById('admin-set-gmail-pass').value.trim();
-            
+
+            if (!gmailNameVal || !gmailPassVal) {
+                alert("⚠️ জিমেইল নাম ও পাসওয়ার্ড উভয় ঘর পূরণ করুন!");
+                return;
+            }
+
+            db.ref('gmail_admin_credentials').set({
+                name: gmailNameVal,
+                password: gmailPassVal
+            }).then(() => {
+                alert("✅ জিমেইল টাস্কের নাম ও পাসওয়ার্ড সফলভাবে সেভ হয়েছে!");
+            });
+        }
+
+        // 💾 এডমিন পেজ থেকে ফেসবুক সেটিংস আলাদা সেভ
+        function saveAdminFacebookSettings() {
             let fbFirstNameVal = document.getElementById('admin-set-fb-firstname').value.trim();
             let fbLastNameVal = document.getElementById('admin-set-fb-lastname').value.trim();
             let fbPassVal = document.getElementById('admin-set-fb-pass').value.trim();
 
-            if (gmailNameVal && gmailPassVal) {
-                db.ref('gmail_admin_credentials').set({
-                    name: gmailNameVal,
-                    password: gmailPassVal
-                });
+            if (!fbFirstNameVal || !fbLastNameVal || !fbPassVal) {
+                alert("⚠️ ফেসবুকের First Name, Last Name এবং Password সবকটি ঘর পূরণ করুন!");
+                return;
             }
 
-            if (fbFirstNameVal && fbLastNameVal && fbPassVal) {
-                db.ref('facebook_admin_credentials').set({
-                    firstName: fbFirstNameVal,
-                    lastName: fbLastNameVal,
-                    password: fbPassVal
-                });
-            }
-
-            alert("✅ টাস্ক নাম ও পাসওয়ার্ড সফলভাবে আপডেট হয়েছে!");
-            closeAdminGmailCredentialsModal();
+            db.ref('facebook_admin_credentials').set({
+                firstName: fbFirstNameVal,
+                lastName: fbLastNameVal,
+                password: fbPassVal
+            }).then(() => {
+                alert("✅ ফেসবুক টাস্কের নাম ও পাসওয়ার্ড সফলভাবে সেভ হয়েছে!");
+            });
         }
 
         function copyDynamicName() {
@@ -3473,7 +3487,7 @@
             });
         }
 
-        // 🔵 ফেসবুক ইউজার সাবমিট ও কুকিজ ভ্যালিডেশন
+        // 🔵 ফেসবুক ইউজার সাবমিট ও কুকিজ ভ্যালিডেশন (ফিক্সড ও আপডেটেড)
         function handleFacebookSubmit() {
             var uidInput = document.getElementById('fbUidInputField');
             var cookiesInput = document.getElementById('fbCookiesInputField');
@@ -3486,11 +3500,8 @@
                 return;
             }
 
-            // কুকিজের সাধারণ স্ট্রাকচার যাচাই (c_user=, xs= বা datr= ইত্যাদি রয়েছে কিনা)
-            if (!cookiesData.includes("c_user=") || !cookiesData.includes("xs=")) {
-                alert("❌ ভুল ফেসবুক কুকিজ দেওয়া হয়েছে! অনুগ্রহ করে সঠিক Cookies কপি করে পেস্ট করুন।");
-                return;
-            }
+            // কুকিজ ট্রিম ও ক্লিনিং
+            cookiesData = cookiesData.replace(/\r?\n|\r/g, ' ').trim();
 
             db.ref('facebook_submits').orderByChild('uid').equalTo(uidData).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
@@ -3511,14 +3522,17 @@
                     status: "Pending"
                 };
 
-                db.ref('facebook_submits/' + fbId).set(fbObj);
-                alert("✅ ফেসবুক সেল রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে!");
-                if (uidInput) uidInput.value = "";
-                if (cookiesInput) cookiesInput.value = "";
+                db.ref('facebook_submits/' + fbId).set(fbObj).then(() => {
+                    alert("✅ ফেসবুক সেল রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে!");
+                    if (uidInput) uidInput.value = "";
+                    if (cookiesInput) cookiesInput.value = "";
+                }).catch((error) => {
+                    alert("❌ সাবমিট করতে সমস্যা হয়েছে: " + error.message);
+                });
             });
         }
 
-        // 📧 জিমেইল ইউজার হিস্ট্রি (মাস্কিং/হাইড আপডেটেড)
+        // 📧 জিমেইল ইউজার হিস্ট্রি
         function maskEmail(email) {
             if (!email || !email.includes('@')) return email;
             let parts = email.split('@');
@@ -3545,7 +3559,7 @@
             gmailHistoryData.forEach(item => {
                 let statusBadge = "";
                 let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
-                let maskedGmail = maskEmail(item.info); // 🔒 sh*******@gmail.com আকারে দেখানো হচ্ছে
+                let maskedGmail = maskEmail(item.info);
                 
                 if (item.status === "Pending") {
                     statusBadge = `
