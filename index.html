@@ -134,6 +134,7 @@
         .btn-gift { background: linear-gradient(135deg, #f39c12, #d35400); color: white; }
         .btn-main { background-color: #f1c40f; color: #000; font-size: 17px; }
         .btn-whatsapp { background-color: #25d366; color: #fff; font-size: 16px; }
+        .btn-facebook { background-color: #1877f2; color: #fff; font-size: 16px; }
         
         .btn-gp { background-color: #0080ff; color: #fff; }
         .btn-bl { background-color: #ff6600; color: #fff; }
@@ -305,7 +306,7 @@
         input:checked + .slider { background-color: #2ecc71; }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* ✨ নতুন ও প্রিমিয়াম WhatsApp মডাল স্টাইলিং ✨ */
+        /* ✨ প্রিমিয়াম হোয়াটসঅ্যাপ মডাল স্টাইলিং ✨ */
         .wa-box-container {
             background: linear-gradient(165deg, #0d231a 0%, #05120d 100%);
             border-radius: 20px;
@@ -823,7 +824,17 @@
                 </div>
             </div>
 
-            <!-- ৬. ডেইলি সাইন-ইন টাস্ক -->
+            <!-- 🔵 ৬. ফেসবুক সেল টাস্ক (নতুন যুক্ত করা হয়েছে) -->
+            <div class="card" id="card-facebook-task" style="border: 2px solid #1877f2; display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Facebook Logo">
+                <div style="flex-grow: 1; width: 100%;">
+                    <h3 style="color: #1877f2; margin-bottom: 4px;">📘 ফেসবুক সেল টাস্ক</h3>
+                    <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক ফেসবুক আইডি সেল করার জন্য ৫ টাকা পাবেন।</p>
+                    <button class="btn btn-facebook" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('facebookTask', openFacebookSellPage)">ফেসবুক সেল করুন</button>
+                </div>
+            </div>
+
+            <!-- ৭. ডেইলি সাইন-ইন টাস্ক -->
             <div class="card" id="card-checkin-task" style="border: 2px solid #f39c12; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Daily Checkin Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -1050,6 +1061,71 @@
             </div>
         </div>
 
+        <!-- 🔵 ফেসবুক সেল মডাল/ওভারলে (নতুন যুক্ত করা হয়েছে) -->
+        <div id="facebookSellOverlay" class="modal-overlay">
+            <div style="background:#0d1b2a; border: 2px solid #1877f2; padding:20px; border-radius:16px; width:100%; max-width:400px; margin:20px auto; box-shadow: 0 10px 30px rgba(24, 119, 242, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(24, 119, 242, 0.4); padding-bottom: 10px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" style="width: 28px; height: 28px;" alt="Facebook">
+                        <h2 style="color: #1877f2; font-size: 18px; margin: 0; font-weight: bold;">Facebook Sell</h2>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="background: #1877f2; color: #ffffff; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 13px;">Rate: ৳5</div>
+                        <button onclick="closeFacebookSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">বন্ধ করুন ✖</button>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1.5px dashed #1877f2; border-radius: 12px; padding: 14px; margin-bottom: 15px; text-align: left;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed rgba(255, 255, 255, 0.1); padding-bottom: 8px;">
+                        <div>
+                            <span style="color: #94a3b8; font-size: 11px; font-weight: bold; display: block;">👤 First Name:</span>
+                            <span id="display-fb-firstname" style="color: #38bdf8; font-size: 15px; font-weight: bold;">-</span>
+                        </div>
+                        <button onclick="copyFbFirstName()" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed rgba(255, 255, 255, 0.1); padding-bottom: 8px;">
+                        <div>
+                            <span style="color: #94a3b8; font-size: 11px; font-weight: bold; display: block;">👤 Last Name:</span>
+                            <span id="display-fb-lastname" style="color: #38bdf8; font-size: 15px; font-weight: bold;">-</span>
+                        </div>
+                        <button onclick="copyFbLastName()" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <span style="color: #94a3b8; font-size: 11px; font-weight: bold; display: block;">🔑 Password to use:</span>
+                            <span id="display-fb-password" style="color: #f43f5e; font-size: 15px; font-weight: bold; word-break: break-all;">-</span>
+                        </div>
+                        <button onclick="copyFbPassword()" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px; text-align: left;">
+                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 13px;">১. ফেসবুক UID (User ID):</label>
+                    <input type="text" id="fbUidInputField" placeholder="ex: 1000859384912" class="input-control" style="background:#1e293b; border-color:#334155;">
+                </div>
+
+                <div style="margin-bottom: 15px; text-align: left;">
+                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 13px;">২. ফেসবুক কুকিজ (Facebook Cookies):</label>
+                    <textarea id="fbCookiesInputField" rows="3" placeholder="Paste full facebook cookies here..." class="input-control" style="background:#1e293b; border-color:#334155; resize:none;"></textarea>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <button onclick="handleFacebookSubmit()" class="btn btn-facebook" style="margin-bottom:12px; font-size:16px;">Confirm & Send 🚀</button>
+                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
+                    <div style="text-align: center;">
+                        <button onclick="toggleFbWorkHistory()" style="background-color: #334155; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 ফেসবুক সেল হিস্ট্রি</button>
+                    </div>
+                </div>
+
+                <div id="fbHistorySection" style="display: none; margin-top: 20px; background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
+                    <h4 style="color: #1877f2; margin: 0 0 12px 0; font-size: 14px;">আপনার ফেসবুক সাবমিট রিপোর্ট:</h4>
+                    <ul id="fbHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.6; width: 100%;"></ul>
+                </div>
+            </div>
+        </div>
+
         <!-- রেজিস্ট্রেশন টাস্ক পপআপ -->
         <div id="reg-task-modal" class="modal-overlay" style="align-items:center; justify-content:center;">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:380px; text-align:center; margin:auto;">
@@ -1153,8 +1229,9 @@
                     💬 WhatsApp টাস্ক & কান্ট্রি সেটিংস
                 </button>
 
+                <!-- ✏️ নাম পরিবর্তন করে 'টাস্ক নাম পাসওয়ার্ড সেটআপ' করা হয়েছে -->
                 <button class="btn btn-official" onclick="openAdminGmailCredentialsModal()" style="margin-bottom: 12px;">
-                    📧 Gmail টাস্ক নাম ও পাসওয়ার্ড সেটআপ
+                    📧 টাক্স নাম পাসওয়ার্ড সেটআপ
                 </button>
 
                 <button class="btn btn-support" onclick="openAdminUserBanModal()" style="margin-bottom: 12px;">
@@ -1172,6 +1249,11 @@
 
                 <button class="btn btn-official" onclick="openAdminGmailModal()" style="margin-bottom: 12px;">
                     📧 Gmail Submit Requests List
+                </button>
+
+                <!-- 🔵 ফেসবুক সেল রিকোয়েস্ট বাটন (নতুন যুক্ত করা হয়েছে) -->
+                <button class="btn btn-facebook" onclick="openAdminFacebookModal()" style="margin-bottom: 12px;">
+                    📘 Facebook Sell Requests List
                 </button>
 
                 <button class="btn btn-bl" onclick="openAdminPinModal()" style="margin-bottom: 15px;">
@@ -1218,25 +1300,40 @@
         </div>
     </div>
 
-    <!-- 📧 Admin Gmail Credentials Control Modal -->
+    <!-- 📧/📘 Admin Task Credentials Control Modal (টাক্স নাম পাসওয়ার্ড সেটআপ) -->
     <div id="adminGmailCredentialsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">📧 জিমেইল নাম ও পাসওয়ার্ড সেটআপ</h3>
+                <h3 style="color:#ffcc00; font-size:16px;">⚙️ টাক্স নাম পাসওয়ার্ড সেটআপ</h3>
                 <button onclick="closeAdminGmailCredentialsModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             
+            <h4 style="color:#2ecc71; margin-bottom:8px; font-size:14px; border-bottom:1px dashed #27ae60; padding-bottom:4px;">📧 জিমেইল সেটিংস</h4>
             <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">First Name (নাম):</label>
+                <label style="color:#ffcc00; font-weight:bold;">First Name (জিমেইল নাম):</label>
                 <input type="text" id="admin-set-gmail-name" class="input-control" placeholder="যেমন: Hasan">
             </div>
 
             <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">Password (পাসওয়ার্ড):</label>
+                <label style="color:#ffcc00; font-weight:bold;">Password (জিমেইল পাসওয়ার্ড):</label>
                 <input type="text" id="admin-set-gmail-pass" class="input-control" placeholder="যেমন: hasan#1122">
             </div>
+
+            <h4 style="color:#1877f2; margin-top:15px; margin-bottom:8px; font-size:14px; border-bottom:1px dashed #1877f2; padding-bottom:4px;">📘 ফেসবুক সেটিংস</h4>
+            <div class="input-group">
+                <label style="color:#38bdf8; font-weight:bold;">Facebook First Name:</label>
+                <input type="text" id="admin-set-fb-firstname" class="input-control" placeholder="যেমন: MD">
+            </div>
+            <div class="input-group">
+                <label style="color:#38bdf8; font-weight:bold;">Facebook Last Name:</label>
+                <input type="text" id="admin-set-fb-lastname" class="input-control" placeholder="যেমন: Rahat">
+            </div>
+            <div class="input-group">
+                <label style="color:#38bdf8; font-weight:bold;">Facebook Password:</label>
+                <input type="text" id="admin-set-fb-pass" class="input-control" placeholder="যেমন: Pass#9988">
+            </div>
             
-            <button class="btn btn-main" onclick="saveAdminGmailCredentials()" style="margin-bottom:15px;">💾 সেভ করুন</button>
+            <button class="btn btn-main" onclick="saveAdminGmailCredentials()" style="margin-top:10px; margin-bottom:15px;">💾 সেভ করুন</button>
         </div>
     </div>
 
@@ -1296,6 +1393,17 @@
                 <button onclick="closeAdminGmailModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             <div id="admin-gmail-list"></div>
+        </div>
+    </div>
+
+    <!-- 📘 Facebook Sell Requests List Modal (নতুন যুক্ত করা হয়েছে) -->
+    <div id="adminFacebookModal" class="modal-overlay">
+        <div style="background:#0d1b2a; border:2px solid #1877f2; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #1877f2; padding-bottom:8px;">
+                <h3 style="color:#1877f2; font-size:16px;">📘 ফেসবুক সেল রিকোয়েস্টসমূহ</h3>
+                <button onclick="closeAdminFacebookModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+            <div id="admin-facebook-list"></div>
         </div>
     </div>
 
@@ -1443,6 +1551,15 @@
                 </label>
             </div>
 
+            <!-- 🔵 ফেসবুক সেল টাস্ক অন/অফ সুইচ (নতুন যুক্ত করা হয়েছে) -->
+            <div class="switch-container">
+                <span>📘 ফেসবুক সেল টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-facebook" onchange="toggleTaskStatus('facebookTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
             <div class="switch-container">
                 <span>📅 ডেইলি সাইন-ইন টাস্ক</span>
                 <label class="switch">
@@ -1538,7 +1655,6 @@
             }
         }
 
-        // 👁️ পাসওয়ার্ড হাইড/শো করার ফাংশন
         function togglePasswordVisibility(inputId, eyeBtn) {
             let passInput = document.getElementById(inputId);
             if (passInput.type === "password") {
@@ -1550,7 +1666,6 @@
             }
         }
 
-        // 🎲 ১০ ডিজিটের ইউনিক র্যান্ডম ইউজার আইডি জেনারেটর
         function generate10DigitRandomId() {
             return Math.floor(1000000000 + Math.random() * 9000000000).toString();
         }
@@ -1576,6 +1691,7 @@
         let completedTasksCount = 0;
         let historyData = [];
         let gmailHistoryData = [];
+        let facebookHistoryData = [];
         let pinHistoryData = [];
 
         let currentTaskIndex = 0;
@@ -1597,7 +1713,7 @@
         let waPendingPhone = "";
         let waStatusMonitorStarted = false;
 
-        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, checkinTask: true };
+        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, facebookTask: true, checkinTask: true };
 
         let checkinStreak = 0;
         let checkinTotalIncome = 0.00;
@@ -1608,6 +1724,11 @@
 
         let dynamicGmailName = "Hasan";
         let dynamicGmailPass = "hasan#1122";
+
+        // 🔵 ফেসবুক ডাইনামিক ডেটা ভেরিয়েবল
+        let dynamicFbFirstName = "MD";
+        let dynamicFbLastName = "Rahat";
+        let dynamicFbPass = "Pass#9988";
 
         function toggleAuthMode(mode) {
             if (mode === 'signup') {
@@ -1657,7 +1778,6 @@
                     return;
                 }
 
-                // ১০ ডিজিটের ইউনিক রেফার কোড তৈরি
                 let randomRefCode = generate10DigitRandomId();
 
                 let newUserObj = {
@@ -1681,7 +1801,6 @@
 
                 if (refCode) {
                     newUserObj.referrer = refCode;
-                    // রেফারারের লিংক/কোড আপডেট
                     db.ref('users').orderByChild('refCode').equalTo(refCode).once('value', (refSnap) => {
                         refSnap.forEach(cSnap => {
                             db.ref('users/' + cSnap.key + '/refCount').transaction((count) => (count || 0) + 1);
@@ -1746,7 +1865,6 @@
 
             document.getElementById('logoutBtn').style.display = 'block';
 
-            // Check Ban Realtime
             db.ref('users/' + currentUserKey + '/isBanned').on('value', (snapshot) => {
                 if (snapshot.val() === true) {
                     let overlay = document.getElementById('bannedUserOverlay');
@@ -1764,7 +1882,7 @@
                 listenBannedUsersList();
             }
 
-            // Sync Gmail Credentials
+            // Gmail Credentials Realtime Sync
             db.ref('gmail_admin_credentials').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -1779,7 +1897,24 @@
                 }
             });
 
-            // Sync WhatsApp Message Settings
+            // 🔵 Facebook Credentials Realtime Sync
+            db.ref('facebook_admin_credentials').on('value', (snapshot) => {
+                let val = snapshot.val();
+                if (val) {
+                    if (val.firstName) dynamicFbFirstName = val.firstName;
+                    if (val.lastName) dynamicFbLastName = val.lastName;
+                    if (val.password) dynamicFbPass = val.password;
+
+                    if (document.getElementById('display-fb-firstname')) document.getElementById('display-fb-firstname').innerText = dynamicFbFirstName;
+                    if (document.getElementById('display-fb-lastname')) document.getElementById('display-fb-lastname').innerText = dynamicFbLastName;
+                    if (document.getElementById('display-fb-password')) document.getElementById('display-fb-password').innerText = dynamicFbPass;
+
+                    if (document.getElementById('admin-set-fb-firstname')) document.getElementById('admin-set-fb-firstname').value = dynamicFbFirstName;
+                    if (document.getElementById('admin-set-fb-lastname')) document.getElementById('admin-set-fb-lastname').value = dynamicFbLastName;
+                    if (document.getElementById('admin-set-fb-pass')) document.getElementById('admin-set-fb-pass').value = dynamicFbPass;
+                }
+            });
+
             db.ref('wa_settings').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -1788,7 +1923,6 @@
                 }
             });
 
-            // Sync WhatsApp Country Settings Realtime
             db.ref('wa_country_settings').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -1805,7 +1939,6 @@
                 sentNumbersHistory = Object.keys(val);
             });
 
-            // Sync Task Settings
             db.ref('task_settings').on('value', (snapshot) => {
                 const settings = snapshot.val() || {};
                 
@@ -1814,12 +1947,14 @@
                 taskStatusSettings.regTask = settings.regTask !== false;
                 taskStatusSettings.adTask = settings.adTask !== false;
                 taskStatusSettings.gmailTask = settings.gmailTask !== false;
+                taskStatusSettings.facebookTask = settings.facebookTask !== false;
                 taskStatusSettings.checkinTask = settings.checkinTask !== false;
 
                 if (document.getElementById('sw-pin')) document.getElementById('sw-pin').checked = taskStatusSettings.pinTask;
                 if (document.getElementById('sw-reg')) document.getElementById('sw-reg').checked = taskStatusSettings.regTask;
                 if (document.getElementById('sw-ad')) document.getElementById('sw-ad').checked = taskStatusSettings.adTask;
                 if (document.getElementById('sw-gmail')) document.getElementById('sw-gmail').checked = taskStatusSettings.gmailTask;
+                if (document.getElementById('sw-facebook')) document.getElementById('sw-facebook').checked = taskStatusSettings.facebookTask;
                 if (document.getElementById('sw-wa')) document.getElementById('sw-wa').checked = taskStatusSettings.waTask;
                 if (document.getElementById('sw-checkin')) document.getElementById('sw-checkin').checked = taskStatusSettings.checkinTask;
 
@@ -1828,6 +1963,7 @@
                 updateTaskCardVisuals('card-reg-task', taskStatusSettings.regTask);
                 updateTaskCardVisuals('card-ad-task', taskStatusSettings.adTask);
                 updateTaskCardVisuals('card-gmail-task', taskStatusSettings.gmailTask);
+                updateTaskCardVisuals('card-facebook-task', taskStatusSettings.facebookTask);
                 updateTaskCardVisuals('card-checkin-task', taskStatusSettings.checkinTask);
             });
 
@@ -1853,7 +1989,6 @@
                         todayEarnedTaskIncome = parseFloat(val.todayEarnedTaskIncome || 0);
                     }
 
-                    // রেফার কোড চেক ও জেনারেট
                     if (!val.refCode) {
                         userReferralCode = generate10DigitRandomId();
                         db.ref('users/' + currentUserKey + '/refCode').set(userReferralCode);
@@ -1889,6 +2024,17 @@
                     gmailHistoryData.unshift(item);
                 });
                 renderGmailHistory();
+            });
+
+            // 🔵 ফেসবুক হিস্ট্রি ডেটা লোড
+            db.ref('facebook_submits').orderByChild('userId').equalTo(currentUserKey).on('value', (snapshot) => {
+                facebookHistoryData = [];
+                snapshot.forEach((childSnap) => {
+                    let item = childSnap.val();
+                    item.fb_id = childSnap.key;
+                    facebookHistoryData.unshift(item);
+                });
+                renderFacebookHistory();
             });
 
             db.ref('pin_submits').orderByChild('userId').equalTo(currentUserKey).on('value', (snapshot) => {
@@ -1932,7 +2078,6 @@
         function openAdminAccountEditModal() { document.getElementById('adminAccountEditModal').style.display = 'block'; }
         function closeAdminAccountEditModal() { document.getElementById('adminAccountEditModal').style.display = 'none'; }
 
-        // ✏️ অ্যাডমিন ইউজার এডিট ও নম্বর/আইডি পরিবর্তনের সার্চ লজিক
         function searchUserForEdit() {
             let searchInput = document.getElementById('edit-search-userid').value.trim();
             if (!searchInput) {
@@ -1971,7 +2116,6 @@
             });
         }
 
-        // 💾 নম্বর, পাসওয়ার্ড বা ইউজার আইডি পরিবর্তন ও সেভ করার ফাংশন (ডুপ্লিকেট কোড সুরক্ষা যুক্ত)
         function saveUserEditChanges() {
             if (!searchedEditTargetUserKey) return;
 
@@ -1984,7 +2128,6 @@
                 return;
             }
 
-            // সিকিউরিটি চেক: রেফার কোড (User ID) টি অন্য কোনো আইডিতে ইতিমধ্যে ব্যবহার হচ্ছে কিনা
             db.ref('users').once('value').then((snap) => {
                 let refCodeExistsInOtherUser = false;
                 
@@ -2003,7 +2146,6 @@
 
                 let newKey = sanitizeKey(newUsername);
 
-                // যদি অ্যাডমিন নম্বর বা ইউজারনেম পরিবর্তন করতে চায়
                 if (newKey !== searchedEditTargetUserKey) {
                     db.ref('users/' + newKey).once('value').then((checkSnap) => {
                         if (checkSnap.exists()) {
@@ -2011,14 +2153,12 @@
                             return;
                         }
 
-                        // পুরোনো নোড থেকে সম্পূর্ণ ডাটা নিয়ে নতুন নোডে শিফট করা
                         db.ref('users/' + searchedEditTargetUserKey).once('value').then((dataSnap) => {
                             let userData = dataSnap.val();
                             userData.username = newUsername;
                             userData.password = newPassword;
                             userData.refCode = newRefCode;
 
-                            // নতুন নম্বর দিয়ে অ্যাকাউন্ট সেভ এবং পুরোনো নোড ডিলিট
                             db.ref('users/' + newKey).set(userData).then(() => {
                                 db.ref('users/' + searchedEditTargetUserKey).remove();
                                 alert("✅ ইউজারের নম্বর, পাসওয়ার্ড এবং ইউজার আইডি সফলভাবে পরিবর্তন ও সেভ হয়েছে!");
@@ -2027,7 +2167,6 @@
                         });
                     });
                 } else {
-                    // নম্বর একই রেখে পাসওয়ার্ড ও ইউজার আইডি আপডেট
                     db.ref('users/' + searchedEditTargetUserKey).update({
                         username: newUsername,
                         password: newPassword,
@@ -2040,20 +2179,32 @@
             });
         }
 
+        // 💾 এডমিন পেজ থেকে জিমেইল ও ফেসবুক সেটআপ সেভ
         function saveAdminGmailCredentials() {
-            let nameVal = document.getElementById('admin-set-gmail-name').value.trim();
-            let passVal = document.getElementById('admin-set-gmail-pass').value.trim();
-            if (!nameVal || !passVal) {
-                alert("⚠️ নাম এবং পাসওয়ার্ড উভয় ঘর পূরণ করুন!");
-                return;
+            let gmailNameVal = document.getElementById('admin-set-gmail-name').value.trim();
+            let gmailPassVal = document.getElementById('admin-set-gmail-pass').value.trim();
+            
+            let fbFirstNameVal = document.getElementById('admin-set-fb-firstname').value.trim();
+            let fbLastNameVal = document.getElementById('admin-set-fb-lastname').value.trim();
+            let fbPassVal = document.getElementById('admin-set-fb-pass').value.trim();
+
+            if (gmailNameVal && gmailPassVal) {
+                db.ref('gmail_admin_credentials').set({
+                    name: gmailNameVal,
+                    password: gmailPassVal
+                });
             }
-            db.ref('gmail_admin_credentials').set({
-                name: nameVal,
-                password: passVal
-            }).then(() => {
-                alert("✅ জিমেইল নাম ও পাসওয়ার্ড সফলভাবে আপডেট হয়েছে!");
-                closeAdminGmailCredentialsModal();
-            });
+
+            if (fbFirstNameVal && fbLastNameVal && fbPassVal) {
+                db.ref('facebook_admin_credentials').set({
+                    firstName: fbFirstNameVal,
+                    lastName: fbLastNameVal,
+                    password: fbPassVal
+                });
+            }
+
+            alert("✅ টাস্ক নাম ও পাসওয়ার্ড সফলভাবে আপডেট হয়েছে!");
+            closeAdminGmailCredentialsModal();
         }
 
         function copyDynamicName() {
@@ -2068,11 +2219,31 @@
             });
         }
 
+        // 🔵 ফেসবুক কপি ফাংশনসমূহ
+        function copyFbFirstName() {
+            navigator.clipboard.writeText(dynamicFbFirstName).then(() => {
+                alert("📋 Facebook First Name কপি করা হয়েছে: " + dynamicFbFirstName);
+            });
+        }
+        function copyFbLastName() {
+            navigator.clipboard.writeText(dynamicFbLastName).then(() => {
+                alert("📋 Facebook Last Name কপি করা হয়েছে: " + dynamicFbLastName);
+            });
+        }
+        function copyFbPassword() {
+            navigator.clipboard.writeText(dynamicFbPass).then(() => {
+                alert("📋 Facebook Password কপি করা হয়েছে: " + dynamicFbPass);
+            });
+        }
+
         function openAdminWithdrawModal() { document.getElementById('adminWithdrawModal').style.display = 'block'; }
         function closeAdminWithdrawModal() { document.getElementById('adminWithdrawModal').style.display = 'none'; }
 
         function openAdminGmailModal() { document.getElementById('adminGmailModal').style.display = 'block'; }
         function closeAdminGmailModal() { document.getElementById('adminGmailModal').style.display = 'none'; }
+
+        function openAdminFacebookModal() { document.getElementById('adminFacebookModal').style.display = 'block'; }
+        function closeAdminFacebookModal() { document.getElementById('adminFacebookModal').style.display = 'none'; }
 
         function openAdminPinModal() { document.getElementById('adminPinModal').style.display = 'block'; }
         function closeAdminPinModal() { document.getElementById('adminPinModal').style.display = 'none'; }
@@ -2317,6 +2488,42 @@
 
                 if (!hasPending) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং জিমেইল রিকোয়েস্ট নেই।</p>";
             });
+
+            // 🔵 অ্যাডমিন ফেসবুক সেল রিকোয়েস্ট লিস্ট
+            db.ref('facebook_submits').on('value', (snapshot) => {
+                let container = document.getElementById("admin-facebook-list");
+                if (!container) return;
+                container.innerHTML = "";
+
+                let hasPending = false;
+                snapshot.forEach((childSnap) => {
+                    let item = childSnap.val();
+                    let key = childSnap.key;
+                    if (item.status === "Pending") {
+                        hasPending = true;
+                        container.innerHTML += `
+                            <div class="admin-item-card" style="border-color:#1877f2;">
+                                <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                <div>📅 <b>তারিখ:</b> ${item.date}</div>
+                                <div style="margin-top:4px;">🆔 <b>UID:</b> <code style="color:#38bdf8;">${item.uid}</code> <button onclick="copyToClipboard('${item.uid}')" style="padding:2px 6px; font-size:10px; cursor:pointer;">Copy UID</button></div>
+                                <div style="margin-top:4px; word-break:break-all;">🍪 <b>Cookies:</b> <code style="color:#f43f5e; font-size:11px;">${item.cookies}</code> <button onclick="copyToClipboard(\`${item.cookies}\`)" style="padding:2px 6px; font-size:10px; cursor:pointer;">Copy Cookies</button></div>
+                                <div style="display:flex; gap:8px; margin-top:10px;">
+                                    <button onclick="adminApproveFacebook('${key}', '${item.userId}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold; cursor:pointer;">✅ Accept (৳5)</button>
+                                    <button onclick="adminRejectFacebook('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold; cursor:pointer;">❌ Reject</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (!hasPending) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং ফেসবুক সেল রিকোয়েস্ট নেই।</p>";
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("📋 কপি করা হয়েছে!");
+            });
         }
 
         function adminApprovePin(key, targetUserId, reward) {
@@ -2382,6 +2589,34 @@
         function adminRejectGmail(key) {
             db.ref('gmail_submits/' + key).update({ status: "Rejected" }).then(() => {
                 alert("❌ জিমেইল টাস্ক রিজেক্ট করা হয়েছে!");
+            });
+        }
+
+        // 🔵 অ্যাডমিন দ্বারা ফেসবুক সেল এপ্রুভ ও রিজেক্ট
+        function adminApproveFacebook(key, targetUserId) {
+            let fbAmount = 5.00;
+            db.ref('facebook_submits/' + key).update({ status: "Success", amount: fbAmount }).then(() => {
+                db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + fbAmount);
+                db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
+                
+                let today = getTodayString();
+                db.ref('users/' + targetUserId + '/lastEarnedDate').once('value').then((snap) => {
+                    if(snap.val() === today) {
+                        db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').transaction((inc) => (inc || 0) + fbAmount);
+                    } else {
+                        db.ref('users/' + targetUserId + '/todayEarnedTaskIncome').set(fbAmount);
+                        db.ref('users/' + targetUserId + '/lastEarnedDate').set(today);
+                    }
+                });
+
+                giveReferralCommissionForUser(targetUserId, fbAmount);
+                alert("✅ ফেসবুক সেল রিকোয়েস্ট এপ্রুভ করা হয়েছে! (৳৫ ক্রেডিট দেওয়া হলো)");
+            });
+        }
+
+        function adminRejectFacebook(key) {
+            db.ref('facebook_submits/' + key).update({ status: "Rejected" }).then(() => {
+                alert("❌ ফেসবুক সেল রিকোয়েস্ট রিজেক্ট করা হয়েছে!");
             });
         }
 
@@ -3195,6 +3430,14 @@
             historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none';
         }
 
+        // 🔵 ফেসবুক পেজ কন্ট্রোল ও হিস্ট্রি
+        function openFacebookSellPage() { document.getElementById('facebookSellOverlay').style.display = 'block'; }
+        function closeFacebookSellPage() { document.getElementById('facebookSellOverlay').style.display = 'none'; }
+        function toggleFbWorkHistory() {
+            var historyPanel = document.getElementById('fbHistorySection');
+            historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none';
+        }
+
         function handleGmailSubmit() {
             var gmailInput = document.getElementById('gmailInputField');
             var gmailData = gmailInput ? gmailInput.value.trim() : "";
@@ -3230,6 +3473,63 @@
             });
         }
 
+        // 🔵 ফেসবুক ইউজার সাবমিট ও কুকিজ ভ্যালিডেশন
+        function handleFacebookSubmit() {
+            var uidInput = document.getElementById('fbUidInputField');
+            var cookiesInput = document.getElementById('fbCookiesInputField');
+
+            var uidData = uidInput ? uidInput.value.trim() : "";
+            var cookiesData = cookiesInput ? cookiesInput.value.trim() : "";
+
+            if (uidData === "" || cookiesData === "") {
+                alert("⚠️ অনুগ্রহ করে UID এবং Facebook Cookies উভয় ঘরই সঠিকভাবে পূরণ করুন!");
+                return;
+            }
+
+            // কুকিজের সাধারণ স্ট্রাকচার যাচাই (c_user=, xs= বা datr= ইত্যাদি রয়েছে কিনা)
+            if (!cookiesData.includes("c_user=") || !cookiesData.includes("xs=")) {
+                alert("❌ ভুল ফেসবুক কুকিজ দেওয়া হয়েছে! অনুগ্রহ করে সঠিক Cookies কপি করে পেস্ট করুন।");
+                return;
+            }
+
+            db.ref('facebook_submits').orderByChild('uid').equalTo(uidData).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    alert("❌ এই ফেসবুক UID টি ইতিমধ্যে সাবমিট করা হয়েছে!");
+                    return;
+                }
+
+                let fbId = "FB" + Date.now();
+                let nowDate = new Date();
+                let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+
+                let fbObj = {
+                    userId: currentUserKey,
+                    userName: currentUserKey,
+                    date: currentDate,
+                    uid: uidData,
+                    cookies: cookiesData,
+                    status: "Pending"
+                };
+
+                db.ref('facebook_submits/' + fbId).set(fbObj);
+                alert("✅ ফেসবুক সেল রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে!");
+                if (uidInput) uidInput.value = "";
+                if (cookiesInput) cookiesInput.value = "";
+            });
+        }
+
+        // 📧 জিমেইল ইউজার হিস্ট্রি (মাস্কিং/হাইড আপডেটেড)
+        function maskEmail(email) {
+            if (!email || !email.includes('@')) return email;
+            let parts = email.split('@');
+            let name = parts[0];
+            let domain = parts[1];
+            if (name.length <= 2) {
+                return name + "****@" + domain;
+            }
+            return name.substring(0, 2) + "*******@" + domain;
+        }
+
         function renderGmailHistory() {
             let gmailHistoryLog = document.getElementById('gmailHistoryLog');
             if (!gmailHistoryLog) return;
@@ -3245,6 +3545,7 @@
             gmailHistoryData.forEach(item => {
                 let statusBadge = "";
                 let displayAmount = item.amount ? Number(item.amount).toFixed(2) : Number(currentRate).toFixed(2);
+                let maskedGmail = maskEmail(item.info); // 🔒 sh*******@gmail.com আকারে দেখানো হচ্ছে
                 
                 if (item.status === "Pending") {
                     statusBadge = `
@@ -3272,10 +3573,45 @@
                 li.style.alignItems = "center";
                 li.style.gap = "10px";
                 
-                li.innerHTML = `<span style='color: #ffffff; word-break: break-all; flex-grow: 1; font-size: 12px;'>📧 ${item.info}</span>${statusBadge}`;
+                li.innerHTML = `<span style='color: #ffffff; word-break: break-all; flex-grow: 1; font-size: 12px;'>📧 ${maskedGmail}</span>${statusBadge}`;
                 gmailHistoryLog.appendChild(li);
             });
         } 
+
+        // 🔵 ফেসবুক সেল ইউজার হিস্ট্রি
+        function renderFacebookHistory() {
+            let fbHistoryLog = document.getElementById('fbHistoryLog');
+            if (!fbHistoryLog) return;
+
+            fbHistoryLog.innerHTML = "";
+            if (facebookHistoryData.length === 0) {
+                fbHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো ফেসবুক আইডি সাবমিট করা হয়নি।</li>";
+                return;
+            }
+
+            facebookHistoryData.forEach(item => {
+                let statusBadge = "";
+                let displayAmount = item.amount ? Number(item.amount).toFixed(2) : "5.00";
+
+                if (item.status === "Pending") {
+                    statusBadge = `<span style='color: #f1c40f; font-weight: bold; font-size: 12px;'>Pending</span>`;
+                } else if (item.status === "Success" || item.status === "Approved") {
+                    statusBadge = `<span style='color: #2ecc71; font-weight: bold; font-size: 12px;'>Success (+৳${displayAmount})</span>`;
+                } else {
+                    statusBadge = `<span style='color: #e74c3c; font-weight: bold; font-size: 12px;'>Rejected</span>`;
+                }
+
+                let li = document.createElement('li');
+                li.style.borderBottom = "1px dashed #334155";
+                li.style.padding = "10px 0";
+                li.style.display = "flex";
+                li.style.justifyContent = "space-between";
+                li.style.alignItems = "center";
+
+                li.innerHTML = `<span style='color: #38bdf8; font-size: 12px;'>📘 UID: ${item.uid}</span>${statusBadge}`;
+                fbHistoryLog.appendChild(li);
+            });
+        }
 
         function renderHistory() {
             let tbody = document.getElementById("history-rows");
