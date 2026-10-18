@@ -305,44 +305,221 @@
         input:checked + .slider { background-color: #2ecc71; }
         input:checked + .slider:before { transform: translateX(22px); }
 
+        /* ✨ নতুন ও প্রিমিয়াম WhatsApp মডাল স্টাইলিং ✨ */
         .wa-box-container {
-            background: #1a1a1a;
-            border-radius: 12px;
-            padding: 15px;
+            background: linear-gradient(165deg, #0d231a 0%, #05120d 100%);
+            border-radius: 20px;
+            padding: 20px;
             color: #fff;
             text-align: left;
             font-size: 13px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            border: 1px solid #333;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 15px rgba(37, 211, 102, 0.2);
+            border: 1px solid rgba(37, 211, 102, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
         }
-        .wa-code-boxes {
+        .wa-box-container::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 120px;
+            height: 120px;
+            background: rgba(37, 211, 102, 0.15);
+            border-radius: 50%;
+            filter: blur(30px);
+            pointer-events: none;
+        }
+        .wa-header-premium {
             display: flex;
-            gap: 4px;
-            justify-content: center;
-            margin: 10px 0;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
         }
-        .wa-code-box {
-            background: #2a2a2a;
-            border: 1px solid #444;
-            color: #ffcc00;
-            font-weight: bold;
-            font-size: 16px;
+        .wa-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .wa-header-title h3 {
+            color: #25d366;
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-shadow: 0 0 10px rgba(37, 211, 102, 0.3);
+        }
+        .wa-close-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
             width: 30px;
-            height: 35px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .wa-close-btn:hover {
+            background: #e74c3c;
+            color: #fff;
+            border-color: #e74c3c;
+        }
+        .wa-stats-card {
+            background: linear-gradient(135deg, rgba(17, 54, 38, 0.8), rgba(6, 25, 17, 0.9));
+            border: 1px solid rgba(39, 174, 96, 0.4);
+            padding: 14px;
+            border-radius: 14px;
+            text-align: center;
+            margin-bottom: 18px;
+            box-shadow: inset 0 0 15px rgba(39, 174, 96, 0.1);
+            position: relative;
+        }
+        .wa-stats-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 15%;
+            width: 70%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #25d366, transparent);
+        }
+        .wa-stats-title {
+            color: #f1c40f;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .wa-stats-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .wa-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .wa-section-title span.icon {
+            background: rgba(37, 211, 102, 0.15);
+            color: #25d366;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .wa-input-wrapper {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .wa-country-badge {
+            background: #142e20;
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            padding: 0 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #2e7d32;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+        .wa-get-btn {
+            background: linear-gradient(135deg, #27ae60, #1e824c);
+            border: none;
+            color: white;
+            padding: 0 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+            transition: transform 0.1s ease;
+            white-space: nowrap;
+        }
+        .wa-get-btn:active {
+            transform: scale(0.96);
+        }
+        .wa-code-boxes {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin: 14px 0 10px 0;
+        }
+        .wa-code-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(37, 211, 102, 0.4);
+            color: #ffcc00;
+            font-weight: 800;
+            font-size: 18px;
+            width: 34px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+        }
+        .wa-copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .wa-copy-btn:hover {
+            background: rgba(46, 204, 113, 0.2);
         }
         .wa-number-item {
-            background: #252525;
-            padding: 10px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(20, 46, 32, 0.7), rgba(10, 25, 17, 0.8));
+            padding: 10px 14px;
+            border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
-            border: 1px solid #3d3d3d;
+            border: 1px solid rgba(39, 174, 96, 0.25);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .wa-status-badge {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #2ecc71;
+            margin-right: 6px;
+        }
+        .wa-guide-box {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px dashed rgba(255, 204, 0, 0.3);
+            margin-top: 15px;
         }
 
         .checkin-grid {
@@ -686,32 +863,40 @@
             </div>
         </div>
 
-        <!-- 💬 হোয়াটসঅ্যাপ মডাল -->
+        <!-- 💬 প্রিমিয়াম হোয়াটসঅ্যাপ মডাল -->
         <div id="waTaskModal" class="modal-overlay">
-            <div class="wa-box-container" style="max-width: 420px; margin: 10px auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
-                    <h3 style="color: #25d366; font-size: 16px;">প্রথমে অনুমোদন সম্পন্ন করুন</h3>
-                    <button onclick="closeWhatsAppTaskModal()" style="background: rgba(255,255,255,0.2); color: #fff; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer;">✕</button>
-                </div>
-
-                <div style="background: #113626; border: 1px solid #27ae60; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
-                    <span style="color: #ffcc00; font-size: 12px; font-weight: bold;">WHATSAPP TOTAL INCOME</span>
-                    <div style="font-size: 20px; font-weight: bold; color: #fff;">৳ <span id="wa-income-val">0.00</span></div>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <div style="display: flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; margin-bottom: 8px;">
-                        🔗 <span>অ্যাকাউন্ট বাঁধুন</span>
+            <div class="wa-box-container" style="max-width: 420px; margin: 15px auto;">
+                <div class="wa-header-premium">
+                    <div class="wa-header-title">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width: 24px; height: 24px;" alt="WA">
+                        <h3>WhatsApp অটো টাস্ক</h3>
                     </div>
-                    <p style="color: #aaa; font-size: 11px; margin-bottom: 8px;">১. আপনার WhatsApp ফোন নম্বর লিখুন:</p>
+                    <button class="wa-close-btn" onclick="closeWhatsAppTaskModal()">✕</button>
+                </div>
+
+                <div class="wa-stats-card">
+                    <span class="wa-stats-title">WhatsApp Total Income</span>
+                    <div class="wa-stats-val">৳ <span id="wa-income-val">0.00</span></div>
+                </div>
+
+                <div style="margin-bottom: 18px;">
+                    <div class="wa-section-title">
+                        <span class="icon">🔗</span>
+                        <span>অ্যাকাউন্ট বাঁধুন</span>
+                    </div>
+                    <p style="color: #b0bec5; font-size: 11px; margin-bottom: 10px; line-height: 1.4;">
+                        ১. আপনার হোয়াটসঅ্যাপ ফোন নম্বর লিখে কোড জেনারেট করুন:
+                    </p>
                     
-                    <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-                        <div style="background: #2a2a2a; border: 1px solid #444; padding: 8px; border-radius: 6px; font-size: 13px; color: #ccc;">+880 ∨</div>
-                        <input type="number" id="wa-bind-input" class="input-control" placeholder="017XXXXXXXX" style="flex: 1; padding: 8px;">
-                        <button onclick="generateWaCode()" style="background: linear-gradient(135deg, #d35400, #f39c12); border: none; color: white; padding: 0 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">কোড পান</button>
+                    <div class="wa-input-wrapper">
+                        <div class="wa-country-badge">🇧🇩 +880</div>
+                        <input type="number" id="wa-bind-input" class="input-control" placeholder="017XXXXXXXX" style="flex: 1; padding: 10px; border-radius: 10px; font-weight: 600;">
+                        <button onclick="generateWaCode()" class="wa-get-btn">কোড পান ⚡</button>
                     </div>
 
-                    <p style="color: #888; font-size: 10px; text-align: center;">ফোনে WhatsApp খুলুন, নম্বরসহ লিংকে ট্যাপ করুন, তারপর এই কোডটি লিখুন!</p>
+                    <p style="color: #78909c; font-size: 10.5px; text-align: center; margin-top: 6px;">
+                        WhatsApp খুলে "Linked Devices" অপশন থেকে নিচে উৎপন্ন কোডটি টাইপ করুন!
+                    </p>
                     
                     <div class="wa-code-boxes" id="wa-code-container">
                         <div class="wa-code-box">-</div>
@@ -723,30 +908,32 @@
                         <div class="wa-code-box">-</div>
                         <div class="wa-code-box">-</div>
                     </div>
-                    <div style="text-align: center; margin-bottom: 10px;">
-                        <button onclick="copyWaCode()" style="background: #333; color: #ccc; border: 1px solid #555; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">📋 কোড কপি করুন</button>
+                    <div style="text-align: center; margin-bottom: 5px;">
+                        <button onclick="copyWaCode()" class="wa-copy-btn">
+                            📋 কোড কপি করুন
+                        </button>
                     </div>
                 </div>
 
-                <div style="margin-bottom: 15px; border-top: 1px solid #333; padding-top: 10px;">
-                    <div style="display: flex; align-items: center; gap: 5px; color: #fff; font-weight: bold; margin-bottom: 8px;">
-                        💬 <span>বাঁধা অ্যাকাউন্ট</span>
+                <div style="margin-bottom: 15px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+                    <div class="wa-section-title">
+                        <span class="icon">📱</span>
+                        <span>সক্রিয় বাঁধা অ্যাকাউন্টসমূহ</span>
                     </div>
                     <div id="wa-bound-list">
-                        <p style="color: #777; font-size: 11px;">কোনো WhatsApp নম্বর বাঁধা নেই</p>
+                        <p style="color: #78909c; font-size: 11px; text-align: center; padding: 10px 0;">কোনো WhatsApp নম্বর বাঁধা নেই</p>
                     </div>
                 </div>
 
-                <div style="border-top: 1px solid #333; padding-top: 10px;">
-                    <div style="color: #ffcc00; font-weight: bold; font-size: 12px; margin-bottom: 6px;">💡 বাঁধার নির্দেশনা</div>
-                    <ol style="color: #aaa; font-size: 11px; padding-left: 15px; line-height: 1.5;">
-                        <li>আপনার WhatsApp নম্বর লিখুন এবং যাচাইকরণ কোড পান ক্লিক করুন</li>
-                        <li>WhatsApp খুলুন</li>
-                        <li>সেটিংস (iPhone) বা "মেনু" (Android) ট্যাপ করুন</li>
-                        <li>লিংকড ডিভাইসে ট্যাপ করুন, ফোন নম্বর দিয়ে লিংক নির্বাচন করুন</li>
-                        <li>যাচাইকরণ কোড লিখুন</li>
-                        <li>কথোপকথন লোড হওয়ার সময় উভয় অ্যাপ খোলা ও নেটওয়ার্কে সংযুক্ত রাখুন</li>
-                        <li>একাধিক WhatsApp অ্যাকাউন্ট লিংক করুন</li>
+                <div class="wa-guide-box">
+                    <div style="color: #f1c40f; font-weight: bold; font-size: 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 5px;">
+                        💡 বাঁধার নির্দেশনা:
+                    </div>
+                    <ol style="color: #b0bec5; font-size: 11px; padding-left: 18px; line-height: 1.6;">
+                        <li>আপনার WhatsApp নম্বর দিন এবং "কোড পান" বাটনে চাপ দিন।</li>
+                        <li>মোবাইলে WhatsApp খুলে Settings > Linked Devices-এ যান।</li>
+                        <li>"Link with phone number instead" চেপে প্রাপ্ত কোড বসান।</li>
+                        <li>লিংক সফল হলে লিঙ্কে কানেক্ট রেখে সেন্ড করুন।</li>
                     </ol>
                 </div>
             </div>
@@ -1784,7 +1971,7 @@
             });
         }
 
-        // 💾 নম্বর, পাসওয়ার্ড বা ইউজার আইডি পরিবর্তন ও সেভ করার ফাংশন
+        // 💾 নম্বর, পাসওয়ার্ড বা ইউজার আইডি পরিবর্তন ও সেভ করার ফাংশন (ডুপ্লিকেট কোড সুরক্ষা যুক্ত)
         function saveUserEditChanges() {
             if (!searchedEditTargetUserKey) return;
 
@@ -1797,42 +1984,60 @@
                 return;
             }
 
-            let newKey = sanitizeKey(newUsername);
-
-            // যদি অ্যাডমিন নম্বর বা ইউজারনেম পরিবর্তন করতে চায়
-            if (newKey !== searchedEditTargetUserKey) {
-                db.ref('users/' + newKey).once('value').then((checkSnap) => {
-                    if (checkSnap.exists()) {
-                        alert("❌ এই নম্বর বা ইউজারনেমটি দিয়ে অন্য একটি অ্যাকাউন্ট তৈরি করা রয়েছে!");
-                        return;
+            // সিকিউরিটি চেক: রেফার কোড (User ID) টি অন্য কোনো আইডিতে ইতিমধ্যে ব্যবহার হচ্ছে কিনা
+            db.ref('users').once('value').then((snap) => {
+                let refCodeExistsInOtherUser = false;
+                
+                snap.forEach(child => {
+                    let uData = child.val();
+                    let uKey = child.key;
+                    if (uKey !== searchedEditTargetUserKey && uData.refCode === newRefCode) {
+                        refCodeExistsInOtherUser = true;
                     }
+                });
 
-                    // পুরোনো নোড থেকে সম্পূর্ণ ডাটা নিয়ে নতুন নোডে শিফট করা
-                    db.ref('users/' + searchedEditTargetUserKey).once('value').then((dataSnap) => {
-                        let userData = dataSnap.val();
-                        userData.username = newUsername;
-                        userData.password = newPassword;
-                        userData.refCode = newRefCode;
+                if (refCodeExistsInOtherUser) {
+                    alert("❌ এই রেফার কোডটি (User ID) অন্য একটি আইডিতে ইতিমধ্যে ব্যবহূত হচ্ছে! একই কোড দ্বিতীয় কোনো আইডিতে দেওয়া যাবে না।");
+                    return;
+                }
 
-                        // নতুন নম্বর দিয়ে অ্যাকাউন্ট সেভ এবং পুরোনো নোড ডিলিট
-                        db.ref('users/' + newKey).set(userData).then(() => {
-                            db.ref('users/' + searchedEditTargetUserKey).remove();
-                            alert("✅ ইউজারের নম্বর, পাসওয়ার্ড এবং ইউজার আইডি সফলভাবে পরিবর্তন ও সেভ হয়েছে!");
-                            closeAdminAccountEditModal();
+                let newKey = sanitizeKey(newUsername);
+
+                // যদি অ্যাডমিন নম্বর বা ইউজারনেম পরিবর্তন করতে চায়
+                if (newKey !== searchedEditTargetUserKey) {
+                    db.ref('users/' + newKey).once('value').then((checkSnap) => {
+                        if (checkSnap.exists()) {
+                            alert("❌ এই নম্বর বা ইউজারনেমটি দিয়ে অন্য একটি অ্যাকাউন্ট তৈরি করা রয়েছে!");
+                            return;
+                        }
+
+                        // পুরোনো নোড থেকে সম্পূর্ণ ডাটা নিয়ে নতুন নোডে শিফট করা
+                        db.ref('users/' + searchedEditTargetUserKey).once('value').then((dataSnap) => {
+                            let userData = dataSnap.val();
+                            userData.username = newUsername;
+                            userData.password = newPassword;
+                            userData.refCode = newRefCode;
+
+                            // নতুন নম্বর দিয়ে অ্যাকাউন্ট সেভ এবং পুরোনো নোড ডিলিট
+                            db.ref('users/' + newKey).set(userData).then(() => {
+                                db.ref('users/' + searchedEditTargetUserKey).remove();
+                                alert("✅ ইউজারের নম্বর, পাসওয়ার্ড এবং ইউজার আইডি সফলভাবে পরিবর্তন ও সেভ হয়েছে!");
+                                closeAdminAccountEditModal();
+                            });
                         });
                     });
-                });
-            } else {
-                // নম্বর একই রেখে পাসওয়ার্ড ও ইউজার আইডি আপডেট
-                db.ref('users/' + searchedEditTargetUserKey).update({
-                    username: newUsername,
-                    password: newPassword,
-                    refCode: newRefCode
-                }).then(() => {
-                    alert("✅ ইউজারের পাসওয়ার্ড ও রেফার আইডি সফলভাবে আপডেট হয়েছে!");
-                    closeAdminAccountEditModal();
-                });
-            }
+                } else {
+                    // নম্বর একই রেখে পাসওয়ার্ড ও ইউজার আইডি আপডেট
+                    db.ref('users/' + searchedEditTargetUserKey).update({
+                        username: newUsername,
+                        password: newPassword,
+                        refCode: newRefCode
+                    }).then(() => {
+                        alert("✅ ইউজারের পাসওয়ার্ড ও রেফার আইডি সফলভাবে আপডেট হয়েছে!");
+                        closeAdminAccountEditModal();
+                    });
+                }
+            });
         }
 
         function saveAdminGmailCredentials() {
@@ -2354,7 +2559,7 @@
             let activeNumbers = userBoundWaNumbers.filter(item => item.status === 'active');
 
             if (activeNumbers.length === 0) {
-                container.innerHTML = `<p style="color: #777; font-size: 11px;">কোনো সফলভাবে বাইন্ড করা WhatsApp নম্বর নেই</p>`;
+                container.innerHTML = `<p style="color: #78909c; font-size: 11px; text-align: center; padding: 10px 0;">কোনো সফলভাবে বাইন্ড করা WhatsApp নম্বর নেই</p>`;
                 return;
             }
 
@@ -2364,11 +2569,12 @@
                 
                 container.innerHTML += `
                     <div class="wa-number-item">
-                        <div>
-                            <span style="font-weight:bold; color:#ffcc00;">📱 +880 ${item.number}</span>
+                        <div style="display: flex; align-items: center;">
+                            <span class="wa-status-badge"></span>
+                            <span style="font-weight:bold; color:#ffffff; font-size: 13px;">+880 ${item.number}</span>
                         </div>
                         <div>
-                            <button id="send-btn-${actualIndex}" onclick="sendWaMessage(${actualIndex}, this)" style="background:#25d366; color:#fff; border:none; padding:5px 12px; border-radius:5px; font-weight:bold; cursor:pointer;">Send</button>
+                            <button id="send-btn-${actualIndex}" onclick="sendWaMessage(${actualIndex}, this)" style="background: linear-gradient(135deg, #2ecc71, #27ae60); color:#fff; border:none; padding:6px 14px; border-radius:8px; font-weight:bold; cursor:pointer; font-size: 12px; box-shadow: 0 2px 6px rgba(46,204,113,0.3);">Send 🚀</button>
                         </div>
                     </div>
                 `;
