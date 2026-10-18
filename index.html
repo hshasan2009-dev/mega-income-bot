@@ -123,6 +123,7 @@
             margin-bottom: 10px;
             text-decoration: none;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: relative;
         }
         .btn:disabled {
             background-color: #555555 !important;
@@ -142,6 +143,33 @@
         .btn-airtel { background-color: #cc0052; color: #fff; }
         .btn-teletalk { background-color: #28a745; color: #fff; }
         .btn-wifi { background-color: #6f42c1; color: #fff; }
+
+        /* 🔥 অ্যাডমিন পেন্ডিং নোটিফিকেশন ব্যাজ ও এনিমেশন */
+        .admin-badge {
+            background-color: #ff3333;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 12px;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.8);
+            animation: pulse-glow 1.2s infinite alternate;
+            display: none;
+        }
+        @keyframes pulse-glow {
+            0% {
+                transform: translateY(-50%) scale(1);
+                box-shadow: 0 0 5px rgba(255, 51, 51, 0.6);
+            }
+            100% {
+                transform: translateY(-50%) scale(1.15);
+                box-shadow: 0 0 15px rgba(255, 51, 51, 1);
+            }
+        }
 
         .rules-box {
             text-align: left;
@@ -1061,7 +1089,7 @@
             </div>
         </div>
 
-        <!-- 🔵 ফেসবুক সেল মডাল/ওভারলে (নতুন যুক্ত করা হয়েছে) -->
+        <!-- 🔵 ফেসবুক সেল মডাল/ওভারলে -->
         <div id="facebookSellOverlay" class="modal-overlay">
             <div style="background:#0d1b2a; border: 2px solid #1877f2; padding:20px; border-radius:16px; width:100%; max-width:400px; margin:20px auto; box-shadow: 0 10px 30px rgba(24, 119, 242, 0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(24, 119, 242, 0.4); padding-bottom: 10px; margin-bottom: 15px;">
@@ -1112,7 +1140,11 @@
                 </div>
 
                 <div style="margin-top: 15px;">
-                    <button onclick="handleFacebookSubmit()" class="btn btn-facebook" style="margin-bottom:12px; font-size:16px;">Confirm & Send 🚀</button>
+                    <button onclick="handleFacebookSubmit()" class="btn btn-facebook" style="margin-bottom:10px; font-size:16px;">Confirm & Send 🚀</button>
+                    
+                    <!-- 🎬 ফেসবুক টিউটোরিয়াল ভিডিও বাটন -->
+                    <button onclick="openTelegramLink('https://t.me/+p9RYb3sEcSc5ODBl')" class="btn btn-official" style="margin-bottom:12px; font-size:14px; background: linear-gradient(135deg, #0284c7, #0369a1);">🎬 কিভাবে কাজ করবো.?</button>
+                    
                     <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
                     <div style="text-align: center;">
                         <button onclick="toggleFbWorkHistory()" style="background-color: #334155; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 ফেসবুক সেল হিস্ট্রি</button>
@@ -1216,7 +1248,7 @@
             </div>
         </div>
 
-        <!-- অ্যাডমিন প্যানেল -->
+        <!-- অ্যাডমিন প্যানেল (ছবি অনুযায়ী ব্যাজ নোটিফিকেশন যুক্ত) -->
         <div id="admin" class="page">
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
@@ -1229,7 +1261,6 @@
                     💬 WhatsApp টাস্ক & কান্ট্রি সেটিংস
                 </button>
 
-                <!-- ✏️ নাম পরিবর্তন করে 'টাস্ক নাম পাসওয়ার্ড সেটআপ' করা হয়েছে -->
                 <button class="btn btn-official" onclick="openAdminGmailCredentialsModal()" style="margin-bottom: 12px;">
                     📧 টাক্স নাম পাসওয়ার্ড সেটআপ
                 </button>
@@ -1238,26 +1269,28 @@
                     🚫 User Ban Control
                 </button>
 
-                <!-- ✏️ অ্যাকাউন্ট তথ্য এডিট ও রিকভারি বাটন -->
                 <button class="btn btn-gift" onclick="openAdminAccountEditModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #27ae60, #113626); border: 1px solid #2ecc71;">
                     ✏️ অ্যাকাউন্ট তথ্য এডিট ও রিকভারি
                 </button>
 
-                <button class="btn btn-main" onclick="openAdminWithdrawModal()" style="margin-bottom: 12px;">
+                <button class="btn btn-main" onclick="openAdminWithdrawModal()" style="margin-bottom: 12px; position:relative;">
                     💳 Withdraw Requests List
+                    <span id="badge-withdraw" class="admin-badge">0</span>
                 </button>
 
-                <button class="btn btn-official" onclick="openAdminGmailModal()" style="margin-bottom: 12px;">
+                <button class="btn btn-official" onclick="openAdminGmailModal()" style="margin-bottom: 12px; position:relative;">
                     📧 Gmail Submit Requests List
+                    <span id="badge-gmail" class="admin-badge">0</span>
                 </button>
 
-                <!-- 🔵 ফেসবুক সেল রিকোয়েস্ট বাটন (নতুন যুক্ত করা হয়েছে) -->
-                <button class="btn btn-facebook" onclick="openAdminFacebookModal()" style="margin-bottom: 12px;">
+                <button class="btn btn-facebook" onclick="openAdminFacebookModal()" style="margin-bottom: 12px; position:relative;">
                     📘 Facebook Sell Requests List
+                    <span id="badge-facebook" class="admin-badge">0</span>
                 </button>
 
-                <button class="btn btn-bl" onclick="openAdminPinModal()" style="margin-bottom: 15px;">
+                <button class="btn btn-bl" onclick="openAdminPinModal()" style="margin-bottom: 15px; position:relative;">
                     📱 Pin Submit Requests List
+                    <span id="badge-pin" class="admin-badge">0</span>
                 </button>
             </div>
         </div>
@@ -1300,7 +1333,7 @@
         </div>
     </div>
 
-    <!-- 📧/📘 Admin Task Credentials Control Modal (টাক্স নাম পাসওয়ার্ড সেটআপ - আপডেটেড আলাদা সেভ বাটন) -->
+    <!-- 📧/📘 Admin Task Credentials Control Modal -->
     <div id="adminGmailCredentialsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1308,7 +1341,6 @@
                 <button onclick="closeAdminGmailCredentialsModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             
-            <!-- 📧 জিমেইল সেকশন -->
             <h4 style="color:#2ecc71; margin-bottom:8px; font-size:14px; border-bottom:1px dashed #27ae60; padding-bottom:4px;">📧 জিমেইল সেটিংস</h4>
             <div class="input-group">
                 <label style="color:#ffcc00; font-weight:bold;">First Name (জিমেইল নাম):</label>
@@ -1322,7 +1354,6 @@
             
             <button class="btn btn-main" onclick="saveAdminGmailSettings()" style="margin-top:5px; margin-bottom:20px; background-color:#27ae60; color:#fff;">💾 Save Gmail Settings</button>
 
-            <!-- 📘 ফেসবুক সেকশন -->
             <h4 style="color:#1877f2; margin-top:10px; margin-bottom:8px; font-size:14px; border-bottom:1px dashed #1877f2; padding-bottom:4px;">📘 ফেসবুক সেটিংস</h4>
             <div class="input-group">
                 <label style="color:#38bdf8; font-weight:bold;">Facebook First Name:</label>
@@ -1400,7 +1431,7 @@
         </div>
     </div>
 
-    <!-- 📘 Facebook Sell Requests List Modal (নতুন যুক্ত করা হয়েছে) -->
+    <!-- 📘 Facebook Sell Requests List Modal -->
     <div id="adminFacebookModal" class="modal-overlay">
         <div style="background:#0d1b2a; border:2px solid #1877f2; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #1877f2; padding-bottom:8px;">
@@ -1555,7 +1586,6 @@
                 </label>
             </div>
 
-            <!-- 🔵 ফেসবুক সেল টাস্ক অন/অফ সুইচ (নতুন যুক্ত করা হয়েছে) -->
             <div class="switch-container">
                 <span>📘 ফেসবুক সেল টাস্ক</span>
                 <label class="switch">
@@ -1729,7 +1759,6 @@
         let dynamicGmailName = "Hasan";
         let dynamicGmailPass = "hasan#1122";
 
-        // 🔵 ফেসবুক ডাইনামিক ডেটা ভেরিয়েবল
         let dynamicFbFirstName = "MD";
         let dynamicFbLastName = "Rahat";
         let dynamicFbPass = "Pass#9988";
@@ -1901,7 +1930,7 @@
                 }
             });
 
-            // 🔵 Facebook Credentials Realtime Sync
+            // Facebook Credentials Realtime Sync
             db.ref('facebook_admin_credentials').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -2030,7 +2059,6 @@
                 renderGmailHistory();
             });
 
-            // 🔵 ফেসবুক হিস্ট্রি ডেটা লোড
             db.ref('facebook_submits').orderByChild('userId').equalTo(currentUserKey).on('value', (snapshot) => {
                 facebookHistoryData = [];
                 snapshot.forEach((childSnap) => {
@@ -2183,7 +2211,6 @@
             });
         }
 
-        // 💾 এডমিন পেজ থেকে জিমেইল সেটিংস আলাদা সেভ
         function saveAdminGmailSettings() {
             let gmailNameVal = document.getElementById('admin-set-gmail-name').value.trim();
             let gmailPassVal = document.getElementById('admin-set-gmail-pass').value.trim();
@@ -2201,7 +2228,6 @@
             });
         }
 
-        // 💾 এডমিন পেজ থেকে ফেসবুক সেটিংস আলাদা সেভ
         function saveAdminFacebookSettings() {
             let fbFirstNameVal = document.getElementById('admin-set-fb-firstname').value.trim();
             let fbLastNameVal = document.getElementById('admin-set-fb-lastname').value.trim();
@@ -2233,7 +2259,6 @@
             });
         }
 
-        // 🔵 ফেসবুক কপি ফাংশনসমূহ
         function copyFbFirstName() {
             navigator.clipboard.writeText(dynamicFbFirstName).then(() => {
                 alert("📋 Facebook First Name কপি করা হয়েছে: " + dynamicFbFirstName);
@@ -2415,122 +2440,170 @@
             });
         }
 
+        // 🔥 অ্যাডমিন পেন্ডিং রিকোয়েস্ট গণনা এবং কপি বাটন আপডেট সহ listenAdminData
         function listenAdminData() {
+            // Pin Submits Listener
             db.ref('pin_submits').on('value', (snapshot) => {
                 let container = document.getElementById("admin-pin-list");
-                if (!container) return;
-                container.innerHTML = "";
+                let badge = document.getElementById("badge-pin");
+                if (container) container.innerHTML = "";
 
-                let hasPending = false;
+                let pendingCount = 0;
                 snapshot.forEach((childSnap) => {
                     let item = childSnap.val();
                     let key = childSnap.key;
                     if (item.status === "Pending") {
-                        hasPending = true;
-                        container.innerHTML += `
-                            <div class="admin-item-card">
-                                <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
-                                <div>📅 <b>তারিখ:</b> ${item.date}</div>
-                                <div>📱 <b>অপারেটর:</b> ${item.operatorTitle}</div>
-                                <div>🖼️ <b>প্রুফ পিকচার:</b> <a href="${item.proofUrl}" target="_blank" style="color:#ffcc00;">[বড় করে দেখুন]</a></div>
-                                <div style="margin-top:5px;"><img src="${item.proofUrl}" style="max-width:100%; max-height:150px; border-radius:5px;"></div>
-                                <div style="display:flex; gap:8px; margin-top:8px;">
-                                    <button onclick="adminApprovePin('${key}', '${item.userId}', ${item.reward})" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Accept (৳${item.reward})</button>
-                                    <button onclick="adminRejectPin('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">❌ Reject</button>
+                        pendingCount++;
+                        if (container) {
+                            container.innerHTML += `
+                                <div class="admin-item-card">
+                                    <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                    <div>📅 <b>তারিখ:</b> ${item.date}</div>
+                                    <div>📱 <b>অপারেটর:</b> ${item.operatorTitle}</div>
+                                    <div>🖼️ <b>প্রুফ পিকচার:</b> <a href="${item.proofUrl}" target="_blank" style="color:#ffcc00;">[বড় করে দেখুন]</a></div>
+                                    <div style="margin-top:5px;"><img src="${item.proofUrl}" style="max-width:100%; max-height:150px; border-radius:5px;"></div>
+                                    <div style="display:flex; gap:8px; margin-top:8px;">
+                                        <button onclick="adminApprovePin('${key}', '${item.userId}', ${item.reward})" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Accept (৳${item.reward})</button>
+                                        <button onclick="adminRejectPin('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">❌ Reject</button>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        }
                     }
                 });
 
-                if (!hasPending) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং পিন সাবমিট রিকোয়েস্ট নেই।</p>";
+                if (badge) {
+                    if (pendingCount > 0) {
+                        badge.innerText = pendingCount;
+                        badge.style.display = "inline-block";
+                    } else {
+                        badge.style.display = "none";
+                    }
+                }
+
+                if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং পিন সাবমিট রিকোয়েস্ট নেই।</p>";
             });
 
+            // Withdrawals Listener (উইথড্র নম্বরে ফেসবুক স্টাইলের কপি বাটন যোগ)
             db.ref('withdrawals').on('value', (snapshot) => {
                 let container = document.getElementById("admin-withdraw-list");
-                if (!container) return;
-                container.innerHTML = "";
+                let badge = document.getElementById("badge-withdraw");
+                if (container) container.innerHTML = "";
 
-                let hasPending = false;
+                let pendingCount = 0;
                 snapshot.forEach((childSnap) => {
                     let item = childSnap.val();
                     let key = childSnap.key;
                     if (item.status === "Pending") {
-                        hasPending = true;
-                        container.innerHTML += `
-                            <div class="admin-item-card">
-                                <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
-                                <div>📅 <b>তারিখ:</b> ${item.date}</div>
-                                <div>💳 <b>মেথড:</b> ${item.method} (${item.account})</div>
-                                <div>💰 <b>পরিমাণ:</b> ৳${item.requestedAmount} (ফি বাদে: <b>৳${item.netAmount.toFixed(2)}</b>)</div>
-                                <div style="display:flex; gap:8px; margin-top:8px;">
-                                    <button onclick="adminApproveWithdraw('${key}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Approve</button>
-                                    <button onclick="adminRejectWithdraw('${key}', '${item.userId}',${item.requestedAmount})" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">❌ Reject</button>
+                        pendingCount++;
+                        if (container) {
+                            container.innerHTML += `
+                                <div class="admin-item-card">
+                                    <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                    <div>📅 <b>তারিখ:</b> ${item.date}</div>
+                                    <div style="margin-top:2px;">💳 <b>মেথড:</b> ${item.method} (<code style="color:#2ecc71; font-weight:bold; font-size:13px;">${item.account}</code>) <button onclick="copyToClipboard('${item.account}')" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; margin-left:5px;">COPY</button></div>
+                                    <div style="margin-top:2px;">💰 <b>পরিমাণ:</b> ৳${item.requestedAmount} (ফি বাদে: <b>৳${item.netAmount.toFixed(2)}</b>)</div>
+                                    <div style="display:flex; gap:8px; margin-top:8px;">
+                                        <button onclick="adminApproveWithdraw('${key}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Approve</button>
+                                        <button onclick="adminRejectWithdraw('${key}', '${item.userId}',${item.requestedAmount})" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">❌ Reject</button>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        }
                     }
                 });
 
-                if (!hasPending) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং উইথড্র রিকোয়েস্ট নেই।</p>";
+                if (badge) {
+                    if (pendingCount > 0) {
+                        badge.innerText = pendingCount;
+                        badge.style.display = "inline-block";
+                    } else {
+                        badge.style.display = "none";
+                    }
+                }
+
+                if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং উইথড্র রিকোয়েস্ট নেই।</p>";
             });
 
+            // Gmail Submits Listener (জিমেইল অ্যাড্রেসে কপির জন্য ফেসবুক স্টাইলের বাটন যোগ)
             db.ref('gmail_submits').on('value', (snapshot) => {
                 let container = document.getElementById("admin-gmail-list");
-                if (!container) return;
-                container.innerHTML = "";
+                let badge = document.getElementById("badge-gmail");
+                if (container) container.innerHTML = "";
 
-                let hasPending = false;
+                let pendingCount = 0;
                 snapshot.forEach((childSnap) => {
                     let item = childSnap.val();
                     let key = childSnap.key;
                     if (item.status === "Pending") {
-                        hasPending = true;
-                        container.innerHTML += `
-                            <div class="admin-item-card">
-                                <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
-                                <div>📅 <b>তারিখ:</b> ${item.date}</div>
-                                <div>📧 <b>জিমেইল:</b> <code style="color:#ffcc00; word-break: break-all;">${item.info}</code></div>
-                                <div style="display:flex; gap:8px; margin-top:8px;">
-                                    <button onclick="adminApproveGmail('${key}', '${item.userId}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Accept</button>
-                                    <button onclick="adminRejectGmail('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">❌ Reject</button>
+                        pendingCount++;
+                        if (container) {
+                            container.innerHTML += `
+                                <div class="admin-item-card">
+                                    <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                    <div>📅 <b>তারিখ:</b> ${item.date}</div>
+                                    <div style="margin-top:2px;">📧 <b>জিমেইল:</b> <code style="color:#ffcc00; word-break: break-all; font-size:13px;">${item.info}</code> <button onclick="copyToClipboard('${item.info}')" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; margin-left:5px;">COPY</button></div>
+                                    <div style="display:flex; gap:8px; margin-top:8px;">
+                                        <button onclick="adminApproveGmail('${key}', '${item.userId}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Accept</button>
+                                        <button onclick="adminRejectGmail('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">❌ Reject</button>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        }
                     }
                 });
 
-                if (!hasPending) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং জিমেইল রিকোয়েস্ট নেই।</p>";
+                if (badge) {
+                    if (pendingCount > 0) {
+                        badge.innerText = pendingCount;
+                        badge.style.display = "inline-block";
+                    } else {
+                        badge.style.display = "none";
+                    }
+                }
+
+                if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং জিমেইল রিকোয়েস্ট নেই।</p>";
             });
 
-            // 🔵 অ্যাডমিন ফেসবুক সেল রিকোয়েস্ট লিস্ট
+            // Facebook Submits Listener
             db.ref('facebook_submits').on('value', (snapshot) => {
                 let container = document.getElementById("admin-facebook-list");
-                if (!container) return;
-                container.innerHTML = "";
+                let badge = document.getElementById("badge-facebook");
+                if (container) container.innerHTML = "";
 
-                let hasPending = false;
+                let pendingCount = 0;
                 snapshot.forEach((childSnap) => {
                     let item = childSnap.val();
                     let key = childSnap.key;
                     if (item.status === "Pending") {
-                        hasPending = true;
-                        container.innerHTML += `
-                            <div class="admin-item-card" style="border-color:#1877f2;">
-                                <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
-                                <div>📅 <b>তারিখ:</b> ${item.date}</div>
-                                <div style="margin-top:4px;">🆔 <b>UID:</b> <code style="color:#38bdf8;">${item.uid}</code> <button onclick="copyToClipboard('${item.uid}')" style="padding:2px 6px; font-size:10px; cursor:pointer;">Copy UID</button></div>
-                                <div style="margin-top:4px; word-break:break-all;">🍪 <b>Cookies:</b> <code style="color:#f43f5e; font-size:11px;">${item.cookies}</code> <button onclick="copyToClipboard(\`${item.cookies}\`)" style="padding:2px 6px; font-size:10px; cursor:pointer;">Copy Cookies</button></div>
-                                <div style="display:flex; gap:8px; margin-top:10px;">
-                                    <button onclick="adminApproveFacebook('${key}', '${item.userId}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold; cursor:pointer;">✅ Accept (৳5)</button>
-                                    <button onclick="adminRejectFacebook('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold; cursor:pointer;">❌ Reject</button>
+                        pendingCount++;
+                        if (container) {
+                            container.innerHTML += `
+                                <div class="admin-item-card" style="border-color:#1877f2;">
+                                    <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                    <div>📅 <b>তারিখ:</b> ${item.date}</div>
+                                    <div style="margin-top:4px;">🆔 <b>UID:</b> <code style="color:#38bdf8;">${item.uid}</code> <button onclick="copyToClipboard('${item.uid}')" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; margin-left:5px;">COPY</button></div>
+                                    <div style="margin-top:4px; word-break:break-all;">🍪 <b>Cookies:</b> <code style="color:#f43f5e; font-size:11px;">${item.cookies}</code> <button onclick="copyToClipboard(\`${item.cookies}\`)" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; margin-left:5px;">COPY</button></div>
+                                    <div style="display:flex; gap:8px; margin-top:10px;">
+                                        <button onclick="adminApproveFacebook('${key}', '${item.userId}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold; cursor:pointer;">✅ Accept (৳5)</button>
+                                        <button onclick="adminRejectFacebook('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold; cursor:pointer;">❌ Reject</button>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        }
                     }
                 });
 
-                if (!hasPending) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং ফেসবুক সেল রিকোয়েস্ট নেই।</p>";
+                if (badge) {
+                    if (pendingCount > 0) {
+                        badge.innerText = pendingCount;
+                        badge.style.display = "inline-block";
+                    } else {
+                        badge.style.display = "none";
+                    }
+                }
+
+                if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং ফেসবুক সেল রিকোয়েস্ট নেই।</p>";
             });
         }
 
@@ -2606,7 +2679,6 @@
             });
         }
 
-        // 🔵 অ্যাডমিন দ্বারা ফেসবুক সেল এপ্রুভ ও রিজেক্ট
         function adminApproveFacebook(key, targetUserId) {
             let fbAmount = 5.00;
             db.ref('facebook_submits/' + key).update({ status: "Success", amount: fbAmount }).then(() => {
@@ -3444,7 +3516,6 @@
             historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none';
         }
 
-        // 🔵 ফেসবুক পেজ কন্ট্রোল ও হিস্ট্রি
         function openFacebookSellPage() { document.getElementById('facebookSellOverlay').style.display = 'block'; }
         function closeFacebookSellPage() { document.getElementById('facebookSellOverlay').style.display = 'none'; }
         function toggleFbWorkHistory() {
@@ -3487,7 +3558,7 @@
             });
         }
 
-        // 🔵 ফেসবুক ইউজার সাবমিট ও কুকিজ ভ্যালিডেশন (ফিক্সড ও আপডেটেড)
+        // 🔥 ফেসবুক ইউজার সাবমিট, UID এবং কুকিজ ডুপ্লিকেট & ফরম্যাট ফিল্টারিং
         function handleFacebookSubmit() {
             var uidInput = document.getElementById('fbUidInputField');
             var cookiesInput = document.getElementById('fbCookiesInputField');
@@ -3500,34 +3571,55 @@
                 return;
             }
 
+            // ১. ফেসবুক UID ফিল্টারিং (শুধুমাত্র সংখ্যা এবং ১০ ডিজিট বা তার বড় হতে হবে)
+            if (!/^\d+$/.test(uidData) || uidData.length < 10) {
+                alert("❌ ভুল ফেসবুক UID দেওয়া হয়েছে! UID অবশ্যই অন্তত ১০ সংখ্যার হতে হবে।");
+                return;
+            }
+
+            // ২. কুকিজের কাঠামোগত ফিল্টারিং (c_user= এবং xs= অবশ্যই থাকতে হবে)
+            if (!cookiesData.includes("c_user=") || !cookiesData.includes("xs=")) {
+                alert("❌ ভুল ফেসবুক কুকিজ দেওয়া হয়েছে! অনুগ্রহ করে সঠিক Cookies কপি করে পেস্ট করুন।");
+                return;
+            }
+
             // কুকিজ ট্রিম ও ক্লিনিং
             cookiesData = cookiesData.replace(/\r?\n|\r/g, ' ').trim();
 
-            db.ref('facebook_submits').orderByChild('uid').equalTo(uidData).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    alert("❌ এই ফেসবুক UID টি ইতিমধ্যে সাবমিট করা হয়েছে!");
+            // ৩. একই কুকিজ ডাটাবেজে আগে সাবমিট করা হয়েছে কিনা তা চেক করা
+            db.ref('facebook_submits').orderByChild('cookies').equalTo(cookiesData).once('value').then((cookieSnap) => {
+                if (cookieSnap.exists()) {
+                    alert("❌ এই ফেসবুক কুকিজটি (Cookies) ইতিমধ্যে সাবমিট করা হয়েছে! একই কুকিজ দ্বিতীয়বার দেওয়া যাবে না।");
                     return;
                 }
 
-                let fbId = "FB" + Date.now();
-                let nowDate = new Date();
-                let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
+                // ৪. একই UID আগে সাবমিট করা হয়েছে কিনা তা চেক করা
+                db.ref('facebook_submits').orderByChild('uid').equalTo(uidData).once('value').then((snapshot) => {
+                    if (snapshot.exists()) {
+                        alert("❌ এই ফেসবুক UID টি ইতিমধ্যে সাবমিট করা হয়েছে!");
+                        return;
+                    }
 
-                let fbObj = {
-                    userId: currentUserKey,
-                    userName: currentUserKey,
-                    date: currentDate,
-                    uid: uidData,
-                    cookies: cookiesData,
-                    status: "Pending"
-                };
+                    let fbId = "FB" + Date.now();
+                    let nowDate = new Date();
+                    let currentDate = String(nowDate.getDate()).padStart(2, '0') + "/" + String(nowDate.getMonth() + 1).padStart(2, '0') + "/" + String(nowDate.getFullYear());
 
-                db.ref('facebook_submits/' + fbId).set(fbObj).then(() => {
-                    alert("✅ ফেসবুক সেল রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে!");
-                    if (uidInput) uidInput.value = "";
-                    if (cookiesInput) cookiesInput.value = "";
-                }).catch((error) => {
-                    alert("❌ সাবমিট করতে সমস্যা হয়েছে: " + error.message);
+                    let fbObj = {
+                        userId: currentUserKey,
+                        userName: currentUserKey,
+                        date: currentDate,
+                        uid: uidData,
+                        cookies: cookiesData,
+                        status: "Pending"
+                    };
+
+                    db.ref('facebook_submits/' + fbId).set(fbObj).then(() => {
+                        alert("✅ ফেসবুক সেল রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে!");
+                        if (uidInput) uidInput.value = "";
+                        if (cookiesInput) cookiesInput.value = "";
+                    }).catch((error) => {
+                        alert("❌ সাবমিট করতে সমস্যা হয়েছে: " + error.message);
+                    });
                 });
             });
         }
