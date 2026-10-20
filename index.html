@@ -18,6 +18,7 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
+            -webkit-tap-highlight-color: transparent; /* ক্লিক হাইলাইট এনিমেশন দ্রুত কাজের জন্য */
         }
         body {
             background-color: #0c2317;
@@ -54,6 +55,47 @@
             0% { left: -150%; }
             50% { left: 150%; }
             100% { left: 150%; }
+        }
+
+        /* 🌀 প্রিমিয়াম ভিডিও স্টাইল লগইন/সাইনআপ লোডিং ওভারলে */
+        #authLoadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #05140c;
+            z-index: 9999999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner-ring {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            padding: 7px;
+            background: conic-gradient(from 0deg, #2ecc71, #f1c40f, #e74c3c, #3498db, #2ecc71);
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff 0);
+            mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff 0);
+            animation: spinRing 1.2s linear infinite;
+            margin-bottom: 25px;
+        }
+
+        @keyframes spinRing {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title-text {
+            color: #f1c40f;
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
         }
 
         .top-title-bar {
@@ -139,13 +181,15 @@
             font-weight: bold;
         }
 
-        /* ✨ ৩. প্রিমিয়াম বাটন ক্লিক নড়াচড়া অ্যানিমেশন (নিচের ৪টি বাটন ছাড়া সকল বাটনের জন্য) ✨ */
+        /* ✨ ৩. প্রিমিয়াম বাটন ক্লিক ইনস্ট্যান্ট অ্যানিমেশন ✨ */
         .btn, .auth-btn, .wa-get-btn, .wa-copy-btn, .logout-btn-top {
-            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease;
+            transition: transform 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
+            touch-action: manipulation;
         }
 
         .btn:active, .auth-btn:active, .wa-get-btn:active, .wa-copy-btn:active, .logout-btn-top:active {
-            transform: scale(0.93) translateY(2px) rotate(-1deg);
+            transform: scale(0.93) translateY(2px) rotate(-0.5deg) !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4) !important;
         }
 
         .btn {
@@ -316,6 +360,11 @@
             background: none;
             border: none;
             padding: 4px 10px;
+            transition: transform 0.05s ease-in-out;
+            touch-action: manipulation;
+        }
+        .nav-item:active {
+            transform: scale(0.9) !important;
         }
         .nav-item .icon {
             font-size: 22px;
@@ -733,6 +782,12 @@
 </head>
 <body>
 
+    <!-- 🌀 প্রিমিয়াম লগইন/সাইনআপ কালারফুল লোডিং ওভারলে -->
+    <div id="authLoadingOverlay">
+        <div class="spinner-ring"></div>
+        <div class="loading-title-text">Mega Income</div>
+    </div>
+
     <!-- 🔐 লগইন ও সাইন-আপ ওভারলে মডাল -->
     <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: #07150d;">
         <!-- সাইন ইন পেজ -->
@@ -851,38 +906,8 @@
                     <button class="btn btn-whatsapp" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
                 </div>
             </div>
-            
-            <!-- ২. পিন সাবমিট টাস্ক -->
-            <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f; display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Pin Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
-                </div>
-            </div>
 
-            <!-- ৩. রেজিস্ট্রেশন টাস্ক -->
-            <div class="card" id="card-reg-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Registration Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
-                </div>
-            </div>
-
-            <!-- ৪. ভিডিও এডস টাস্ক -->
-            <div class="card" id="card-ad-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/2983/2983797.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Video Ads Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📺 ভিডিও এডস টাস্ক</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
-                </div>
-            </div>
-
-            <!-- ৫. জিমেইল সেল টাস্ক -->
+            <!-- ২. জিমেইল সেল টাস্ক -->
             <div class="card" id="card-gmail-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Gmail Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -892,13 +917,43 @@
                 </div>
             </div>
 
-            <!-- 🔵 ৬. ফেসবুক সেল টাস্ক (নতুন যুক্ত করা হয়েছে) -->
+            <!-- ৩. ফেসবুক সেল টাস্ক -->
             <div class="card" id="card-facebook-task" style="border: 2px solid #1877f2; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Facebook Logo">
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #1877f2; margin-bottom: 4px;">📘 ফেসবুক সেল টাস্ক</h3>
                     <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক ফেসবুক আইডি সেল করার জন্য ৫ টাকা পাবেন।</p>
                     <button class="btn btn-facebook" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('facebookTask', openFacebookSellPage)">ফেসবুক সেল করুন</button>
+                </div>
+            </div>
+
+            <!-- ৪. পিন সাবমিট টাস্ক -->
+            <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f; display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Pin Logo">
+                <div style="flex-grow: 1; width: 100%;">
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
+                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
+                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
+                </div>
+            </div>
+
+            <!-- ৫. রেজিস্ট্রেশন টাস্ক -->
+            <div class="card" id="card-reg-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Registration Logo">
+                <div style="flex-grow: 1; width: 100%;">
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
+                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
+                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
+                </div>
+            </div>
+
+            <!-- ৬. ভিডিও এডস টাস্ক -->
+            <div class="card" id="card-ad-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/2983/2983797.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Video Ads Logo">
+                <div style="flex-grow: 1; width: 100%;">
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📺 ভিডিও এডস টাস্ক</h3>
+                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
+                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
                 </div>
             </div>
 
@@ -1288,7 +1343,7 @@
             </div>
         </div>
 
-        <!-- অ্যাডমিন প্যানেল (ছবি অনুযায়ী ব্যাজ নোটিফিকেশন যুক্ত) -->
+        <!-- অ্যাডমিন প্যানেল -->
         <div id="admin" class="page">
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
@@ -1303,6 +1358,10 @@
 
                 <button class="btn btn-official" onclick="openAdminGmailCredentialsModal()" style="margin-bottom: 12px;">
                     📧 টাক্স নাম পাসওয়ার্ড সেটআপ
+                </button>
+
+                <button class="btn btn-gift" onclick="openGiftManagementModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #f39c12, #d35400);">
+                    🎁 Gift Code Management
                 </button>
 
                 <button class="btn btn-support" onclick="openAdminUserBanModal()" style="margin-bottom: 12px;">
@@ -1335,6 +1394,58 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- 🎁 Gift Code Management Modal -->
+    <div id="giftManagementModal" class="modal-overlay">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
+                <h3 style="color:#ffcc00; font-size:16px;">🎁 Gift Code Management</h3>
+                <button onclick="closeGiftManagementModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+
+            <button class="btn btn-gift" onclick="toggleNewGiftCodeForm()" style="margin-bottom:15px;">
+                ➕ Create a new Gift Code
+            </button>
+
+            <!-- Create / Edit Gift Code Form -->
+            <div id="giftCodeFormContainer" style="display:none; background:#081a11; border:1px solid #f39c12; padding:15px; border-radius:8px; margin-bottom:15px; text-align:left; position:relative;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h4 id="giftFormTitle" style="color:#ffcc00; font-size:14px; margin:0;">Create New Gift Code</h4>
+                    <button id="btnDeleteGiftCode" onclick="deleteGiftCode()" style="display:none; background:#e74c3c; color:#fff; border:none; padding:4px 10px; border-radius:5px; font-weight:bold; font-size:11px; cursor:pointer;">🗑 Delete</button>
+                </div>
+                
+                <div class="input-group">
+                    <label style="color:#aaa;">Gift Code:</label>
+                    <input type="text" id="gc-code-input" class="input-control" placeholder="যেমন: BONUS100" style="text-transform:uppercase;">
+                </div>
+
+                <div style="display:flex; gap:8px; margin-bottom:12px;">
+                    <div style="flex:1;">
+                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Amount (৳)</label>
+                        <input type="number" id="gc-amount-input" class="input-control" placeholder="50">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Limit (ইউজার সংখ্যা)</label>
+                        <input type="number" id="gc-limit-input" class="input-control" placeholder="100">
+                    </div>
+                    <div style="flex:1.2;">
+                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Time (যেমন 30min / 2hour / 1day)</label>
+                        <input type="text" id="gc-time-input" class="input-control" placeholder="2hour">
+                    </div>
+                </div>
+
+                <input type="hidden" id="gc-edit-key" value="">
+
+                <button class="btn btn-main" onclick="saveGiftCode()" style="margin-top:5px;">Save</button>
+            </div>
+
+            <!-- List of existing Gift Codes -->
+            <h4 style="color:#2ecc71; text-align:left; margin-bottom:10px; font-size:14px;">📜 সকল গিফট কোডের তালিকা:</h4>
+            <div id="admin-gift-list" style="max-height:300px; overflow-y:auto;">
+                <p style="color:#aaa; font-size:12px;">কোনো গিফট কোড পাওয়া যায়নি।</p>
+            </div>
+        </div>
     </div>
 
     <!-- ✏️ Admin User Edit & Recovery Modal -->
@@ -1595,6 +1706,22 @@
             </div>
 
             <div class="switch-container">
+                <span>📧 জিমেইল সেল টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-gmail" onchange="toggleTaskStatus('gmailTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>📘 ফেসবুক সেল টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-facebook" onchange="toggleTaskStatus('facebookTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
                 <span>📱 পিন সাবমিট টাস্ক</span>
                 <label class="switch">
                     <input type="checkbox" id="sw-pin" onchange="toggleTaskStatus('pinTask', this.checked)">
@@ -1614,22 +1741,6 @@
                 <span>📺 ভিডিও এডস টাস্ক</span>
                 <label class="switch">
                     <input type="checkbox" id="sw-ad" onchange="toggleTaskStatus('adTask', this.checked)">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="switch-container">
-                <span>📧 জিমেইল সেল টাস্ক</span>
-                <label class="switch">
-                    <input type="checkbox" id="sw-gmail" onchange="toggleTaskStatus('gmailTask', this.checked)">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="switch-container">
-                <span>📘 ফেসবুক সেল টাস্ক</span>
-                <label class="switch">
-                    <input type="checkbox" id="sw-facebook" onchange="toggleTaskStatus('facebookTask', this.checked)">
                     <span class="slider"></span>
                 </label>
             </div>
@@ -1795,6 +1906,7 @@
         let gmailHistoryData = [];
         let facebookHistoryData = [];
         let pinHistoryData = [];
+        let giftCodesList = [];
 
         let currentTaskIndex = 0;
         let taskOpenTimestamp = 0;
@@ -1853,6 +1965,16 @@
             return String(key).replace(/[.#$\[\]]/g, "_").toLowerCase().trim();
         }
 
+        function showAuthLoader() {
+            let loader = document.getElementById('authLoadingOverlay');
+            if (loader) loader.style.display = 'flex';
+        }
+
+        function hideAuthLoader() {
+            let loader = document.getElementById('authLoadingOverlay');
+            if (loader) loader.style.display = 'none';
+        }
+
         function handleSignup() {
             let fullNameInput = document.getElementById('signupFullName').value.trim();
             let uInput = document.getElementById('signupUsername').value.trim();
@@ -1870,10 +1992,13 @@
                 return;
             }
 
+            showAuthLoader();
+
             let uKey = sanitizeKey(uInput);
 
             db.ref('users/' + uKey).once('value').then((snap) => {
                 if (snap.exists()) {
+                    hideAuthLoader();
                     alert("❌ এই ইউজারনেম/ফোন দিয়ে একাউন্ট ইতিমধ্যে তৈরি করা আছে! লগইন করুন।");
                     toggleAuthMode('login');
                     return;
@@ -1910,12 +2035,19 @@
                 }
 
                 db.ref('users/' + uKey).set(newUserObj).then(() => {
-                    localStorage.setItem("loggedInUserKey", uKey);
-                    currentUserKey = uKey;
-                    document.getElementById('authModal').style.display = 'none';
-                    document.getElementById('logoutBtn').style.display = 'block';
-                    initFirebaseUserSync();
+                    setTimeout(() => {
+                        localStorage.setItem("loggedInUserKey", uKey);
+                        currentUserKey = uKey;
+                        hideAuthLoader();
+                        document.getElementById('authModal').style.display = 'none';
+                        document.getElementById('logoutBtn').style.display = 'block';
+                        initFirebaseUserSync();
+                    }, 1200);
+                }).catch(() => {
+                    hideAuthLoader();
                 });
+            }).catch(() => {
+                hideAuthLoader();
             });
         }
 
@@ -1928,10 +2060,13 @@
                 return;
             }
 
+            showAuthLoader();
+
             let uKey = sanitizeKey(uInput);
 
             db.ref('users/' + uKey).once('value').then((snap) => {
                 if (!snap.exists()) {
+                    hideAuthLoader();
                     alert("❌ কোনো অ্যাকাউন্ট পাওয়া যায়নি! আগে রেজিস্টার করুন।");
                     toggleAuthMode('signup');
                     return;
@@ -1939,15 +2074,21 @@
 
                 let val = snap.val();
                 if (val.password !== pInput) {
+                    hideAuthLoader();
                     alert("❌ পাসওয়ার্ড সঠিক নয়!");
                     return;
                 }
 
-                localStorage.setItem("loggedInUserKey", uKey);
-                currentUserKey = uKey;
-                document.getElementById('authModal').style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'block';
-                initFirebaseUserSync();
+                setTimeout(() => {
+                    localStorage.setItem("loggedInUserKey", uKey);
+                    currentUserKey = uKey;
+                    hideAuthLoader();
+                    document.getElementById('authModal').style.display = 'none';
+                    document.getElementById('logoutBtn').style.display = 'block';
+                    initFirebaseUserSync();
+                }, 1200);
+            }).catch(() => {
+                hideAuthLoader();
             });
         }
 
@@ -1981,6 +2122,7 @@
                 if (adminBtn) adminBtn.style.display = "flex";
                 listenAdminData();
                 listenBannedUsersList();
+                listenGiftCodesList();
             }
 
             // Gmail Credentials Realtime Sync
@@ -2177,6 +2319,158 @@
 
         function openAdminAccountEditModal() { document.getElementById('adminAccountEditModal').style.display = 'block'; }
         function closeAdminAccountEditModal() { document.getElementById('adminAccountEditModal').style.display = 'none'; }
+
+        function openGiftManagementModal() { document.getElementById('giftManagementModal').style.display = 'block'; }
+        function closeGiftManagementModal() { document.getElementById('giftManagementModal').style.display = 'none'; }
+
+        function toggleNewGiftCodeForm() {
+            let form = document.getElementById('giftCodeFormContainer');
+            if (form.style.display === 'none' || form.style.display === '') {
+                document.getElementById('giftFormTitle').innerText = "Create New Gift Code";
+                document.getElementById('gc-code-input').value = "";
+                document.getElementById('gc-code-input').disabled = false;
+                document.getElementById('gc-amount-input').value = "";
+                document.getElementById('gc-limit-input').value = "";
+                document.getElementById('gc-time-input').value = "";
+                document.getElementById('gc-edit-key').value = "";
+                document.getElementById('btnDeleteGiftCode').style.display = "none";
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+
+        function parseTimeStringToMs(timeStr) {
+            if (!timeStr) return 0;
+            timeStr = timeStr.trim().toLowerCase();
+            let num = parseFloat(timeStr);
+            if (isNaN(num)) return 0;
+            if (timeStr.includes("min")) return num * 60 * 1000;
+            if (timeStr.includes("hour")) return num * 60 * 60 * 1000;
+            if (timeStr.includes("day")) return num * 24 * 60 * 60 * 1000;
+            return num * 60 * 60 * 1000; // default hours
+        }
+
+        function saveGiftCode() {
+            let code = document.getElementById('gc-code-input').value.trim().toUpperCase();
+            let amount = parseFloat(document.getElementById('gc-amount-input').value);
+            let limit = parseInt(document.getElementById('gc-limit-input').value);
+            let timeStr = document.getElementById('gc-time-input').value.trim();
+            let editKey = document.getElementById('gc-edit-key').value;
+
+            if (!code || isNaN(amount) || isNaN(limit) || !timeStr) {
+                alert("⚠️ সবকটি ঘর সঠিকভাবে পূরণ করুন!");
+                return;
+            }
+
+            let durationMs = parseTimeStringToMs(timeStr);
+            if (durationMs <= 0) {
+                alert("⚠️ সঠিক Time দিন! (যেমন: 30min, 2hour, 1day)");
+                return;
+            }
+
+            let now = Date.now();
+            let expireTime = now + durationMs;
+
+            if (editKey) {
+                db.ref('gift_codes/' + editKey).update({
+                    amount: amount,
+                    limit: limit,
+                    timeStr: timeStr,
+                    expire: expireTime
+                }).then(() => {
+                    alert("✅ গিফট কোড সফলভাবে আপডেট করা হয়েছে!");
+                    document.getElementById('giftCodeFormContainer').style.display = 'none';
+                });
+            } else {
+                let codeKey = sanitizeKey(code);
+                db.ref('gift_codes/' + codeKey).once('value').then((snap) => {
+                    if (snap.exists()) {
+                        alert("❌ এই গিফট কোডটি ইতিমধ্যে বিদ্যমান!");
+                        return;
+                    }
+
+                    let newGift = {
+                        code: code,
+                        amount: amount,
+                        limit: limit,
+                        timeStr: timeStr,
+                        usedCount: 0,
+                        createdAt: now,
+                        expire: expireTime
+                    };
+
+                    db.ref('gift_codes/' + codeKey).set(newGift).then(() => {
+                        alert("✅ নতুন গিফট কোড সফলভাবে চালু করা হয়েছে!");
+                        document.getElementById('giftCodeFormContainer').style.display = 'none';
+                    });
+                });
+            }
+        }
+
+        function deleteGiftCode() {
+            let editKey = document.getElementById('gc-edit-key').value;
+            if (!editKey) return;
+
+            if (confirm("আপনি কি নিশ্চিৎ যে এই গিফট কোডটি মুছে ফেলতে চান?")) {
+                db.ref('gift_codes/' + editKey).remove().then(() => {
+                    alert("🗑️ গিফট কোডটি সফলভাবে ডিলিট করা হয়েছে!");
+                    document.getElementById('giftCodeFormContainer').style.display = 'none';
+                });
+            }
+        }
+
+        function listenGiftCodesList() {
+            db.ref('gift_codes').on('value', (snapshot) => {
+                let container = document.getElementById('admin-gift-list');
+                if (!container) return;
+
+                container.innerHTML = "";
+                giftCodesList = [];
+
+                snapshot.forEach((child) => {
+                    let item = child.val();
+                    item.key = child.key;
+                    giftCodesList.push(item);
+                });
+
+                if (giftCodesList.length === 0) {
+                    container.innerHTML = `<p style="color:#aaa; font-size:12px;">কোনো গিফট কোড পাওয়া যায়নি।</p>`;
+                    return;
+                }
+
+                giftCodesList.forEach((item, index) => {
+                    let used = item.usedCount || 0;
+                    container.innerHTML += `
+                        <div class="admin-item-card" style="display:flex; justify-content:space-between; align-items:center; border-color:#f39c12; margin-bottom:8px;">
+                            <div>
+                                <div style="color:#ffcc00; font-weight:bold; font-size:14px;">${index + 1}. Code:${item.code}</div>
+                                <div style="color:#fff; font-size:12px; margin-top:2px;">Amount: <b>৳${item.amount}</b> \vert{} Use: <b>${used} / ${item.limit}</b> \vert{} Time: <b>${item.timeStr || ''}</b></div>
+                            </div>
+                            <button onclick="editGiftCode('${item.key}')" style="background:#2980b9; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Edit</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function editGiftCode(key) {
+            db.ref('gift_codes/' + key).once('value').then((snap) => {
+                if (!snap.exists()) return;
+                let val = snap.val();
+
+                document.getElementById('giftFormTitle').innerText = "Edit Gift Code";
+                document.getElementById('gc-code-input').value = val.code;
+                document.getElementById('gc-code-input').disabled = true;
+                document.getElementById('gc-amount-input').value = val.amount;
+                document.getElementById('gc-limit-input').value = val.limit;
+                document.getElementById('gc-time-input').value = val.timeStr || "";
+                document.getElementById('gc-edit-key').value = key;
+
+                document.getElementById('btnDeleteGiftCode').style.display = "inline-block";
+                document.getElementById('giftCodeFormContainer').style.display = 'block';
+            });
+        }
 
         function searchUserForEdit() {
             let searchInput = document.getElementById('edit-search-userid').value.trim();
@@ -2552,7 +2846,7 @@
                 if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং পিন সাবমিট রিকোয়েস্ট নেই।</p>";
             });
 
-            // Withdrawals Listener (উইথড্র নম্বরে ফেসবুক স্টাইলের কপি বাটন যোগ)
+            // Withdrawals Listener
             db.ref('withdrawals').on('value', (snapshot) => {
                 let container = document.getElementById("admin-withdraw-list");
                 let badge = document.getElementById("badge-withdraw");
@@ -2593,7 +2887,7 @@
                 if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং উইথড্র রিকোয়েস্ট নেই।</p>";
             });
 
-            // Gmail Submits Listener (জিমেইল অ্যাড্রেসে কপির জন্য ফেসবুক স্টাইলের বাটন যোগ)
+            // Gmail Submits Listener
             db.ref('gmail_submits').on('value', (snapshot) => {
                 let container = document.getElementById("admin-gmail-list");
                 let badge = document.getElementById("badge-gmail");
@@ -3383,12 +3677,6 @@
             alert(`🎉 অভিনন্দন! দিন ${checkinStreak}-এর সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
         }
 
-        const validGiftCodes = {
-            "SIYAM1122": { amount: 50.00, expire: Date.now() + 600000 * 7 },
-            "SPESHALGIFT50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
-            "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
-        };
-
         window.onload = function() {
             if (currentUserKey) {
                 document.getElementById('authModal').style.display = 'none';
@@ -3459,23 +3747,41 @@
             
             if (!code) { alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!"); return; }
 
-            let codeObj = validGiftCodes[code];
-            if (!codeObj) { alert("❌ ভুল বা Invalid গিফট কোড!"); return; }
+            let codeKey = sanitizeKey(code);
 
-            if (Date.now() > codeObj.expire) { alert("❌ এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!"); return; }
-
-            db.ref(`used_gifts/${currentUserKey}/${code}`).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
+            db.ref('gift_codes/' + codeKey).once('value').then((snapshot) => {
+                if (!snapshot.exists()) {
+                    alert("❌ ভুল বা Invalid গিফট কোড!");
                     return;
                 }
 
-                db.ref(`used_gifts/${currentUserKey}/${code}`).set(true);
-                currentBalance += codeObj.amount;
-                updateFirebaseProfile();
-                updateUI();
-                closeGiftModal();
-                alert(`🎉 অভিনন্দন! ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
+                let giftObj = snapshot.val();
+
+                if (Date.now() > giftObj.expire) {
+                    alert("❌ এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
+                    return;
+                }
+
+                if ((giftObj.usedCount || 0) >= giftObj.limit) {
+                    alert("❌ লিমিট শেষ হয়ে গেছে!");
+                    return;
+                }
+
+                db.ref(`used_gifts/${currentUserKey}/${codeKey}`).once('value').then((usedSnap) => {
+                    if (usedSnap.exists()) {
+                        alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
+                        return;
+                    }
+
+                    db.ref(`used_gifts/${currentUserKey}/${codeKey}`).set(true);
+                    db.ref('gift_codes/' + codeKey + '/usedCount').transaction((count) => (count || 0) + 1);
+
+                    currentBalance += parseFloat(giftObj.amount || 0);
+                    updateFirebaseProfile();
+                    updateUI();
+                    closeGiftModal();
+                    alert(`🎉 অভিনন্দন! ৳${parseFloat(giftObj.amount).toFixed(2)} যোগ হয়েছে!`);
+                });
             });
         }
 
@@ -3639,29 +3945,28 @@
                 return;
             }
 
-            // ১. ফেসবুক UID ফিল্টারিং (শুধুমাত্র সংখ্যা এবং ১০ ডিজিট বা তার বড় হতে হবে)
+            // ১. ফেসবুক UID ফিল্টারিং
             if (!/^\d+$/.test(uidData) || uidData.length < 10) {
                 alert("❌ ভুল ফেসবুক UID দেওয়া হয়েছে! UID অবশ্যই অন্তত ১০ সংখ্যার হতে হবে।");
                 return;
             }
 
-            // ২. কুকিজের কাঠামোগত ফিল্টারিং (c_user= এবং xs= অবশ্যই থাকতে হবে)
+            // ২. কুকিজের কাঠামোগত ফিল্টারিং
             if (!cookiesData.includes("c_user=") || !cookiesData.includes("xs=")) {
                 alert("❌ ভুল ফেসবুক কুকিজ দেওয়া হয়েছে! অনুগ্রহ করে সঠিক Cookies কপি করে পেস্ট করুন।");
                 return;
             }
 
-            // কুকিজ ট্রিম ও ক্লিনিং
             cookiesData = cookiesData.replace(/\r?\n|\r/g, ' ').trim();
 
-            // ৩. একই কুকিজ ডাটাবেজে আগে সাবমিট করা হয়েছে কিনা তা চেক করা
+            // ৩. একই কুকিজ ডাটাবেজে আগে সাবমিট করা হয়েছে কিনা চেক করা
             db.ref('facebook_submits').orderByChild('cookies').equalTo(cookiesData).once('value').then((cookieSnap) => {
                 if (cookieSnap.exists()) {
                     alert("❌ এই ফেসবুক কুকিজটি (Cookies) ইতিমধ্যে সাবমিট করা হয়েছে! একই কুকিজ দ্বিতীয়বার দেওয়া যাবে না।");
                     return;
                 }
 
-                // ৪. একই UID আগে সাবমিট করা হয়েছে কিনা তা চেক করা
+                // ৪. একই UID আগে সাবমিট করা হয়েছে কিনা চেক করা
                 db.ref('facebook_submits').orderByChild('uid').equalTo(uidData).once('value').then((snapshot) => {
                     if (snapshot.exists()) {
                         alert("❌ এই ফেসবুক UID টি ইতিমধ্যে সাবমিট করা হয়েছে!");
@@ -3815,4 +4120,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
