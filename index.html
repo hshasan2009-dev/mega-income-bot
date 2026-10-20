@@ -12,6 +12,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <style>
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -29,6 +35,67 @@
             overflow-x: hidden;
         }
 
+        /* 🌈 ১. প্রিমিয়াম কালারফুল লোডার স্ক্রিন অ্যানিমেশন */
+        #appLoaderOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #05100a;
+            z-index: 9999999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .colorful-spinner {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(#ff007f, #7f00ff, #00f0ff, #00ff66, #ffcc00, #ff007f);
+            animation: spinLoader 1.2s linear infinite;
+            position: relative;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+        }
+
+        .colorful-spinner::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: #05100a;
+            border-radius: 50%;
+        }
+
+        @keyframes spinLoader {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-title-text {
+            margin-top: 25px;
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            background: linear-gradient(90deg, #ff007f, #7f00ff, #00f0ff, #00ff66, #ffcc00, #ff007f);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbowText 2.5s ease infinite;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes rainbowText {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ✨ শিমার ব্যাকগ্রাউন্ড অ্যানিমেশন ✨ */
         body::before {
             content: '';
             position: fixed;
@@ -139,9 +206,29 @@
             font-weight: bold;
         }
 
+        /* 💖 ঝকমকে বাটন অ্যানিমেশন (Glow Border & Click Animation) */
         .btn, .auth-btn, .wa-get-btn, .wa-copy-btn, .logout-btn-top {
+            position: relative;
+            z-index: 1;
             transition: transform 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
             touch-action: manipulation;
+        }
+
+        .btn::after, .auth-btn::after {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: conic-gradient(from var(--angle), #ff007f, #00f0ff, #00ff66, #ffcc00, #ff007f);
+            border-radius: inherit;
+            z-index: -1;
+            animation: rotateGlow 3s linear infinite;
+            opacity: 0.7;
+            filter: blur(4px);
+        }
+
+        @keyframes rotateGlow {
+            0% { --angle: 0deg; }
+            100% { --angle: 360deg; }
         }
 
         .btn:active, .auth-btn:active, .wa-get-btn:active, .wa-copy-btn:active, .logout-btn-top:active {
@@ -165,7 +252,6 @@
             margin-bottom: 10px;
             text-decoration: none;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            position: relative;
         }
         .btn:disabled {
             background-color: #555555 !important;
@@ -736,7 +822,15 @@
 </head>
 <body>
 
+    <!-- 🌈 লোডার স্ক্রিন ওভারলে -->
+    <div id="appLoaderOverlay">
+        <div class="colorful-spinner"></div>
+        <div class="loader-title-text">Mega Income</div>
+    </div>
+
+    <!-- 🔐 লগইন ও সাইন-আপ ওভারলে মডাল -->
     <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: #07150d;">
+        <!-- সাইন ইন পেজ -->
         <div id="loginBox" class="auth-card">
             <div class="auth-logo">🚀</div>
             <div class="auth-title">Mega Income Bot</div>
@@ -758,6 +852,7 @@
             <div class="auth-switch">Don't have an account? <a onclick="toggleAuthMode('signup')">Sign Up</a></div>
         </div>
 
+        <!-- সাইন আপ পেজ -->
         <div id="signupBox" class="auth-card" style="display: none;">
             <div class="auth-logo">🚀</div>
             <div class="auth-title">Mega Income Bot</div>
@@ -795,6 +890,7 @@
         </div>
     </div>
 
+    <!-- 🚫 ইউজার ব্যান এলার্ট পপআপ -->
     <div id="bannedUserOverlay" class="modal-overlay" style="z-index: 999999; background: rgba(10, 5, 5, 0.98); align-items: center; justify-content: center;">
         <div style="background: linear-gradient(145deg, #2c0b0e, #1a0507); border: 2px solid #e74c3c; border-radius: 16px; padding: 25px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4); margin: auto;">
             <div style="font-size: 50px; margin-bottom: 10px;">🚫</div>
@@ -811,6 +907,7 @@
 
     <div class="container">
 
+        <!-- হোম পেজ -->
         <div id="home" class="page active">
             <div class="balance-card">
                 <div class="balance-title">TOTAL BALANCE</div>
@@ -837,8 +934,8 @@
             </div>
         </div>
 
+        <!-- টাস্ক পেজ -->
         <div id="task" class="page">
-
             <div class="card" id="card-wa-task" style="border: 2px solid #25d366; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="WhatsApp Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -903,6 +1000,7 @@
             </div>
         </div>
 
+        <!-- 📅 ডেইলি সাইন-ইন মডাল -->
         <div id="dailyCheckinModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center; color:#fff;">
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #27ae60; padding-bottom:8px; margin-bottom:15px;">
@@ -931,6 +1029,7 @@
             </div>
         </div>
 
+        <!-- 💬 হোয়াটসঅ্যাপ মডাল -->
         <div id="waTaskModal" class="modal-overlay">
             <div class="wa-box-container" style="max-width: 420px; margin: 15px auto;">
                 <div class="wa-header-premium">
@@ -1006,6 +1105,7 @@
             </div>
         </div>
 
+        <!-- 📱 পিন সাবমিট সিলেক্ট মডাল -->
         <div id="pinSubmitModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
                 <div style="text-align: right; margin-bottom: 10px;">
@@ -1031,6 +1131,7 @@
             </div>
         </div>
 
+        <!-- 📱 পিন অফার মডাল -->
         <div id="pinTaskWorkModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
                 <div style="text-align: right; margin-bottom: 10px;">
@@ -1062,6 +1163,7 @@
             </div>
         </div>
 
+        <!-- জিমেইল সেল ওভারলে -->
         <div id="gmailSellOverlay" class="modal-overlay">
             <div style="background:#113626; border: 2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27ae60; padding-bottom: 8px; margin-bottom: 15px;">
@@ -1114,6 +1216,7 @@
             </div>
         </div>
 
+        <!-- 🔵 ফেসবুক সেল মডাল -->
         <div id="facebookSellOverlay" class="modal-overlay">
             <div style="background:#0d1b2a; border: 2px solid #1877f2; padding:20px; border-radius:16px; width:100%; max-width:400px; margin:20px auto; box-shadow: 0 10px 30px rgba(24, 119, 242, 0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(24, 119, 242, 0.4); padding-bottom: 10px; margin-bottom: 15px;">
@@ -1165,7 +1268,6 @@
 
                 <div style="margin-top: 15px;">
                     <button onclick="handleFacebookSubmit()" class="btn btn-facebook" style="margin-bottom:10px; font-size:16px;">Confirm & Send 🚀</button>
-                    
                     <button onclick="openTelegramLink('https://t.me/+p9RYb3sEcSc5ODBl')" class="btn btn-official" style="margin-bottom:12px; font-size:14px; background: linear-gradient(135deg, #0284c7, #0369a1);">🎬 কিভাবে কাজ করবো.?</button>
                     
                     <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
@@ -1181,6 +1283,7 @@
             </div>
         </div>
 
+        <!-- রেজিস্ট্রেশন টাস্ক পপআপ -->
         <div id="reg-task-modal" class="modal-overlay" style="align-items:center; justify-content:center;">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:380px; text-align:center; margin:auto;">
                 <h3 style="color:#ffcc00; margin-bottom:10px;">✨ রেজিস্ট্রেশন টাস্ক</h3>
@@ -1193,6 +1296,7 @@
             </div>
         </div>
 
+        <!-- রেফার পেজ -->
         <div id="refer" class="page">
             <div class="card">
                 <h3>👥 ইনভাইট ও ইনকাম</h3>
@@ -1225,6 +1329,7 @@
             </div>
         </div>
 
+        <!-- উইথড্র পেজ -->
         <div id="withdraw" class="page">
             <div class="card">
                 <h3>💳 টাকা তুলুন</h3>
@@ -1268,6 +1373,7 @@
             </div>
         </div>
 
+        <!-- অ্যাডমিন প্যানেল -->
         <div id="admin" class="page">
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
@@ -1358,13 +1464,14 @@
 
                 <input type="hidden" id="gc-edit-key" value="">
 
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-main" onclick="saveGiftCode()" style="margin-top:5px; flex: 1;">Save</button>
-                    <!-- লাল দাগ দিয়ে চিহ্নিত স্থানে নতুন ডিলিট বাটন যুক্ত করা হলো -->
-                    <button class="btn" id="gc-delete-btn" onclick="deleteGiftCode()" style="margin-top:5px; background-color: #e74c3c; flex: 1; display: none;">Delete</button>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn btn-main" onclick="saveGiftCode()" style="flex: 1;">Save</button>
+                    <!-- 🗑️ লাল ডিলিট বাটন -->
+                    <button class="btn" id="gc-delete-btn" onclick="deleteCurrentGiftCode()" style="display: none; flex: 1; background-color: #e74c3c; color: #ffffff;">Delete Gift Code 🗑️</button>
                 </div>
             </div>
 
+            <!-- List of existing Gift Codes -->
             <h4 style="color:#2ecc71; text-align:left; margin-bottom:10px; font-size:14px;">📜 সকল গিফট কোডের তালিকা:</h4>
             <div id="admin-gift-list" style="max-height:300px; overflow-y:auto;">
                 <p style="color:#aaa; font-size:12px;">কোনো গিফট কোড পাওয়া যায়নি।</p>
@@ -1372,6 +1479,7 @@
         </div>
     </div>
 
+    <!-- ✏️ Admin User Edit & Recovery Modal -->
     <div id="adminAccountEditModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1407,6 +1515,7 @@
         </div>
     </div>
 
+    <!-- 📧/📘 Admin Task Credentials Control Modal -->
     <div id="adminGmailCredentialsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1445,6 +1554,7 @@
         </div>
     </div>
 
+    <!-- 🚫 User Ban Control Modal -->
     <div id="adminUserBanModal" class="modal-overlay">
         <div style="background: linear-gradient(135deg, #102a1d, #08150f); border: 2px solid #e74c3c; padding: 20px; border-radius: 12px; width: 100%; max-width: 440px; margin: 20px auto; color: #fff; box-shadow: 0 5px 20px rgba(0,0,0,0.6);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e74c3c; padding-bottom:8px;">
@@ -1481,6 +1591,7 @@
         </div>
     </div>
 
+    <!-- 💳 Withdraw Requests List Modal -->
     <div id="adminWithdrawModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1491,6 +1602,7 @@
         </div>
     </div>
 
+    <!-- 📧 Gmail Submit Requests List Modal -->
     <div id="adminGmailModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1501,6 +1613,7 @@
         </div>
     </div>
 
+    <!-- 📘 Facebook Sell Requests List Modal -->
     <div id="adminFacebookModal" class="modal-overlay">
         <div style="background:#0d1b2a; border:2px solid #1877f2; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #1877f2; padding-bottom:8px;">
@@ -1511,6 +1624,7 @@
         </div>
     </div>
 
+    <!-- 📱 Pin Submit Requests List Modal -->
     <div id="adminPinModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1521,6 +1635,7 @@
         </div>
     </div>
 
+    <!-- 💬 WhatsApp Task Settings Modal -->
     <div id="adminWaSettingsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #25d366; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1605,6 +1720,7 @@
         </div>
     </div>
 
+    <!-- অ্যাডমিন অন-অফ কন্ট্রোল মডাল -->
     <div id="adminTaskControlModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -1670,6 +1786,7 @@
         </div>
     </div>
 
+    <!-- ✨ ন্যাভবার ✨ -->
     <div class="navbar" id="app-navbar">
         <button class="nav-item active" onclick="switchTab('home', this)">
             <span class="icon">
@@ -1721,6 +1838,7 @@
         </button>
     </div>
 
+    <!-- গিফট কোড মডেল -->
     <div id="giftModal" class="modal-overlay" style="align-items:center; justify-content:center;">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:350px; text-align:center; margin:auto;">
             <h3 style="color:#ffcc00; margin-bottom:10px;">🎁 গিফট কোড রিডিম</h3>
@@ -1770,6 +1888,20 @@
 
         let urlParams = new URLSearchParams(window.location.search);
         detectedStartParam = tg?.initDataUnsafe?.start_param || urlParams.get('startapp') || urlParams.get('start') || urlParams.get('ref');
+
+        // ✨ অ্যাপ লোডার প্লে স্ক্রিপ্ট
+        function triggerColorfulLoader(callback) {
+            let loader = document.getElementById('appLoaderOverlay');
+            if (loader) {
+                loader.style.display = 'flex';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    if (callback) callback();
+                }, 2200);
+            } else {
+                if (callback) callback();
+            }
+        }
 
         function openTelegramLink(url) {
             if (tg && tg.openTelegramLink && url.includes("t.me")) {
@@ -1938,8 +2070,10 @@
                     localStorage.setItem("loggedInUserKey", uKey);
                     currentUserKey = uKey;
                     document.getElementById('authModal').style.display = 'none';
-                    document.getElementById('logoutBtn').style.display = 'block';
-                    initFirebaseUserSync();
+                    triggerColorfulLoader(() => {
+                        document.getElementById('logoutBtn').style.display = 'block';
+                        initFirebaseUserSync();
+                    });
                 });
             });
         }
@@ -1971,8 +2105,10 @@
                 localStorage.setItem("loggedInUserKey", uKey);
                 currentUserKey = uKey;
                 document.getElementById('authModal').style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'block';
-                initFirebaseUserSync();
+                triggerColorfulLoader(() => {
+                    document.getElementById('logoutBtn').style.display = 'block';
+                    initFirebaseUserSync();
+                });
             });
         }
 
@@ -2207,6 +2343,7 @@
 
         function toggleNewGiftCodeForm() {
             let form = document.getElementById('giftCodeFormContainer');
+            let deleteBtn = document.getElementById('gc-delete-btn');
             if (form.style.display === 'none' || form.style.display === '') {
                 document.getElementById('giftFormTitle').innerText = "Create New Gift Code";
                 document.getElementById('gc-code-input').value = "";
@@ -2215,9 +2352,7 @@
                 document.getElementById('gc-limit-input').value = "";
                 document.getElementById('gc-time-input').value = "";
                 document.getElementById('gc-edit-key').value = "";
-                // ক্রিয়েট করার সময় ডিলিট বাটন লুকিয়ে রাখা হবে
-                let delBtn = document.getElementById('gc-delete-btn');
-                if (delBtn) delBtn.style.display = 'none';
+                if(deleteBtn) deleteBtn.style.display = "none";
                 form.style.display = 'block';
             } else {
                 form.style.display = 'none';
@@ -2292,22 +2427,20 @@
             }
         }
 
-        // কঠোর নিয়মের সাথে গিফট কোড ডিলিট করার ফাংশন
-        function deleteGiftCode() {
+        /* 🗑️ গিফট কোড ডিলিট করার ফাংশন */
+        function deleteCurrentGiftCode() {
             let editKey = document.getElementById('gc-edit-key').value;
-            let codeText = document.getElementById('gc-code-input').value;
             if (!editKey) return;
 
-            if (confirm(`⚠️ আপনি কি নিশ্চিত যে '${codeText}' গিফট কোডটি চিরতরে ডিলিট করতে চান? ডিলিট করার পর এই কোড আর কোনোভাবেই কাজ করবে না!`)) {
+            if (confirm("আপনি কি নিশ্চিৎ যে এই গিফট কোডটি ডিলিট করতে চান? ডিলিট করলে ইউজাররা আর এটি রিডিম করতে পারবে না।")) {
                 db.ref('gift_codes/' + editKey).remove().then(() => {
-                    alert("✅ গিফট কোডটি সফলভাবে ডিলিট করা হয়েছে এবং এটি এখন সম্পূর্ণ নিষ্ক্রিয়!");
+                    alert("🗑️ গিফট কোডটি সফলভাবে ডিলিট করা হয়েছে!");
                     document.getElementById('giftCodeFormContainer').style.display = 'none';
-                }).catch((error) => {
-                    alert("❌ ডিলিট করতে সমস্যা হয়েছে: " + error.message);
                 });
             }
         }
 
+        /* 📜 গিফট কোড তালিকা ও সুন্দর রেন্ডারিং (ert{} ক্লিনআপ) */
         function listenGiftCodesList() {
             db.ref('gift_codes').on('value', (snapshot) => {
                 let container = document.getElementById('admin-gift-list');
@@ -2354,10 +2487,9 @@
                 document.getElementById('gc-limit-input').value = val.limit;
                 document.getElementById('gc-time-input').value = val.timeStr || "";
                 document.getElementById('gc-edit-key').value = key;
-                
-                // এডিট মোডে আসার পর রেড সার্কেলের স্থানে ডিলিট বাটনটি দৃশ্যমান করা হবে
-                let delBtn = document.getElementById('gc-delete-btn');
-                if (delBtn) delBtn.style.display = 'block';
+
+                let deleteBtn = document.getElementById('gc-delete-btn');
+                if(deleteBtn) deleteBtn.style.display = "block";
 
                 document.getElementById('giftCodeFormContainer').style.display = 'block';
             });
@@ -2425,7 +2557,7 @@
                 });
 
                 if (refCodeExistsInOtherUser) {
-                    alert("❌ এই রেফার কোডটি (User ID) অন্য একটি আইডিতে ইতিমধ্যে ব্যবহূত হচ্ছে! একই কোড দ্বিতীয় কোনো আইডিতে দেওয়া যাবে না।");
+                    alert("❌ এই রেফার কোডটি (User ID) অন্য একটি আইডিতে ইতিমধ্যে ব্যবহূত হচ্ছে!");
                     return;
                 }
 
@@ -2446,7 +2578,7 @@
 
                             db.ref('users/' + newKey).set(userData).then(() => {
                                 db.ref('users/' + searchedEditTargetUserKey).remove();
-                                alert("✅ ইউজারের নম্বর, পাসওয়ার্ড এবং ইউজার আইডি সফলভাবে পরিবর্তন ও সেভ হয়েছে!");
+                                alert("✅ ইউজারের তথ্য সফলভাবে আপডেট হয়েছে!");
                                 closeAdminAccountEditModal();
                             });
                         });
@@ -2944,7 +3076,7 @@
                 });
 
                 giveReferralCommissionForUser(targetUserId, fbAmount);
-                alert("✅ ফেসবুক সেল রিকোয়েস্ট এপ্রুভ করা হয়েছে! (৳৫ ক্রেডিট দেওয়া হলো)");
+                alert("✅ ফেসবুক সেল রিকোয়েস্ট এপ্রুভ করা হয়েছে!");
             });
         }
 
@@ -3128,7 +3260,7 @@
             let activeNumbers = userBoundWaNumbers.filter(item => item.status === 'active');
 
             if (activeNumbers.length === 0) {
-                container.innerHTML = `<p style="color: #78909c; font-size: 11px; text-align: center; padding: 10px 0;">কোনো WhatsApp নম্বর বাঁধা নেই</p>`;
+                container.innerHTML = `<p style="color: #78909c; font-size: 11px; text-align: center; padding: 10px 0;">কোনো সফলভাবে বাইন্ড করা WhatsApp নম্বর নেই</p>`;
                 return;
             }
 
@@ -3626,6 +3758,7 @@
             if (codeInput) codeInput.value = "";
         }
 
+        /* 🔒 কঠোর সিকিউরিটি ফিল্টার যুক্ত গিফট কোড রিডিম ফাংশন */
         function redeemGiftCode() {
             let codeInput = document.getElementById("gift-code-input");
             if (!codeInput) return;
@@ -3643,19 +3776,22 @@
 
                 let giftObj = snapshot.val();
 
+                // ১. টাইম ও মেয়াদের কড়া চেক
                 if (Date.now() > giftObj.expire) {
                     alert("❌ এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
                     return;
                 }
 
+                // ২. ব্যবহারের লিমিট চেক
                 if ((giftObj.usedCount || 0) >= giftObj.limit) {
-                    alert("❌ লিমিট শেষ হয়ে গেছে!");
+                    alert("❌ এই গিফট কোডের ব্যবহারের লিমিট শেষ হয়ে গেছে!");
                     return;
                 }
 
+                // ৩. একই ইউজার একাধিকবার ব্যবহারের চেষ্টা রোধ
                 db.ref(`used_gifts/${currentUserKey}/${codeKey}`).once('value').then((usedSnap) => {
                     if (usedSnap.exists()) {
-                        alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
+                        alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি একবার ব্যবহার করে ফেলেছেন!");
                         return;
                     }
 
@@ -3666,7 +3802,7 @@
                     updateFirebaseProfile();
                     updateUI();
                     closeGiftModal();
-                    alert(`🎉 অভিনন্দন! ৳${parseFloat(giftObj.amount).toFixed(2)} যোগ হয়েছে!`);
+                    alert(`🎉 অভিনন্দন! ৳${parseFloat(giftObj.amount).toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
                 });
             });
         }
@@ -3844,7 +3980,7 @@
 
             db.ref('facebook_submits').orderByChild('cookies').equalTo(cookiesData).once('value').then((cookieSnap) => {
                 if (cookieSnap.exists()) {
-                    alert("❌ এই ফেসবুক কুকিজটি (Cookies) ইতিমধ্যে সাবমিট করা হয়েছে! একই কুকিজ দ্বিতীয়বার দেওয়া যাবে না।");
+                    alert("❌ এই ফেসবুক কুকিজটি (Cookies) ইতিমধ্যে সাবমিট করা হয়েছে!");
                     return;
                 }
 
@@ -3981,7 +4117,7 @@
                 return;
             }
 
-            historyData.historyData.forEach(item => {
+            historyData.forEach(item => {
                 let badgeClass = "badge-pending";
                 let statusText = "Pending";
                 if (item.status === "Approved" || item.status === "Success") { badgeClass = "badge-success"; statusText = "Success"; }
