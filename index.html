@@ -827,6 +827,10 @@
                 <div class="balance-amount">৳ <span id="balance-val">0.00</span></div>
             </div>
 
+            <button class="btn btn-gift" onclick="openGiftModal()">
+                🎁 গিফট কোড রিডিম করুন
+            </button>
+
             <button class="btn btn-official" onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')">
                 📢 অফিসিয়াল চ্যানেল
             </button>
@@ -1309,10 +1313,6 @@
                     📧 টাক্স নাম পাসওয়ার্ড সেটআপ
                 </button>
 
-                <button class="btn btn-gift" onclick="openAdminGiftModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #e67e22, #d35400);">
-                    🎁 Gift Code Management
-                </button>
-
                 <button class="btn btn-support" onclick="openAdminUserBanModal()" style="margin-bottom: 12px;">
                     🚫 User Ban Control
                 </button>
@@ -1343,56 +1343,6 @@
             </div>
         </div>
 
-    </div>
-
-    <!-- 🎁 Admin Gift Code Management Modal -->
-    <div id="adminGiftModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">🎁 Gift Code Management</h3>
-                <button onclick="closeAdminGiftModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
-            </div>
-
-            <button class="btn btn-gift" onclick="toggleCreateGiftForm()" style="margin-bottom:15px;">➕ Create a new Gift code</button>
-
-            <div id="createGiftForm" style="display:none; background:#081a11; border:1px solid #f39c12; padding:12px; border-radius:8px; margin-bottom:15px;">
-                <h4 id="giftFormTitle" style="color:#ffcc00; font-size:14px; margin-bottom:10px;">নতুন গিফট কোড তৈরি করুন</h4>
-                <input type="hidden" id="gift-edit-key" value="">
-                
-                <div class="input-group">
-                    <label style="color:#aaa;">Gift Code:</label>
-                    <input type="text" id="admin-gift-code" class="input-control" placeholder="যেমন: GIFT100" style="text-transform:uppercase;">
-                </div>
-
-                <div style="display:flex; gap:8px; margin-bottom:10px;">
-                    <div style="flex:1;">
-                        <label style="color:#aaa; font-size:11px;">Amount (৳):</label>
-                        <input type="number" id="admin-gift-amount" class="input-control" placeholder="৫০">
-                    </div>
-                    <div style="flex:1;">
-                        <label style="color:#aaa; font-size:11px;">Limit (ইউজার):</label>
-                        <input type="number" id="admin-gift-limit" class="input-control" placeholder="১০০">
-                    </div>
-                    <div style="flex:1;">
-                        <label style="color:#aaa; font-size:11px;">Time (মিনিট/দিন):</label>
-                        <div style="display:flex; gap:2px;">
-                            <input type="number" id="admin-gift-time-val" class="input-control" placeholder="১০" style="padding:8px 4px;">
-                            <select id="admin-gift-time-unit" class="input-control" style="padding:8px 2px; font-size:11px;">
-                                <option value="min">মিনিট</option>
-                                <option value="day">দিন</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn btn-main" onclick="saveAdminGiftCode()" style="margin-top:5px; background:#2ecc71; color:#000;">💾 Save</button>
-            </div>
-
-            <h4 style="color:#2ecc71; margin-bottom:10px; font-size:14px; text-align:left;">📜 তৈরি করা গিফট কোডসমূহ:</h4>
-            <div id="admin-gift-list" style="max-height:300px; overflow-y:auto;">
-                <p style="color:#aaa; font-size:12px;">কোনো গিফট কোড তৈরি করা নেই।</p>
-            </div>
-        </div>
     </div>
 
     <!-- ✏️ Admin User Edit & Recovery Modal -->
@@ -1754,6 +1704,17 @@
         </button>
     </div>
 
+    <!-- গিফট কোড মডেল -->
+    <div id="giftModal" class="modal-overlay" style="align-items:center; justify-content:center;">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:350px; text-align:center; margin:auto;">
+            <h3 style="color:#ffcc00; margin-bottom:10px;">🎁 গিফট কোড রিডিম</h3>
+            <p style="color:#ccc; font-size:13px; margin-bottom:15px;">আপনার প্রোমো বা গিফট কোডটি নিচে লিখুন:</p>
+            <input type="text" id="gift-code-input" class="input-control" placeholder="যেমন: BONUS50" style="margin-bottom:12px; text-align:center; text-transform:uppercase;">
+            <button class="btn btn-main" onclick="redeemGiftCode()" style="margin-bottom:8px;">সাবমিট করুন</button>
+            <button class="btn" onclick="closeGiftModal()" style="background:#c0392b;">বন্ধ করুন</button>
+        </div>
+    </div>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBh2p9Vgy9b8UEBKf5at2UCbqeK_AJPFfk",
@@ -2028,7 +1989,6 @@
                 if (adminBtn) adminBtn.style.display = "flex";
                 listenAdminData();
                 listenBannedUsersList();
-                listenAdminGiftCodes();
             }
 
             // Gmail Credentials Realtime Sync
@@ -2225,123 +2185,6 @@
 
         function openAdminAccountEditModal() { document.getElementById('adminAccountEditModal').style.display = 'block'; }
         function closeAdminAccountEditModal() { document.getElementById('adminAccountEditModal').style.display = 'none'; }
-
-        /* 🎁 Admin Gift Code Management Modal Functions */
-        function openAdminGiftModal() { document.getElementById('adminGiftModal').style.display = 'block'; }
-        function closeAdminGiftModal() { document.getElementById('adminGiftModal').style.display = 'none'; }
-
-        function toggleCreateGiftForm() {
-            let form = document.getElementById('createGiftForm');
-            if (form.style.display === 'none' || form.style.display === '') {
-                form.style.display = 'block';
-                document.getElementById('giftFormTitle').innerText = 'নতুন গিফট কোড তৈরি করুন';
-                document.getElementById('gift-edit-key').value = '';
-                document.getElementById('admin-gift-code').value = '';
-                document.getElementById('admin-gift-code').disabled = false;
-                document.getElementById('admin-gift-amount').value = '';
-                document.getElementById('admin-gift-limit').value = '';
-                document.getElementById('admin-gift-time-val').value = '';
-            } else {
-                form.style.display = 'none';
-            }
-        }
-
-        function saveAdminGiftCode() {
-            let editKey = document.getElementById('gift-edit-key').value.trim();
-            let code = document.getElementById('admin-gift-code').value.trim().toUpperCase();
-            let amount = parseFloat(document.getElementById('admin-gift-amount').value);
-            let limit = parseInt(document.getElementById('admin-gift-limit').value);
-            let timeVal = parseFloat(document.getElementById('admin-gift-time-val').value);
-            let timeUnit = document.getElementById('admin-gift-time-unit').value;
-
-            if (!code || isNaN(amount) || amount <= 0 || isNaN(limit) || limit <= 0 || isNaN(timeVal) || timeVal <= 0) {
-                alert("⚠️ সবকটি ঘর সঠিকভাবে পূরণ করুন!");
-                return;
-            }
-
-            let durationMs = timeUnit === 'min' ? timeVal * 60000 : timeVal * 86400000;
-            let expireTime = Date.now() + durationMs;
-
-            let keyToSave = editKey ? editKey : sanitizeKey(code);
-
-            db.ref('gift_codes/' + keyToSave).once('value').then((snap) => {
-                let existingData = snap.val() || {};
-                let usedCount = existingData.usedCount || 0;
-                let createdBy = existingData.createdBy || currentUserKey;
-
-                let giftData = {
-                    code: code,
-                    amount: amount,
-                    limit: limit,
-                    usedCount: usedCount,
-                    expire: expireTime,
-                    durationVal: timeVal,
-                    durationUnit: timeUnit,
-                    createdBy: createdBy,
-                    createdAt: existingData.createdAt || Date.now()
-                };
-
-                db.ref('gift_codes/' + keyToSave).set(giftData).then(() => {
-                    alert("✅ গিফট কোড সফলভাবে সেভ ও চালু হয়েছে!");
-                    document.getElementById('createGiftForm').style.display = 'none';
-                });
-            });
-        }
-
-        function editGiftCode(key) {
-            db.ref('gift_codes/' + key).once('value').then((snap) => {
-                let val = snap.val();
-                if (!val) return;
-                let form = document.getElementById('createGiftForm');
-                form.style.display = 'block';
-                document.getElementById('giftFormTitle').innerText = 'গিফট কোড এডিট করুন: ' + val.code;
-                document.getElementById('gift-edit-key').value = key;
-                document.getElementById('admin-gift-code').value = val.code;
-                document.getElementById('admin-gift-code').disabled = true;
-                document.getElementById('admin-gift-amount').value = val.amount;
-                document.getElementById('admin-gift-limit').value = val.limit;
-                document.getElementById('admin-gift-time-val').value = val.durationVal || 10;
-                document.getElementById('admin-gift-time-unit').value = val.durationUnit || 'min';
-            });
-        }
-
-        function listenAdminGiftCodes() {
-            db.ref('gift_codes').on('value', (snapshot) => {
-                let container = document.getElementById('admin-gift-list');
-                if (!container) return;
-
-                container.innerHTML = "";
-                let count = 0;
-
-                snapshot.forEach((childSnap) => {
-                    let key = childSnap.key;
-                    let val = childSnap.val();
-                    if (!val) return;
-                    count++;
-
-                    let isExpired = Date.now() > val.expire;
-                    let statusText = isExpired ? "<span style='color:#e74c3c;'>(মেয়াদ শেষ)</span>" : (val.usedCount >= val.limit ? "<span style='color:#e74c3c;'>(লিমিট শেষ)</span>" : "<span style='color:#2ecc71;'>(সক্রিয়)</span>");
-
-                    container.innerHTML += `
-                        <div class="admin-item-card" style="border-color:#f39c12; margin-bottom:10px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(255,255,255,0.2); padding-bottom:4px; margin-bottom:6px;">
-                                <span style="font-size:15px; font-weight:bold; color:#ffcc00;">🎁 কোড: ${val.code}${statusText}</span>
-                                <button onclick="editGiftCode('${key}')" style="background:#f39c12; color:#fff; border:none; padding:4px 10px; border-radius:5px; font-weight:bold; cursor:pointer;">Edit ✏️</button>
-                            </div>
-                            <div style="font-size:12px; color:#ddd; line-height:1.6;">
-                                <div><b>অ্যাকাউন্ট (Creator):</b> <span style="color:#2ecc71;">${val.createdBy || 'Admin'}</span></div>
-                                <div><b>এমাউন্ট:</b> ৳${parseFloat(val.amount).toFixed(2)}</div>
-                                <div><b>ইউজড / লিমিট:</b> <span style="color:#f1c40f; font-weight:bold;">${val.usedCount \vert{}\vert{} 0} /${val.limit} জন</span></div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                if (count === 0) {
-                    container.innerHTML = `<p style="color:#aaa; font-size:12px;">কোনো গিফট কোড তৈরি করা নেই।</p>`;
-                }
-            });
-        }
 
         function searchUserForEdit() {
             let searchInput = document.getElementById('edit-search-userid').value.trim();
@@ -3548,6 +3391,12 @@
             alert(`🎉 অভিনন্দন! দিন ${checkinStreak}-এর সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
         }
 
+        const validGiftCodes = {
+            "SIYAM1122": { amount: 50.00, expire: Date.now() + 600000 * 7 },
+            "SPESHALGIFT50": { amount: 50.00, expire: Date.now() + 86400000 * 3 },
+            "GIFTCODE5": { amount: 5.00, expire: Date.now() + 86400000 * 10 }
+        };
+
         window.onload = function() {
             if (currentUserKey) {
                 document.getElementById('authModal').style.display = 'none';
@@ -3596,6 +3445,45 @@
                         });
                     });
                 }
+            });
+        }
+
+        function openGiftModal() {
+            let modal = document.getElementById("giftModal");
+            if (modal) modal.style.display = "flex";
+        }
+
+        function closeGiftModal() {
+            let modal = document.getElementById("giftModal");
+            if (modal) modal.style.display = "none";
+            let codeInput = document.getElementById("gift-code-input");
+            if (codeInput) codeInput.value = "";
+        }
+
+        function redeemGiftCode() {
+            let codeInput = document.getElementById("gift-code-input");
+            if (!codeInput) return;
+            let code = codeInput.value.trim().toUpperCase();
+            
+            if (!code) { alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!"); return; }
+
+            let codeObj = validGiftCodes[code];
+            if (!codeObj) { alert("❌ ভুল বা Invalid গিফট কোড!"); return; }
+
+            if (Date.now() > codeObj.expire) { alert("❌ এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!"); return; }
+
+            db.ref(`used_gifts/${currentUserKey}/${code}`).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
+                    return;
+                }
+
+                db.ref(`used_gifts/${currentUserKey}/${code}`).set(true);
+                currentBalance += codeObj.amount;
+                updateFirebaseProfile();
+                updateUI();
+                closeGiftModal();
+                alert(`🎉 অভিনন্দন! ৳${codeObj.amount.toFixed(2)} যোগ হয়েছে!`);
             });
         }
 
