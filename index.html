@@ -18,7 +18,7 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: transparent; /* ক্লিক হাইলাইট এনিমেশন দ্রুত কাজের জন্য */
         }
         body {
             background-color: #0c2317;
@@ -29,39 +29,7 @@
             overflow-x: hidden;
         }
 
-        /* ✨ রোটেটিং গ্লো বর্ডার অ্যানিমেশন ✨ */
-        @property --angle {
-            syntax: '<angle>';
-            initial-value: 0deg;
-            inherits: false;
-        }
-
-        @keyframes rotateBorder {
-            0% { --angle: 0deg; }
-            100% { --angle: 360deg; }
-        }
-
-        .btn, .auth-btn, .wa-get-btn, .wa-copy-btn, .logout-btn-top {
-            position: relative;
-            border-radius: 10px;
-            isolation: isolate;
-            transition: transform 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
-            touch-action: manipulation;
-            border: none;
-            overflow: hidden;
-        }
-
-        .btn::after, .auth-btn::after, .wa-get-btn::after {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 12px;
-            background: conic-gradient(from var(--angle), #ff4d4d, #f1c40f, #2ecc71, #3498db, #9b59b6, #ff4d4d);
-            z-index: -1;
-            animation: rotateBorder 3s linear infinite;
-        }
-
-        /* ✨ শিমার ও ব্যাকগ্রাউন্ড লাইটিং অ্যানিমেশন ✨ */
+        /* ✨ ১. পুরো বটে প্রিমিয়াম কোয়ালিটির শিমার ও ব্যাকগ্রাউন্ড কালার ভিডিও অ্যানিমেশন ✨ */
         body::before {
             content: '';
             position: fixed;
@@ -80,7 +48,7 @@
             transform: skewX(-25deg);
             animation: bodyShimmer 6s infinite linear;
             pointer-events: none;
-            z-index: 99999;
+            z-index: 999999;
         }
 
         @keyframes bodyShimmer {
@@ -89,54 +57,45 @@
             100% { left: 150%; }
         }
 
-        #appLoadingOverlay {
+        /* 🌀 প্রিমিয়াম ভিডিও স্টাইল লগইন/সাইনআপ লোডিং ওভারলে */
+        #authLoadingOverlay {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #07150d;
-            display: none;
+            background-color: #05140c;
+            z-index: 9999999;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 9999999;
         }
 
-        .colorful-spinner {
-            width: 70px;
-            height: 70px;
-            border: 6px solid transparent;
-            border-top-color: #ff4d4d;
-            border-right-color: #f1c40f;
-            border-bottom-color: #2ecc71;
-            border-left-color: #3498db;
+        .spinner-ring {
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            animation: spinLoader 1s linear infinite;
-            box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
-            margin-bottom: 20px;
+            padding: 7px;
+            background: conic-gradient(from 0deg, #2ecc71, #f1c40f, #e74c3c, #3498db, #2ecc71);
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff 0);
+            mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff 0);
+            animation: spinRing 1.2s linear infinite;
+            margin-bottom: 25px;
         }
 
-        @keyframes spinLoader {
+        @keyframes spinRing {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
         .loading-title-text {
-            font-size: 22px;
+            color: #f1c40f;
+            font-size: 26px;
             font-weight: bold;
-            background: linear-gradient(90deg, #ff4d4d, #f1c40f, #2ecc71, #3498db, #9b59b6);
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: textShiftColors 3s linear infinite;
-            letter-spacing: 1px;
-        }
-
-        @keyframes textShiftColors {
-            0% { background-position: 0% center; }
-            50% { background-position: 100% center; }
-            100% { background-position: 0% center; }
+            letter-spacing: 0.5px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
         }
 
         .top-title-bar {
@@ -222,6 +181,12 @@
             font-weight: bold;
         }
 
+        /* ✨ ৩. প্রিমিয়াম বাটন ক্লিক ইনস্ট্যান্ট অ্যানিমেশন ✨ */
+        .btn, .auth-btn, .wa-get-btn, .wa-copy-btn, .logout-btn-top {
+            transition: transform 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
+            touch-action: manipulation;
+        }
+
         .btn:active, .auth-btn:active, .wa-get-btn:active, .wa-copy-btn:active, .logout-btn-top:active {
             transform: scale(0.93) translateY(2px) rotate(-0.5deg) !important;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.4) !important;
@@ -265,6 +230,7 @@
         .btn-teletalk { background-color: #28a745; color: #fff; }
         .btn-wifi { background-color: #6f42c1; color: #fff; }
 
+        /* 🔥 অ্যাডমিন পেন্ডিং নোটিফিকেশন ব্যাজ ও এনিমেশন */
         .admin-badge {
             background-color: #ff3333;
             color: #ffffff;
@@ -462,6 +428,7 @@
         input:checked + .slider { background-color: #2ecc71; }
         input:checked + .slider:before { transform: translateX(22px); }
 
+        /* ✨ প্রিমিয়াম হোয়াটসঅ্যাপ মডাল স্টাইলিং ✨ */
         .wa-box-container {
             background: linear-gradient(165deg, #0d231a 0%, #05120d 100%);
             border-radius: 20px;
@@ -712,6 +679,7 @@
             color: #ffffff;
         }
 
+        /* 🔐 সাইন-ইন ও সাইন-আপ কার্ড ডিজাইন */
         .auth-card {
             background-color: #0c2317;
             border: 2px solid #27ae60;
@@ -814,13 +782,13 @@
 </head>
 <body>
 
-    <!-- ১. লগইন/সাইন-আপ লোডিং অ্যানিমেশন স্ক্রিন ওভারলে -->
-    <div id="appLoadingOverlay">
-        <div class="colorful-spinner"></div>
+    <!-- 🌀 প্রিমিয়াম লগইন/সাইনআপ কালারফুল লোডিং ওভারলে -->
+    <div id="authLoadingOverlay">
+        <div class="spinner-ring"></div>
         <div class="loading-title-text">Mega Income</div>
     </div>
 
-    <!-- লগইন ও সাইন-আপ ওভারলে মডাল -->
+    <!-- 🔐 লগইন ও সাইন-আপ ওভারলে মডাল -->
     <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: #07150d;">
         <!-- সাইন ইন পেজ -->
         <div id="loginBox" class="auth-card">
@@ -882,7 +850,7 @@
         </div>
     </div>
 
-    <!-- ইউজার ব্যান এলার্ট পপআপ -->
+    <!-- 🚫 ইউজার ব্যান এলার্ট পপআপ -->
     <div id="bannedUserOverlay" class="modal-overlay" style="z-index: 999999; background: rgba(10, 5, 5, 0.98); align-items: center; justify-content: center;">
         <div style="background: linear-gradient(145deg, #2c0b0e, #1a0507); border: 2px solid #e74c3c; border-radius: 16px; padding: 25px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4); margin: auto;">
             <div style="font-size: 50px; margin-bottom: 10px;">🚫</div>
@@ -928,6 +896,8 @@
 
         <!-- টাস্ক পেজ -->
         <div id="task" class="page">
+
+            <!-- ১. হোয়াটসঅ্যাপ অটোমেটিক টাস্ক -->
             <div class="card" id="card-wa-task" style="border: 2px solid #25d366; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="WhatsApp Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -937,6 +907,7 @@
                 </div>
             </div>
 
+            <!-- ২. জিমেইল সেল টাস্ক -->
             <div class="card" id="card-gmail-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Gmail Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -946,6 +917,7 @@
                 </div>
             </div>
 
+            <!-- ৩. ফেসবুক সেল টাস্ক -->
             <div class="card" id="card-facebook-task" style="border: 2px solid #1877f2; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Facebook Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -955,6 +927,7 @@
                 </div>
             </div>
 
+            <!-- ৪. পিন সাবমিট টাস্ক -->
             <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Pin Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -964,6 +937,7 @@
                 </div>
             </div>
 
+            <!-- ৫. রেজিস্ট্রেশন টাস্ক -->
             <div class="card" id="card-reg-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Registration Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -973,6 +947,7 @@
                 </div>
             </div>
 
+            <!-- ৬. ভিডিও এডস টাস্ক -->
             <div class="card" id="card-ad-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/2983/2983797.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Video Ads Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -982,6 +957,7 @@
                 </div>
             </div>
 
+            <!-- ৭. ডেইলি সাইন-ইন টাস্ক -->
             <div class="card" id="card-checkin-task" style="border: 2px solid #f39c12; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Daily Checkin Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -992,7 +968,7 @@
             </div>
         </div>
 
-        <!-- ডেইলি সাইন-ইন মডাল -->
+        <!-- 📅 ডেইলি সাইন-ইন মডাল/পপআপ -->
         <div id="dailyCheckinModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center; color:#fff;">
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #27ae60; padding-bottom:8px; margin-bottom:15px;">
@@ -1021,7 +997,7 @@
             </div>
         </div>
 
-        <!-- হোয়াটসঅ্যাপ মডাল -->
+        <!-- 💬 প্রিমিয়াম হোয়াটসঅ্যাপ মডাল -->
         <div id="waTaskModal" class="modal-overlay">
             <div class="wa-box-container" style="max-width: 420px; margin: 15px auto;">
                 <div class="wa-header-premium">
@@ -1097,7 +1073,7 @@
             </div>
         </div>
 
-        <!-- পিন সাবমিট সিলেক্ট মডাল -->
+        <!-- 📱 পিন সাবমিট সিলেক্ট মডাল -->
         <div id="pinSubmitModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
                 <div style="text-align: right; margin-bottom: 10px;">
@@ -1123,7 +1099,7 @@
             </div>
         </div>
 
-        <!-- পিন অফার মডাল -->
+        <!-- 📱 পিন অফার মডাল -->
         <div id="pinTaskWorkModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
                 <div style="text-align: right; margin-bottom: 10px;">
@@ -1208,7 +1184,7 @@
             </div>
         </div>
 
-        <!-- ফেসবুক সেল মডাল -->
+        <!-- 🔵 ফেসবুক সেল মডাল/ওভারলে -->
         <div id="facebookSellOverlay" class="modal-overlay">
             <div style="background:#0d1b2a; border: 2px solid #1877f2; padding:20px; border-radius:16px; width:100%; max-width:400px; margin:20px auto; box-shadow: 0 10px 30px rgba(24, 119, 242, 0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(24, 119, 242, 0.4); padding-bottom: 10px; margin-bottom: 15px;">
@@ -1260,7 +1236,10 @@
 
                 <div style="margin-top: 15px;">
                     <button onclick="handleFacebookSubmit()" class="btn btn-facebook" style="margin-bottom:10px; font-size:16px;">Confirm & Send 🚀</button>
+                    
+                    <!-- 🎬 ফেসবুক টিউটোরিয়াল ভিডিও বাটন -->
                     <button onclick="openTelegramLink('https://t.me/+p9RYb3sEcSc5ODBl')" class="btn btn-official" style="margin-bottom:12px; font-size:14px; background: linear-gradient(135deg, #0284c7, #0369a1);">🎬 কিভাবে কাজ করবো.?</button>
+                    
                     <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
                     <div style="text-align: center;">
                         <button onclick="toggleFbWorkHistory()" style="background-color: #334155; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 ফেসবুক সেল হিস্ট্রি</button>
@@ -1417,7 +1396,7 @@
 
     </div>
 
-    <!-- Gift Code Management Modal -->
+    <!-- 🎁 Gift Code Management Modal -->
     <div id="giftManagementModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1430,8 +1409,11 @@
             </button>
 
             <!-- Create / Edit Gift Code Form -->
-            <div id="giftCodeFormContainer" style="display:none; background:#081a11; border:1px solid #f39c12; padding:15px; border-radius:8px; margin-bottom:15px; text-align:left;">
-                <h4 id="giftFormTitle" style="color:#ffcc00; margin-bottom:10px; font-size:14px;">Create New Gift Code</h4>
+            <div id="giftCodeFormContainer" style="display:none; background:#081a11; border:1px solid #f39c12; padding:15px; border-radius:8px; margin-bottom:15px; text-align:left; position:relative;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h4 id="giftFormTitle" style="color:#ffcc00; font-size:14px; margin:0;">Create New Gift Code</h4>
+                    <button id="btnDeleteGiftCode" onclick="deleteGiftCode()" style="display:none; background:#e74c3c; color:#fff; border:none; padding:4px 10px; border-radius:5px; font-weight:bold; font-size:11px; cursor:pointer;">🗑 Delete</button>
+                </div>
                 
                 <div class="input-group">
                     <label style="color:#aaa;">Gift Code:</label>
@@ -1448,8 +1430,8 @@
                         <input type="number" id="gc-limit-input" class="input-control" placeholder="100">
                     </div>
                     <div style="flex:1.2;">
-                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Time (যেমন 30day)</label>
-                        <input type="text" id="gc-time-input" class="input-control" placeholder="30day">
+                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Time (যেমন 30min / 2hour / 1day)</label>
+                        <input type="text" id="gc-time-input" class="input-control" placeholder="2hour">
                     </div>
                 </div>
 
@@ -1458,6 +1440,7 @@
                 <button class="btn btn-main" onclick="saveGiftCode()" style="margin-top:5px;">Save</button>
             </div>
 
+            <!-- List of existing Gift Codes -->
             <h4 style="color:#2ecc71; text-align:left; margin-bottom:10px; font-size:14px;">📜 সকল গিফট কোডের তালিকা:</h4>
             <div id="admin-gift-list" style="max-height:300px; overflow-y:auto;">
                 <p style="color:#aaa; font-size:12px;">কোনো গিফট কোড পাওয়া যায়নি।</p>
@@ -1465,7 +1448,7 @@
         </div>
     </div>
 
-    <!-- Admin User Edit & Recovery Modal -->
+    <!-- ✏️ Admin User Edit & Recovery Modal -->
     <div id="adminAccountEditModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1501,7 +1484,7 @@
         </div>
     </div>
 
-    <!-- Admin Task Credentials Control Modal -->
+    <!-- 📧/📘 Admin Task Credentials Control Modal -->
     <div id="adminGmailCredentialsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1540,7 +1523,7 @@
         </div>
     </div>
 
-    <!-- User Ban Control Modal -->
+    <!-- 🚫 User Ban Control Modal -->
     <div id="adminUserBanModal" class="modal-overlay">
         <div style="background: linear-gradient(135deg, #102a1d, #08150f); border: 2px solid #e74c3c; padding: 20px; border-radius: 12px; width: 100%; max-width: 440px; margin: 20px auto; color: #fff; box-shadow: 0 5px 20px rgba(0,0,0,0.6);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e74c3c; padding-bottom:8px;">
@@ -1577,7 +1560,7 @@
         </div>
     </div>
 
-    <!-- Withdraw Requests List Modal -->
+    <!-- 💳 Withdraw Requests List Modal -->
     <div id="adminWithdrawModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1588,7 +1571,7 @@
         </div>
     </div>
 
-    <!-- Gmail Submit Requests List Modal -->
+    <!-- 📧 Gmail Submit Requests List Modal -->
     <div id="adminGmailModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1599,7 +1582,7 @@
         </div>
     </div>
 
-    <!-- Facebook Sell Requests List Modal -->
+    <!-- 📘 Facebook Sell Requests List Modal -->
     <div id="adminFacebookModal" class="modal-overlay">
         <div style="background:#0d1b2a; border:2px solid #1877f2; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #1877f2; padding-bottom:8px;">
@@ -1610,7 +1593,7 @@
         </div>
     </div>
 
-    <!-- Pin Submit Requests List Modal -->
+    <!-- 📱 Pin Submit Requests List Modal -->
     <div id="adminPinModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1621,7 +1604,7 @@
         </div>
     </div>
 
-    <!-- WhatsApp Task Settings Modal -->
+    <!-- 💬 WhatsApp Task Settings Modal -->
     <div id="adminWaSettingsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #25d366; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1706,7 +1689,7 @@
         </div>
     </div>
 
-    <!-- অ্যাডমিন অন-অফ কন্ট্রোল মডাল -->
+    <!-- অ্যাডমিন অন-অফ কন্ট্রোল মডাল/পেজ -->
     <div id="adminTaskControlModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -1772,7 +1755,7 @@
         </div>
     </div>
 
-    <!-- ন্যাভবার -->
+    <!-- ✨ ২. ন্যাভবার (প্রিমিয়াম কালারফুল SVG আইকন সহ) ✨ -->
     <div class="navbar" id="app-navbar">
         <button class="nav-item active" onclick="switchTab('home', this)">
             <span class="icon">
@@ -1960,22 +1943,6 @@
         let dynamicFbLastName = "Rahat";
         let dynamicFbPass = "Pass#9988";
 
-        function showAppLoadingAndEnter(uKey) {
-            currentUserKey = uKey;
-            localStorage.setItem("loggedInUserKey", uKey);
-            document.getElementById('authModal').style.display = 'none';
-
-            let loadingOverlay = document.getElementById('appLoadingOverlay');
-            loadingOverlay.style.display = 'flex';
-
-            setTimeout(() => {
-                loadingOverlay.style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'block';
-                initFirebaseUserSync();
-                startWhatsAppStatusMonitor();
-            }, 2500);
-        }
-
         function toggleAuthMode(mode) {
             if (mode === 'signup') {
                 document.getElementById('loginBox').style.display = 'none';
@@ -1998,6 +1965,16 @@
             return String(key).replace(/[.#$\[\]]/g, "_").toLowerCase().trim();
         }
 
+        function showAuthLoader() {
+            let loader = document.getElementById('authLoadingOverlay');
+            if (loader) loader.style.display = 'flex';
+        }
+
+        function hideAuthLoader() {
+            let loader = document.getElementById('authLoadingOverlay');
+            if (loader) loader.style.display = 'none';
+        }
+
         function handleSignup() {
             let fullNameInput = document.getElementById('signupFullName').value.trim();
             let uInput = document.getElementById('signupUsername').value.trim();
@@ -2015,10 +1992,13 @@
                 return;
             }
 
+            showAuthLoader();
+
             let uKey = sanitizeKey(uInput);
 
             db.ref('users/' + uKey).once('value').then((snap) => {
                 if (snap.exists()) {
+                    hideAuthLoader();
                     alert("❌ এই ইউজারনেম/ফোন দিয়ে একাউন্ট ইতিমধ্যে তৈরি করা আছে! লগইন করুন।");
                     toggleAuthMode('login');
                     return;
@@ -2055,8 +2035,19 @@
                 }
 
                 db.ref('users/' + uKey).set(newUserObj).then(() => {
-                    showAppLoadingAndEnter(uKey);
+                    setTimeout(() => {
+                        localStorage.setItem("loggedInUserKey", uKey);
+                        currentUserKey = uKey;
+                        hideAuthLoader();
+                        document.getElementById('authModal').style.display = 'none';
+                        document.getElementById('logoutBtn').style.display = 'block';
+                        initFirebaseUserSync();
+                    }, 1200);
+                }).catch(() => {
+                    hideAuthLoader();
                 });
+            }).catch(() => {
+                hideAuthLoader();
             });
         }
 
@@ -2069,10 +2060,13 @@
                 return;
             }
 
+            showAuthLoader();
+
             let uKey = sanitizeKey(uInput);
 
             db.ref('users/' + uKey).once('value').then((snap) => {
                 if (!snap.exists()) {
+                    hideAuthLoader();
                     alert("❌ কোনো অ্যাকাউন্ট পাওয়া যায়নি! আগে রেজিস্টার করুন।");
                     toggleAuthMode('signup');
                     return;
@@ -2080,11 +2074,21 @@
 
                 let val = snap.val();
                 if (val.password !== pInput) {
+                    hideAuthLoader();
                     alert("❌ পাসওয়ার্ড সঠিক নয়!");
                     return;
                 }
 
-                showAppLoadingAndEnter(uKey);
+                setTimeout(() => {
+                    localStorage.setItem("loggedInUserKey", uKey);
+                    currentUserKey = uKey;
+                    hideAuthLoader();
+                    document.getElementById('authModal').style.display = 'none';
+                    document.getElementById('logoutBtn').style.display = 'block';
+                    initFirebaseUserSync();
+                }, 1200);
+            }).catch(() => {
+                hideAuthLoader();
             });
         }
 
@@ -2121,6 +2125,7 @@
                 listenGiftCodesList();
             }
 
+            // Gmail Credentials Realtime Sync
             db.ref('gmail_admin_credentials').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -2135,6 +2140,7 @@
                 }
             });
 
+            // Facebook Credentials Realtime Sync
             db.ref('facebook_admin_credentials').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -2327,6 +2333,7 @@
                 document.getElementById('gc-limit-input').value = "";
                 document.getElementById('gc-time-input').value = "";
                 document.getElementById('gc-edit-key').value = "";
+                document.getElementById('btnDeleteGiftCode').style.display = "none";
                 form.style.display = 'block';
             } else {
                 form.style.display = 'none';
@@ -2341,7 +2348,7 @@
             if (timeStr.includes("min")) return num * 60 * 1000;
             if (timeStr.includes("hour")) return num * 60 * 60 * 1000;
             if (timeStr.includes("day")) return num * 24 * 60 * 60 * 1000;
-            return num * 60 * 60 * 1000;
+            return num * 60 * 60 * 1000; // default hours
         }
 
         function saveGiftCode() {
@@ -2358,7 +2365,7 @@
 
             let durationMs = parseTimeStringToMs(timeStr);
             if (durationMs <= 0) {
-                alert("⚠️ সঠিক Time দিন! (যেমন: 30min, 2hour, 1day, 30day)");
+                alert("⚠️ সঠিক Time দিন! (যেমন: 30min, 2hour, 1day)");
                 return;
             }
 
@@ -2401,7 +2408,18 @@
             }
         }
 
-        // 🟢 সঠিক ফরমেটিং সহ গিফট কোডের তালিকা (ডিলিট বাটন রিমুভ ও ert{} বাগ ফিক্স করা হয়েছে)
+        function deleteGiftCode() {
+            let editKey = document.getElementById('gc-edit-key').value;
+            if (!editKey) return;
+
+            if (confirm("আপনি কি নিশ্চিৎ যে এই গিফট কোডটি মুছে ফেলতে চান?")) {
+                db.ref('gift_codes/' + editKey).remove().then(() => {
+                    alert("🗑️ গিফট কোডটি সফলভাবে ডিলিট করা হয়েছে!");
+                    document.getElementById('giftCodeFormContainer').style.display = 'none';
+                });
+            }
+        }
+
         function listenGiftCodesList() {
             db.ref('gift_codes').on('value', (snapshot) => {
                 let container = document.getElementById('admin-gift-list');
@@ -2427,11 +2445,9 @@
                         <div class="admin-item-card" style="display:flex; justify-content:space-between; align-items:center; border-color:#f39c12; margin-bottom:8px;">
                             <div>
                                 <div style="color:#ffcc00; font-weight:bold; font-size:14px;">${index + 1}. Code:${item.code}</div>
-                                <div style="color:#fff; font-size:12px; margin-top:2px;">Amount: ৳<b>${item.amount}</b> \vert{} Use: <b>${used} / ${item.limit}</b> \vert{} Time: <b>${item.timeStr || ''}</b></div>
+                                <div style="color:#fff; font-size:12px; margin-top:2px;">Amount: <b>৳${item.amount}</b> \vert{} Use: <b>${used} / ${item.limit}</b> \vert{} Time: <b>${item.timeStr || ''}</b></div>
                             </div>
-                            <div style="display:flex; gap:6px;">
-                                <button onclick="editGiftCode('${item.key}')" style="background:#2980b9; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Edit</button>
-                            </div>
+                            <button onclick="editGiftCode('${item.key}')" style="background:#2980b9; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Edit</button>
                         </div>
                     `;
                 });
@@ -2451,6 +2467,7 @@
                 document.getElementById('gc-time-input').value = val.timeStr || "";
                 document.getElementById('gc-edit-key').value = key;
 
+                document.getElementById('btnDeleteGiftCode').style.display = "inline-block";
                 document.getElementById('giftCodeFormContainer').style.display = 'block';
             });
         }
@@ -2517,7 +2534,7 @@
                 });
 
                 if (refCodeExistsInOtherUser) {
-                    alert("❌ এই রেফার কোডটি (User ID) অন্য একটি আইডিতে ইতিমধ্যে ব্যবহূত হচ্ছে!");
+                    alert("❌ এই রেফার কোডটি (User ID) অন্য একটি আইডিতে ইতিমধ্যে ব্যবহূত হচ্ছে! একই কোড দ্বিতীয় কোনো আইডিতে দেওয়া যাবে না।");
                     return;
                 }
 
@@ -2785,7 +2802,9 @@
             });
         }
 
+        // 🔥 অ্যাডমিন পেন্ডিং রিকোয়েস্ট গণনা এবং কপি বাটন আপডেট সহ listenAdminData
         function listenAdminData() {
+            // Pin Submits Listener
             db.ref('pin_submits').on('value', (snapshot) => {
                 let container = document.getElementById("admin-pin-list");
                 let badge = document.getElementById("badge-pin");
@@ -2827,6 +2846,7 @@
                 if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং পিন সাবমিট রিকোয়েস্ট নেই।</p>";
             });
 
+            // Withdrawals Listener
             db.ref('withdrawals').on('value', (snapshot) => {
                 let container = document.getElementById("admin-withdraw-list");
                 let badge = document.getElementById("badge-withdraw");
@@ -2867,6 +2887,7 @@
                 if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং উইথড্র রিকোয়েস্ট নেই।</p>";
             });
 
+            // Gmail Submits Listener
             db.ref('gmail_submits').on('value', (snapshot) => {
                 let container = document.getElementById("admin-gmail-list");
                 let badge = document.getElementById("badge-gmail");
@@ -2906,6 +2927,7 @@
                 if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং জিমেইল রিকোয়েস্ট নেই।</p>";
             });
 
+            // Facebook Submits Listener
             db.ref('facebook_submits').on('value', (snapshot) => {
                 let container = document.getElementById("admin-facebook-list");
                 let badge = document.getElementById("badge-facebook");
@@ -3036,7 +3058,7 @@
                 });
 
                 giveReferralCommissionForUser(targetUserId, fbAmount);
-                alert("✅ ফেসবুক সেল রিকোয়েস্ট এপ্রুভ করা হয়েছে!");
+                alert("✅ ফেসবুক সেল রিকোয়েস্ট এপ্রুভ করা হয়েছে! (৳৫ ক্রেডিট দেওয়া হলো)");
             });
         }
 
@@ -3106,6 +3128,7 @@
                 }
 
                 displayWaCode(data.code);
+
                 alert("✅ WhatsApp লিংক ডিভাইস কোড তৈরি হয়েছে!");
 
                 startWhatsAppStatusMonitor();
@@ -3206,6 +3229,7 @@
             waStatusMonitorStarted = true;
 
             checkAllWhatsAppStatuses();
+
             setInterval(() => {
                 checkAllWhatsAppStatuses();
             }, 3000);
@@ -3376,7 +3400,7 @@
 
                     alert(`✅ Success: মেসেজ সফলভাবে সেন্ড হয়েছে! ৳${reward.toFixed(2)} ব্যালেন্সে যোগ হয়েছে।`);
                 } else {
-                    alert("❌ Failed: মেসেজ সেন্ড হয়নি!");
+                    alert("❌ Failed: মেসেজ সেন্ড হয়নি! কোনো টাকা যোগ করা হয়নি।");
                 }
             } catch (error) {
                 console.error('WhatsApp send error:', error);
@@ -3908,6 +3932,7 @@
             });
         }
 
+        // 🔥 ফেসবুক ইউজার সাবমিট, UID এবং কুকিজ ডুপ্লিকেট & ফরম্যাট ফিল্টারিং
         function handleFacebookSubmit() {
             var uidInput = document.getElementById('fbUidInputField');
             var cookiesInput = document.getElementById('fbCookiesInputField');
@@ -3920,11 +3945,13 @@
                 return;
             }
 
+            // ১. ফেসবুক UID ফিল্টারিং
             if (!/^\d+$/.test(uidData) || uidData.length < 10) {
                 alert("❌ ভুল ফেসবুক UID দেওয়া হয়েছে! UID অবশ্যই অন্তত ১০ সংখ্যার হতে হবে।");
                 return;
             }
 
+            // ২. কুকিজের কাঠামোগত ফিল্টারিং
             if (!cookiesData.includes("c_user=") || !cookiesData.includes("xs=")) {
                 alert("❌ ভুল ফেসবুক কুকিজ দেওয়া হয়েছে! অনুগ্রহ করে সঠিক Cookies কপি করে পেস্ট করুন।");
                 return;
@@ -3932,12 +3959,14 @@
 
             cookiesData = cookiesData.replace(/\r?\n|\r/g, ' ').trim();
 
+            // ৩. একই কুকিজ ডাটাবেজে আগে সাবমিট করা হয়েছে কিনা চেক করা
             db.ref('facebook_submits').orderByChild('cookies').equalTo(cookiesData).once('value').then((cookieSnap) => {
                 if (cookieSnap.exists()) {
-                    alert("❌ এই ফেসবুক কুকিজটি (Cookies) ইতিমধ্যে সাবমিট করা হয়েছে!");
+                    alert("❌ এই ফেসবুক কুকিজটি (Cookies) ইতিমধ্যে সাবমিট করা হয়েছে! একই কুকিজ দ্বিতীয়বার দেওয়া যাবে না।");
                     return;
                 }
 
+                // ৪. একই UID আগে সাবমিট করা হয়েছে কিনা চেক করা
                 db.ref('facebook_submits').orderByChild('uid').equalTo(uidData).once('value').then((snapshot) => {
                     if (snapshot.exists()) {
                         alert("❌ এই ফেসবুক UID টি ইতিমধ্যে সাবমিট করা হয়েছে!");
@@ -3968,6 +3997,7 @@
             });
         }
 
+        // 📧 জিমেইল ইউজার হিস্ট্রি
         function maskEmail(email) {
             if (!email || !email.includes('@')) return email;
             let parts = email.split('@');
@@ -4027,6 +4057,7 @@
             });
         } 
 
+        // 🔵 ফেসবুক সেল ইউজার হিস্ট্রি
         function renderFacebookHistory() {
             let fbHistoryLog = document.getElementById('fbHistoryLog');
             if (!fbHistoryLog) return;
