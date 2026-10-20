@@ -18,6 +18,7 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
+            -webkit-tap-highlight-color: transparent; /* ক্লিক হাইলাইট এনিমেশন দ্রুত কাজের জন্য */
         }
         body {
             background-color: #0c2317;
@@ -139,13 +140,15 @@
             font-weight: bold;
         }
 
-        /* ✨ ৩. প্রিমিয়াম বাটন ক্লিক নড়াচড়া অ্যানিমেশন (নিচের ৪টি বাটন ছাড়া সকল বাটনের জন্য) ✨ */
+        /* ✨ ৩. প্রিমিয়াম বাটন ক্লিক ইনস্ট্যান্ট অ্যানিমেশন ✨ */
         .btn, .auth-btn, .wa-get-btn, .wa-copy-btn, .logout-btn-top {
-            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease;
+            transition: transform 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
+            touch-action: manipulation;
         }
 
         .btn:active, .auth-btn:active, .wa-get-btn:active, .wa-copy-btn:active, .logout-btn-top:active {
-            transform: scale(0.93) translateY(2px) rotate(-1deg);
+            transform: scale(0.93) translateY(2px) rotate(-0.5deg) !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4) !important;
         }
 
         .btn {
@@ -316,6 +319,11 @@
             background: none;
             border: none;
             padding: 4px 10px;
+            transition: transform 0.05s ease-in-out;
+            touch-action: manipulation;
+        }
+        .nav-item:active {
+            transform: scale(0.9) !important;
         }
         .nav-item .icon {
             font-size: 22px;
@@ -851,38 +859,8 @@
                     <button class="btn btn-whatsapp" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
                 </div>
             </div>
-            
-            <!-- ২. পিন সাবমিট টাস্ক -->
-            <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f; display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Pin Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
-                </div>
-            </div>
 
-            <!-- ৩. রেজিস্ট্রেশন টাস্ক -->
-            <div class="card" id="card-reg-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Registration Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
-                </div>
-            </div>
-
-            <!-- ৪. ভিডিও এডস টাস্ক -->
-            <div class="card" id="card-ad-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/2983/2983797.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Video Ads Logo">
-                <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📺 ভিডিও এডস টাস্ক</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
-                </div>
-            </div>
-
-            <!-- ৫. জিমেইল সেল টাস্ক -->
+            <!-- ২. জিমেইল সেল টাস্ক -->
             <div class="card" id="card-gmail-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Gmail Logo">
                 <div style="flex-grow: 1; width: 100%;">
@@ -892,13 +870,43 @@
                 </div>
             </div>
 
-            <!-- 🔵 ৬. ফেসবুক সেল টাস্ক (নতুন যুক্ত করা হয়েছে) -->
+            <!-- ৩. ফেসবুক সেল টাস্ক -->
             <div class="card" id="card-facebook-task" style="border: 2px solid #1877f2; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Facebook Logo">
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #1877f2; margin-bottom: 4px;">📘 ফেসবুক সেল টাস্ক</h3>
                     <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক ফেসবুক আইডি সেল করার জন্য ৫ টাকা পাবেন।</p>
                     <button class="btn btn-facebook" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('facebookTask', openFacebookSellPage)">ফেসবুক সেল করুন</button>
+                </div>
+            </div>
+
+            <!-- ৪. পিন সাবমিট টাস্ক -->
+            <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f; display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Pin Logo">
+                <div style="flex-grow: 1; width: 100%;">
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
+                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
+                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
+                </div>
+            </div>
+
+            <!-- ৫. রেজিস্ট্রেশন টাস্ক -->
+            <div class="card" id="card-reg-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Registration Logo">
+                <div style="flex-grow: 1; width: 100%;">
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
+                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
+                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
+                </div>
+            </div>
+
+            <!-- ৬. ভিডিও এডস টাস্ক -->
+            <div class="card" id="card-ad-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/2983/2983797.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Video Ads Logo">
+                <div style="flex-grow: 1; width: 100%;">
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📺 ভিডিও এডস টাস্ক</h3>
+                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখে আয় করুন</p>
+                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
                 </div>
             </div>
 
@@ -1288,7 +1296,7 @@
             </div>
         </div>
 
-        <!-- অ্যাডমিন প্যানেল (ছবি অনুযায়ী ব্যাজ নোটিফিকেশন যুক্ত) -->
+        <!-- অ্যাডমিন প্যানেল -->
         <div id="admin" class="page">
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
@@ -1595,6 +1603,22 @@
             </div>
 
             <div class="switch-container">
+                <span>📧 জিমেইল সেল টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-gmail" onchange="toggleTaskStatus('gmailTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
+                <span>📘 ফেসবুক সেল টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-facebook" onchange="toggleTaskStatus('facebookTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
                 <span>📱 পিন সাবমিট টাস্ক</span>
                 <label class="switch">
                     <input type="checkbox" id="sw-pin" onchange="toggleTaskStatus('pinTask', this.checked)">
@@ -1614,22 +1638,6 @@
                 <span>📺 ভিডিও এডস টাস্ক</span>
                 <label class="switch">
                     <input type="checkbox" id="sw-ad" onchange="toggleTaskStatus('adTask', this.checked)">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="switch-container">
-                <span>📧 জিমেইল সেল টাস্ক</span>
-                <label class="switch">
-                    <input type="checkbox" id="sw-gmail" onchange="toggleTaskStatus('gmailTask', this.checked)">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="switch-container">
-                <span>📘 ফেসবুক সেল টাস্ক</span>
-                <label class="switch">
-                    <input type="checkbox" id="sw-facebook" onchange="toggleTaskStatus('facebookTask', this.checked)">
                     <span class="slider"></span>
                 </label>
             </div>
@@ -2552,7 +2560,7 @@
                 if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং পিন সাবমিট রিকোয়েস্ট নেই।</p>";
             });
 
-            // Withdrawals Listener (উইথড্র নম্বরে ফেসবুক স্টাইলের কপি বাটন যোগ)
+            // Withdrawals Listener
             db.ref('withdrawals').on('value', (snapshot) => {
                 let container = document.getElementById("admin-withdraw-list");
                 let badge = document.getElementById("badge-withdraw");
@@ -2593,7 +2601,7 @@
                 if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং উইথড্র রিকোয়েস্ট নেই।</p>";
             });
 
-            // Gmail Submits Listener (জিমেইল অ্যাড্রেসে কপির জন্য ফেসবুক স্টাইলের বাটন যোগ)
+            // Gmail Submits Listener
             db.ref('gmail_submits').on('value', (snapshot) => {
                 let container = document.getElementById("admin-gmail-list");
                 let badge = document.getElementById("badge-gmail");
@@ -3639,29 +3647,28 @@
                 return;
             }
 
-            // ১. ফেসবুক UID ফিল্টারিং (শুধুমাত্র সংখ্যা এবং ১০ ডিজিট বা তার বড় হতে হবে)
+            // ১. ফেসবুক UID ফিল্টারিং
             if (!/^\d+$/.test(uidData) || uidData.length < 10) {
                 alert("❌ ভুল ফেসবুক UID দেওয়া হয়েছে! UID অবশ্যই অন্তত ১০ সংখ্যার হতে হবে।");
                 return;
             }
 
-            // ২. কুকিজের কাঠামোগত ফিল্টারিং (c_user= এবং xs= অবশ্যই থাকতে হবে)
+            // ২. কুকিজের কাঠামোগত ফিল্টারিং
             if (!cookiesData.includes("c_user=") || !cookiesData.includes("xs=")) {
                 alert("❌ ভুল ফেসবুক কুকিজ দেওয়া হয়েছে! অনুগ্রহ করে সঠিক Cookies কপি করে পেস্ট করুন।");
                 return;
             }
 
-            // কুকিজ ট্রিম ও ক্লিনিং
             cookiesData = cookiesData.replace(/\r?\n|\r/g, ' ').trim();
 
-            // ৩. একই কুকিজ ডাটাবেজে আগে সাবমিট করা হয়েছে কিনা তা চেক করা
+            // ৩. একই কুকিজ ডাটাবেজে আগে সাবমিট করা হয়েছে কিনা চেক করা
             db.ref('facebook_submits').orderByChild('cookies').equalTo(cookiesData).once('value').then((cookieSnap) => {
                 if (cookieSnap.exists()) {
                     alert("❌ এই ফেসবুক কুকিজটি (Cookies) ইতিমধ্যে সাবমিট করা হয়েছে! একই কুকিজ দ্বিতীয়বার দেওয়া যাবে না।");
                     return;
                 }
 
-                // ৪. একই UID আগে সাবমিট করা হয়েছে কিনা তা চেক করা
+                // ৪. একই UID আগে সাবমিট করা হয়েছে কিনা চেক করা
                 db.ref('facebook_submits').orderByChild('uid').equalTo(uidData).once('value').then((snapshot) => {
                     if (snapshot.exists()) {
                         alert("❌ এই ফেসবুক UID টি ইতিমধ্যে সাবমিট করা হয়েছে!");
