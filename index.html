@@ -18,7 +18,7 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
-            -webkit-tap-highlight-color: transparent; /* ক্লিক হাইলাইট এনিমেশন দ্রুত কাজের জন্য */
+            -webkit-tap-highlight-color: transparent;
         }
         body {
             background-color: #0c2317;
@@ -29,7 +29,7 @@
             overflow-x: hidden;
         }
 
-        /* ✨ ৫. ঝকমকে বাটন অ্যানিমেশন (Glow & Border Animation) ✨ */
+        /* ✨ রোটেটিং গ্লো বর্ডার অ্যানিমেশন ✨ */
         @property --angle {
             syntax: '<angle>';
             initial-value: 0deg;
@@ -47,19 +47,21 @@
             isolation: isolate;
             transition: transform 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
             touch-action: manipulation;
+            border: none;
+            overflow: hidden;
         }
 
         .btn::after, .auth-btn::after, .wa-get-btn::after {
             content: '';
             position: absolute;
-            inset: -2px;
+            inset: -3px;
             border-radius: 12px;
             background: conic-gradient(from var(--angle), #ff4d4d, #f1c40f, #2ecc71, #3498db, #9b59b6, #ff4d4d);
             z-index: -1;
-            animation: rotateBorder 4s linear infinite;
+            animation: rotateBorder 3s linear infinite;
         }
 
-        /* ✨ ১. পুরো বটে প্রিমিয়াম কোয়ালিটির শিমার ও ব্যাকগ্রাউন্ড কালার ভিডিও অ্যানিমেশন ✨ */
+        /* ✨ শিমার ও ব্যাকগ্রাউন্ড লাইটিং অ্যানিমেশন ✨ */
         body::before {
             content: '';
             position: fixed;
@@ -87,7 +89,6 @@
             100% { left: 150%; }
         }
 
-        /* ✨ ১. লগইন/সাইন-আপ পরবর্তী লোডিং অ্যানিমেশন ও কালারফুল টেক্সট ✨ */
         #appLoadingOverlay {
             position: fixed;
             top: 0;
@@ -813,13 +814,13 @@
 </head>
 <body>
 
-    <!-- ✨ ১. লগইন/সাইন-আপ লোডিং অ্যানিমেশন স্ক্রিন ওভারলে -->
+    <!-- ১. লগইন/সাইন-আপ লোডিং অ্যানিমেশন স্ক্রিন ওভারলে -->
     <div id="appLoadingOverlay">
         <div class="colorful-spinner"></div>
         <div class="loading-title-text">Mega Income</div>
     </div>
 
-    <!-- 🔐 লগইন ও সাইন-আপ ওভারলে মডাল -->
+    <!-- লগইন ও সাইন-আপ ওভারলে মডাল -->
     <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: #07150d;">
         <!-- সাইন ইন পেজ -->
         <div id="loginBox" class="auth-card">
@@ -881,7 +882,7 @@
         </div>
     </div>
 
-    <!-- 🚫 ইউজার ব্যান এলার্ট পপআপ -->
+    <!-- ইউজার ব্যান এলার্ট পপআপ -->
     <div id="bannedUserOverlay" class="modal-overlay" style="z-index: 999999; background: rgba(10, 5, 5, 0.98); align-items: center; justify-content: center;">
         <div style="background: linear-gradient(145deg, #2c0b0e, #1a0507); border: 2px solid #e74c3c; border-radius: 16px; padding: 25px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4); margin: auto;">
             <div style="font-size: 50px; margin-bottom: 10px;">🚫</div>
@@ -991,7 +992,7 @@
             </div>
         </div>
 
-        <!-- 📅 ডেইলি সাইন-ইন মডাল/পপআপ -->
+        <!-- ডেইলি সাইন-ইন মডাল -->
         <div id="dailyCheckinModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center; color:#fff;">
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #27ae60; padding-bottom:8px; margin-bottom:15px;">
@@ -1020,7 +1021,7 @@
             </div>
         </div>
 
-        <!-- 💬 প্রিমিয়াম হোয়াটসঅ্যাপ মডাল -->
+        <!-- হোয়াটসঅ্যাপ মডাল -->
         <div id="waTaskModal" class="modal-overlay">
             <div class="wa-box-container" style="max-width: 420px; margin: 15px auto;">
                 <div class="wa-header-premium">
@@ -1096,7 +1097,7 @@
             </div>
         </div>
 
-        <!-- 📱 পিন সাবমিট সিলেক্ট মডাল -->
+        <!-- পিন সাবমিট সিলেক্ট মডাল -->
         <div id="pinSubmitModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
                 <div style="text-align: right; margin-bottom: 10px;">
@@ -1122,7 +1123,7 @@
             </div>
         </div>
 
-        <!-- 📱 পিন অফার মডাল -->
+        <!-- পিন অফার মডাল -->
         <div id="pinTaskWorkModal" class="modal-overlay">
             <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
                 <div style="text-align: right; margin-bottom: 10px;">
@@ -1207,7 +1208,7 @@
             </div>
         </div>
 
-        <!-- 🔵 ফেসবুক সেল মডাল/ওভারলে -->
+        <!-- ফেসবুক সেল মডাল -->
         <div id="facebookSellOverlay" class="modal-overlay">
             <div style="background:#0d1b2a; border: 2px solid #1877f2; padding:20px; border-radius:16px; width:100%; max-width:400px; margin:20px auto; box-shadow: 0 10px 30px rgba(24, 119, 242, 0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(24, 119, 242, 0.4); padding-bottom: 10px; margin-bottom: 15px;">
@@ -1416,7 +1417,7 @@
 
     </div>
 
-    <!-- 🎁 Gift Code Management Modal -->
+    <!-- Gift Code Management Modal -->
     <div id="giftManagementModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1447,8 +1448,8 @@
                         <input type="number" id="gc-limit-input" class="input-control" placeholder="100">
                     </div>
                     <div style="flex:1.2;">
-                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Time (যেমন 30min / 2hour / 1day)</label>
-                        <input type="text" id="gc-time-input" class="input-control" placeholder="2hour">
+                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Time (যেমন 30day)</label>
+                        <input type="text" id="gc-time-input" class="input-control" placeholder="30day">
                     </div>
                 </div>
 
@@ -1457,7 +1458,6 @@
                 <button class="btn btn-main" onclick="saveGiftCode()" style="margin-top:5px;">Save</button>
             </div>
 
-            <!-- List of existing Gift Codes -->
             <h4 style="color:#2ecc71; text-align:left; margin-bottom:10px; font-size:14px;">📜 সকল গিফট কোডের তালিকা:</h4>
             <div id="admin-gift-list" style="max-height:300px; overflow-y:auto;">
                 <p style="color:#aaa; font-size:12px;">কোনো গিফট কোড পাওয়া যায়নি।</p>
@@ -1465,7 +1465,7 @@
         </div>
     </div>
 
-    <!-- ✏️ Admin User Edit & Recovery Modal -->
+    <!-- Admin User Edit & Recovery Modal -->
     <div id="adminAccountEditModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1501,7 +1501,7 @@
         </div>
     </div>
 
-    <!-- 📧/📘 Admin Task Credentials Control Modal -->
+    <!-- Admin Task Credentials Control Modal -->
     <div id="adminGmailCredentialsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1540,7 +1540,7 @@
         </div>
     </div>
 
-    <!-- 🚫 User Ban Control Modal -->
+    <!-- User Ban Control Modal -->
     <div id="adminUserBanModal" class="modal-overlay">
         <div style="background: linear-gradient(135deg, #102a1d, #08150f); border: 2px solid #e74c3c; padding: 20px; border-radius: 12px; width: 100%; max-width: 440px; margin: 20px auto; color: #fff; box-shadow: 0 5px 20px rgba(0,0,0,0.6);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e74c3c; padding-bottom:8px;">
@@ -1577,7 +1577,7 @@
         </div>
     </div>
 
-    <!-- 💳 Withdraw Requests List Modal -->
+    <!-- Withdraw Requests List Modal -->
     <div id="adminWithdrawModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1588,7 +1588,7 @@
         </div>
     </div>
 
-    <!-- 📧 Gmail Submit Requests List Modal -->
+    <!-- Gmail Submit Requests List Modal -->
     <div id="adminGmailModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1599,7 +1599,7 @@
         </div>
     </div>
 
-    <!-- 📘 Facebook Sell Requests List Modal -->
+    <!-- Facebook Sell Requests List Modal -->
     <div id="adminFacebookModal" class="modal-overlay">
         <div style="background:#0d1b2a; border:2px solid #1877f2; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #1877f2; padding-bottom:8px;">
@@ -1610,7 +1610,7 @@
         </div>
     </div>
 
-    <!-- 📱 Pin Submit Requests List Modal -->
+    <!-- Pin Submit Requests List Modal -->
     <div id="adminPinModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1621,7 +1621,7 @@
         </div>
     </div>
 
-    <!-- 💬 WhatsApp Task Settings Modal -->
+    <!-- WhatsApp Task Settings Modal -->
     <div id="adminWaSettingsModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #25d366; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -1706,7 +1706,7 @@
         </div>
     </div>
 
-    <!-- অ্যাডমিন অন-অফ কন্ট্রোল মডাল/পেজ -->
+    <!-- অ্যাডমিন অন-অফ কন্ট্রোল মডাল -->
     <div id="adminTaskControlModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -1772,7 +1772,7 @@
         </div>
     </div>
 
-    <!-- ✨ ২. ন্যাভবার (প্রিমিয়াম কালারফুল SVG আইকন সহ) -->
+    <!-- ন্যাভবার -->
     <div class="navbar" id="app-navbar">
         <button class="nav-item active" onclick="switchTab('home', this)">
             <span class="icon">
@@ -1960,7 +1960,6 @@
         let dynamicFbLastName = "Rahat";
         let dynamicFbPass = "Pass#9988";
 
-        // ✨ ১. লোডিং অ্যানিমেশন সহ লগইন/সাইন-আপ এন্ট্রান্স
         function showAppLoadingAndEnter(uKey) {
             currentUserKey = uKey;
             localStorage.setItem("loggedInUserKey", uKey);
@@ -2359,7 +2358,7 @@
 
             let durationMs = parseTimeStringToMs(timeStr);
             if (durationMs <= 0) {
-                alert("⚠️ সঠিক Time দিন! (যেমন: 30min, 2hour, 1day)");
+                alert("⚠️ সঠিক Time দিন! (যেমন: 30min, 2hour, 1day, 30day)");
                 return;
             }
 
@@ -2402,15 +2401,7 @@
             }
         }
 
-        // ✨ ২. গিফট কোড সম্পূর্ণ ডিলিট ফাংশন
-        function deleteGiftCode(key, codeName) {
-            if (confirm(`আপনি কি নিশ্চিতভাবে "${codeName}" গিফট কোডটি ডাটাবেজ থেকে সম্পূর্ণ ডিলিট করতে চান?`)) {
-                db.ref('gift_codes/' + key).remove().then(() => {
-                    alert("✅ গিফট কোডটি সফলভাবে ডিলিট করা হয়েছে!");
-                });
-            }
-        }
-
+        // 🟢 সঠিক ফরমেটিং সহ গিফট কোডের তালিকা (ডিলিট বাটন রিমুভ ও ert{} বাগ ফিক্স করা হয়েছে)
         function listenGiftCodesList() {
             db.ref('gift_codes').on('value', (snapshot) => {
                 let container = document.getElementById('admin-gift-list');
@@ -2432,16 +2423,14 @@
 
                 giftCodesList.forEach((item, index) => {
                     let used = item.usedCount || 0;
-                    // ✨ ৩. টেক্সট ফরমেটিং ফিক্স (ert{} জাতীয় সমস্যা পুরোপুরি ঠিক করে প্রিমিয়াম লুক দেওয়া হয়েছে)
                     container.innerHTML += `
                         <div class="admin-item-card" style="display:flex; justify-content:space-between; align-items:center; border-color:#f39c12; margin-bottom:8px;">
                             <div>
                                 <div style="color:#ffcc00; font-weight:bold; font-size:14px;">${index + 1}. Code:${item.code}</div>
-                                <div style="color:#fff; font-size:12px; margin-top:2px;">Amount: <b>৳${item.amount}</b> \vert{} Use: <b>${used} / ${item.limit}</b> \vert{} Time: <b>${item.timeStr || ''}</b></div>
+                                <div style="color:#fff; font-size:12px; margin-top:2px;">Amount: ৳<b>${item.amount}</b> \vert{} Use: <b>${used} / ${item.limit}</b> \vert{} Time: <b>${item.timeStr || ''}</b></div>
                             </div>
                             <div style="display:flex; gap:6px;">
-                                <button onclick="editGiftCode('${item.key}')" style="background:#2980b9; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">Edit</button>
-                                <button onclick="deleteGiftCode('${item.key}', '${item.code}')" style="background:#e74c3c; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">Delete</button>
+                                <button onclick="editGiftCode('${item.key}')" style="background:#2980b9; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Edit</button>
                             </div>
                         </div>
                     `;
@@ -3727,7 +3716,6 @@
             if (codeInput) codeInput.value = "";
         }
 
-        // ✨ ৪. গিফট কোড সিকিউরিটি ও নিয়ম কড়াকড়ি (কঠোর ফিল্টার)
         function redeemGiftCode() {
             let codeInput = document.getElementById("gift-code-input");
             if (!codeInput) return;
@@ -3757,7 +3745,7 @@
 
                 db.ref(`used_gifts/${currentUserKey}/${codeKey}`).once('value').then((usedSnap) => {
                     if (usedSnap.exists()) {
-                        alert("⚠️ কঠোর সিকিউরিটি ফিল্টার: আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন! দ্বিতীয়বার ব্যবহার করা অসম্ভব।");
+                        alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
                         return;
                     }
 
