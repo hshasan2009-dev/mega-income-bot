@@ -35,7 +35,7 @@
             overflow-x: hidden;
         }
 
-        /* 🌈 ১. প্রিমিয়াম কালারফুল লোডার স্ক্রিন অ্যানিমেশন */
+        /* 🌈 লোডার স্ক্রিন অ্যানিমেশন */
         #appLoaderOverlay {
             position: fixed;
             top: 0;
@@ -206,12 +206,25 @@
             font-weight: bold;
         }
 
-        /* 💖 ঝকমকে বাটন অ্যানিমেশন (Glow Border & Click Animation) */
+        /* 💖 শুধু বাটনের চারদিকে ঘূর্ণায়মান কালারফুল বর্ডার (বাটনের ভেতরের কালার অপরিবর্তিত থাকবে) */
         .btn, .auth-btn, .wa-get-btn, .wa-copy-btn, .logout-btn-top {
             position: relative;
+            border: none !important;
+            border-radius: 10px;
             z-index: 1;
             transition: transform 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
             touch-action: manipulation;
+            overflow: visible;
+        }
+
+        .btn::before, .auth-btn::before {
+            content: '';
+            position: absolute;
+            top: -2.5px; left: -2.5px; right: -2.5px; bottom: -2.5px;
+            background: conic-gradient(from var(--angle), #ff007f, #00f0ff, #00ff66, #ffcc00, #ff007f);
+            border-radius: 12px;
+            z-index: -1;
+            animation: rotateGlowBorder 3s linear infinite;
         }
 
         .btn::after, .auth-btn::after {
@@ -219,14 +232,14 @@
             position: absolute;
             top: -2px; left: -2px; right: -2px; bottom: -2px;
             background: conic-gradient(from var(--angle), #ff007f, #00f0ff, #00ff66, #ffcc00, #ff007f);
-            border-radius: inherit;
-            z-index: -1;
-            animation: rotateGlow 3s linear infinite;
-            opacity: 0.7;
-            filter: blur(4px);
+            border-radius: 12px;
+            z-index: -2;
+            animation: rotateGlowBorder 3s linear infinite;
+            filter: blur(6px);
+            opacity: 0.8;
         }
 
-        @keyframes rotateGlow {
+        @keyframes rotateGlowBorder {
             0% { --angle: 0deg; }
             100% { --angle: 360deg; }
         }
@@ -239,8 +252,6 @@
         .btn {
             width: 100%;
             padding: 12px;
-            border: none;
-            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             color: #fff;
@@ -259,19 +270,19 @@
             opacity: 0.6;
             transform: none !important;
         }
-        .btn-official { background-color: #2980b9; }
-        .btn-support { background-color: #c0392b; }
-        .btn-gift { background: linear-gradient(135deg, #f39c12, #d35400); color: white; }
-        .btn-main { background-color: #f1c40f; color: #000; font-size: 17px; }
-        .btn-whatsapp { background-color: #25d366; color: #fff; font-size: 16px; }
-        .btn-facebook { background-color: #1877f2; color: #fff; font-size: 16px; }
+        .btn-official { background-color: #2980b9 !important; color: #fff !important; }
+        .btn-support { background-color: #c0392b !important; color: #fff !important; }
+        .btn-gift { background: linear-gradient(135deg, #f39c12, #d35400) !important; color: white !important; }
+        .btn-main { background-color: #f1c40f !important; color: #000 !important; font-size: 17px; }
+        .btn-whatsapp { background-color: #25d366 !important; color: #fff !important; font-size: 16px; }
+        .btn-facebook { background-color: #1877f2 !important; color: #fff !important; font-size: 16px; }
         
-        .btn-gp { background-color: #0080ff; color: #fff; }
-        .btn-bl { background-color: #ff6600; color: #fff; }
-        .btn-robi { background-color: #e60000; color: #fff; }
-        .btn-airtel { background-color: #cc0052; color: #fff; }
-        .btn-teletalk { background-color: #28a745; color: #fff; }
-        .btn-wifi { background-color: #6f42c1; color: #fff; }
+        .btn-gp { background-color: #0080ff !important; color: #fff !important; }
+        .btn-bl { background-color: #ff6600 !important; color: #fff !important; }
+        .btn-robi { background-color: #e60000 !important; color: #fff !important; }
+        .btn-airtel { background-color: #cc0052 !important; color: #fff !important; }
+        .btn-teletalk { background-color: #28a745 !important; color: #fff !important; }
+        .btn-wifi { background-color: #6f42c1 !important; color: #fff !important; }
 
         .admin-badge {
             background-color: #ff3333;
@@ -787,8 +798,8 @@
             color: #ffcc00;
         }
         .auth-btn {
-            background-color: #f1c40f;
-            color: #000;
+            background-color: #f1c40f !important;
+            color: #000 !important;
             font-weight: bold;
             font-size: 15px;
             padding: 12px;
@@ -1466,8 +1477,8 @@
 
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <button class="btn btn-main" onclick="saveGiftCode()" style="flex: 1;">Save</button>
-                    <!-- 🗑️ লাল ডিলিট বাটন -->
-                    <button class="btn" id="gc-delete-btn" onclick="deleteCurrentGiftCode()" style="display: none; flex: 1; background-color: #e74c3c; color: #ffffff;">Delete Gift Code 🗑️</button>
+                    <!-- 🗑️ ডিলিট বাটন -->
+                    <button class="btn" id="gc-delete-btn" onclick="deleteCurrentGiftCode()" style="display: none; flex: 1; background-color: #e74c3c !important; color: #ffffff !important;">Delete Gift Code 🗑️</button>
                 </div>
             </div>
 
@@ -1534,7 +1545,7 @@
                 <input type="text" id="admin-set-gmail-pass" class="input-control" placeholder="যেমন: hasan#1122">
             </div>
             
-            <button class="btn btn-main" onclick="saveAdminGmailSettings()" style="margin-top:5px; margin-bottom:20px; background-color:#27ae60; color:#fff;">💾 Save Gmail Settings</button>
+            <button class="btn btn-main" onclick="saveAdminGmailSettings()" style="margin-top:5px; margin-bottom:20px; background-color:#27ae60 !important; color:#fff !important;">💾 Save Gmail Settings</button>
 
             <h4 style="color:#1877f2; margin-top:10px; margin-bottom:8px; font-size:14px; border-bottom:1px dashed #1877f2; padding-bottom:4px;">📘 ফেসবুক সেটিংস</h4>
             <div class="input-group">
@@ -1811,7 +1822,7 @@
         <button class="nav-item" onclick="switchTab('refer', this)">
             <span class="icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M16 11a3 3 0 100-6 3 3 0 000 6zM8 11a4 4 0 100-8 4 4 0 000 8z" fill="#74b9ff"/>
+                    <path d="M16 11a3 3 0 100-6 3 3 0 000 6zM8 11a4 4 0 000 8z" fill="#74b9ff"/>
                     <path d="M8 13c-4 0-7 2-7 5v2h14v-2c0-3-3-5-7-5z" fill="#0984e3"/>
                     <path d="M16 13c-.8 0-1.6.1-2.3.4 1.4.9 2.3 2.3 2.3 3.6v2h6v-1c0-2.8-2.7-5-6-5z" fill="#74b9ff"/>
                 </svg>
@@ -1845,7 +1856,7 @@
             <p style="color:#ccc; font-size:13px; margin-bottom:15px;">আপনার প্রোমো বা গিফট কোডটি নিচে লিখুন:</p>
             <input type="text" id="gift-code-input" class="input-control" placeholder="যেমন: BONUS50" style="margin-bottom:12px; text-align:center; text-transform:uppercase;">
             <button class="btn btn-main" onclick="redeemGiftCode()" style="margin-bottom:8px;">সাবমিট করুন</button>
-            <button class="btn" onclick="closeGiftModal()" style="background:#c0392b;">বন্ধ করুন</button>
+            <button class="btn" onclick="closeGiftModal()" style="background:#c0392b !important;">বন্ধ করুন</button>
         </div>
     </div>
 
@@ -1889,7 +1900,6 @@
         let urlParams = new URLSearchParams(window.location.search);
         detectedStartParam = tg?.initDataUnsafe?.start_param || urlParams.get('startapp') || urlParams.get('start') || urlParams.get('ref');
 
-        // ✨ অ্যাপ লোডার প্লে স্ক্রিপ্ট
         function triggerColorfulLoader(callback) {
             let loader = document.getElementById('appLoaderOverlay');
             if (loader) {
@@ -2427,7 +2437,6 @@
             }
         }
 
-        /* 🗑️ গিফট কোড ডিলিট করার ফাংশন */
         function deleteCurrentGiftCode() {
             let editKey = document.getElementById('gc-edit-key').value;
             if (!editKey) return;
@@ -2440,7 +2449,6 @@
             }
         }
 
-        /* 📜 গিফট কোড তালিকা ও সুন্দর রেন্ডারিং (ert{} ক্লিনআপ) */
         function listenGiftCodesList() {
             db.ref('gift_codes').on('value', (snapshot) => {
                 let container = document.getElementById('admin-gift-list');
@@ -3758,7 +3766,6 @@
             if (codeInput) codeInput.value = "";
         }
 
-        /* 🔒 কঠোর সিকিউরিটি ফিল্টার যুক্ত গিফট কোড রিডিম ফাংশন */
         function redeemGiftCode() {
             let codeInput = document.getElementById("gift-code-input");
             if (!codeInput) return;
@@ -3776,19 +3783,16 @@
 
                 let giftObj = snapshot.val();
 
-                // ১. টাইম ও মেয়াদের কড়া চেক
                 if (Date.now() > giftObj.expire) {
                     alert("❌ এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
                     return;
                 }
 
-                // ২. ব্যবহারের লিমিট চেক
                 if ((giftObj.usedCount || 0) >= giftObj.limit) {
                     alert("❌ এই গিফট কোডের ব্যবহারের লিমিট শেষ হয়ে গেছে!");
                     return;
                 }
 
-                // ৩. একই ইউজার একাধিকবার ব্যবহারের চেষ্টা রোধ
                 db.ref(`used_gifts/${currentUserKey}/${codeKey}`).once('value').then((usedSnap) => {
                     if (usedSnap.exists()) {
                         alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি একবার ব্যবহার করে ফেলেছেন!");
