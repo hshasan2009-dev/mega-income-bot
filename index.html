@@ -1914,7 +1914,7 @@
             <h3 style="color:#ffcc00; margin-bottom:10px;">🎁 গিফট কোড রিডিম</h3>
             <p style="color:#ccc; font-size:13px; margin-bottom:15px;">আপনার প্রোমো বা গিফট কোডটি নিচে লিখুন:</p>
             <input type="text" id="gift-code-input" class="input-control" placeholder="যেমন: BONUS50" style="margin-bottom:12px; text-align:center; text-transform:uppercase;">
-            <button class="btn btn-main" onclick="redeemGiftCode()" style="margin-bottom:8px;">সাবমিট করুন</button>
+            <button class="btn btn-main" id="redeem-gift-btn" onclick="redeemGiftCode()" style="margin-bottom:8px;">সাবমিট করুন</button>
             <button class="btn" onclick="closeGiftModal()" style="background:#c0392b;">বন্ধ করুন</button>
         </div>
     </div>
@@ -3948,6 +3948,7 @@
 
         function redeemGiftCode() {
             let codeInput = document.getElementById("gift-code-input");
+            let redeemBtn = document.getElementById("redeem-gift-btn");
             if (!codeInput) return;
             let code = codeInput.value.trim().toUpperCase();
             
@@ -3955,9 +3956,16 @@
 
             let codeKey = sanitizeKey(code);
 
+            //Disable button and show loading state to prevent double clicking
+            if (redeemBtn) {
+                redeemBtn.disabled = true;
+                redeemBtn.innerText = "প্রসেসিং হচ্ছে...";
+            }
+
             db.ref('gift_codes/' + codeKey).once('value').then((snapshot) => {
                 if (!snapshot.exists()) {
                     alert("❌ ভুল বা Invalid গিফট কোড!");
+                    if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
                     return;
                 }
 
@@ -3965,29 +3973,43 @@
 
                 if (Date.now() > giftObj.expire) {
                     alert("❌ এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
+                    if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
                     return;
                 }
 
                 if ((giftObj.usedCount || 0) >= giftObj.limit) {
                     alert("❌ লিমিট শেষ হয়ে গেছে!");
+                    if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
                     return;
                 }
 
-                db.ref(`used_gifts/${currentUserKey}/${codeKey}`).once('value').then((usedSnap) => {
-                    if (usedSnap.exists()) {
-                        alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
-                        return;
+                db.ref(`used_gifts/${currentUserKey}/${codeKey}`).transaction((currentVal) => {
+                    if (currentVal === null) {
+                        return true; // Mark as used
+                    } else {
+                        return; // Already used, abort transaction
                     }
+                }, (error, committed, snapshot) => {
+                    if (error) {
+                        alert("❌ সমস্যা হয়েছে, আবার চেষ্টা করুন!");
+                        if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
+                    } else if (!committed) {
+                        alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
+                        if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
+                    } else {
+                        // Atomic update to Firebase
+                        db.ref('gift_codes/' + codeKey + '/usedCount').transaction((count) => (count || 0) + 1);
 
-                    db.ref(`used_gifts/${currentUserKey}/${codeKey}`).set(true);
-                    db.ref('gift_codes/' + codeKey + '/usedCount').transaction((count) => (count || 0) + 1);
-
-                    currentBalance += parseFloat(giftObj.amount || 0);
-                    updateFirebaseProfile();
-                    updateUI();
-                    closeGiftModal();
-                    alert(`🎉 অভিনন্দন! ৳${parseFloat(giftObj.amount).toFixed(2)} যোগ হয়েছে!`);
+                        currentBalance += parseFloat(giftObj.amount || 0);
+                        updateFirebaseProfile();
+                        updateUI();
+                        closeGiftModal();
+                        alert(`🎉 অভিনন্দন! ৳${parseFloat(giftObj.amount).toFixed(2)} যোগ হয়েছে!`);
+                        if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
+                    }
                 });
+            }).catch(() => {
+                if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
             });
         }
 
