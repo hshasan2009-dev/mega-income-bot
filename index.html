@@ -3434,7 +3434,7 @@
             let activeNumbers = userBoundWaNumbers.filter(item => item.status === 'active');
 
             if (activeNumbers.length === 0) {
-                container.innerHTML = `<p style="color: #78909c; font-size: 11px; text-align: center; padding: 10px 0;">কোনো WhatsApp নম্বর বাঁধা নেই</p>`;
+                container.innerHTML = `<p style="color: #78909c; font-size: 11px; text-align: center; padding: 10px 0;">কোনো সফলভাবে বাইন্ড করা WhatsApp নম্বর নেই</p>`;
                 return;
             }
 
@@ -4331,7 +4331,7 @@
 
                 let tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td>${item.account || ''}<br><span style="font-size:10px; color:#aaa;">${item.date}</span></td>
+                    <td>${item.date}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount ? item.netAmount.toFixed(2) : '0.00'}</td>
                     <td>${item.method}</td>
                     <td><span class="${badgeClass}">${statusText}</span></td>
