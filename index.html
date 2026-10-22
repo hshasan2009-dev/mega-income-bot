@@ -1893,6 +1893,23 @@
         </div>
     </div>
 
+    <!-- নতুন ব্রডকাস্ট মেসেজ মডাল (অ্যাডমিন প্যানেলের জন্য) -->
+    <div id="adminBroadcastModal" class="modal-overlay">
+        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
+                <h3 style="color:#ffcc00; font-size:16px;">📢 ইউজারদের কাছে ব্রডকাস্ট মেসেজ</h3>
+                <button onclick="closeAdminBroadcastModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
+            </div>
+            
+            <div class="input-group">
+                <label style="color:#ffcc00; font-weight:bold;">মেসেজ বা লিংক লিখুন:</label>
+                <textarea id="broadcast-msg-input" class="input-control" rows="6" placeholder="সকল ইউজারের কাছে পাঠানোর জন্য এখানে মেসেজ বা লিংক লিখুন..."></textarea>
+            </div>
+            
+            <button class="btn btn-main" onclick="sendBroadcastMessage()" style="margin-top:5px; background-color:#27ae60; color:#fff;">🚀 সকল ইউজারের কাছে পাঠান</button>
+        </div>
+    </div>
+
     <div class="navbar" id="app-navbar">
         <button class="nav-item active" onclick="switchTab('home', this)">
             <span class="icon">
@@ -2508,6 +2525,17 @@
                 });
                 renderPinHistory();
             });
+
+            // ব্রডকাস্ট মেসেজ রিসিভ করার ফায়ারবেস লিসেনার (বটের ইউজারদের জন্য)
+            db.ref('broadcast_messages').limitToLast(1).on('child_added', (snapshot) => {
+                let msgData = snapshot.val();
+                if (msgData && msgData.message) {
+                    // চেক করতে পারেন যাতে পেজ লোড হওয়ার আগের পুরনো মেসেজ পপআপ না করে
+                    if (msgData.time && (Date.now() - msgData.time < 10000)) {
+                        // যদি চান ইউজার অ্যাপে থাকা অবস্থায় কোনো নোটিফিকেশন দেখাতে পারেন
+                    }
+                }
+            });
         }
 
         function updateTaskCardVisuals(cardId, isEnabled) {
@@ -2539,6 +2567,46 @@
 
         function openAdminTaskRewardSetupModal() { document.getElementById('adminTaskRewardSetupModal').style.display = 'block'; }
         function closeAdminTaskRewardSetupModal() { document.getElementById('adminTaskRewardSetupModal').style.display = 'none'; }
+
+        // ব্রডকাস্ট মডাল ওপেন/ক্লোজ ফাংশন
+        function openAdminBroadcastModal() { 
+            let modal = document.getElementById('adminBroadcastModal');
+            if(modal) modal.style.display = 'block'; 
+        }
+        function closeAdminBroadcastModal() { 
+            let modal = document.getElementById('adminBroadcastModal');
+            if(modal) modal.style.display = 'none'; 
+        }
+
+        // ব্রডকাস্ট মেসেজ সেভ ও ট্রিগার ফাংশন
+        function sendBroadcastMessage() {
+            let msgBox = document.getElementById('broadcast-msg-input');
+            let messageText = msgBox ? msgBox.value.trim() : "";
+
+            if (!messageText) {
+                alert("⚠️ অনুগ্রহ করে পাঠানোর জন্য কিছু মেসেজ বা লিংক লিখুন!");
+                return;
+            }
+
+            if (!confirm("আপনি কি নিশ্চিত যে সকল ইউজারের কাছে এই মেসেজটি পাঠাতে চান?")) {
+                return;
+            }
+
+            let broadcastObj = {
+                message: messageText,
+                time: Date.now(),
+                sender: currentUserKey
+            };
+
+            // ফায়ারবেসে মেসেজটি সেভ করা
+            db.ref('broadcast_messages').push(broadcastObj).then(() => {
+                alert("✅ সফলভাবে ব্রডকাস্ট মেসেজ পাঠানো হয়েছে!");
+                if(msgBox) msgBox.value = "";
+                closeAdminBroadcastModal();
+            }).catch((err) => {
+                alert("❌ মেসেজ পাঠাতে সমস্যা হয়েছে: " + err.message);
+            });
+        }
 
         function saveSingleTaskReward(key, inputId, label) {
             let val = parseFloat(document.getElementById(inputId).value);
@@ -3889,7 +3957,7 @@
         }
 
         // ========================================================
-        // 🎬 UPDATED CHECK-IN REWARD WITH 15S TIMER & MONETAG AD
+        // 🎬 চেক-ইন রিওয়ার্ড (টাইম হাইড করা সহ)
         // ========================================================
         let isCheckinAdRunning = false;
 
@@ -3915,21 +3983,19 @@
             isCheckinAdRunning = true;
             let checkinBtn = document.getElementById('btn-do-checkin');
 
-            // 1. Trigger Monetag Ad popup
             if (typeof show_12093219 === 'function') {
                 show_12093219().catch(e => console.log("Monetag trigger info:", e));
             }
 
-            // 2. Start 15s Countdown Timer
             let timerSec = 15;
             if (checkinBtn) {
                 checkinBtn.disabled = true;
-                checkinBtn.innerText = `⏳ এড দেখা শেষ হওয়া পর্যন্ত অপেক্ষা করুন (${timerSec}s)`;
+                // টাইম হাইড করে শুধু প্রসেসিং টেক্সট দেখানো হচ্ছে
+                checkinBtn.innerText = `⏳ প্রসেসিং হচ্ছে, অপেক্ষা করুন...`;
             }
 
             let checkinTimer = setInterval(() => {
                 timerSec--;
-                if (checkinBtn) checkinBtn.innerText = `⏳ এড দেখা শেষ হওয়া পর্যন্ত অপেক্ষা করুন (${timerSec}s)`;
 
                 if (timerSec <= 0) {
                     clearInterval(checkinTimer);
@@ -4085,7 +4151,7 @@
         }
 
         // ==========================================================
-        // 🎬 FIXED MONETAG REWARDED FUNCTION (15S TIMER & AUTO REWARD)
+        // 🎬 মনিট্যাগ এডস টাস্ক (টাইম হাইড করা সহ)
         // ==========================================================
         let isMonetagAdRunning = false;
 
@@ -4099,23 +4165,19 @@
             let monetagBtn = document.querySelector("#card-monetag-task button");
             let originalText = "🎬 Monetag এডস দেখুন";
 
-            // 1. Trigger Monetag Ad
             if (typeof show_12093219 === 'function') {
                 show_12093219().catch(e => console.log("Monetag trigger info:", e));
             }
 
-            // 2. Start 15s Countdown Timer on Button
             let timerSec = 15;
             if (monetagBtn) {
                 monetagBtn.disabled = true;
-                monetagBtn.innerText = `⏳ বিজ্ঞাপন এড হচ্ছে (${timerSec}s)...`;
+                // টাইম হাইড করে শুধু প্রসেসিং টেক্সট দেখানো হচ্ছে
+                monetagBtn.innerText = `⏳ বিজ্ঞাপন লোড হচ্ছে, অপেক্ষা করুন...`;
             }
 
             let adTimer = setInterval(() => {
                 timerSec--;
-                if (monetagBtn) {
-                    monetagBtn.innerText = `⏳ বিজ্ঞাপন এড হচ্ছে (${timerSec}s)...`;
-                }
 
                 if (timerSec <= 0) {
                     clearInterval(adTimer);
@@ -4126,7 +4188,6 @@
                         monetagBtn.innerText = originalText;
                     }
 
-                    // 3. Auto-Credit Reward
                     let earned = parseFloat(dynamicTaskRewards.monetagTask || 1.00);
                     currentBalance += earned;
                     completedTasksCount += 1;
