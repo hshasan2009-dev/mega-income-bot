@@ -428,6 +428,97 @@
         input:checked + .slider { background-color: #2ecc71; }
         input:checked + .slider:before { transform: translateX(22px); }
 
+        /* কাস্টম স্টাইলিশ পপআপ ডিজাইন */
+        .custom-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+        .custom-popup-box {
+            background: linear-gradient(145deg, #163827, #0b2217);
+            border: 2px solid #f1c40f;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 350px;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(241, 196, 15, 0.3);
+            animation: popupScale 0.3s ease-out;
+        }
+        @keyframes popupScale {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .custom-popup-close {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .custom-popup-close:hover {
+            background: #e74c3c;
+            border-color: #e74c3c;
+        }
+        .custom-popup-logo {
+            width: 75px;
+            height: 75px;
+            background: radial-gradient(circle, #f1c40f 0%, #d35400 100%);
+            border-radius: 50%;
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+            border: 2px solid #fff;
+        }
+        .custom-popup-title {
+            color: #f1c40f;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .custom-popup-desc {
+            color: #e0e0e0;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        .custom-popup-btn {
+            background: linear-gradient(135deg, #f1c40f, #d35400);
+            color: #000;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);
+        }
+
         .wa-box-container {
             background: linear-gradient(165deg, #0d231a 0%, #05120d 100%);
             border-radius: 20px;
@@ -815,6 +906,17 @@
     </style>
 </head>
 <body>
+
+    <!-- মিনি অ্যাপের স্টাইলিশ পপ-আপ নোটিশ -->
+    <div id="dynamicNoticePopup" class="custom-popup-overlay">
+        <div class="custom-popup-box">
+            <button class="custom-popup-close" onclick="closeDynamicNotice()">✕</button>
+            <div class="custom-popup-logo">🚀</div>
+            <h3 id="popupMainTitle" class="custom-popup-title">সাইন-আপ বোনাস +৫০০ পয়েন্ট</h3>
+            <p id="popupSubDesc" class="custom-popup-desc">টাস্ক দাবি করুন · বার্তা পাঠান · পয়েন্ট আয় করুন</p>
+            <button class="custom-popup-btn" onclick="closeDynamicNotice()">এখনই দাবি করুন ›</button>
+        </div>
+    </div>
 
     <div id="authLoadingOverlay">
         <div class="spinner-ring"></div>
@@ -1392,9 +1494,9 @@
                     🎁 Gift Code Management
                 </button>
 
-                <!-- 📢 নতুন ব্রডকাস্ট মেসেজ বাটন -->
+                <!-- ব্রডকাস্ট ও পপ-আপ সেটিংস বাটন -->
                 <button class="btn btn-gift" onclick="openAdminBroadcastModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #e67e22, #d35400);">
-                    📢 Broadcast Message to Users
+                    📢 Broadcast & Popup Notice Settings
                 </button>
 
                 <button class="btn btn-support" onclick="openAdminUserBanModal()" style="margin-bottom: 12px;">
@@ -1898,20 +2000,44 @@
         </div>
     </div>
 
-    <!-- ব্রডকাস্ট মেসেজ মডাল -->
+    <!-- ব্রডকাস্ট এবং পপ-আপ নোটিশ সেটিংস মডাল -->
     <div id="adminBroadcastModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">📢 ইউজারদের কাছে ব্রডকাস্ট মেসেজ</h3>
+                <h3 style="color:#ffcc00; font-size:16px;">📢 ব্রডকাস্ট ও পপ-আপ নোটিশ কন্ট্রোল</h3>
                 <button onclick="closeAdminBroadcastModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             
             <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">মেসেজ বা লিংক লিখুন:</label>
-                <textarea id="broadcast-msg-input" class="input-control" rows="6" placeholder="সকল ইউজারের কাছে পাঠানোর জন্য এখানে মেসেজ বা লিংক লিখুন..."></textarea>
+                <label style="color:#ffcc00; font-weight:bold;">১. ব্রডকাস্ট মেসেজ বা লিংক (টেলিগ্রাম বট মেসেজ):</label>
+                <textarea id="broadcast-msg-input" class="input-control" rows="4" placeholder="সকল ইউজারের কাছে পাঠানোর জন্য মেসেজ লিখুন..."></textarea>
             </div>
             
-            <button class="btn btn-main" onclick="sendBroadcastMessage()" style="margin-top:5px; background-color:#27ae60; color:#fff;">🚀 সকল ইউজারের কাছে পাঠান</button>
+            <button class="btn btn-main" onclick="sendBroadcastMessage()" style="margin-top:5px; margin-bottom:15px; background-color:#27ae60; color:#fff;">🚀 টেলিগ্রাম বট ব্রডকাস্ট পাঠান</button>
+
+            <hr style="border:0; border-top:1px dashed #27ae60; margin:15px 0;">
+
+            <h4 style="color:#f1c40f; margin-bottom:10px; font-size:14px;">✨ মিনি অ্যাপ পপ-আপ নোটিশ সেটিংস:</h4>
+
+            <div class="switch-container">
+                <span>পপ-আপ নোটিশ অন/অফ সুইচ</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-popup-toggle" onchange="savePopupSettings()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="input-group">
+                <label style="color:#ffcc00; font-weight:bold;">২. পপ-আপ বড় মূল শিরোনাম (Title):</label>
+                <input type="text" id="popup-title-input" class="input-control" placeholder="যেমন: সাইন-আপ বোনাস +৫০০ পয়েন্ট">
+            </div>
+
+            <div class="input-group">
+                <label style="color:#ffcc00; font-weight:bold;">৩. পপ-আপ বিস্তারিত বা সাব-হেডিং লেখা:</label>
+                <textarea id="popup-desc-input" class="input-control" rows="2" placeholder="যেমন: টাস্ক দাবি করুন · বার্তা পাঠান · পয়েন্ট আয় করুন"></textarea>
+            </div>
+
+            <button class="btn btn-gift" onclick="savePopupSettings()" style="margin-top:5px; background: linear-gradient(135deg, #f39c12, #d35400);">💾 পপ-আপ সেটিংস সেভ করুন</button>
         </div>
     </div>
 
@@ -2294,7 +2420,6 @@
                 return;
             }
 
-            // টেলিগ্রাম চ্যাট আইডি অটোমেটিক সেভ করার কোড
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
                 let telegramChatId = window.Telegram.WebApp.initDataUnsafe.user.id;
                 if (telegramChatId) {
@@ -2321,6 +2446,31 @@
                 listenBannedUsersList();
                 listenGiftCodesList();
             }
+
+            // পপ-আপ সেটিংস রিয়েলটাইম লিসেনার
+            db.ref('popup_notice_settings').on('value', (snapshot) => {
+                let val = snapshot.val();
+                let popupOverlay = document.getElementById('dynamicNoticePopup');
+                let toggleSwitch = document.getElementById('sw-popup-toggle');
+                let titleInput = document.getElementById('popup-title-input');
+                let descInput = document.getElementById('popup-desc-input');
+
+                if (val) {
+                    if (toggleSwitch) toggleSwitch.checked = !!val.enabled;
+                    if (titleInput) titleInput.value = val.title || "";
+                    if (descInput) descInput.value = val.description || "";
+
+                    if (val.enabled) {
+                        document.getElementById('popupMainTitle').innerText = val.title || "সাইন-আপ বোনাস +৫০০ পয়েন্ট";
+                        document.getElementById('popupSubDesc').innerText = val.description || "টাস্ক দাবি করুন · বার্তা পাঠান · পয়েন্ট আয় করুন";
+                        if (popupOverlay) popupOverlay.style.display = 'flex';
+                    } else {
+                        if (popupOverlay) popupOverlay.style.display = 'none';
+                    }
+                } else {
+                    if (popupOverlay) popupOverlay.style.display = 'none';
+                }
+            });
 
             db.ref('task_rewards').on('value', (snapshot) => {
                 let val = snapshot.val();
@@ -2538,14 +2688,24 @@
                 });
                 renderPinHistory();
             });
+        }
 
-            db.ref('broadcast_messages').limitToLast(1).on('child_added', (snapshot) => {
-                let msgData = snapshot.val();
-                if (msgData && msgData.message) {
-                    if (msgData.time && (Date.now() - msgData.time < 10000)) {
-                        // Broadcast notification listener
-                    }
-                }
+        function closeDynamicNotice() {
+            let popup = document.getElementById('dynamicNoticePopup');
+            if (popup) popup.style.display = 'none';
+        }
+
+        function savePopupSettings() {
+            let enabled = document.getElementById('sw-popup-toggle').checked;
+            let title = document.getElementById('popup-title-input').value.trim();
+            let description = document.getElementById('popup-desc-input').value.trim();
+
+            db.ref('popup_notice_settings').set({
+                enabled: enabled,
+                title: title,
+                description: description
+            }).then(() => {
+                alert("✅ পপ-আপ নোটিশ সেটিংস সফলভাবে সেভ হয়েছে!");
             });
         }
 
@@ -2608,9 +2768,8 @@
             };
 
             db.ref('broadcast_messages').push(broadcastObj).then(() => {
-                alert("✅ সফলভাবে ব্রডকাস্ট মেসেজ পাঠানো হয়েছে!");
+                alert("✅ সফলভাবে টেলিগ্রাম ব্রডকাস্ট মেসেজ পাঠানো হয়েছে!");
                 if(msgBox) msgBox.value = "";
-                closeAdminBroadcastModal();
             }).catch((err) => {
                 alert("❌ মেসেজ পাঠাতে সমস্যা হয়েছে: " + err.message);
             });
