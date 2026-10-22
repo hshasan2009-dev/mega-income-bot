@@ -777,7 +777,6 @@
             font-weight: bold;
         }
 
-        /* Task Reward Card Design in Admin */
         .reward-setup-card {
             background: linear-gradient(135deg, #0d271a, #081a11);
             border: 1px solid #27ae60;
@@ -2293,7 +2292,6 @@
                 listenGiftCodesList();
             }
 
-            // Sync Task Rewards Setup from Firebase
             db.ref('task_rewards').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -2312,7 +2310,6 @@
                         });
                     }
 
-                    // Update UI text for rewards
                     if (document.getElementById('ui-reward-wa')) document.getElementById('ui-reward-wa').innerText = "৳" + parseFloat(dynamicTaskRewards.waTask || 1.00).toFixed(2);
                     if (document.getElementById('ui-reward-gmail')) document.getElementById('ui-reward-gmail').innerText = parseFloat(dynamicTaskRewards.gmailTask || 15.00).toFixed(0);
                     if (document.getElementById('ui-reward-facebook')) document.getElementById('ui-reward-facebook').innerText = parseFloat(dynamicTaskRewards.facebookTask || 5.00).toFixed(0);
@@ -2329,7 +2326,6 @@
                     if (document.getElementById('btn-reward-Teletalk')) document.getElementById('btn-reward-Teletalk').innerText = "৳" + parseFloat(dynamicTaskRewards.pinTeletalk || 5.00).toFixed(0);
                     if (document.getElementById('btn-reward-Wifi')) document.getElementById('btn-reward-Wifi').innerText = "৳" + parseFloat(dynamicTaskRewards.pinWifi || 5.00).toFixed(0);
 
-                    // Update Admin Setup Inputs
                     if (document.getElementById('rew-set-wa')) document.getElementById('rew-set-wa').value = dynamicTaskRewards.waTask || 1.00;
                     if (document.getElementById('rew-set-gmail')) document.getElementById('rew-set-gmail').value = dynamicTaskRewards.gmailTask || 15.00;
                     if (document.getElementById('rew-set-fb')) document.getElementById('rew-set-fb').value = dynamicTaskRewards.facebookTask || 5.00;
@@ -3892,6 +3888,11 @@
             }
         }
 
+        // ========================================================
+        // 🎬 UPDATED CHECK-IN REWARD WITH MANDATORY MONETAG AD
+        // ========================================================
+        let isCheckinAdRunning = false;
+
         function claimDailyCheckinReward() {
             let today = getTodayString();
             let yesterday = getYesterdayString();
@@ -3906,23 +3907,62 @@
                 return;
             }
 
-            if (lastCheckinDate && lastCheckinDate !== yesterday) {
-                checkinStreak = 0;
+            if (isCheckinAdRunning) {
+                alert("⚠️ বিজ্ঞাপন লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন!");
+                return;
             }
 
-            let nextStreak = checkinStreak + 1;
-            let rewardAmt = dailyRewards[Math.min(nextStreak - 1, dailyRewards.length - 1)];
+            if (typeof show_12093219 === 'function') {
+                isCheckinAdRunning = true;
+                let checkinBtn = document.getElementById('btn-do-checkin');
+                let originalBtnText = checkinBtn ? checkinBtn.innerText : "✍️ এখনই সাইন-ইন করুন";
 
-            currentBalance += rewardAmt;
-            checkinStreak = nextStreak;
-            checkinTotalIncome += rewardAmt;
-            lastCheckinDate = today;
+                if (checkinBtn) {
+                    checkinBtn.disabled = true;
+                    checkinBtn.innerText = "⏳ বোনাস ক্লেম করার জন্য এড লোড হচ্ছে...";
+                }
 
-            updateFirebaseProfile();
-            updateUI();
-            renderCheckinGrid();
+                show_12093219().then(() => {
+                    isCheckinAdRunning = false;
 
-            alert(`🎉 অভিনন্দন! দিন ${checkinStreak}-এর সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
+                    if (lastCheckinDate && lastCheckinDate !== yesterday) {
+                        checkinStreak = 0;
+                    }
+
+                    let nextStreak = checkinStreak + 1;
+                    let rewardAmt = dailyRewards[Math.min(nextStreak - 1, dailyRewards.length - 1)];
+
+                    currentBalance += rewardAmt;
+                    checkinStreak = nextStreak;
+                    checkinTotalIncome += rewardAmt;
+                    lastCheckinDate = today;
+
+                    updateFirebaseProfile();
+                    updateUI();
+                    renderCheckinGrid();
+
+                    if (checkinBtn) {
+                        checkinBtn.disabled = false;
+                        checkinBtn.innerText = originalBtnText;
+                    }
+
+                    alert(`🎉 অভিনন্দন! বিজ্ঞাপন সম্পূর্ণ দেখে দিন ${checkinStreak}-এর সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
+
+                }).catch((error) => {
+                    isCheckinAdRunning = false;
+
+                    if (checkinBtn) {
+                        checkinBtn.disabled = false;
+                        checkinBtn.innerText = originalBtnText;
+                    }
+
+                    console.log("Check-in Monetag Ad Closed or Error:", error);
+                    alert("❌ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি বা কেটে দেওয়া হয়েছে! তাই সাইন-ইন বোনাস দেওয়া হয়নি।");
+                });
+
+            } else {
+                alert("⚠️ Monetag SDK লোড হয়নি। অনুগ্রহ করে পেজ রিফ্রেশ করুন বা কিছুক্ষণ পর চেষ্টা করুন।");
+            }
         }
 
         window.onload = function() {
@@ -3998,7 +4038,6 @@
 
             let codeKey = sanitizeKey(code);
 
-            //Disable button and show loading state to prevent double clicking
             if (redeemBtn) {
                 redeemBtn.disabled = true;
                 redeemBtn.innerText = "প্রসেসিং হচ্ছে...";
@@ -4027,9 +4066,9 @@
 
                 db.ref(`used_gifts/${currentUserKey}/${codeKey}`).transaction((currentVal) => {
                     if (currentVal === null) {
-                        return true; // Mark as used
+                        return true; 
                     } else {
-                        return; // Already used, abort transaction
+                        return; 
                     }
                 }, (error, committed, snapshot) => {
                     if (error) {
@@ -4039,7 +4078,6 @@
                         alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
                         if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
                     } else {
-                        // Atomic update to Firebase
                         db.ref('gift_codes/' + codeKey + '/usedCount').transaction((count) => (count || 0) + 1);
 
                         currentBalance += parseFloat(giftObj.amount || 0);
@@ -4055,9 +4093,9 @@
             });
         }
 
-        // ==========================================
-        // 🎬 UPDATED SECURED MONETAG REWARDED FUNCTION
-        // ==========================================
+        // ==========================================================
+        // 🎬 SECURED MONETAG REWARDED FUNCTION (STRICT CHECK)
+        // ==========================================================
         let isMonetagAdRunning = false;
 
         function watchMonetagAdTask() {
@@ -4446,4 +4484,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
