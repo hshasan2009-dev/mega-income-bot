@@ -5,8 +5,7 @@ const TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
 
 console.log("📢 Broadcast Bot Server is running and monitoring...");
 
-// সার্ভার চালু হওয়ার ঠিক পরের মুহূর্তের আগের সব পুরোনো মেসেজ আইডি সেভ করে রাখা, 
-// যাতে পুরোনো কোনো মেসেজ হুট করে রি-সেন্ড না হয়।
+// সার্ভার চালু হওয়ার আগের পুরোনো মেসেজগুলো ট্র্যাক করার জন্য সেট
 let processedMessages = new Set();
 
 async function initOldMessages() {
@@ -20,7 +19,7 @@ async function initOldMessages() {
 }
 initOldMessages();
 
-// প্রতি ১০ সেকেন্ড পর পর চেক করা
+// প্রতি ১০ সেকেন্ড পর পর নতুন ব্রডকাস্ট চেক করা
 setInterval(async () => {
     try {
         const res = await fetch(`${FIREBASE_DB_URL}/broadcast_messages.json`);
@@ -33,11 +32,11 @@ setInterval(async () => {
             
             // যদি মেসেজটি নতুন হয় এবং পূর্বে পাঠানো না হয়ে থাকে
             if (data && data.message && !processedMessages.has(key) && !data.sentToTelegram) {
-                processedMessages.add(key); // সাথে সাথে লিস্টে যোগ করা যাতে ডাবল না যায়
+                processedMessages.add(key); // ডাবল সেন্ড রোধ করতে সাথে সাথে সেটে যুক্ত করা
                 let messageText = data.message;
                 console.log(`🚀 New broadcast found: "${messageText}". Sending to all users...`);
 
-                // ১. ইউজারদের ডাটা ফেচ করা (আপনার ফায়ারবেসের স্ট্রাকচার অনুযায়ী 'users' নোড)
+                // ফায়ারবেস থেকে সকল ইউজারের ডেটা আনা
                 const userRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
                 const users = await userRes.json();
 
@@ -48,8 +47,13 @@ setInterval(async () => {
                     for (let userKey in users) {
                         let user = users[userKey];
                         
-                        // ইউজারের টেলিগ্রাম আইডি খুঁজে বের করার বিভিন্ন সম্ভাব্য পথ
-                        let chatId = user.telegramId || user.chatId || userKey;
+                        // প্রতিটি ইউজারের telegramId বা chatId বের করার লজিক
+                        let chatId = user.telegramId || user.chatId;
+
+                        // যদি টেলিগ্রাম আইডি সেভ না থাকে, তবে ইউজারের ইউজারনেম বা ফোন নম্বর টেলিগ্রাম আইডি হিসেবে কাজ করতে পারে কি না যাচাই
+                        if (!chatId && user.username && !isNaN(user.username)) {
+                            chatId = user.username;
+                        }
 
                         if (chatId) {
                             try {
@@ -58,7 +62,8 @@ setInterval(async () => {
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
                                         chat_id: chatId,
-                                        text: messageText
+                                        text: messageText,
+                                        parse_mode: "Markdown"
                                     })
                                 });
                                 
@@ -67,6 +72,7 @@ setInterval(async () => {
                                     success++;
                                 } else {
                                     failed++;
+                                    console.log(`Failed for chat_id ${chatId}:`, tgData.description);
                                 }
                             } catch (err) {
                                 failed++;
@@ -76,7 +82,7 @@ setInterval(async () => {
                     console.log(`✅ Broadcast Finished. Success: ${success}, Failed: ${failed}`);
                 }
 
-                // ২. ফায়ারবেসে এই মেসেজটিকে পার্মানেন্টলি 'sentToTelegram: true' করে দেওয়া, যাতে সার্ভার রিস্টার্ট হলেও আর ডাবল না যায়
+                // মেসেজটি সফলভাবে প্রসেস হওয়ার পর ফায়ারবেসে sentToTelegram: true মার্ক করে দেওয়া, যাতে আর বারবার না যায়
                 await fetch(`${FIREBASE_DB_URL}/broadcast_messages/${key}.json`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
