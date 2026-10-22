@@ -1392,6 +1392,11 @@
                     🎁 Gift Code Management
                 </button>
 
+                <!-- 📢 নতুন ব্রডকাস্ট মেসেজ বাটন -->
+                <button class="btn btn-gift" onclick="openAdminBroadcastModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #e67e22, #d35400);">
+                    📢 Broadcast Message to Users
+                </button>
+
                 <button class="btn btn-support" onclick="openAdminUserBanModal()" style="margin-bottom: 12px;">
                     🚫 User Ban Control
                 </button>
@@ -1893,7 +1898,7 @@
         </div>
     </div>
 
-    <!-- নতুন ব্রডকাস্ট মেসেজ মডাল (অ্যাডমিন প্যানেলের জন্য) -->
+    <!-- ব্রডকাস্ট মেসেজ মডাল -->
     <div id="adminBroadcastModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
@@ -2526,13 +2531,11 @@
                 renderPinHistory();
             });
 
-            // ব্রডকাস্ট মেসেজ রিসিভ করার ফায়ারবেস লিসেনার (বটের ইউজারদের জন্য)
             db.ref('broadcast_messages').limitToLast(1).on('child_added', (snapshot) => {
                 let msgData = snapshot.val();
                 if (msgData && msgData.message) {
-                    // চেক করতে পারেন যাতে পেজ লোড হওয়ার আগের পুরনো মেসেজ পপআপ না করে
                     if (msgData.time && (Date.now() - msgData.time < 10000)) {
-                        // যদি চান ইউজার অ্যাপে থাকা অবস্থায় কোনো নোটিফিকেশন দেখাতে পারেন
+                        // Broadcast notification listener
                     }
                 }
             });
@@ -2568,7 +2571,6 @@
         function openAdminTaskRewardSetupModal() { document.getElementById('adminTaskRewardSetupModal').style.display = 'block'; }
         function closeAdminTaskRewardSetupModal() { document.getElementById('adminTaskRewardSetupModal').style.display = 'none'; }
 
-        // ব্রডকাস্ট মডাল ওপেন/ক্লোজ ফাংশন
         function openAdminBroadcastModal() { 
             let modal = document.getElementById('adminBroadcastModal');
             if(modal) modal.style.display = 'block'; 
@@ -2578,7 +2580,6 @@
             if(modal) modal.style.display = 'none'; 
         }
 
-        // ব্রডকাস্ট মেসেজ সেভ ও ট্রিগার ফাংশন
         function sendBroadcastMessage() {
             let msgBox = document.getElementById('broadcast-msg-input');
             let messageText = msgBox ? msgBox.value.trim() : "";
@@ -2598,7 +2599,6 @@
                 sender: currentUserKey
             };
 
-            // ফায়ারবেসে মেসেজটি সেভ করা
             db.ref('broadcast_messages').push(broadcastObj).then(() => {
                 alert("✅ সফলভাবে ব্রডকাস্ট মেসেজ পাঠানো হয়েছে!");
                 if(msgBox) msgBox.value = "";
@@ -3956,9 +3956,6 @@
             }
         }
 
-        // ========================================================
-        // 🎬 চেক-ইন রিওয়ার্ড (টাইম হাইড করা সহ)
-        // ========================================================
         let isCheckinAdRunning = false;
 
         function claimDailyCheckinReward() {
@@ -3990,7 +3987,6 @@
             let timerSec = 15;
             if (checkinBtn) {
                 checkinBtn.disabled = true;
-                // টাইম হাইড করে শুধু প্রসেসিং টেক্সট দেখানো হচ্ছে
                 checkinBtn.innerText = `⏳ প্রসেসিং হচ্ছে, অপেক্ষা করুন...`;
             }
 
@@ -4150,9 +4146,6 @@
             });
         }
 
-        // ==========================================================
-        // 🎬 মনিট্যাগ এডস টাস্ক (টাইম হাইড করা সহ)
-        // ==========================================================
         let isMonetagAdRunning = false;
 
         function watchMonetagAdTask() {
@@ -4172,7 +4165,6 @@
             let timerSec = 15;
             if (monetagBtn) {
                 monetagBtn.disabled = true;
-                // টাইম হাইড করে শুধু প্রসেসিং টেক্সট দেখানো হচ্ছে
                 monetagBtn.innerText = `⏳ বিজ্ঞাপন লোড হচ্ছে, অপেক্ষা করুন...`;
             }
 
