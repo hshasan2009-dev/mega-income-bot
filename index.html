@@ -3889,7 +3889,7 @@
         }
 
         // ========================================================
-        // 🎬 UPDATED CHECK-IN REWARD WITH MANDATORY MONETAG AD
+        // 🎬 UPDATED CHECK-IN REWARD WITH 15S TIMER & MONETAG AD
         // ========================================================
         let isCheckinAdRunning = false;
 
@@ -3912,17 +3912,27 @@
                 return;
             }
 
+            isCheckinAdRunning = true;
+            let checkinBtn = document.getElementById('btn-do-checkin');
+
+            // 1. Trigger Monetag Ad popup
             if (typeof show_12093219 === 'function') {
-                isCheckinAdRunning = true;
-                let checkinBtn = document.getElementById('btn-do-checkin');
-                let originalBtnText = checkinBtn ? checkinBtn.innerText : "✍️ এখনই সাইন-ইন করুন";
+                show_12093219().catch(e => console.log("Monetag trigger info:", e));
+            }
 
-                if (checkinBtn) {
-                    checkinBtn.disabled = true;
-                    checkinBtn.innerText = "⏳ বোনাস ক্লেম করার জন্য এড লোড হচ্ছে...";
-                }
+            // 2. Start 15s Countdown Timer
+            let timerSec = 15;
+            if (checkinBtn) {
+                checkinBtn.disabled = true;
+                checkinBtn.innerText = `⏳ এড দেখা শেষ হওয়া পর্যন্ত অপেক্ষা করুন (${timerSec}s)`;
+            }
 
-                show_12093219().then(() => {
+            let checkinTimer = setInterval(() => {
+                timerSec--;
+                if (checkinBtn) checkinBtn.innerText = `⏳ এড দেখা শেষ হওয়া পর্যন্ত অপেক্ষা করুন (${timerSec}s)`;
+
+                if (timerSec <= 0) {
+                    clearInterval(checkinTimer);
                     isCheckinAdRunning = false;
 
                     if (lastCheckinDate && lastCheckinDate !== yesterday) {
@@ -3941,28 +3951,9 @@
                     updateUI();
                     renderCheckinGrid();
 
-                    if (checkinBtn) {
-                        checkinBtn.disabled = false;
-                        checkinBtn.innerText = originalBtnText;
-                    }
-
-                    alert(`🎉 অভিনন্দন! বিজ্ঞাপন সম্পূর্ণ দেখে দিন ${checkinStreak}-এর সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
-
-                }).catch((error) => {
-                    isCheckinAdRunning = false;
-
-                    if (checkinBtn) {
-                        checkinBtn.disabled = false;
-                        checkinBtn.innerText = originalBtnText;
-                    }
-
-                    console.log("Check-in Monetag Ad Closed or Error:", error);
-                    alert("❌ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি বা কেটে দেওয়া হয়েছে! তাই সাইন-ইন বোনাস দেওয়া হয়নি।");
-                });
-
-            } else {
-                alert("⚠️ Monetag SDK লোড হয়নি। অনুগ্রহ করে পেজ রিফ্রেশ করুন বা কিছুক্ষণ পর চেষ্টা করুন।");
-            }
+                    alert(`🎉 অভিনন্দন! দিন ${checkinStreak}-এর সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
+                }
+            }, 1000);
         }
 
         window.onload = function() {
@@ -4094,7 +4085,7 @@
         }
 
         // ==========================================================
-        // 🎬 SECURED MONETAG REWARDED FUNCTION (STRICT CHECK)
+        // 🎬 FIXED MONETAG REWARDED FUNCTION (15S TIMER & AUTO REWARD)
         // ==========================================================
         let isMonetagAdRunning = false;
 
@@ -4104,17 +4095,30 @@
                 return;
             }
 
-            if (typeof show_12093219 === 'function') {
-                isMonetagAdRunning = true;
-                let monetagBtn = document.querySelector("#card-monetag-task button");
-                let originalText = monetagBtn ? monetagBtn.innerText : "🎬 Monetag এডস দেখুন";
+            isMonetagAdRunning = true;
+            let monetagBtn = document.querySelector("#card-monetag-task button");
+            let originalText = "🎬 Monetag এডস দেখুন";
 
+            // 1. Trigger Monetag Ad
+            if (typeof show_12093219 === 'function') {
+                show_12093219().catch(e => console.log("Monetag trigger info:", e));
+            }
+
+            // 2. Start 15s Countdown Timer on Button
+            let timerSec = 15;
+            if (monetagBtn) {
+                monetagBtn.disabled = true;
+                monetagBtn.innerText = `⏳ বিজ্ঞাপন এড হচ্ছে (${timerSec}s)...`;
+            }
+
+            let adTimer = setInterval(() => {
+                timerSec--;
                 if (monetagBtn) {
-                    monetagBtn.disabled = true;
-                    monetagBtn.innerText = "⏳ বিজ্ঞাপন লোড হচ্ছে...";
+                    monetagBtn.innerText = `⏳ বিজ্ঞাপন এড হচ্ছে (${timerSec}s)...`;
                 }
 
-                show_12093219().then(() => {
+                if (timerSec <= 0) {
+                    clearInterval(adTimer);
                     isMonetagAdRunning = false;
 
                     if (monetagBtn) {
@@ -4122,6 +4126,7 @@
                         monetagBtn.innerText = originalText;
                     }
 
+                    // 3. Auto-Credit Reward
                     let earned = parseFloat(dynamicTaskRewards.monetagTask || 1.00);
                     currentBalance += earned;
                     completedTasksCount += 1;
@@ -4138,22 +4143,8 @@
                     updateUI();
 
                     alert(`🎉 অভিনন্দন! Monetag বিজ্ঞাপন সম্পূর্ণ দেখে ৳${earned.toFixed(2)} বোনাস পেয়েছেন!`);
-
-                }).catch((error) => {
-                    isMonetagAdRunning = false;
-
-                    if (monetagBtn) {
-                        monetagBtn.disabled = false;
-                        monetagBtn.innerText = originalText;
-                    }
-
-                    console.log("Monetag Ad Closed or Error:", error);
-                    alert("❌ বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি বা কেটে দেওয়া হয়েছে! কোনো টাকা যোগ হয়নি।");
-                });
-
-            } else {
-                alert("⚠️ Monetag SDK লোড হয়নি। অনুগ্রহ করে পেজ রিফ্রেশ করুন বা কিছুক্ষণ পর চেষ্টা করুন।");
-            }
+                }
+            }, 1000);
         }
 
         function watchAdTask() {
@@ -4484,4 +4475,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
