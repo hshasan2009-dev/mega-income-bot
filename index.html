@@ -2294,6 +2294,14 @@
                 return;
             }
 
+            // টেলিগ্রাম চ্যাট আইডি অটোমেটিক সেভ করার কোড
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+                let telegramChatId = window.Telegram.WebApp.initDataUnsafe.user.id;
+                if (telegramChatId) {
+                    db.ref('users/' + currentUserKey + '/telegramId').set(telegramChatId);
+                }
+            }
+
             document.getElementById('logoutBtn').style.display = 'block';
 
             db.ref('users/' + currentUserKey + '/isBanned').on('value', (snapshot) => {
