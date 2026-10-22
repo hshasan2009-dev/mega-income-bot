@@ -914,7 +914,7 @@
             <div class="custom-popup-logo">🚀</div>
             <h3 id="popupMainTitle" class="custom-popup-title">সাইন-আপ বোনাস +৫০০ পয়েন্ট</h3>
             <p id="popupSubDesc" class="custom-popup-desc">টাস্ক দাবি করুন · বার্তা পাঠান · পয়েন্ট আয় করুন</p>
-            <button class="custom-popup-btn" onclick="closeDynamicNotice()">এখনই দাবি করুন ›</button>
+            <button id="popupActionButton" class="custom-popup-btn" onclick="handlePopupAction()">এখনই দাবি করুন ›</button>
         </div>
     </div>
 
@@ -2010,7 +2010,7 @@
             
             <div class="input-group">
                 <label style="color:#ffcc00; font-weight:bold;">১. ব্রডকাস্ট মেসেজ বা লিংক (টেলিগ্রাম বট মেসেজ):</label>
-                <textarea id="broadcast-msg-input" class="input-control" rows="4" placeholder="সকল ইউজারের কাছে পাঠানোর জন্য মেসেজ লিখুন..."></textarea>
+                <textarea id="broadcast-msg-input" class="input-control" rows="3" placeholder="সকল ইউজারের কাছে পাঠানোর জন্য মেসেজ লিখুন..."></textarea>
             </div>
             
             <button class="btn btn-main" onclick="sendBroadcastMessage()" style="margin-top:5px; margin-bottom:15px; background-color:#27ae60; color:#fff;">🚀 টেলিগ্রাম বট ব্রডকাস্ট পাঠান</button>
@@ -2035,6 +2035,11 @@
             <div class="input-group">
                 <label style="color:#ffcc00; font-weight:bold;">৩. পপ-আপ বিস্তারিত বা সাব-হেডিং লেখা:</label>
                 <textarea id="popup-desc-input" class="input-control" rows="2" placeholder="যেমন: টাস্ক দাবি করুন · বার্তা পাঠান · পয়েন্ট আয় করুন"></textarea>
+            </div>
+
+            <div class="input-group">
+                <label style="color:#ffcc00; font-weight:bold;">৪. পপ-আপ বাটন লিংক (ঐচ্ছিক):</label>
+                <input type="text" id="popup-link-input" class="input-control" placeholder="যেমন: https://t.me/... (খালি রাখলে শুধু পপআপ বন্ধ হবে)">
             </div>
 
             <button class="btn btn-gift" onclick="savePopupSettings()" style="margin-top:5px; background: linear-gradient(135deg, #f39c12, #d35400);">💾 পপ-আপ সেটিংস সেভ করুন</button>
@@ -2141,6 +2146,8 @@
 
         let urlParams = new URLSearchParams(window.location.search);
         detectedStartParam = tg?.initDataUnsafe?.start_param || urlParams.get('startapp') || urlParams.get('start') || urlParams.get('ref');
+
+        let popupRedirectUrl = "";
 
         function openTelegramLink(url) {
             if (tg && tg.openTelegramLink && url.includes("t.me")) {
@@ -2454,11 +2461,15 @@
                 let toggleSwitch = document.getElementById('sw-popup-toggle');
                 let titleInput = document.getElementById('popup-title-input');
                 let descInput = document.getElementById('popup-desc-input');
+                let linkInput = document.getElementById('popup-link-input');
 
                 if (val) {
                     if (toggleSwitch) toggleSwitch.checked = !!val.enabled;
                     if (titleInput) titleInput.value = val.title || "";
                     if (descInput) descInput.value = val.description || "";
+                    if (linkInput) linkInput.value = val.link || "";
+
+                    popupRedirectUrl = val.link || "";
 
                     if (val.enabled) {
                         document.getElementById('popupMainTitle').innerText = val.title || "সাইন-আপ বোনাস +৫০০ পয়েন্ট";
@@ -2695,15 +2706,24 @@
             if (popup) popup.style.display = 'none';
         }
 
+        function handlePopupAction() {
+            closeDynamicNotice();
+            if (popupRedirectUrl && popupRedirectUrl.trim() !== "") {
+                openTelegramLink(popupRedirectUrl.trim());
+            }
+        }
+
         function savePopupSettings() {
             let enabled = document.getElementById('sw-popup-toggle').checked;
             let title = document.getElementById('popup-title-input').value.trim();
             let description = document.getElementById('popup-desc-input').value.trim();
+            let link = document.getElementById('popup-link-input').value.trim();
 
             db.ref('popup_notice_settings').set({
                 enabled: enabled,
                 title: title,
-                description: description
+                description: description,
+                link: link
             }).then(() => {
                 alert("✅ পপ-আপ নোটিশ সেটিংস সফলভাবে সেভ হয়েছে!");
             });
