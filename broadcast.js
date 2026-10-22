@@ -3,24 +3,14 @@ const fetch = require('node-fetch');
 const FIREBASE_DB_URL = process.env.FIREBASE_DB_URL || "https://mega-income-bot-9d9fa-default-rtdb.firebaseio.com";
 const TOKEN = "8644824917:AAFShJhs-Agv2XdAfW117tvMa1aaKaKOdEg";
 
-console.log("📢 Broadcast Bot Server is running and monitoring...");
+console.log("📢 Single-Instance Broadcast Service is running...");
 
-// সার্ভার চালু হওয়ার আগের পুরোনো মেসেজগুলো ট্র্যাক করার জন্য সেট
-let processedMessages = new Set();
+// ডাবল সেন্ড রোধ করার জন্য লোকাল মেমোরি লক
+let isBroadcasting = false;
 
-async function initOldMessages() {
-    try {
-        const res = await fetch(`${FIREBASE_DB_URL}/broadcast_messages.json`);
-        const data = await res.json();
-        if (data) {
-            Object.keys(data).forEach(key => processedMessages.add(key));
-        }
-    } catch (e) {}
-}
-initOldMessages();
-
-// প্রতি ১০ সেকেন্ড পর পর নতুন ব্রডকাস্ট চেক করা
 setInterval(async () => {
+    if (isBroadcasting) return; // যদি অলরেডি ব্রডকাস্ট চলতে থাকে, তবে স্কিপ করবে
+
     try {
         const res = await fetch(`${FIREBASE_DB_URL}/broadcast_messages.json`);
         const broadcasts = await res.json();
@@ -30,40 +20,46 @@ setInterval(async () => {
         for (let key in broadcasts) {
             let data = broadcasts[key];
             
-            // যদি মেসেজটি নতুন হয় এবং পূর্বে পাঠানো না হয়ে থাকে
-            if (data && data.message && !processedMessages.has(key) && !data.sentToTelegram) {
-                processedMessages.add(key); // ডাবল সেন্ড রোধ করতে সাথে সাথে সেটে যুক্ত করা
+            // যদি মেসেজটি ইতিমধ্যে পাঠানো হয়ে থাকে (sentToTelegram: true), তবে এটি সম্পূর্ণ এড়িয়ে যাবে
+            if (data && data.message && !data.sentToTelegram) {
+                isBroadcasting = true;
                 let messageText = data.message;
-                console.log(`🚀 New broadcast found: "${messageText}". Sending to all users...`);
+                console.log(`🚀 Processing broadcast ID [${key}]: "${messageText}"`);
 
-                // ফায়ারবেস থেকে সকল ইউজারের ডেটা আনা
+                // ১. সবার আগে ফায়ারবেসে মেসেজটিকে 'sentToTelegram: true' করে দেওয়া, যাতে অন্য কোনো লুপ এটি আর ধরতে না পারে
+                await fetch(`${FIREBASE_DB_URL}/broadcast_messages/${key}.json`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sentToTelegram: true })
+                });
+
+                // ২. ফায়ারবেস থেকে সকল ইউজারের ডাটা আনা
                 const userRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
                 const users = await userRes.json();
 
                 if (users) {
                     let success = 0;
                     let failed = 0;
+                    
+                    // ডুপ্লিকেট চ্যাট আইডি পাঠানো রোধ করার জন্য সেট
+                    let sentChatIds = new Set();
 
                     for (let userKey in users) {
                         let user = users[userKey];
                         
-                        // প্রতিটি ইউজারের telegramId বা chatId বের করার লজিক
-                        let chatId = user.telegramId || user.chatId;
+                        // ইউজারের টেলিগ্রাম আইডি খুঁজে বের করার সকল সম্ভাব্য পথ
+                        let chatId = user.telegramId || user.chatId || userKey;
 
-                        // যদি টেলিগ্রাম আইডি সেভ না থাকে, তবে ইউজারের ইউজারনেম বা ফোন নম্বর টেলিগ্রাম আইডি হিসেবে কাজ করতে পারে কি না যাচাই
-                        if (!chatId && user.username && !isNaN(user.username)) {
-                            chatId = user.username;
-                        }
+                        if (chatId && !sentChatIds.has(String(chatId))) {
+                            sentChatIds.add(String(chatId));
 
-                        if (chatId) {
                             try {
                                 const tgRes = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
                                         chat_id: chatId,
-                                        text: messageText,
-                                        parse_mode: "Markdown"
+                                        text: messageText
                                     })
                                 });
                                 
@@ -72,25 +68,24 @@ setInterval(async () => {
                                     success++;
                                 } else {
                                     failed++;
-                                    console.log(`Failed for chat_id ${chatId}:`, tgData.description);
                                 }
                             } catch (err) {
                                 failed++;
                             }
+                            
+                            // ফ্লাড রেট এড়াতে প্রতিটি মেসেজের মাঝে সামান্য বিরতি
+                            await new Promise(resolve => setTimeout(resolve, 50));
                         }
                     }
-                    console.log(`✅ Broadcast Finished. Success: ${success}, Failed: ${failed}`);
+                    console.log(`✅ Broadcast Completed. Success: ${success}, Failed: ${failed}`);
                 }
 
-                // মেসেজটি সফলভাবে প্রসেস হওয়ার পর ফায়ারবেসে sentToTelegram: true মার্ক করে দেওয়া, যাতে আর বারবার না যায়
-                await fetch(`${FIREBASE_DB_URL}/broadcast_messages/${key}.json`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sentToTelegram: true })
-                });
+                isBroadcasting = false;
+                break; // একবারে একটি নতুন মেসেজ প্রসেস করবে
             }
         }
     } catch (err) {
+        isBroadcasting = false;
         console.error('Broadcast loop error:', err.message);
     }
 }, 10000);
