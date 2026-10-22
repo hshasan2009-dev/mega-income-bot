@@ -504,3 +504,6 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     restoreSessions();
 });
+
+// broadcast.js ফাইলটি সংযুক্ত করা হলো
+require('./broadcast.js');
