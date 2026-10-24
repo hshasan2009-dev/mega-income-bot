@@ -1428,16 +1428,21 @@
         </div>
 
         <div id="withdraw" class="page">
-            <div class="card" id="withdrawCardBox" style="transition: all 0.3s ease;">
-                <div id="withdrawNoticeBanner" style="display:none; background: #e74c3c; color: #fff; padding: 10px; border-radius: 8px; font-weight: bold; margin-bottom: 12px; font-size: 13px;">
-                    ⚠️ উইথড্র সিস্টেম সাময়িক সময়ের জন্য বন্ধ রাখা হয়েছে!
-                </div>
-
+            <div class="card">
                 <h3>💳 টাকা তুলুন</h3>
                 <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সর্বনিম্ন উইথড্র limit: <b>১৫০ টাকা</b> (৫% সার্ভিস ফি)</p>
                 
                 <div class="input-group">
-                    <label>অ্যাকাউন্ট নম্বর (<span id="selected-method-label">বিকাশ</span>)</label>
+                    <label>পেমেন্ট মাধ্যম বেছে নিন</label>
+                    <select id="payment-method" class="input-control">
+                        <option value="বিকাশ">বিকাশ (bKash)</option>
+                        <option value="নগদ">নগদ (Nagad)</option>
+                        <option value="রকেট">রকেট (Rocket)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>অ্যাকাউন্ট নম্বর</label>
                     <input type="number" id="account-num" class="input-control" placeholder="017XXXXXXXX">
                 </div>
 
@@ -1446,7 +1451,7 @@
                     <input type="number" id="withdraw-amt" class="input-control" placeholder="১৫০">
                 </div>
 
-                <button class="btn btn-main" id="withdrawSubmitBtn" onclick="submitWithdrawal()">উইথড্র রিকোয়েস্ট পাঠান</button>
+                <button class="btn btn-main" onclick="submitWithdrawal()">উইথড্র রিকোয়েস্ট পাঠান</button>
             </div>
 
             <div class="card">
@@ -1454,7 +1459,7 @@
                 <table class="history-table">
                     <thead>
                         <tr>
-                            <th>তারিখ / নম্বর</th>
+                            <th>তারিখ</th>
                             <th>পরিমাণ</th>
                             <th>মেথড</th>
                             <th>স্ট্যাটাস</th>
@@ -1925,27 +1930,10 @@
     <div id="adminTaskControlModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="color:#f1c40f;">⚙️ টাস্ক ও উইথড্র কন্ট্রোল</h3>
+                <h3 style="color:#f1c40f;">⚙️ টাস্ক অন/অফ কন্ট্রোল</h3>
                 <button onclick="closeAdminTaskControlModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             
-            <!-- উইথড্র মেথড ও সিস্টেম কন্ট্রোল বাটন (এক লাইনে ৩ টা মেথড বাটন ও উইথড্র সিস্টেম অফ বাটন) -->
-            <div style="background:#081a11; border:1px solid #27ae60; border-radius:8px; padding:12px; margin-bottom:15px;">
-                <div style="font-size:12px; color:#ffcc00; font-weight:bold; margin-bottom:8px;">💳 উইথড্র মেথড ও সিস্টেম সেটিংস:</div>
-                <div style="display:flex; gap:6px; margin-bottom:8px;">
-                    <button id="admin-btn-bkash" onclick="toggleWithdrawMethodAdmin('বিকাশ')" style="flex:1; padding:8px 4px; border-radius:6px; font-weight:bold; font-size:11px; border:none; cursor:pointer; background:#555; color:#fff;">বিকাশ</button>
-                    <button id="admin-btn-nagad" onclick="toggleWithdrawMethodAdmin('নগদ')" style="flex:1; padding:8px 4px; border-radius:6px; font-weight:bold; font-size:11px; border:none; cursor:pointer; background:#555; color:#fff;">নগদ</button>
-                    <button id="admin-btn-rocket" onclick="toggleWithdrawMethodAdmin('রকেট')" style="flex:1; padding:8px 4px; border-radius:6px; font-weight:bold; font-size:11px; border:none; cursor:pointer; background:#555; color:#fff;">রকেট</button>
-                </div>
-                <div class="switch-container" style="margin-bottom:0; padding:8px 10px;">
-                    <span style="font-size:12px;">🚫 সম্পূর্ণ উইথড্র সিস্টেম বন্ধ রাখুন</span>
-                    <label class="switch">
-                        <input type="checkbox" id="sw-withdraw-system" onchange="toggleWithdrawSystemStatus(this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-
             <div class="switch-container">
                 <span>💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</span>
                 <label class="switch">
@@ -2161,10 +2149,6 @@
 
         let popupRedirectUrl = "";
 
-        // উইথড্র মেথড ও সিস্টেম স্টেট গ্লোবাল ভ্যারিয়েবল
-        let activeWithdrawMethod = "বিকাশ";
-        let isWithdrawSystemOff = false;
-
         function openTelegramLink(url) {
             if (tg && tg.openTelegramLink && url.includes("t.me")) {
                 tg.openTelegramLink(url);
@@ -2318,12 +2302,6 @@
 
             let uKey = sanitizeKey(uInput);
 
-            // টেলিগ্রাম চ্যাটআইডি সরাসরি স্বয়ংক্রয়ভাবে সেভ করা
-            let telegramChatId = "";
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
-                telegramChatId = String(window.Telegram.WebApp.initDataUnsafe.user.id || "");
-            }
-
             db.ref('users/' + uKey).once('value').then((snap) => {
                 if (snap.exists()) {
                     hideAuthLoader();
@@ -2350,8 +2328,7 @@
                     checkinTotalIncome: 0.00,
                     lastCheckinDate: "",
                     todayEarnedTaskIncome: 0.00,
-                    isBanned: false,
-                    telegramId: telegramChatId
+                    isBanned: false
                 };
 
                 if (refCode) {
@@ -2408,14 +2385,6 @@
                     return;
                 }
 
-                // লগইন করলেই চ্যাটআইডি সেভ বা আপডেট করা
-                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
-                    let telegramChatId = String(window.Telegram.WebApp.initDataUnsafe.user.id || "");
-                    if (telegramChatId) {
-                        db.ref('users/' + uKey + '/telegramId').set(telegramChatId);
-                    }
-                }
-
                 setTimeout(() => {
                     localStorage.setItem("loggedInUserKey", uKey);
                     currentUserKey = uKey;
@@ -2461,7 +2430,7 @@
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
                 let telegramChatId = window.Telegram.WebApp.initDataUnsafe.user.id;
                 if (telegramChatId) {
-                    db.ref('users/' + currentUserKey + '/telegramId').set(String(telegramChatId));
+                    db.ref('users/' + currentUserKey + '/telegramId').set(telegramChatId);
                 }
             }
 
@@ -2484,16 +2453,6 @@
                 listenBannedUsersList();
                 listenGiftCodesList();
             }
-
-            // উইথড্র মেথড ও সিস্টেম কন্ট্রোল লিসেনার
-            db.ref('withdraw_system_config').on('value', (snapshot) => {
-                let val = snapshot.val() || {};
-                activeWithdrawMethod = val.method || "বিকাশ";
-                isWithdrawSystemOff = !!val.systemOff;
-
-                updateWithdrawPageConfigUI();
-                updateAdminWithdrawConfigUI();
-            });
 
             // পপ-আপ সেটিংস রিয়েলটাইম লিসেনার
             db.ref('popup_notice_settings').on('value', (snapshot) => {
@@ -2740,61 +2699,6 @@
                 });
                 renderPinHistory();
             });
-        }
-
-        // উইথড্র মেথড ও সিস্টেম অ্যাডমিন কন্ট্রোল ফাংশন
-        function toggleWithdrawMethodAdmin(methodName) {
-            db.ref('withdraw_system_config/method').set(methodName).then(() => {
-                alert(`✅ উইথড্র মেথড হিসেবে '${methodName}' সিলেক্ট করা হয়েছে!`);
-            });
-        }
-
-        function toggleWithdrawSystemStatus(isOff) {
-            db.ref('withdraw_system_config/systemOff').set(isOff).then(() => {
-                alert(isOff ? "⚠️ উইথড্র সিস্টেম সাময়িকভাবে বন্ধ করা হয়েছে!" : "✅ উইথড্র সিস্টেম চালু করা হয়েছে!");
-            });
-        }
-
-        function updateWithdrawPageConfigUI() {
-            let label = document.getElementById('selected-method-label');
-            if (label) label.innerText = activeWithdrawMethod;
-
-            let cardBox = document.getElementById('withdrawCardBox');
-            let banner = document.getElementById('withdrawNoticeBanner');
-            let submitBtn = document.getElementById('withdrawSubmitBtn');
-            let accountInput = document.getElementById('account-num');
-            let amtInput = document.getElementById('withdraw-amt');
-
-            if (isWithdrawSystemOff) {
-                if (cardBox) cardBox.style.opacity = "0.5";
-                if (banner) banner.style.display = "block";
-                if (submitBtn) submitBtn.disabled = true;
-                if (accountInput) accountInput.disabled = true;
-                if (amtInput) amtInput.disabled = true;
-            } else {
-                if (cardBox) cardBox.style.opacity = "1";
-                if (banner) banner.style.display = "none";
-                if (submitBtn) submitBtn.disabled = false;
-                if (accountInput) accountInput.disabled = false;
-                if (amtInput) amtInput.disabled = false;
-            }
-        }
-
-        function updateAdminWithdrawConfigUI() {
-            let btnBkash = document.getElementById('admin-btn-bkash');
-            let btnNagad = document.getElementById('admin-btn-nagad');
-            let btnRocket = document.getElementById('admin-btn-rocket');
-            let swSystem = document.getElementById('sw-withdraw-system');
-
-            if (btnBkash && btnNagad && btnRocket) {
-                btnBkash.style.background = (activeWithdrawMethod === "বিকাশ") ? "#2ecc71" : "#555";
-                btnNagad.style.background = (activeWithdrawMethod === "নগদ") ? "#2ecc71" : "#555";
-                btnRocket.style.background = (activeWithdrawMethod === "রকেট") ? "#2ecc71" : "#555";
-            }
-
-            if (swSystem) {
-                swSystem.checked = isWithdrawSystemOff;
-            }
         }
 
         function closeDynamicNotice() {
@@ -4524,22 +4428,18 @@
         }
 
         function submitWithdrawal() {
-            if (isWithdrawSystemOff) {
-                alert("⚠️ উইথড্র সিস্টেম সাময়িক সময়ের জন্য বন্ধ রাখা হয়েছে!");
-                return;
-            }
-
+            let methodEl = document.getElementById("payment-method");
             let accountEl = document.getElementById("account-num");
             let amountEl = document.getElementById("withdraw-amt");
 
-            if (!accountEl || !amountEl) return;
+            if (!methodEl || !accountEl || !amountEl) return;
 
-            let method = activeWithdrawMethod;
+            let method = methodEl.value;
             let account = accountEl.value.trim();
             let amount = parseFloat(amountEl.value);
 
             if (!account || !amount || amount <= 0) {
-                alert("⚠ সঠিক অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
+                alert("⚠ সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
                 return;
             }
 
@@ -4805,10 +4705,7 @@
 
                 let tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td style="text-align: left; padding-left: 8px;">
-                        <div style="font-weight: bold; color: #ffcc00; font-size: 13px;">📱 ${item.account} (${item.method})</div>
-                        <div style="font-size: 10.5px; color: #aaa; margin-top: 2px;">📅 ${item.date}</div>
-                    </td>
+                    <td>${item.date}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount ? item.netAmount.toFixed(2) : '0.00'}</td>
                     <td>${item.method}</td>
                     <td><span class="${badgeClass}">${statusText}</span></td>
@@ -4818,4 +4715,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
