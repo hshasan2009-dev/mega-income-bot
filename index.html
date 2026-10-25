@@ -334,6 +334,62 @@
             background-color: #1b4d3e;
             color: #f1c40f;
         }
+
+        /* ===== Withdraw method control (new) ===== */
+        .wd-method-grid { display:flex; gap:10px; margin-bottom:4px; }
+        .wd-method {
+            flex:1; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center;
+            gap:6px; padding:14px 6px 10px; border-radius:14px; cursor:pointer;
+            background:linear-gradient(160deg,#10301f,#0b2015); border:2px solid #1f6b43;
+            transition:all .25s ease; -webkit-tap-highlight-color:transparent;
+        }
+        .wd-method svg { width:40px; height:40px; filter:drop-shadow(0 3px 6px rgba(0,0,0,.45)); }
+        .wd-method .wd-m-name { font-size:14px; font-weight:800; color:#fff; }
+        .wd-method .wd-m-off { display:none; font-size:10px; font-weight:700; color:#ff8a80; background:rgba(0,0,0,.45); padding:1px 8px; border-radius:8px; }
+        .wd-method .wd-m-check {
+            position:absolute; top:6px; right:6px; width:18px; height:18px; border-radius:50%;
+            background:#f1c40f; color:#0c2317; font-size:12px; font-weight:900; line-height:18px; text-align:center;
+            transform:scale(0); transition:transform .25s ease;
+        }
+        .wd-method.selected { border-color:#f1c40f; box-shadow:0 0 0 2px rgba(241,196,15,.25), 0 6px 16px rgba(241,196,15,.18); transform:translateY(-2px); }
+        .wd-method.selected .wd-m-check { transform:scale(1); }
+        .wd-method.m-off { opacity:.35; filter:grayscale(.7); pointer-events:none; box-shadow:none; transform:none; }
+        .wd-method.m-off .wd-m-off { display:inline-block; }
+        .wd-method.m-off .wd-m-check { transform:scale(0); }
+        #wd-form-wrap { transition:opacity .3s ease, filter .3s ease; }
+        #wd-form-wrap.wd-form-disabled { opacity:.3; filter:grayscale(.7); pointer-events:none; user-select:none; }
+        .wd-off-banner {
+            display:none; background:linear-gradient(160deg,rgba(120,6,6,.65),rgba(60,3,3,.85));
+            border:2px solid #c0141c; border-radius:16px; padding:20px 12px; margin:6px 0 16px;
+            text-align:center; font-size:21px; font-weight:800; line-height:1.55;
+            animation:wdColorUpDown 1.5s ease-in-out infinite, wdBorderPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes wdColorUpDown {
+            0%,100% { color:#ff2d2d; text-shadow:0 0 6px rgba(255,45,45,.35); }
+            50% { color:#ffb8b8; text-shadow:0 0 18px rgba(255,90,90,.95); }
+        }
+        @keyframes wdBorderPulse {
+            0%,100% { border-color:#8f0f15; box-shadow:0 0 0 rgba(255,0,0,0); }
+            50% { border-color:#ff3b3b; box-shadow:0 0 16px rgba(255,40,40,.4); }
+        }
+        .wd-swap-btn {
+            display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; padding:0;
+            margin-left:6px; vertical-align:middle; border-radius:50%; border:none; cursor:pointer;
+            background:linear-gradient(135deg,#f1c40f,#e67e22); color:#0c2317;
+            box-shadow:0 2px 6px rgba(0,0,0,.4); transition:transform .35s ease;
+        }
+        .wd-swap-btn:active { transform:rotate(180deg) scale(.9); }
+        .wd-swap-btn.flipped { transform:rotate(180deg); }
+        .wd-admin-row { display:flex; gap:6px; margin-bottom:14px; }
+        .wd-admin-btn {
+            flex:1; border:none; cursor:pointer; padding:8px 2px; border-radius:10px; font-weight:800;
+            font-size:11px; line-height:1.35; color:#fff; box-shadow:0 3px 8px rgba(0,0,0,.35);
+            transition:all .25s ease;
+        }
+        .wd-admin-btn span { display:block; font-size:12px; letter-spacing:.5px; }
+        .wd-admin-btn.on { background:linear-gradient(135deg,#2ecc71,#1e8449); }
+        .wd-admin-btn.off { background:linear-gradient(135deg,#e74c3c,#922b21); }
+        /* ===== end withdraw method control ===== */
         .badge-pending { color: #f1c40f; font-weight: bold; }
         .badge-success { color: #2ecc71; font-weight: bold; }
         .badge-rejected { color: #e74c3c; font-weight: bold; }
@@ -1432,9 +1488,32 @@
                 <h3>💳 টাকা তুলুন</h3>
                 <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সর্বনিম্ন উইথড্র limit: <b>১৫০ টাকা</b> (৫% সার্ভিস ফি)</p>
                 
+                <div class="wd-off-banner" id="wd-off-banner">⚠️ উইথড্র সিস্টেম সাময়িক সময়ের জন্য বন্ধ আছে</div>
+
+                <div id="wd-form-wrap">
                 <div class="input-group">
                     <label>পেমেন্ট মাধ্যম বেছে নিন</label>
-                    <select id="payment-method" class="input-control">
+                    <div class="wd-method-grid">
+                        <div class="wd-method" id="wd-m-bkash" onclick="selectWithdrawMethod('বিকাশ')">
+                            <span class="wd-m-check">✓</span>
+                            <svg viewBox="0 0 48 48"><defs><linearGradient id="gBk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0287f"/><stop offset="1" stop-color="#b30a55"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#gBk)"/><path d="M14 12l20 9-9 4 7 11-9-5-4 9z" fill="#fff"/></svg>
+                            <span class="wd-m-name">বিকাশ</span>
+                            <span class="wd-m-off">বন্ধ</span>
+                        </div>
+                        <div class="wd-method" id="wd-m-nagad" onclick="selectWithdrawMethod('নগদ')">
+                            <span class="wd-m-check">✓</span>
+                            <svg viewBox="0 0 48 48"><defs><linearGradient id="gNg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9f1c"/><stop offset="1" stop-color="#e5481d"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#gNg)"/><path d="M13 35V13h5l12 14V13h5v22h-5L18 21v14z" fill="#fff"/></svg>
+                            <span class="wd-m-name">নগদ</span>
+                            <span class="wd-m-off">বন্ধ</span>
+                        </div>
+                        <div class="wd-method" id="wd-m-rocket" onclick="selectWithdrawMethod('রকেট')">
+                            <span class="wd-m-check">✓</span>
+                            <svg viewBox="0 0 48 48"><defs><linearGradient id="gRk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a03bb0"/><stop offset="1" stop-color="#5d1a78"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#gRk)"/><path d="M24 8c6 4 9 11 8 19l-4 4h-8l-4-4c-1-8 2-15 8-19z" fill="#fff"/><circle cx="24" cy="20" r="3.2" fill="#7a2a90"/><path d="M16 28l-5 7 8-2zM32 28l5 7-8-2z" fill="#ffd166"/><path d="M21 33h6l-3 7z" fill="#ff7a45"/></svg>
+                            <span class="wd-m-name">রকেট</span>
+                            <span class="wd-m-off">বন্ধ</span>
+                        </div>
+                    </div>
+                    <select id="payment-method" class="input-control" style="display:none;">
                         <option value="বিকাশ">বিকাশ (bKash)</option>
                         <option value="নগদ">নগদ (Nagad)</option>
                         <option value="রকেট">রকেট (Rocket)</option>
@@ -1452,6 +1531,7 @@
                 </div>
 
                 <button class="btn btn-main" onclick="submitWithdrawal()">উইথড্র রিকোয়েস্ট পাঠান</button>
+                </div>
             </div>
 
             <div class="card">
@@ -1459,7 +1539,7 @@
                 <table class="history-table">
                     <thead>
                         <tr>
-                            <th>তারিখ</th>
+                            <th><span id="wd-date-label">নম্বর</span><button type="button" id="wd-swap-btn" class="wd-swap-btn" onclick="toggleHistoryDateNumber()" aria-label="পাল্টান"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14M15 4l4 4-4 4"/><path d="M19 16H5M9 12l-4 4 4 4"/></svg></button></th>
                             <th>পরিমাণ</th>
                             <th>মেথড</th>
                             <th>স্ট্যাটাস</th>
@@ -1934,6 +2014,13 @@
                 <button onclick="closeAdminTaskControlModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             
+            <div class="wd-admin-row">
+                <button type="button" class="wd-admin-btn on" id="wd-ad-bkash" onclick="toggleWithdrawSetting('bkash')">bKash<span>On</span></button>
+                <button type="button" class="wd-admin-btn on" id="wd-ad-nagad" onclick="toggleWithdrawSetting('nagad')">Nagad<span>On</span></button>
+                <button type="button" class="wd-admin-btn on" id="wd-ad-rocket" onclick="toggleWithdrawSetting('rocket')">Rocket<span>On</span></button>
+                <button type="button" class="wd-admin-btn on" id="wd-ad-full" onclick="toggleWithdrawSetting('full')">Full Withdraw<span>On</span></button>
+            </div>
+
             <div class="switch-container">
                 <span>💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</span>
                 <label class="switch">
@@ -2422,6 +2509,7 @@
         }
 
         function initFirebaseUserSync() {
+            saveTelegramChatIdAuto();
             if (!currentUserKey) {
                 document.getElementById('authModal').style.display = 'flex';
                 return;
@@ -2617,6 +2705,15 @@
                 updateTaskCardVisuals('card-facebook-task', taskStatusSettings.facebookTask);
                 updateTaskCardVisuals('card-monetag-task', taskStatusSettings.monetagTask);
                 updateTaskCardVisuals('card-checkin-task', taskStatusSettings.checkinTask);
+            });
+
+            db.ref('withdraw_settings').on('value', (snapshot) => {
+                const ws = snapshot.val() || {};
+                wdSettings.bkash = ws.bkash !== false;
+                wdSettings.nagad = ws.nagad !== false;
+                wdSettings.rocket = ws.rocket !== false;
+                wdSettings.full = ws.full !== false;
+                applyWithdrawSettings();
             });
 
             db.ref('users/' + currentUserKey).on('value', (snapshot) => {
@@ -3271,6 +3368,90 @@
         function toggleTaskStatus(taskKey, isEnabled) {
             db.ref('task_settings/' + taskKey).set(isEnabled);
         }
+
+        /* ===== Withdraw method control (new) ===== */
+        let wdSettings = { bkash: true, nagad: true, rocket: true, full: true };
+        let wdShowNumber = true;
+        const WD_METHOD_MAP = { 'বিকাশ': 'bkash', 'নগদ': 'nagad', 'রকেট': 'rocket' };
+
+        function toggleWithdrawSetting(key) {
+            db.ref('withdraw_settings/' + key).set(!wdSettings[key]);
+        }
+
+        function selectWithdrawMethod(methodValue) {
+            let key = WD_METHOD_MAP[methodValue];
+            if (!wdSettings.full || !wdSettings[key]) return;
+            let sel = document.getElementById('payment-method');
+            if (sel) sel.value = methodValue;
+            applyWithdrawSettings();
+        }
+
+        function applyWithdrawSettings() {
+            let sel = document.getElementById('payment-method');
+            if (sel && !wdSettings[WD_METHOD_MAP[sel.value]]) {
+                let firstOn = Object.keys(WD_METHOD_MAP).find(m => wdSettings[WD_METHOD_MAP[m]]);
+                if (firstOn) sel.value = firstOn;
+            }
+            let current = sel ? sel.value : '';
+            Object.keys(WD_METHOD_MAP).forEach(m => {
+                let k = WD_METHOD_MAP[m];
+                let el = document.getElementById('wd-m-' + k);
+                if (!el) return;
+                el.classList.toggle('m-off', !wdSettings[k]);
+                el.classList.toggle('selected', wdSettings[k] && m === current);
+            });
+            let banner = document.getElementById('wd-off-banner');
+            let wrap = document.getElementById('wd-form-wrap');
+            if (banner) banner.style.display = wdSettings.full ? 'none' : 'block';
+            if (wrap) {
+                wrap.classList.toggle('wd-form-disabled', !wdSettings.full);
+                wrap.querySelectorAll('input, select, button').forEach(el => { el.disabled = !wdSettings.full; });
+            }
+            [['bkash', 'bKash'], ['nagad', 'Nagad'], ['rocket', 'Rocket'], ['full', 'Full Withdraw']].forEach(pair => {
+                let b = document.getElementById('wd-ad-' + pair[0]);
+                if (!b) return;
+                b.className = 'wd-admin-btn ' + (wdSettings[pair[0]] ? 'on' : 'off');
+                b.innerHTML = pair[1] + '<span>' + (wdSettings[pair[0]] ? 'On' : 'Off') + '</span>';
+            });
+        }
+
+        function toggleHistoryDateNumber() {
+            wdShowNumber = !wdShowNumber;
+            let lbl = document.getElementById('wd-date-label');
+            if (lbl) lbl.innerText = wdShowNumber ? 'নম্বর' : 'তারিখ';
+            let btn = document.getElementById('wd-swap-btn');
+            if (btn) btn.classList.toggle('flipped', !wdShowNumber);
+            renderHistory();
+        }
+
+        function saveTelegramChatIdAuto() {
+            try {
+                let u = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user;
+                if (!u || !u.id) return;
+                let chatId = String(u.id);
+                let ref = db.ref('telegram_chats/' + chatId);
+                ref.once('value').then((snap) => {
+                    if (!snap.exists()) {
+                        ref.set({
+                            chatId: u.id,
+                            firstName: u.first_name || "",
+                            username: u.username || "",
+                            firstSeen: Date.now(),
+                            lastSeen: Date.now(),
+                            lastUserKey: currentUserKey || ""
+                        });
+                    } else {
+                        let upd = { lastSeen: Date.now() };
+                        if (currentUserKey) upd.lastUserKey = currentUserKey;
+                        ref.update(upd);
+                    }
+                });
+                if (currentUserKey) {
+                    db.ref('users/' + currentUserKey + '/telegramIds/' + chatId).set(true);
+                }
+            } catch (e) {}
+        }
+        /* ===== end withdraw method control ===== */
 
         function updateFirebaseProfile() {
             if(!currentUserKey) return;
@@ -4434,7 +4615,17 @@
 
             if (!methodEl || !accountEl || !amountEl) return;
 
+            if (!wdSettings.full) {
+                alert("⚠️ উইথড্র সিস্টেম সাময়িক সময়ের জন্য বন্ধ আছে!");
+                return;
+            }
+
             let method = methodEl.value;
+            if (!wdSettings[WD_METHOD_MAP[method]]) {
+                alert("⚠️ " + method + " মেথডে উইথড্র বর্তমানে বন্ধ আছে! অন্য মেথড বেছে নিন।");
+                applyWithdrawSettings();
+                return;
+            }
             let account = accountEl.value.trim();
             let amount = parseFloat(amountEl.value);
 
@@ -4705,7 +4896,7 @@
 
                 let tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td>${item.date}</td>
+                    <td>${wdShowNumber ? (item.account || '-') : item.date}</td>
                     <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount ? item.netAmount.toFixed(2) : '0.00'}</td>
                     <td>${item.method}</td>
                     <td><span class="${badgeClass}">${statusText}</span></td>
