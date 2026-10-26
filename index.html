@@ -1051,6 +1051,28 @@
         /* ===== সব বাটনে ঘুরন্ত আলোর এনিমেশন (ছোট বাটনে শুধু রিং) ===== */
         .gb-sm::after { display: none; }
         .gb-sm::before { inset: -1.5px; }
+
+        /* ===== টাস্ক কার্ডের চারপাশে ঘুরন্ত বর্ডার আলো (সাইজ/লোগো অপরিবর্তিত) ===== */
+        #task .card { --rgb:241,196,15; --c:#fff4b8; --c2:#ff9d00; --d:0s; }
+        #card-wa-task { --rgb:37,211,102; --c:#9dffc3; --c2:#25d366; --d:0s; }
+        #card-gmail-task { --d:-1.2s; }
+        #card-facebook-task { --rgb:24,119,242; --c:#a7d0ff; --c2:#1877f2; --d:-2.4s; }
+        #card-monetag-task { --rgb:155,89,182; --c:#e9c2ff; --c2:#ff7ad9; --d:-3.4s; }
+        #card-pin-task { --d:-.8s; }
+        #card-reg-task { --d:-1.8s; }
+        #card-ad-task { --d:-2.8s; }
+        #card-checkin-task { --rgb:243,156,18; --c:#ffd98a; --d:-3.8s; }
+        #task .card:not(.disabled-task)::before, #task .card:not(.disabled-task)::after {
+            content:""; position:absolute; z-index:-1; pointer-events:none;
+            background:conic-gradient(from var(--ang), transparent 0deg, transparent 170deg, rgba(var(--rgb),.10) 215deg, rgba(var(--rgb),.35) 275deg, rgba(var(--rgb),.85) 330deg, var(--c) 346deg, #ffffff 357deg, transparent 360deg);
+            animation: gbSpin 4.5s linear infinite; animation-delay: var(--d);
+        }
+        #task .card:not(.disabled-task)::before { inset:-3px; border-radius:15px; }
+        #task .card:not(.disabled-task)::after { inset:-5px; border-radius:17px; filter:blur(14px); opacity:.7; }
+        #card-gmail-task:not(.disabled-task)::before, #card-gmail-task:not(.disabled-task)::after, #card-ad-task:not(.disabled-task)::before, #card-ad-task:not(.disabled-task)::after { background:conic-gradient(from var(--ang), transparent 0deg, transparent 200deg, rgba(var(--rgb),.3) 280deg, var(--c) 342deg, #fff 357deg, transparent 360deg), conic-gradient(from calc(var(--ang) + 180deg), transparent 0deg, transparent 200deg, rgba(var(--rgb),.3) 280deg, var(--c) 342deg, #fff 357deg, transparent 360deg); }
+        #card-facebook-task:not(.disabled-task)::after, #card-reg-task:not(.disabled-task)::after { animation: gbSpin 4.5s linear infinite, gbPulse 2.2s ease-in-out infinite; animation-delay: var(--d), var(--d); }
+        #card-monetag-task:not(.disabled-task)::before, #card-monetag-task:not(.disabled-task)::after, #card-pin-task:not(.disabled-task)::before, #card-pin-task:not(.disabled-task)::after { background:conic-gradient(from var(--ang), var(--c), var(--c2), #fff, var(--c2), var(--c)); animation-duration:6s; }
+        @media (prefers-reduced-motion: reduce) { #task .card::before, #task .card::after { animation:none !important; } }
     </style>
 </head>
 <body>
