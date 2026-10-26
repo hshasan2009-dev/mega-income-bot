@@ -443,6 +443,58 @@
         .wdh-empty { text-align:center; color:#9fc4b0; padding:26px 10px; border:1.5px dashed #1f6b43; border-radius:14px; }
         @media (prefers-reduced-motion: reduce) { .wdh-pill, .wdh-pill .txt, .wdh-pill .dot, .wdh-card::before { animation:none !important; } }
         /* ===== end withdraw history cards ===== */
+        /* ===== গ্লো বাটন এনিমেশন (সব বাটনে) ===== */
+        @property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        @property --s   { syntax: '<number>'; initial-value: 0; inherits: false; }
+        @property --sx  { syntax: '<percentage>'; initial-value: 160%; inherits: false; }
+        .gb-iso { isolation: isolate; }
+        .glow-btn { --c:#f1c40f; --c2:#ff9d00; --rgb:241,196,15; --d:0s; overflow:visible;
+            transition: transform .18s ease, box-shadow .3s ease, filter .25s ease, --s .3s ease; }
+        .glow-btn:not(:disabled) {
+            background-image:
+                linear-gradient(105deg, transparent 38%, rgba(255,255,255,.30) 50%, transparent 62%),
+                radial-gradient(140px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255, calc(var(--s) * .30)), transparent 70%),
+                var(--gb-img, none) !important;
+            background-repeat: no-repeat !important;
+            background-size: 260% 100%, auto, auto !important;
+            background-position: var(--sx) 0, 0 0, 0 0 !important;
+            animation: gbShine 5s ease-in-out infinite; animation-delay: var(--d);
+        }
+        .glow-btn::before, .glow-btn::after {
+            content:""; position:absolute; z-index:-1; border-radius:inherit; pointer-events:none;
+            background: conic-gradient(from var(--ang), transparent 0deg, transparent 170deg,
+                rgba(var(--rgb), .10) 215deg, rgba(var(--rgb), .35) 275deg, rgba(var(--rgb), .85) 330deg,
+                var(--c) 346deg, #ffffff 357deg, transparent 360deg);
+            animation: gbSpin 3.4s linear infinite; animation-delay: var(--d);
+        }
+        .glow-btn::before { inset:-2px; }
+        .glow-btn::after { inset:-4px; filter:blur(12px); opacity:.65; transition:opacity .3s ease; }
+        .glow-btn:disabled::before, .glow-btn:disabled::after { display:none; }
+        .gb-off, .gb-off::before, .gb-off::after { animation-play-state: paused !important; }
+        @keyframes gbSpin { to { --ang: 360deg; } }
+        @keyframes gbShine { 0%, 55% { --sx: 160%; } 85%, 100% { --sx: -60%; } }
+        @keyframes gbPulse { 0%, 100% { opacity:.35; } 50% { opacity:.95; } }
+        .fx-dual::before, .fx-dual::after {
+            background:
+                conic-gradient(from var(--ang), transparent 0deg, transparent 200deg, rgba(var(--rgb), .3) 280deg, var(--c) 342deg, #fff 357deg, transparent 360deg),
+                conic-gradient(from calc(var(--ang) + 180deg), transparent 0deg, transparent 200deg, rgba(var(--rgb), .3) 280deg, var(--c) 342deg, #fff 357deg, transparent 360deg);
+        }
+        .fx-pulse::after { animation: gbSpin 3.4s linear infinite, gbPulse 2.2s ease-in-out infinite; animation-delay: var(--d), var(--d); }
+        .fx-aurora::before, .fx-aurora::after { background: conic-gradient(from var(--ang), var(--c), var(--c2), #ffffff, var(--c2), var(--c)); animation-duration: 5s; }
+        .fx-aurora::after { opacity:.55; }
+        .glow-btn:not(:disabled):hover, .glow-btn.touching:not(:disabled) { --s:1; filter:brightness(1.08) saturate(1.1); transform:translateY(-1px); box-shadow:0 8px 22px rgba(var(--rgb), .30); }
+        .glow-btn:hover::after, .glow-btn.touching::after { opacity:1; }
+        .glow-btn:not(:disabled):active { transform: scale(.97) !important; }
+        .gb-ripple { position:absolute; border-radius:50%; pointer-events:none; transform:scale(0);
+            background: radial-gradient(circle, rgba(var(--rgb), .55), rgba(var(--rgb), 0) 70%); animation: gbRipple .65s ease-out forwards; }
+        .gb-shock { position:absolute; inset:0; border-radius:inherit; pointer-events:none; border:2px solid rgba(var(--rgb), .85); animation: gbShock .6s ease-out forwards; }
+        @keyframes gbRipple { to { transform:scale(1); opacity:0; } }
+        @keyframes gbShock { from { transform:scale(1); opacity:.9; } to { transform:scale(1.07, 1.55); opacity:0; } }
+        /* টাস্ক পেজের বাটনের গোল (পিল) লুক */
+        .btn.gb-look { border-radius:30px !important; padding:12px 14px !important; font-size:14px; font-weight:800; letter-spacing:.4px; border:1px solid rgba(255,255,255,.25) !important; }
+        .gb-look::before, .gb-look::after { border-radius:32px; }
+        @media (prefers-reduced-motion: reduce) { .glow-btn, .glow-btn::before, .glow-btn::after { animation:none !important; } }
+        /* ===== end গ্লো বাটন ===== */
         .badge-pending { color: #f1c40f; font-weight: bold; }
         .badge-success { color: #2ecc71; font-weight: bold; }
         .badge-rejected { color: #e74c3c; font-weight: bold; }
@@ -1140,7 +1192,7 @@
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #25d366; margin-bottom: 4px;">💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</h3>
                     <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতি মেসেজে পাবেন <span id="ui-reward-wa">৳1.00</span> টাকা। হোয়াটসঅ্যাপ অ্যাকাউন্ট বাঁধুন এবং মেসেজ পাঠিয়ে আয় করুন!</p>
-                    <button class="btn btn-whatsapp" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
+                    <button class="btn btn-whatsapp gb-look" data-gb="base" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0; --c:#9dffc3; --rgb:37,211,102; --d:0s;" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
                 </div>
             </div>
 
@@ -1149,7 +1201,7 @@
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #ffcc00; margin-bottom: 4px;">📧 জিমেইল সেল টাস্ক</h3>
                     <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক জিমেইল সেল করার জন্য <span id="ui-reward-gmail">১৫</span> টাকা পাবেন।</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('gmailTask', openGmailSellPage)">জিমেইল সেল করুন</button>
+                    <button class="btn btn-main gb-look" data-gb="dual" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0; --c:#fff4b8; --rgb:241,196,15; --d:-.6s;" onclick="handleTaskClick('gmailTask', openGmailSellPage)">জিমেইল সেল করুন</button>
                 </div>
             </div>
 
@@ -1158,7 +1210,7 @@
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #1877f2; margin-bottom: 4px;">📘 ফেসবুক সেল টাস্ক</h3>
                     <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক ফেসবুক আইডি সেল করার জন্য <span id="ui-reward-facebook">৫</span> টাকা পাবেন।</p>
-                    <button class="btn btn-facebook" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('facebookTask', openFacebookSellPage)">ফেসবুক সেল করুন</button>
+                    <button class="btn btn-facebook gb-look" data-gb="pulse" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0; --c:#a7d0ff; --rgb:24,119,242; --d:-1.2s;" onclick="handleTaskClick('facebookTask', openFacebookSellPage)">ফেসবুক সেল করুন</button>
                 </div>
             </div>
 
@@ -1173,7 +1225,7 @@
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #9b59b6; margin-bottom: 4px;">🎬 Monetag স্মার্ট এডস</h3>
                     <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখলে পাবেন <span id="ui-reward-monetag">৳1.00</span> টাকা।</p>
-                    <button class="btn btn-monetag" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('monetagTask', watchMonetagAdTask)">🎬 Monetag এডস দেখুন</button>
+                    <button class="btn btn-monetag gb-look" data-gb="aurora" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0; --c:#e9c2ff; --c2:#ff7ad9; --rgb:155,89,182; --d:-1.8s;" onclick="handleTaskClick('monetagTask', watchMonetagAdTask)">🎬 Monetag এডস দেখুন</button>
                 </div>
             </div>
 
@@ -1182,7 +1234,7 @@
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #ffcc00; margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
                     <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
+                    <button class="btn btn-main gb-look" data-gb="aurora" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0; --c:#fff4b8; --c2:#ff7a1a; --rgb:241,196,15; --d:-2.4s;" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
                 </div>
             </div>
 
@@ -1191,7 +1243,7 @@
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #ffcc00; margin-bottom: 4px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
                     <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
+                    <button class="btn btn-main gb-look" data-gb="pulse" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0; --c:#fff4b8; --rgb:241,196,15; --d:-.3s;" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
                 </div>
             </div>
 
@@ -1200,7 +1252,7 @@
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #ffcc00; margin-bottom: 4px;">📺 ভিডিও এডস টাস্ক</h3>
                     <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখে পাবেন <span id="ui-reward-ad">৳1.00</span> টাকা</p>
-                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
+                    <button class="btn btn-main gb-look" data-gb="dual" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0; --c:#fff4b8; --rgb:241,196,15; --d:-.9s;" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
                 </div>
             </div>
 
@@ -1209,7 +1261,7 @@
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #ffcc00; margin-bottom: 4px;">📅 ডেইলি সাইন-ইন / চেক-ইন</h3>
                     <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিদিন সাইন-ইন করে ফ্রি ক্যাশ রিওয়ার্ড নিন!</p>
-                    <button class="btn btn-gift" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('checkinTask', openDailyCheckinModal)">📅 ডেইলি সাইন-ইন করুন</button>
+                    <button class="btn btn-gift gb-look" data-gb="base" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0; --c:#ffd98a; --rgb:243,156,18; --d:-1.5s;" onclick="handleTaskClick('checkinTask', openDailyCheckinModal)">📅 ডেইলি সাইন-ইন করুন</button>
                 </div>
             </div>
         </div>
@@ -4979,6 +5031,85 @@
                 </div>`;
             }).join('');
         }
+
+        /* ===== গ্লো বাটন এনিমেশন: সব বাটনে নিজে থেকে বসে (নতুন তৈরি বাটনেও) ===== */
+        (function () {
+            var SKIP = '.nav-item, .wdh-tab, .custom-popup-close';
+            var ROT = ['base', 'dual', 'pulse'], rot = 0;
+            function rgbOf(str) {
+                var m = /rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s\/]+([\d.]+))?/.exec(str || '');
+                return m ? [+m[1], +m[2], +m[3], m[4] === undefined ? 1 : +m[4]] : null;
+            }
+            function enhance(btn, rect) {
+                if (btn.dataset.gb === 'done' || btn.dataset.gb === 'skip') return;
+                if (btn.matches(SKIP) || rect.width < 56 || rect.height < 26) { btn.dataset.gb = 'skip'; return; }
+                var cs = getComputedStyle(btn), bgc = cs.backgroundColor, bgi = cs.backgroundImage;
+                var preset = btn.style.getPropertyValue('--rgb');
+                if (!preset) {
+                    var c = rgbOf(bgc);
+                    if (!c || c[3] < 0.3) c = rgbOf(bgi);
+                    if (!c) { btn.dataset.gb = 'skip'; return; }
+                    var mx = Math.max(c[0], c[1], c[2]), mn = Math.min(c[0], c[1], c[2]);
+                    if (mx < 110 || mx - mn < 35) c = [241, 196, 15];
+                    var lt = c.slice(0, 3).map(function (v) { return Math.round(v + (255 - v) * 0.55); });
+                    btn.style.setProperty('--rgb', c[0] + ',' + c[1] + ',' + c[2]);
+                    btn.style.setProperty('--c', 'rgb(' + lt.join(',') + ')');
+                    btn.style.setProperty('--d', '-' + (Math.random() * 5).toFixed(1) + 's');
+                }
+                if (bgi && bgi !== 'none') btn.style.setProperty('--gb-img', bgi);
+                if (cs.position === 'static') btn.style.position = 'relative';
+                if (btn.parentElement) btn.parentElement.classList.add('gb-iso');
+                var v = btn.dataset.gb || ROT[rot++ % ROT.length];
+                btn.classList.add('glow-btn');
+                if (v !== 'base') btn.classList.add('fx-' + v);
+                btn.dataset.gb = 'done';
+                bindPointer(btn);
+            }
+            function bindPointer(btn) {
+                function setSpot(e) {
+                    var r = btn.getBoundingClientRect();
+                    btn.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+                    btn.style.setProperty('--my', (e.clientY - r.top) + 'px');
+                }
+                btn.addEventListener('pointermove', setSpot);
+                btn.addEventListener('pointerenter', function (e) { setSpot(e); if (e.pointerType !== 'mouse') btn.classList.add('touching'); });
+                btn.addEventListener('pointerleave', function () { btn.classList.remove('touching'); });
+                btn.addEventListener('pointerup', function () { setTimeout(function () { btn.classList.remove('touching'); }, 250); });
+                btn.addEventListener('pointerdown', function (e) {
+                    if (btn.disabled) return;
+                    setSpot(e);
+                    if (e.pointerType !== 'mouse') btn.classList.add('touching');
+                    var r = btn.getBoundingClientRect(), size = Math.max(r.width, r.height) * 2;
+                    var rip = document.createElement('span');
+                    rip.className = 'gb-ripple';
+                    rip.style.width = rip.style.height = size + 'px';
+                    rip.style.left = (e.clientX - r.left - size / 2) + 'px';
+                    rip.style.top = (e.clientY - r.top - size / 2) + 'px';
+                    var shock = document.createElement('span');
+                    shock.className = 'gb-shock';
+                    btn.appendChild(rip); btn.appendChild(shock);
+                    setTimeout(function () { rip.remove(); shock.remove(); }, 700);
+                });
+            }
+            /* স্ক্রিনে দেখা গেলে চালু, বাইরে গেলে থামে (ফোন হালকা রাখতে) */
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    var b = en.target;
+                    if (en.isIntersecting) enhance(b, en.boundingClientRect);
+                    if (b.dataset.gb === 'skip') { io.unobserve(b); return; }
+                    b.classList.toggle('gb-off', !en.isIntersecting);
+                });
+            });
+            function watch(root) {
+                if (root.nodeType !== 1) return;
+                if (root.matches('button, a.btn')) io.observe(root);
+                root.querySelectorAll('button, a.btn').forEach(function (b) { io.observe(b); });
+            }
+            watch(document.body);
+            new MutationObserver(function (list) {
+                list.forEach(function (m) { m.addedNodes.forEach(watch); });
+            }).observe(document.body, { childList: true, subtree: true });
+        })();
     </script>
 </body>
 </html>
