@@ -223,6 +223,7 @@
         .btn-whatsapp { background-color: #25d366; color: #fff; font-size: 16px; }
         .btn-facebook { background-color: #1877f2; color: #fff; font-size: 16px; }
         .btn-monetag { background: linear-gradient(135deg, #8e44ad, #9b59b6); color: #fff; font-size: 16px; }
+        .btn-richads { background: linear-gradient(135deg, #16a085, #1abc9c); color: #fff; font-size: 16px; }
         
         .btn-gp { background-color: #0080ff; color: #fff; }
         .btn-bl { background-color: #ff6600; color: #fff; }
@@ -1162,6 +1163,23 @@
                 </div>
             </div>
 
+            <!-- RichAds Ad Task Card -->
+            <div class="card" id="card-richads-task" style="border: 2px solid #1abc9c; display: flex; align-items: center; text-align: left; gap: 12px;">
+                <div style="width: 48px; height: 48px; flex-shrink: 0; background: linear-gradient(135deg, #16a085, #1abc9c); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(26, 188, 156, 0.4);">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 9v6h3l5 4V5L7 9H4z" fill="#ffffff"/>
+                        <path d="M15.5 8.5a5 5 0 010 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M18 6a8.5 8.5 0 010 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+                        <circle cx="19" cy="4" r="2.5" fill="#f1c40f"/>
+                    </svg>
+                </div>
+                <div style="flex-grow: 1; width: 100%;">
+                    <h3 style="color: #1abc9c; margin-bottom: 4px;">📣 স্পেশাল এড বোনাস</h3>
+                    <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">প্রতিদিন একবার এড দেখে পাবেন <span id="ui-reward-richads">৳1.00</span> টাকা।</p>
+                    <button class="btn btn-richads" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('richadsTask', watchRichAdsTask)">📣 এড দেখুন</button>
+                </div>
+            </div>
+
             <!-- Monetag Ad Task Card -->
             <div class="card" id="card-monetag-task" style="border: 2px solid #9b59b6; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <div style="width: 48px; height: 48px; flex-shrink: 0; background: linear-gradient(135deg, #8e44ad, #9b59b6); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(155, 89, 182, 0.4);">
@@ -1704,6 +1722,15 @@
                 </div>
             </div>
 
+            <!-- 4.1 RichAds Task Reward -->
+            <div class="reward-setup-card">
+                <div class="reward-setup-title">📣 ৪.১ স্পেশাল এড বোনাস টাস্ক রিওয়ার্ড</div>
+                <div class="reward-setup-flex">
+                    <input type="number" step="0.01" id="rew-set-richads" class="input-control" placeholder="যেমন: 1.00">
+                    <button class="reward-setup-btn" onclick="saveSingleTaskReward('richadsTask', 'rew-set-richads', 'স্পেশাল এড বোনাস')">💾 Save</button>
+                </div>
+            </div>
+
             <!-- 5. Video Ad Task Reward -->
             <div class="reward-setup-card">
                 <div class="reward-setup-title">📺 ৫. ভিডিও এডস টাস্ক রিওয়ার্ড</div>
@@ -2095,6 +2122,14 @@
             </div>
 
             <div class="switch-container">
+                <span>📣 স্পেশাল এড বোনাস টাস্ক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-richads" onchange="toggleTaskStatus('richadsTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
                 <span>🎬 Monetag এডস টাস্ক</span>
                 <label class="switch">
                     <input type="checkbox" id="sw-monetag" onchange="toggleTaskStatus('monetagTask', this.checked)">
@@ -2328,6 +2363,7 @@
             waTask: 1.00,
             gmailTask: 15.00,
             facebookTask: 5.00,
+            richadsTask: 1.00,
             monetagTask: 1.00,
             adTask: 1.00,
             regTask: 0.03,
@@ -2369,7 +2405,7 @@
         let waPendingPhone = "";
         let waStatusMonitorStarted = false;
 
-        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, facebookTask: true, monetagTask: true, checkinTask: true };
+        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, facebookTask: true, monetagTask: true, richadsTask: true, checkinTask: true };
 
         let checkinStreak = 0;
         let checkinTotalIncome = 0.00;
@@ -2642,6 +2678,7 @@
                     if (document.getElementById('ui-reward-gmail')) document.getElementById('ui-reward-gmail').innerText = parseFloat(dynamicTaskRewards.gmailTask || 15.00).toFixed(0);
                     if (document.getElementById('ui-reward-facebook')) document.getElementById('ui-reward-facebook').innerText = parseFloat(dynamicTaskRewards.facebookTask || 5.00).toFixed(0);
                     if (document.getElementById('ui-reward-monetag')) document.getElementById('ui-reward-monetag').innerText = "৳" + parseFloat(dynamicTaskRewards.monetagTask || 1.00).toFixed(2);
+                    if (document.getElementById('ui-reward-richads')) document.getElementById('ui-reward-richads').innerText = "৳" + parseFloat(dynamicTaskRewards.richadsTask || 1.00).toFixed(2);
                     if (document.getElementById('ui-reward-ad')) document.getElementById('ui-reward-ad').innerText = "৳" + parseFloat(dynamicTaskRewards.adTask || 1.00).toFixed(2);
                     
                     if (document.getElementById('rate-gmail-val')) document.getElementById('rate-gmail-val').innerText = parseFloat(dynamicTaskRewards.gmailTask || 15.00).toFixed(0);
@@ -2658,6 +2695,7 @@
                     if (document.getElementById('rew-set-gmail')) document.getElementById('rew-set-gmail').value = dynamicTaskRewards.gmailTask || 15.00;
                     if (document.getElementById('rew-set-fb')) document.getElementById('rew-set-fb').value = dynamicTaskRewards.facebookTask || 5.00;
                     if (document.getElementById('rew-set-monetag')) document.getElementById('rew-set-monetag').value = dynamicTaskRewards.monetagTask || 1.00;
+                    if (document.getElementById('rew-set-richads')) document.getElementById('rew-set-richads').value = dynamicTaskRewards.richadsTask || 1.00;
                     if (document.getElementById('rew-set-ad')) document.getElementById('rew-set-ad').value = dynamicTaskRewards.adTask || 1.00;
                     if (document.getElementById('rew-set-reg')) document.getElementById('rew-set-reg').value = dynamicTaskRewards.regTask || 0.03;
                     
@@ -2735,6 +2773,7 @@
                 taskStatusSettings.gmailTask = settings.gmailTask !== false;
                 taskStatusSettings.facebookTask = settings.facebookTask !== false;
                 taskStatusSettings.monetagTask = settings.monetagTask !== false;
+                taskStatusSettings.richadsTask = settings.richadsTask !== false;
                 taskStatusSettings.checkinTask = settings.checkinTask !== false;
 
                 if (document.getElementById('sw-pin')) document.getElementById('sw-pin').checked = taskStatusSettings.pinTask;
@@ -2743,6 +2782,7 @@
                 if (document.getElementById('sw-gmail')) document.getElementById('sw-gmail').checked = taskStatusSettings.gmailTask;
                 if (document.getElementById('sw-facebook')) document.getElementById('sw-facebook').checked = taskStatusSettings.facebookTask;
                 if (document.getElementById('sw-monetag')) document.getElementById('sw-monetag').checked = taskStatusSettings.monetagTask;
+                if (document.getElementById('sw-richads')) document.getElementById('sw-richads').checked = taskStatusSettings.richadsTask;
                 if (document.getElementById('sw-wa')) document.getElementById('sw-wa').checked = taskStatusSettings.waTask;
                 if (document.getElementById('sw-checkin')) document.getElementById('sw-checkin').checked = taskStatusSettings.checkinTask;
 
@@ -2753,6 +2793,7 @@
                 updateTaskCardVisuals('card-gmail-task', taskStatusSettings.gmailTask);
                 updateTaskCardVisuals('card-facebook-task', taskStatusSettings.facebookTask);
                 updateTaskCardVisuals('card-monetag-task', taskStatusSettings.monetagTask);
+                updateTaskCardVisuals('card-richads-task', taskStatusSettings.richadsTask);
                 updateTaskCardVisuals('card-checkin-task', taskStatusSettings.checkinTask);
             });
 
@@ -4560,6 +4601,94 @@
                 });
             }).catch(() => {
                 if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
+            });
+        }
+
+        let isRichAdsRunning = false;
+        const RICHADS_SRC = 'https://richinfo.co/richpartners/push/js/rp-cl-ob.js?pubid=1026956&siteid=410942&niche=33';
+
+        function loadRichAdsScript() {
+            if (document.getElementById('richads-push-sdk')) return;
+            let sc = document.createElement('script');
+            sc.id = 'richads-push-sdk';
+            sc.type = 'module';
+            sc.async = true;
+            sc.setAttribute('data-cfasync', 'false');
+            sc.src = RICHADS_SRC;
+            document.head.appendChild(sc);
+        }
+
+        function watchRichAdsTask() {
+            if (isRichAdsRunning) {
+                alert("⚠️ আপনার একটি অ্যাড ইতিমধ্যে চলছে, অনুগ্রহ করে শেষ হওয়া পর্যন্ত অপেক্ষা করুন!");
+                return;
+            }
+            if (!currentUserKey) {
+                alert("⚠️ আগে লগইন করুন!");
+                return;
+            }
+
+            let today = getTodayString();
+            let btn = document.querySelector("#card-richads-task button");
+            let originalText = "📣 এড দেখুন";
+            let lastRef = db.ref('users/' + currentUserKey + '/richadsLastDate');
+
+            function resetBtn() {
+                isRichAdsRunning = false;
+                if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            }
+
+            isRichAdsRunning = true;
+            lastRef.once('value').then((snap) => {
+                if (snap.val() === today) {
+                    isRichAdsRunning = false;
+                    alert("✅ আজকের এড বোনাস আপনি নিয়ে নিয়েছেন, আগামীকাল আবার চেষ্টা করুন!");
+                    return;
+                }
+
+                loadRichAdsScript();
+
+                let timerSec = 15;
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerText = "⏳ বিজ্ঞাপন লোড হচ্ছে, অপেক্ষা করুন...";
+                }
+
+                let adTimer = setInterval(() => {
+                    timerSec--;
+                    if (timerSec > 0) return;
+                    clearInterval(adTimer);
+
+                    lastRef.transaction((cur) => (cur === today ? undefined : today)).then((res) => {
+                        resetBtn();
+                        if (!res.committed) {
+                            alert("✅ আজকের এড বোনাস আপনি নিয়ে নিয়েছেন, আগামীকাল আবার চেষ্টা করুন!");
+                            return;
+                        }
+
+                        let earned = parseFloat(dynamicTaskRewards.richadsTask || 1.00);
+                        currentBalance += earned;
+                        completedTasksCount += 1;
+
+                        if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
+                            todayEarnedTaskIncome = earned;
+                        } else {
+                            todayEarnedTaskIncome += earned;
+                        }
+
+                        giveReferralCommission(earned);
+                        updateFirebaseProfile();
+                        updateUI();
+
+                        alert(`🎉 অভিনন্দন! এড দেখে ৳${earned.toFixed(2)} বোনাস পেয়েছেন!`);
+                    }).catch(() => {
+                        resetBtn();
+                        alert("⚠️ নেটওয়ার্ক সমস্যা হয়েছে, আবার চেষ্টা করুন!");
+                    });
+                }, 1000);
+            }).catch(() => {
+                isRichAdsRunning = false;
+                alert("⚠️ নেটওয়ার্ক সমস্যা হয়েছে, আবার চেষ্টা করুন!");
             });
         }
 
