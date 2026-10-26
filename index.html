@@ -1073,7 +1073,48 @@
         #card-facebook-task:not(.disabled-task)::after, #card-reg-task:not(.disabled-task)::after { animation: gbSpin 4.5s linear infinite, gbPulse 2.2s ease-in-out infinite; animation-delay: var(--d), var(--d); }
         #card-monetag-task:not(.disabled-task)::before, #card-monetag-task:not(.disabled-task)::after, #card-pin-task:not(.disabled-task)::before, #card-pin-task:not(.disabled-task)::after { background:conic-gradient(from var(--ang), var(--c), var(--c2), #fff, var(--c2), var(--c)); animation-duration:6s; }
         @media (prefers-reduced-motion: reduce) { #task .card::before, #task .card::after { animation:none !important; } }
-    </style>
+    
+        /* ===== Final overrides: equal-size task cards + smooth/lightweight animations ===== */
+        /* body shimmer: GPU transform instead of animating left; no layout/paint cost */
+        body::before { left: 0 !important; width: 100% !important; transform: translate3d(-150%,0,0) skewX(-25deg) !important; animation: bodyShimmer2 7s infinite linear !important; will-change: transform; }
+        @keyframes bodyShimmer2 { 0% { transform: translate3d(-150%,0,0) skewX(-25deg); } 50%,100% { transform: translate3d(150%,0,0) skewX(-25deg); } }
+
+        /* all task cards same size */
+        #task .card {
+            height: 148px; min-height: 148px; max-height: 148px;
+            margin-bottom: 14px; padding: 12px 14px;
+            display: flex !important; align-items: center !important; gap: 12px !important;
+            overflow: visible;
+        }
+        #task .card > img, #task .card > div:first-child:not([style*="flex-grow"]) {
+            width: 48px !important; height: 48px !important; flex: 0 0 48px !important; object-fit: contain;
+        }
+        #task .card > div[style*="flex-grow"] {
+            flex: 1 1 auto !important; min-width: 0; width: auto !important;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        #task .card h3 {
+            font-size: 15px !important; line-height: 1.25; margin-bottom: 4px !important;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        #task .card p {
+            font-size: 12px !important; line-height: 1.4; margin-bottom: 8px !important;
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+            min-height: 50px;
+        }
+        #task .card .btn {
+            height: 40px; min-height: 40px; padding: 0 10px !important; font-size: 14px !important;
+            margin-bottom: 0 !important; flex: 0 0 auto; white-space: nowrap;
+        }
+
+        /* lighter glow: drop the heavy blurred second layer, keep the rotating ring */
+        .gb::after, #task .card:not(.disabled-task)::after { display: none !important; }
+        .gb::before, #task .card:not(.disabled-task)::before { will-change: transform; backface-visibility: hidden; }
+        .btn, .auth-btn { will-change: auto; }
+        .page { contain: layout style; }
+        .modal-overlay { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+        .custom-popup-overlay { backdrop-filter: none; background: rgba(0,0,0,.85); }
+</style>
 </head>
 <body>
 
@@ -1241,7 +1282,7 @@
             <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Pin Logo">
                 <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক (Mobipium)</h3>
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক</h3>
                     <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
                     <button class="btn btn-main gb gb-pin fx-aurora" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
                 </div>
@@ -1250,7 +1291,7 @@
             <div class="card" id="card-reg-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Registration Logo">
                 <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">⭐ স্পেশাল টাস্ক (রেজিস্ট্রেশন)</h3>
+                    <h3 style="color: #ffcc00; margin-bottom: 4px;">⭐ রেজিস্ট্রেশন টাস্ক</h3>
                     <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
                     <button class="btn btn-main gb gb-reg fx-pulse" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
                 </div>
@@ -2026,7 +2067,7 @@
     <div id="adminPinModal" class="modal-overlay">
         <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">📱 পিন সাবমিট প্রুফসমূহ (Mobipium)</h3>
+                <h3 style="color:#ffcc00; font-size:16px;">📱 পিন সাবমিট প্রুফসমূহ</h3>
                 <button onclick="closeAdminPinModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             <div id="admin-pin-list"></div>
