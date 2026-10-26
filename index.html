@@ -395,6 +395,54 @@
         .wd-admin-btn.on { background:linear-gradient(135deg,#2ecc71,#1e8449); }
         .wd-admin-btn.off { background:linear-gradient(135deg,#e74c3c,#922b21); }
         /* ===== end withdraw method control ===== */
+        /* ===== Withdraw history cards (new) ===== */
+        .wdh-tabs { display:flex; gap:8px; overflow-x:auto; padding:10px 2px 9px; scrollbar-width:none; }
+        .wdh-tabs::-webkit-scrollbar { display:none; }
+        .wdh-tab { flex:0 0 auto; border:1.5px solid #1f6b43; background:#113626; color:#bfe3cc; padding:5px 14px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer; transition:all .2s ease; }
+        .wdh-tab:active { transform:scale(.94); }
+        .wdh-tab.active { background:linear-gradient(135deg,#f1c40f,#e6a911); color:#0c2317; border-color:#f1c40f; box-shadow:0 3px 10px rgba(241,196,15,.25); }
+        .wdh-card { position:relative; overflow:hidden; text-align:left; background:linear-gradient(160deg,#14412c 0%,#0f3022 100%); border:1.5px solid #1f6b43; border-radius:13px; padding:9px 12px 3px 15px; margin-bottom:8px; box-shadow:0 4px 12px rgba(0,0,0,.28); }
+        .wdh-card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:#f1c40f; }
+        .wdh-card.st-success::before { background:#2ecc71; }
+        .wdh-card.st-rejected::before { background:#e74c3c; }
+        .wdh-card.st-pending::before { background:#f1c40f; animation:wdhStrip 1.6s ease-in-out infinite; }
+        .wdh-head { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+        .wdh-amount { font-size:19px; font-weight:800; color:#f1c40f; line-height:1.15; }
+        .wdh-net { font-size:11px; color:#9fc4b0; margin-top:1px; }
+        .wdh-net b { color:#2ecc71; font-weight:800; }
+        .wdh-card.st-rejected .wdh-net b { color:#9fc4b0; text-decoration:line-through; }
+        .wdh-pill { display:inline-flex; align-items:center; gap:6px; padding:3px 11px; border-radius:12px; font-size:11px; font-weight:800; border:1px solid transparent; white-space:nowrap; }
+        .wdh-pill .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex:none; }
+        .wdh-pill .txt { display:inline-block; animation:wdhBob 1.8s ease-in-out infinite; }
+        .wdh-pill.success { color:#2ecc71; background:rgba(46,204,113,.14); border-color:rgba(46,204,113,.45); animation:wdhGlowG 2.6s ease-in-out infinite; }
+        .wdh-pill.rejected { color:#e74c3c; background:rgba(231,76,60,.14); border-color:rgba(231,76,60,.45); animation:wdhGlowR 3s ease-in-out infinite; }
+        .wdh-pill.pending { color:#f1c40f; background:rgba(241,196,15,.14); border-color:rgba(241,196,15,.45); animation:wdhGlowY 1.6s ease-in-out infinite; }
+        .wdh-pill.success .txt { animation-duration:2.4s; }
+        .wdh-pill.rejected .txt { animation-duration:2.8s; }
+        .wdh-pill.pending .txt { animation-duration:1.3s; }
+        .wdh-pill.pending .dot { animation:wdhDot 1.3s ease-in-out infinite; }
+        @keyframes wdhBob { 0%,100% { transform:translateY(-1.5px); } 50% { transform:translateY(1.5px); } }
+        @keyframes wdhDot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.35; transform:scale(.7); } }
+        @keyframes wdhGlowG { 0%,100% { box-shadow:0 0 0 0 rgba(46,204,113,0); } 50% { box-shadow:0 0 10px 1px rgba(46,204,113,.35); } }
+        @keyframes wdhGlowR { 0%,100% { box-shadow:0 0 0 0 rgba(231,76,60,0); } 50% { box-shadow:0 0 10px 1px rgba(231,76,60,.35); } }
+        @keyframes wdhGlowY { 0%,100% { box-shadow:0 0 0 0 rgba(241,196,15,0); } 50% { box-shadow:0 0 12px 2px rgba(241,196,15,.4); } }
+        @keyframes wdhStrip { 0%,100% { opacity:1; } 50% { opacity:.45; } }
+        .wdh-line { height:1px; background:linear-gradient(90deg,#27ae60,rgba(39,174,96,.15)); margin:7px 0 2px; }
+        .wdh-row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:5px 0; font-size:12px; }
+        .wdh-row + .wdh-row { border-top:1px dashed rgba(39,174,96,.28); }
+        .wdh-row .k { color:#9fc4b0; }
+        .wdh-row.duo { justify-content:flex-start; gap:0; }
+        .wdh-row.duo .half { flex:1; display:flex; justify-content:space-between; gap:8px; }
+        .wdh-row.duo .half:first-child { padding-right:10px; border-right:1px dashed rgba(39,174,96,.28); }
+        .wdh-row.duo .half:last-child { padding-left:10px; }
+        .wdh-row .v { color:#fff; font-weight:600; text-align:right; word-break:break-all; }
+        .wdh-method { display:inline-block; padding:0 8px; margin-right:6px; border-radius:7px; font-size:11px; font-weight:800; color:#0c2317; background:#f1c40f; }
+        .wdh-method.bkash { background:#e2136e; color:#fff; }
+        .wdh-method.nagad { background:#f6921e; color:#0c2317; }
+        .wdh-method.rocket { background:#8c3494; color:#fff; }
+        .wdh-empty { text-align:center; color:#9fc4b0; padding:26px 10px; border:1.5px dashed #1f6b43; border-radius:14px; }
+        @media (prefers-reduced-motion: reduce) { .wdh-pill, .wdh-pill .txt, .wdh-pill .dot, .wdh-card::before { animation:none !important; } }
+        /* ===== end withdraw history cards ===== */
         .badge-pending { color: #f1c40f; font-weight: bold; }
         .badge-success { color: #2ecc71; font-weight: bold; }
         .badge-rejected { color: #e74c3c; font-weight: bold; }
@@ -1541,17 +1589,13 @@
 
             <div class="card">
                 <h3>📜 উইথড্র হিস্টরি</h3>
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th><span id="wd-date-label">নম্বর</span><button type="button" id="wd-swap-btn" class="wd-swap-btn" onclick="toggleHistoryDateNumber()" aria-label="পাল্টান"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14M15 4l4 4-4 4"/><path d="M19 16H5M9 12l-4 4 4 4"/></svg></button></th>
-                            <th>পরিমাণ</th>
-                            <th>মেথড</th>
-                            <th>স্ট্যাটাস</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-rows"></tbody>
-                </table>
+                <div class="wdh-tabs" id="wdh-tabs">
+                    <button type="button" class="wdh-tab active" data-f="all" onclick="setWdhFilter('all')">সব</button>
+                    <button type="button" class="wdh-tab" data-f="Pending" onclick="setWdhFilter('Pending')">Pending</button>
+                    <button type="button" class="wdh-tab" data-f="Rejected" onclick="setWdhFilter('Rejected')">Rejected</button>
+                    <button type="button" class="wdh-tab" data-f="Success" onclick="setWdhFilter('Success')">Success</button>
+                </div>
+                <div id="wdh-list"></div>
             </div>
         </div>
 
@@ -4883,31 +4927,57 @@
             });
         }
 
+        var wdhFilter = 'all';
+        function wdhEsc(t) {
+            return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        function setWdhFilter(f) {
+            wdhFilter = f;
+            document.querySelectorAll('.wdh-tab').forEach(b => b.classList.toggle('active', b.dataset.f === f));
+            renderHistory();
+        }
         function renderHistory() {
-            let tbody = document.getElementById("history-rows");
-            if (!tbody) return;
-            tbody.innerHTML = ``;
+            const box = document.getElementById("wdh-list");
+            if (!box) return;
 
-            if (historyData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="color:#aaa;">কোনো উইথড্র হিস্টরি নেই</td></tr>`;
+            const list = historyData.filter(item => {
+                let st = (item.status === "Approved" || item.status === "Success") ? "Success"
+                       : (item.status === "Rejected" ? "Rejected" : "Pending");
+                return wdhFilter === 'all' || st === wdhFilter;
+            });
+
+            if (list.length === 0) {
+                box.innerHTML = '<div class="wdh-empty">কোনো উইথড্র হিস্টরি নেই</div>';
                 return;
             }
 
-            historyData.forEach(item => {
-                let badgeClass = "badge-pending";
-                let statusText = "Pending";
-                if (item.status === "Approved" || item.status === "Success") { badgeClass = "badge-success"; statusText = "Success"; }
-                if (item.status === "Rejected") { badgeClass = "badge-rejected"; statusText = "Rejected"; }
+            box.innerHTML = list.map(item => {
+                let cls = 'pending', text = 'Pending';
+                if (item.status === "Approved" || item.status === "Success") { cls = 'success'; text = 'Success'; }
+                if (item.status === "Rejected") { cls = 'rejected'; text = 'Rejected'; }
 
-                let tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${wdShowNumber ? (item.account || '-') : item.date}</td>
-                    <td style="color:#f1c40f; font-weight:bold;">৳${item.netAmount ? item.netAmount.toFixed(2) : '0.00'}</td>
-                    <td>${item.method}</td>
-                    <td><span class="${badgeClass}">${statusText}</span></td>
-                `;
-                tbody.appendChild(tr);
-            });
+                let requested = Number(item.requestedAmount || 0);
+                let net = Number(item.netAmount || 0);
+                let fee = Math.max(requested - net, 0);
+                let mClass = item.method === 'বিকাশ' ? 'bkash' : item.method === 'নগদ' ? 'nagad' : item.method === 'রকেট' ? 'rocket' : '';
+
+                return `
+                <div class="wdh-card st-${cls}">
+                    <div class="wdh-head">
+                        <div>
+                            <div class="wdh-amount">৳${requested.toFixed(2)}</div>
+                            <div class="wdh-net">পৌঁছাবে <b>৳${net.toFixed(2)}</b></div>
+                        </div>
+                        <span class="wdh-pill ${cls}"><i class="dot"></i><span class="txt">${text}</span></span>
+                    </div>
+                    <div class="wdh-line"></div>
+                    <div class="wdh-row"><span class="k">অ্যাকাউন্ট</span><span class="v"><span class="wdh-method ${mClass}">${wdhEsc(item.method)}</span>${wdhEsc(item.account || '-')}</span></div>
+                    <div class="wdh-row duo">
+                        <div class="half"><span class="k">ফি</span><span class="v">৳${fee.toFixed(2)}</span></div>
+                        <div class="half"><span class="k">তারিখ</span><span class="v">${wdhEsc(item.date)}</span></div>
+                    </div>
+                </div>`;
+            }).join('');
         }
     </script>
 </body>
