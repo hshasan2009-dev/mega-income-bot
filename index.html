@@ -1122,6 +1122,7 @@
         .modal-overlay { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         .custom-popup-overlay { backdrop-filter: none; background: rgba(0,0,0,.85); }
         /* ===== এড দেখুন টাস্ক মোডাল ===== */
+        #exoAdOverlay { z-index: 100001; }
         #exoAdOverlay .exo-panel { background:#0b1f26; border:2px solid #00bcd4; padding:18px; border-radius:16px; width:100%; max-width:400px; margin:20px auto; box-shadow:0 10px 30px rgba(0,188,212,.3); color:#fff; }
         #exoAdOverlay .exo-head { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,188,212,.4); padding-bottom:10px; margin-bottom:12px; }
         #exoAdOverlay .exo-head h2 { color:#00e5ff; font-size:18px; margin:0; font-weight:bold; }
@@ -1352,13 +1353,13 @@
         <div id="exoAdOverlay" class="modal-overlay">
             <div class="exo-panel">
                 <div class="exo-head">
-                    <h2>📢 স্পন্সর বিজ্ঞাপন</h2>
+                    <h2 id="exo-ad-title">📢 স্পন্সর বিজ্ঞাপন</h2>
                     <button class="exo-close" onclick="closeExoAdModal()">বন্ধ করুন ✖</button>
                 </div>
                 <div class="exo-box" id="exoAdBox"></div>
                 <div class="exo-bar"><div id="exo-ad-bar"></div></div>
                 <div class="exo-time" id="exo-ad-time">⏳ বিজ্ঞাপন লোড হচ্ছে...</div>
-                <div class="exo-note">বিজ্ঞাপনটি সম্পূর্ণ দেখুন, সময় শেষ হলে <b style="color:#ffcc00;">৳<span id="exo-ad-reward">1.00</span></b> স্বয়ংক্রিয়ভাবে যোগ হবে।<br>⚠️ অ্যাপ বা ট্যাব বদলালে টাইমার থেমে যাবে, আর মাঝপথে বন্ধ করলে রিওয়ার্ড পাবেন না।</div>
+                <div class="exo-note" id="exo-ad-note"></div>
             </div>
         </div>
 
@@ -4555,11 +4556,8 @@
             }
         }
 
-        let isCheckinAdRunning = false;
-
         function claimDailyCheckinReward() {
             let today = getTodayString();
-            let yesterday = getYesterdayString();
 
             if (lastCheckinDate === today) {
                 alert("⚠️ আপনি আজকের সাইন-ইন ইতিমধ্যে সম্পন্ন করেছেন!");
@@ -4571,50 +4569,38 @@
                 return;
             }
 
-            if (isCheckinAdRunning) {
-                alert("⚠️ বিজ্ঞাপন লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন!");
-                return;
+            // স্পন্সর বিজ্ঞাপন সম্পূর্ণ না দেখলে সাইন-ইন রিওয়ার্ড পাবেন না
+            startExoAdSession({
+                seconds: getExoAdSeconds(),
+                title: '📅 সাইন-ইন বিজ্ঞাপন',
+                note: 'সাইন-ইন রিওয়ার্ড পেতে বিজ্ঞাপনটি <b style="color:#ffcc00;">সম্পূর্ণ</b> দেখুন। সময় শেষ হলে স্বয়ংক্রিয়ভাবে সাইন-ইন সম্পন্ন হবে।',
+                onComplete: completeDailyCheckin
+            });
+        }
+
+        function completeDailyCheckin() {
+            let today = getTodayString();
+            let yesterday = getYesterdayString();
+
+            if (lastCheckinDate === today) return; // দুইবার রিওয়ার্ড ঠেকাতে
+
+            if (lastCheckinDate && lastCheckinDate !== yesterday) {
+                checkinStreak = 0;
             }
 
-            isCheckinAdRunning = true;
-            let checkinBtn = document.getElementById('btn-do-checkin');
+            let nextStreak = checkinStreak + 1;
+            let rewardAmt = dailyRewards[Math.min(nextStreak - 1, dailyRewards.length - 1)];
 
-            if (typeof show_12093219 === 'function') {
-                show_12093219().catch(e => console.log("Monetag trigger info:", e));
-            }
+            currentBalance += rewardAmt;
+            checkinStreak = nextStreak;
+            checkinTotalIncome += rewardAmt;
+            lastCheckinDate = today;
 
-            let timerSec = 15;
-            if (checkinBtn) {
-                checkinBtn.disabled = true;
-                checkinBtn.innerText = `⏳ প্রসেসিং হচ্ছে, অপেক্ষা করুন...`;
-            }
+            updateFirebaseProfile();
+            updateUI();
+            renderCheckinGrid();
 
-            let checkinTimer = setInterval(() => {
-                timerSec--;
-
-                if (timerSec <= 0) {
-                    clearInterval(checkinTimer);
-                    isCheckinAdRunning = false;
-
-                    if (lastCheckinDate && lastCheckinDate !== yesterday) {
-                        checkinStreak = 0;
-                    }
-
-                    let nextStreak = checkinStreak + 1;
-                    let rewardAmt = dailyRewards[Math.min(nextStreak - 1, dailyRewards.length - 1)];
-
-                    currentBalance += rewardAmt;
-                    checkinStreak = nextStreak;
-                    checkinTotalIncome += rewardAmt;
-                    lastCheckinDate = today;
-
-                    updateFirebaseProfile();
-                    updateUI();
-                    renderCheckinGrid();
-
-                    alert(`🎉 অভিনন্দন! দিন ${checkinStreak}-এর সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
-                }
-            }, 1000);
+            alert(`🎉 অভিনন্দন! দিন ${checkinStreak}-এর সাইন-ইন রিওয়ার্ড ৳${rewardAmt.toFixed(2)} আপনার ব্যালেন্সে যোগ হয়েছে!`);
         }
 
         window.onload = function() {
@@ -4799,12 +4785,14 @@
             }, 1000);
         }
 
-        /* ===== এড দেখুন টাস্ক (ExoClick বিজ্ঞাপন + টাইমার) ===== */
+        /* ===== স্পন্সর এড (ExoClick) — "এড দেখুন" টাস্ক ও ডেইলি সাইন-ইনে ব্যবহৃত ===== */
         let exoAdRunning = false;
         let exoAdTimer = null;
         let exoAdWaitTimer = null;
         let exoAdRemaining = 0;
         let exoAdTotal = 15;
+        let exoAdOnComplete = null;
+        let exoAdOnAbort = null;
 
         function getExoAdSeconds() {
             let sec = parseInt(dynamicTaskRewards.exoAdSeconds, 10);
@@ -4845,24 +4833,37 @@
             if (overlay) overlay.style.display = 'none';
         }
 
+        // ইউজার বন্ধ করলে বা বিজ্ঞাপন ব্যর্থ হলে: রিওয়ার্ড নেই
+        function exoAdAbort() {
+            const cb = exoAdOnAbort;
+            exoAdOnComplete = null;
+            exoAdOnAbort = null;
+            exoAdCleanup();
+            if (cb) cb();
+        }
+
         function closeExoAdModal() {
             if (exoAdTimer && exoAdRemaining > 0) {
                 if (!confirm('এখন বন্ধ করলে রিওয়ার্ড পাবেন না। বন্ধ করতে চান?')) return;
             }
-            exoAdCleanup();
+            exoAdAbort();
         }
 
-        function openExoAdTask() {
+        // opts: { seconds, title, note, onComplete, onAbort }
+        function startExoAdSession(opts) {
             if (exoAdRunning) {
                 alert('⚠️ আপনার একটি অ্যাড ইতিমধ্যে চলছে, অনুগ্রহ করে শেষ হওয়া পর্যন্ত অপেক্ষা করুন!');
                 return;
             }
             exoAdRunning = true;
-            exoAdTotal = getExoAdSeconds();
+            exoAdTotal = opts.seconds || getExoAdSeconds();
             exoAdRemaining = exoAdTotal;
+            exoAdOnComplete = opts.onComplete || null;
+            exoAdOnAbort = opts.onAbort || null;
 
-            const rewardEl = document.getElementById('exo-ad-reward');
-            if (rewardEl) rewardEl.innerText = parseFloat(dynamicTaskRewards.exoAdTask || 1.00).toFixed(2);
+            document.getElementById('exo-ad-title').innerText = opts.title || '📢 স্পন্সর বিজ্ঞাপন';
+            document.getElementById('exo-ad-note').innerHTML = (opts.note || '') +
+                '<br>⚠️ অ্যাপ বা ট্যাব বদলালে টাইমার থেমে যাবে, আর মাঝপথে বন্ধ করলে রিওয়ার্ড পাবেন না।';
             document.getElementById('exo-ad-bar').style.width = '0%';
             document.getElementById('exo-ad-time').innerText = '⏳ বিজ্ঞাপন লোড হচ্ছে...';
             document.getElementById('exoAdOverlay').style.display = 'block';
@@ -4873,16 +4874,12 @@
             const ins = document.createElement('ins');
             ins.className = 'eas6a97888e10';
             ins.setAttribute('data-zoneid', '6067067');
-            ins.setAttribute('data-keywords', 'keywords');
-            ins.setAttribute('data-sub', '123450000');
-            ins.setAttribute('data-block-ad-types', '0');
-            ins.setAttribute('data-ex-av', 'name');
             box.appendChild(ins);
             try {
                 (window.AdProvider = window.AdProvider || []).push({ "serve": {} });
             } catch (e) { console.log('Exo ad error:', e); }
 
-            // বিজ্ঞাপন সত্যিই দেখা গেলে তবেই টাইমার শুরু হবে (সর্বোচ্চ ১২ সেকেন্ড অপেক্ষা)
+            // বিজ্ঞাপন সত্যিই দেখা গেলে তবেই টাইমার শুরু হবে (সর্বোচ্চ ১৫ সেকেন্ড অপেক্ষা)
             let waited = 0;
             exoAdWaitTimer = setInterval(() => {
                 waited += 0.5;
@@ -4908,19 +4905,36 @@
                 if (exoAdRemaining <= 0) {
                     clearInterval(exoAdTimer);
                     exoAdTimer = null;
-                    finishExoAdTask();
+                    finishExoAdSession();
                 }
             }, 1000);
         }
 
-        function finishExoAdTask() {
+        function finishExoAdSession() {
             if (!exoAdIsRendered()) {
-                exoAdCleanup();
+                exoAdAbort();
                 alert('⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা যায়নি, তাই রিওয়ার্ড যোগ হয়নি। আবার চেষ্টা করুন।');
                 return;
             }
+            const done = exoAdOnComplete;
+            exoAdOnComplete = null;
+            exoAdOnAbort = null;
             exoAdCleanup();
+            if (done) done();
+        }
 
+        // ---- "এড দেখুন" টাস্ক ----
+        function openExoAdTask() {
+            const reward = parseFloat(dynamicTaskRewards.exoAdTask || 1.00);
+            startExoAdSession({
+                seconds: getExoAdSeconds(),
+                title: '📢 স্পন্সর বিজ্ঞাপন',
+                note: 'বিজ্ঞাপনটি সম্পূর্ণ দেখুন, সময় শেষ হলে <b style="color:#ffcc00;">৳' + reward.toFixed(2) + '</b> স্বয়ংক্রিয়ভাবে যোগ হবে।',
+                onComplete: grantExoAdTaskReward
+            });
+        }
+
+        function grantExoAdTaskReward() {
             let earned = parseFloat(dynamicTaskRewards.exoAdTask || 1.00);
             currentBalance += earned;
             completedTasksCount += 1;
