@@ -4814,9 +4814,17 @@
 
         function exoAdIsRendered() {
             const box = document.getElementById('exoAdBox');
-            const ins = box ? box.querySelector('ins') : null;
-            if (!ins) return false;
-            return ins.childElementCount > 0 || ins.offsetHeight > 20;
+            if (!box) return false;
+            // ExoClick অনেক সময় <ins> বদলে iframe/div/img বসায়, তাই পুরো বক্সের ভেতরটা দেখা হচ্ছে
+            const media = box.querySelectorAll('iframe, img, video, canvas, picture, a');
+            for (const el of media) {
+                if (el.offsetHeight > 30 && el.offsetWidth > 30) return true;
+            }
+            const kids = box.querySelectorAll('ins *');
+            for (const el of kids) {
+                if (el.offsetHeight > 40 && el.offsetWidth > 40) return true;
+            }
+            return false;
         }
 
         function exoAdUpdateUI() {
@@ -4882,7 +4890,7 @@
                     clearInterval(exoAdWaitTimer);
                     exoAdWaitTimer = null;
                     startExoAdCountdown();
-                } else if (waited >= 12) {
+                } else if (waited >= 15) {
                     clearInterval(exoAdWaitTimer);
                     exoAdWaitTimer = null;
                     exoAdRunning = false;
