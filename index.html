@@ -11,6 +11,9 @@
     <!-- Monetag Rewarded SDK -->
     <script src="//libtl.com/sdk.js" data-zone="12093219" data-sdk="show_12093219"></script>
 
+    <!-- ExoClick Ad Provider (এড দেখুন টাস্ক) -->
+    <script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script>
+
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -224,6 +227,7 @@
         .btn-whatsapp { background-color: #25d366; color: #fff; font-size: 16px; }
         .btn-facebook { background-color: #1877f2; color: #fff; font-size: 16px; }
         .btn-monetag { background: linear-gradient(135deg, #8e44ad, #9b59b6); color: #fff; font-size: 16px; }
+        .btn-exo { background: linear-gradient(135deg, #0097a7, #00bcd4); color: #fff; font-size: 16px; }
         
         .btn-gp { background-color: #0080ff; color: #fff; }
         .btn-bl { background-color: #ff6600; color: #fff; }
@@ -1031,6 +1035,7 @@
         .gb-gmail { --c:#fff4b8; --rgb:241,196,15; --d:-.6s; }
         .gb-fb  { --c:#a7d0ff; --rgb:24,119,242; --d:-1.2s; }
         .gb-mon { --c:#e9c2ff; --c2:#ff7ad9; --rgb:155,89,182; --d:-1.8s; }
+        .gb-exo { --c:#a8f3ff; --c2:#00bcd4; --rgb:0,188,212; --d:-1.4s; }
         .gb-pin { --c:#fff4b8; --c2:#ff7a1a; --rgb:241,196,15; --d:-2.4s; }
         .gb-reg { --c:#fff4b8; --rgb:241,196,15; --d:-.3s; }
         .gb-ad  { --c:#fff4b8; --rgb:241,196,15; --d:-.9s; }
@@ -1059,6 +1064,7 @@
         #card-gmail-task { --d:-1.2s; }
         #card-facebook-task { --rgb:24,119,242; --c:#a7d0ff; --c2:#1877f2; --d:-2.4s; }
         #card-monetag-task { --rgb:155,89,182; --c:#e9c2ff; --c2:#ff7ad9; --d:-3.4s; }
+        #card-exo-task { --rgb:0,188,212; --c:#a8f3ff; --c2:#00bcd4; --d:-1.6s; }
         #card-pin-task { --d:-.8s; }
         #card-reg-task { --d:-1.8s; }
         #card-ad-task { --d:-2.8s; }
@@ -1115,6 +1121,16 @@
         .page { contain: layout style; }
         .modal-overlay { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         .custom-popup-overlay { backdrop-filter: none; background: rgba(0,0,0,.85); }
+        /* ===== এড দেখুন টাস্ক মোডাল ===== */
+        #exoAdOverlay .exo-panel { background:#0b1f26; border:2px solid #00bcd4; padding:18px; border-radius:16px; width:100%; max-width:400px; margin:20px auto; box-shadow:0 10px 30px rgba(0,188,212,.3); color:#fff; }
+        #exoAdOverlay .exo-head { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,188,212,.4); padding-bottom:10px; margin-bottom:12px; }
+        #exoAdOverlay .exo-head h2 { color:#00e5ff; font-size:18px; margin:0; font-weight:bold; }
+        #exoAdOverlay .exo-close { background:#ff3333; color:#fff; border:none; padding:5px 10px; border-radius:6px; font-weight:bold; font-size:12px; cursor:pointer; }
+        #exoAdOverlay .exo-box { background:#06141a; border:1px dashed rgba(0,188,212,.5); border-radius:10px; min-height:260px; display:flex; align-items:center; justify-content:center; overflow:auto; padding:6px; text-align:center; }
+        #exoAdOverlay .exo-bar { height:10px; background:#12333d; border-radius:6px; overflow:hidden; margin:12px 0 6px; }
+        #exoAdOverlay .exo-bar > div { height:100%; width:0%; background:linear-gradient(90deg,#00bcd4,#00e5ff); transition:width .9s linear; }
+        #exoAdOverlay .exo-time { font-size:14px; font-weight:bold; color:#ffcc00; text-align:center; }
+        #exoAdOverlay .exo-note { font-size:12px; color:#9fc3cc; text-align:center; margin-top:6px; line-height:1.5; }
 </style>
 </head>
 <body>
@@ -1265,6 +1281,22 @@
                 </div>
             </div>
 
+            <!-- Exo Ad Task Card (এড দেখুন) -->
+            <div class="card" id="card-exo-task" style="border: 2px solid #00bcd4; display: flex; align-items: center; text-align: left; gap: 12px;">
+                <div style="width: 48px; height: 48px; flex-shrink: 0; background: linear-gradient(135deg, #0097a7, #00bcd4); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 188, 212, 0.4);">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="5" width="18" height="12" rx="2" fill="#ffffff"/>
+                        <rect x="9" y="19" width="6" height="2" rx="1" fill="#ffffff"/>
+                        <polygon points="10 8 10 14 15 11" fill="#00bcd4"/>
+                    </svg>
+                </div>
+                <div style="flex-grow: 1; width: 100%;">
+                    <h3 style="color: #00bcd4; margin-bottom: 4px;">📢 স্পন্সর এড টাস্ক</h3>
+                    <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখলে পাবেন <span id="ui-reward-exo">৳1.00</span> টাকা।</p>
+                    <button class="btn btn-exo gb gb-exo fx-pulse" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('exoAdTask', openExoAdTask)">📢 এড দেখুন</button>
+                </div>
+            </div>
+
             <!-- Monetag Ad Task Card -->
             <div class="card" id="card-monetag-task" style="border: 2px solid #9b59b6; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <div style="width: 48px; height: 48px; flex-shrink: 0; background: linear-gradient(135deg, #8e44ad, #9b59b6); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(155, 89, 182, 0.4);">
@@ -1314,6 +1346,19 @@
                     <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিদিন সাইন-ইন করে ফ্রি ক্যাশ রিওয়ার্ড নিন!</p>
                     <button class="btn btn-gift gb gb-chk" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('checkinTask', openDailyCheckinModal)">📅 ডেইলি সাইন-ইন করুন</button>
                 </div>
+            </div>
+        </div>
+
+        <div id="exoAdOverlay" class="modal-overlay">
+            <div class="exo-panel">
+                <div class="exo-head">
+                    <h2>📢 স্পন্সর বিজ্ঞাপন</h2>
+                    <button class="exo-close" onclick="closeExoAdModal()">বন্ধ করুন ✖</button>
+                </div>
+                <div class="exo-box" id="exoAdBox"></div>
+                <div class="exo-bar"><div id="exo-ad-bar"></div></div>
+                <div class="exo-time" id="exo-ad-time">⏳ বিজ্ঞাপন লোড হচ্ছে...</div>
+                <div class="exo-note">বিজ্ঞাপনটি সম্পূর্ণ দেখুন, সময় শেষ হলে <b style="color:#ffcc00;">৳<span id="exo-ad-reward">1.00</span></b> স্বয়ংক্রিয়ভাবে যোগ হবে।<br>⚠️ অ্যাপ বা ট্যাব বদলালে টাইমার থেমে যাবে, আর মাঝপথে বন্ধ করলে রিওয়ার্ড পাবেন না।</div>
             </div>
         </div>
 
@@ -1798,6 +1843,24 @@
                 </div>
             </div>
 
+            <!-- Exo Ad Task Reward -->
+            <div class="reward-setup-card">
+                <div class="reward-setup-title">📢 স্পন্সর এড টাস্ক (এড দেখুন) রিওয়ার্ড</div>
+                <div class="reward-setup-flex">
+                    <input type="number" step="0.01" id="rew-set-exo" class="input-control" placeholder="যেমন: 1.00">
+                    <button class="reward-setup-btn" onclick="saveSingleTaskReward('exoAdTask', 'rew-set-exo', 'স্পন্সর এড')">💾 Save</button>
+                </div>
+            </div>
+
+            <!-- Exo Ad Task Timer -->
+            <div class="reward-setup-card">
+                <div class="reward-setup-title">⏱️ স্পন্সর এড দেখার সময় (সেকেন্ড, ৫–১২০)</div>
+                <div class="reward-setup-flex">
+                    <input type="number" step="1" min="5" max="120" id="rew-set-exo-sec" class="input-control" placeholder="যেমন: 15">
+                    <button class="reward-setup-btn" onclick="saveExoAdSeconds()">💾 Save</button>
+                </div>
+            </div>
+
             <!-- 4. Monetag Task Reward -->
             <div class="reward-setup-card">
                 <div class="reward-setup-title">🎬 ৪. Monetag এডস টাস্ক রিওয়ার্ড</div>
@@ -2198,6 +2261,14 @@
             </div>
 
             <div class="switch-container">
+                <span>📢 স্পন্সর এড টাস্ক (এড দেখুন)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-exo" onchange="toggleTaskStatus('exoAdTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
                 <span>🎬 Monetag এডস টাস্ক</span>
                 <label class="switch">
                     <input type="checkbox" id="sw-monetag" onchange="toggleTaskStatus('monetagTask', this.checked)">
@@ -2432,6 +2503,8 @@
             gmailTask: 15.00,
             facebookTask: 5.00,
             monetagTask: 1.00,
+            exoAdTask: 1.00,
+            exoAdSeconds: 15,
             adTask: 1.00,
             regTask: 0.03,
             pinGP: 8.00,
@@ -2472,7 +2545,7 @@
         let waPendingPhone = "";
         let waStatusMonitorStarted = false;
 
-        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, facebookTask: true, monetagTask: true, checkinTask: true };
+        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, facebookTask: true, monetagTask: true, exoAdTask: true, checkinTask: true };
 
         let checkinStreak = 0;
         let checkinTotalIncome = 0.00;
@@ -2745,6 +2818,7 @@
                     if (document.getElementById('ui-reward-gmail')) document.getElementById('ui-reward-gmail').innerText = parseFloat(dynamicTaskRewards.gmailTask || 15.00).toFixed(0);
                     if (document.getElementById('ui-reward-facebook')) document.getElementById('ui-reward-facebook').innerText = parseFloat(dynamicTaskRewards.facebookTask || 5.00).toFixed(0);
                     if (document.getElementById('ui-reward-monetag')) document.getElementById('ui-reward-monetag').innerText = "৳" + parseFloat(dynamicTaskRewards.monetagTask || 1.00).toFixed(2);
+                    if (document.getElementById('ui-reward-exo')) document.getElementById('ui-reward-exo').innerText = "৳" + parseFloat(dynamicTaskRewards.exoAdTask || 1.00).toFixed(2);
                     if (document.getElementById('ui-reward-ad')) document.getElementById('ui-reward-ad').innerText = "৳" + parseFloat(dynamicTaskRewards.adTask || 1.00).toFixed(2);
                     
                     if (document.getElementById('rate-gmail-val')) document.getElementById('rate-gmail-val').innerText = parseFloat(dynamicTaskRewards.gmailTask || 15.00).toFixed(0);
@@ -2761,6 +2835,8 @@
                     if (document.getElementById('rew-set-gmail')) document.getElementById('rew-set-gmail').value = dynamicTaskRewards.gmailTask || 15.00;
                     if (document.getElementById('rew-set-fb')) document.getElementById('rew-set-fb').value = dynamicTaskRewards.facebookTask || 5.00;
                     if (document.getElementById('rew-set-monetag')) document.getElementById('rew-set-monetag').value = dynamicTaskRewards.monetagTask || 1.00;
+                    if (document.getElementById('rew-set-exo')) document.getElementById('rew-set-exo').value = dynamicTaskRewards.exoAdTask || 1.00;
+                    if (document.getElementById('rew-set-exo-sec')) document.getElementById('rew-set-exo-sec').value = dynamicTaskRewards.exoAdSeconds || 15;
                     if (document.getElementById('rew-set-ad')) document.getElementById('rew-set-ad').value = dynamicTaskRewards.adTask || 1.00;
                     if (document.getElementById('rew-set-reg')) document.getElementById('rew-set-reg').value = dynamicTaskRewards.regTask || 0.03;
                     
@@ -2838,6 +2914,7 @@
                 taskStatusSettings.gmailTask = settings.gmailTask !== false;
                 taskStatusSettings.facebookTask = settings.facebookTask !== false;
                 taskStatusSettings.monetagTask = settings.monetagTask !== false;
+                taskStatusSettings.exoAdTask = settings.exoAdTask !== false;
                 taskStatusSettings.checkinTask = settings.checkinTask !== false;
 
                 if (document.getElementById('sw-pin')) document.getElementById('sw-pin').checked = taskStatusSettings.pinTask;
@@ -2846,6 +2923,7 @@
                 if (document.getElementById('sw-gmail')) document.getElementById('sw-gmail').checked = taskStatusSettings.gmailTask;
                 if (document.getElementById('sw-facebook')) document.getElementById('sw-facebook').checked = taskStatusSettings.facebookTask;
                 if (document.getElementById('sw-monetag')) document.getElementById('sw-monetag').checked = taskStatusSettings.monetagTask;
+                if (document.getElementById('sw-exo')) document.getElementById('sw-exo').checked = taskStatusSettings.exoAdTask;
                 if (document.getElementById('sw-wa')) document.getElementById('sw-wa').checked = taskStatusSettings.waTask;
                 if (document.getElementById('sw-checkin')) document.getElementById('sw-checkin').checked = taskStatusSettings.checkinTask;
 
@@ -2856,6 +2934,7 @@
                 updateTaskCardVisuals('card-gmail-task', taskStatusSettings.gmailTask);
                 updateTaskCardVisuals('card-facebook-task', taskStatusSettings.facebookTask);
                 updateTaskCardVisuals('card-monetag-task', taskStatusSettings.monetagTask);
+                updateTaskCardVisuals('card-exo-task', taskStatusSettings.exoAdTask);
                 updateTaskCardVisuals('card-checkin-task', taskStatusSettings.checkinTask);
             });
 
@@ -4718,6 +4797,149 @@
                     alert(`🎉 অভিনন্দন! Monetag বিজ্ঞাপন সম্পূর্ণ দেখে ৳${earned.toFixed(2)} বোনাস পেয়েছেন!`);
                 }
             }, 1000);
+        }
+
+        /* ===== এড দেখুন টাস্ক (ExoClick বিজ্ঞাপন + টাইমার) ===== */
+        let exoAdRunning = false;
+        let exoAdTimer = null;
+        let exoAdWaitTimer = null;
+        let exoAdRemaining = 0;
+        let exoAdTotal = 15;
+
+        function getExoAdSeconds() {
+            let sec = parseInt(dynamicTaskRewards.exoAdSeconds, 10);
+            if (isNaN(sec) || sec < 5) sec = 15;
+            return Math.min(sec, 120);
+        }
+
+        function exoAdIsRendered() {
+            const box = document.getElementById('exoAdBox');
+            const ins = box ? box.querySelector('ins') : null;
+            if (!ins) return false;
+            return ins.childElementCount > 0 || ins.offsetHeight > 20;
+        }
+
+        function exoAdUpdateUI() {
+            const done = exoAdTotal - exoAdRemaining;
+            const bar = document.getElementById('exo-ad-bar');
+            const time = document.getElementById('exo-ad-time');
+            if (bar) bar.style.width = Math.min(100, Math.round((done / exoAdTotal) * 100)) + '%';
+            if (time) time.innerText = '⏳ ' + exoAdRemaining + ' সেকেন্ড বাকি...';
+        }
+
+        function exoAdCleanup() {
+            if (exoAdTimer) { clearInterval(exoAdTimer); exoAdTimer = null; }
+            if (exoAdWaitTimer) { clearInterval(exoAdWaitTimer); exoAdWaitTimer = null; }
+            exoAdRunning = false;
+            const box = document.getElementById('exoAdBox');
+            if (box) box.innerHTML = '';
+            const overlay = document.getElementById('exoAdOverlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+
+        function closeExoAdModal() {
+            if (exoAdTimer && exoAdRemaining > 0) {
+                if (!confirm('এখন বন্ধ করলে রিওয়ার্ড পাবেন না। বন্ধ করতে চান?')) return;
+            }
+            exoAdCleanup();
+        }
+
+        function openExoAdTask() {
+            if (exoAdRunning) {
+                alert('⚠️ আপনার একটি অ্যাড ইতিমধ্যে চলছে, অনুগ্রহ করে শেষ হওয়া পর্যন্ত অপেক্ষা করুন!');
+                return;
+            }
+            exoAdRunning = true;
+            exoAdTotal = getExoAdSeconds();
+            exoAdRemaining = exoAdTotal;
+
+            const rewardEl = document.getElementById('exo-ad-reward');
+            if (rewardEl) rewardEl.innerText = parseFloat(dynamicTaskRewards.exoAdTask || 1.00).toFixed(2);
+            document.getElementById('exo-ad-bar').style.width = '0%';
+            document.getElementById('exo-ad-time').innerText = '⏳ বিজ্ঞাপন লোড হচ্ছে...';
+            document.getElementById('exoAdOverlay').style.display = 'block';
+
+            // প্রতিবার নতুন করে বিজ্ঞাপন লোড হবে
+            const box = document.getElementById('exoAdBox');
+            box.innerHTML = '';
+            const ins = document.createElement('ins');
+            ins.className = 'eas6a97888e10';
+            ins.setAttribute('data-zoneid', '6067067');
+            ins.setAttribute('data-keywords', 'keywords');
+            ins.setAttribute('data-sub', '123450000');
+            ins.setAttribute('data-block-ad-types', '0');
+            ins.setAttribute('data-ex-av', 'name');
+            box.appendChild(ins);
+            try {
+                (window.AdProvider = window.AdProvider || []).push({ "serve": {} });
+            } catch (e) { console.log('Exo ad error:', e); }
+
+            // বিজ্ঞাপন সত্যিই দেখা গেলে তবেই টাইমার শুরু হবে (সর্বোচ্চ ১২ সেকেন্ড অপেক্ষা)
+            let waited = 0;
+            exoAdWaitTimer = setInterval(() => {
+                waited += 0.5;
+                if (exoAdIsRendered()) {
+                    clearInterval(exoAdWaitTimer);
+                    exoAdWaitTimer = null;
+                    startExoAdCountdown();
+                } else if (waited >= 12) {
+                    clearInterval(exoAdWaitTimer);
+                    exoAdWaitTimer = null;
+                    exoAdRunning = false;
+                    document.getElementById('exo-ad-time').innerText = '⚠️ বিজ্ঞাপন লোড হয়নি। বন্ধ করে আবার চেষ্টা করুন।';
+                }
+            }, 500);
+        }
+
+        function startExoAdCountdown() {
+            exoAdUpdateUI();
+            exoAdTimer = setInterval(() => {
+                if (document.hidden) return; // অ্যাপ/ট্যাব বদলালে টাইমার থেমে থাকবে
+                exoAdRemaining--;
+                exoAdUpdateUI();
+                if (exoAdRemaining <= 0) {
+                    clearInterval(exoAdTimer);
+                    exoAdTimer = null;
+                    finishExoAdTask();
+                }
+            }, 1000);
+        }
+
+        function finishExoAdTask() {
+            if (!exoAdIsRendered()) {
+                exoAdCleanup();
+                alert('⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখা যায়নি, তাই রিওয়ার্ড যোগ হয়নি। আবার চেষ্টা করুন।');
+                return;
+            }
+            exoAdCleanup();
+
+            let earned = parseFloat(dynamicTaskRewards.exoAdTask || 1.00);
+            currentBalance += earned;
+            completedTasksCount += 1;
+
+            let today = getTodayString();
+            if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
+                todayEarnedTaskIncome = earned;
+            } else {
+                todayEarnedTaskIncome += earned;
+            }
+
+            giveReferralCommission(earned);
+            updateFirebaseProfile();
+            updateUI();
+
+            alert(`🎉 অভিনন্দন! বিজ্ঞাপন সম্পূর্ণ দেখে ৳${earned.toFixed(2)} বোনাস পেয়েছেন!`);
+        }
+
+        function saveExoAdSeconds() {
+            let val = parseInt(document.getElementById('rew-set-exo-sec').value, 10);
+            if (isNaN(val) || val < 5 || val > 120) {
+                alert('⚠️ সময় ৫ থেকে ১২০ সেকেন্ডের মধ্যে দিন!');
+                return;
+            }
+            db.ref('task_rewards/exoAdSeconds').set(val).then(() => {
+                alert('✅ স্পন্সর এড দেখার সময় আপডেট হয়েছে!');
+            });
         }
 
         function watchAdTask() {
