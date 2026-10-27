@@ -5,18 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="6a97888e-site-verification" content="8324287408aeb4da250eeb168cf20553">
     <title>Mega Income Pro</title>
-    <style>
-        #authModal { display: none; }
-        html.has-session #authLoadingOverlay { display: flex; }
-        .dots-loader { display:inline-flex; align-items:center; gap:4px; height:1em; vertical-align:middle; }
-        .dots-loader i { display:inline-block; width:7px; height:7px; border-radius:50%; background:#f1c40f; animation:dotBounce 1s infinite; }
-        .dots-loader i:nth-child(2) { animation-delay:.15s; }
-        .dots-loader i:nth-child(3) { animation-delay:.3s; }
-        @keyframes dotBounce { 0%,80%,100% { opacity:.3; transform:translateY(0); } 40% { opacity:1; transform:translateY(-5px); } }
-    </style>
-    <script>
-        try { if (localStorage.getItem("loggedInUserKey")) document.documentElement.classList.add("has-session"); } catch (e) {}
-    </script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
@@ -1144,7 +1132,12 @@
         #exoAdOverlay .exo-bar > div { height:100%; width:0%; background:linear-gradient(90deg,#00bcd4,#00e5ff); transition:width .9s linear; }
         #exoAdOverlay .exo-time { font-size:14px; font-weight:bold; color:#ffcc00; text-align:center; }
         #exoAdOverlay .exo-note { font-size:12px; color:#9fc3cc; text-align:center; margin-top:6px; line-height:1.5; }
-</style>
+.dots-loader { display:inline-flex; align-items:center; gap:4px; height:1em; vertical-align:middle; }
+        .dots-loader i { display:inline-block; width:7px; height:7px; border-radius:50%; background:#f1c40f; animation:dotBounce 1s infinite; }
+        .dots-loader i:nth-child(2) { animation-delay:.15s; }
+        .dots-loader i:nth-child(3) { animation-delay:.3s; }
+        @keyframes dotBounce { 0%,80%,100% { opacity:.3; transform:translateY(0); } 40% { opacity:1; transform:translateY(-5px); } }
+    </style>
 </head>
 <body>
 
@@ -1164,7 +1157,7 @@
         <div class="loading-title-text">Mega Income</div>
     </div>
 
-    <div id="authModal" class="modal-overlay" style="display: none; align-items: center; justify-content: center; background: #07150d;">
+    <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: #07150d;">
         <div id="loginBox" class="auth-card">
             <div class="auth-logo">🚀</div>
             <div class="auth-title">Mega Income Pro</div>
@@ -2762,10 +2755,6 @@
 
             document.getElementById('logoutBtn').style.display = 'block';
 
-            updateUI();
-            setTimeout(markUserDataLoaded, 12000);
-            setTimeout(updateUI, 12100);
-
             db.ref('users/' + currentUserKey + '/isBanned').on('value', (snapshot) => {
                 if (snapshot.val() === true) {
                     let overlay = document.getElementById('bannedUserOverlay');
@@ -2964,11 +2953,11 @@
                 applyWithdrawSettings();
             });
 
+            balanceLoaded = false;
+            updateUI();
             db.ref('users/' + currentUserKey).on('value', (snapshot) => {
                 const val = snapshot.val();
-                userDataLoaded = true;
-                document.documentElement.classList.remove('has-session');
-                hideAuthLoader();
+                balanceLoaded = true;
                 if (val) {
                     currentBalance = parseFloat(val.balance || 0);
                     referCount = parseInt(val.refCount || 0);
@@ -4628,8 +4617,6 @@
                 initFirebaseUserSync();
                 startWhatsAppStatusMonitor();
             } else {
-                document.documentElement.classList.remove('has-session');
-                hideAuthLoader();
                 toggleAuthMode('login');
                 document.getElementById('authModal').style.display = 'flex';
             }
@@ -4644,15 +4631,7 @@
             if (element) element.classList.add('active');
         }
 
-        let userDataLoaded = false;
-        const DOTS_HTML = '<span class="dots-loader"><i></i><i></i><i></i></span>';
-
-        function markUserDataLoaded() {
-            if (userDataLoaded) return;
-            userDataLoaded = true;
-            document.documentElement.classList.remove('has-session');
-            hideAuthLoader();
-        }
+        let balanceLoaded = false;
 
         function updateUI() {
             let balEl = document.getElementById("balance-val");
@@ -4660,11 +4639,13 @@
             let refBonEl = document.getElementById("ref-bonus-val");
             let waIncomeEl = document.getElementById("wa-income-val");
 
-            if (!userDataLoaded && currentUserKey) {
-                [balEl, refEl, refBonEl, waIncomeEl].forEach(el => { if (el && !el.querySelector('.dots-loader')) el.innerHTML = DOTS_HTML; });
-                return;
+            if (balEl) {
+                if (currentUserKey && !balanceLoaded) {
+                    if (!balEl.querySelector('.dots-loader')) balEl.innerHTML = '<span class="dots-loader"><i></i><i></i><i></i></span>';
+                } else {
+                    balEl.innerText = currentBalance.toFixed(2);
+                }
             }
-            if (balEl) balEl.innerText = currentBalance.toFixed(2);
             if (refEl) refEl.innerText = referCount;
             if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
             if (waIncomeEl) waIncomeEl.innerText = waTotalIncome.toFixed(2);
@@ -4914,29 +4895,19 @@
                 (window.AdProvider = window.AdProvider || []).push({ "serve": {} });
             } catch (e) { console.log('Exo ad error:', e); }
 
-            // বিজ্ঞাপন সত্যিই দেখা গেলে তবেই টাইমার শুরু হবে (একবার রিট্রাই, সর্বোচ্চ ১৫ সেকেন্ড)
+            // বিজ্ঞাপন সত্যিই দেখা গেলে তবেই টাইমার শুরু হবে (সর্বোচ্চ ১৫ সেকেন্ড অপেক্ষা)
             let waited = 0;
-            let retried = false;
             exoAdWaitTimer = setInterval(() => {
                 waited += 0.5;
                 if (exoAdIsRendered()) {
                     clearInterval(exoAdWaitTimer);
                     exoAdWaitTimer = null;
                     startExoAdCountdown();
-                } else if (waited >= 7 && !retried) {
-                    retried = true;
-                    document.getElementById('exo-ad-time').innerText = '🔄 আবার চেষ্টা করা হচ্ছে...';
-                    box.innerHTML = '';
-                    const ins2 = document.createElement('ins');
-                    ins2.className = 'eas6a97888e10';
-                    ins2.setAttribute('data-zoneid', '6067067');
-                    box.appendChild(ins2);
-                    try { (window.AdProvider = window.AdProvider || []).push({ "serve": {} }); } catch (e) {}
                 } else if (waited >= 15) {
                     clearInterval(exoAdWaitTimer);
                     exoAdWaitTimer = null;
-                    document.getElementById('exo-ad-time').innerText = '⚠️ এই মুহূর্তে কোনো বিজ্ঞাপন নেই। একটু পরে আবার চেষ্টা করুন বা Monetag এডস দেখুন।';
-                    setTimeout(() => { if (exoAdRunning && !exoAdTimer) exoAdAbort(); }, 3500);
+                    exoAdRunning = false;
+                    document.getElementById('exo-ad-time').innerText = '⚠️ বিজ্ঞাপন লোড হয়নি। বন্ধ করে আবার চেষ্টা করুন।';
                 }
             }, 500);
         }
