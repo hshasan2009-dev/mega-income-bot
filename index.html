@@ -2557,6 +2557,18 @@
         let checkinTotalIncome = 0.00;
         let lastCheckinDate = "";
         let todayEarnedTaskIncome = 0.00; 
+        let incomeDateStr = "";
+        const CHECKIN_MIN_INCOME = 20.00;
+
+        // তারিখ বদলালে (রাত ১২টার পর) গতকালের আয় ০ করে দেয়, যেন গতকালের আয় আজকের সাইন-ইনে না গোনা হয়
+        function ensureTodayIncome() {
+            let t = getTodayString();
+            if (incomeDateStr !== t) {
+                todayEarnedTaskIncome = 0.00;
+                incomeDateStr = t;
+            }
+        }
+
 
         const dailyRewards = [1.00, 2.00, 3.00, 3.50, 4.00, 5.00, 6.00, 6.50, 7.00, 7.50, 8.00, 9.00, 9.50, 10.00];
 
@@ -2979,6 +2991,7 @@
                     } else {
                         todayEarnedTaskIncome = parseFloat(val.todayEarnedTaskIncome || 0);
                     }
+                    incomeDateStr = today;
 
                     if (!val.refCode) {
                         userReferralCode = generate10DigitRandomId();
@@ -3695,6 +3708,7 @@
 
         function updateFirebaseProfile() {
             if(!currentUserKey) return;
+            ensureTodayIncome();
             let today = getTodayString();
             db.ref('users/' + currentUserKey).update({
                 balance: currentBalance,
@@ -4294,7 +4308,8 @@
                     completedTasksCount += 1;
                     
                     let today = getTodayString();
-                    if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
+                    ensureTodayIncome();
+            if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
                         todayEarnedTaskIncome = reward;
                     } else {
                         todayEarnedTaskIncome += reward;
@@ -4479,6 +4494,7 @@
             completedTasksCount += 1;
             
             let today = getTodayString();
+            ensureTodayIncome();
             if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
                 todayEarnedTaskIncome = rewardInBDT;
             } else {
@@ -4572,8 +4588,9 @@
                 return;
             }
 
-            if (todayEarnedTaskIncome < 1.00) {
-                alert("⚠️ চেক-ইন করতে প্রথমে আজকের নির্দিষ্ট টাক্স কমপ্লিট করুন!");
+            ensureTodayIncome();
+            if (todayEarnedTaskIncome < CHECKIN_MIN_INCOME) {
+                alert(`⚠️ সাইন-ইন করতে আজ টাস্ক থেকে কমপক্ষে ৳${CHECKIN_MIN_INCOME.toFixed(0)} ইনকাম করতে হবে!\nআজ আপনার ইনকাম: ৳${todayEarnedTaskIncome.toFixed(2)}`);
                 return;
             }
 
@@ -4786,7 +4803,8 @@
                     completedTasksCount += 1;
                     
                     let today = getTodayString();
-                    if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
+                    ensureTodayIncome();
+            if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
                         todayEarnedTaskIncome = earned;
                     } else {
                         todayEarnedTaskIncome += earned;
@@ -4956,6 +4974,7 @@
             completedTasksCount += 1;
 
             let today = getTodayString();
+            ensureTodayIncome();
             if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
                 todayEarnedTaskIncome = earned;
             } else {
@@ -4990,7 +5009,8 @@
                         completedTasksCount += 1;
                         
                         let today = getTodayString();
-                        if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
+                        ensureTodayIncome();
+            if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
                             todayEarnedTaskIncome = earned;
                         } else {
                             todayEarnedTaskIncome += earned;
