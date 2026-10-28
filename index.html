@@ -311,6 +311,53 @@
             outline: none;
         }
 
+
+        /* ===== রেফার লিডারবোর্ড ===== */
+        .rlb-card{border-color:#f1c40f;box-shadow:0 0 18px rgba(241,196,15,.16);padding:16px 12px 14px}
+        .rlb-card h3{color:#ffcc00;text-align:center;font-size:18px;margin-bottom:6px}
+        .rlb-sub{font-size:12.5px;color:#cfe9d8;text-align:center;line-height:1.5;margin-bottom:12px}
+        .rlb-row{display:flex;align-items:center;gap:10px;background:#0b2217;border:1px solid #1f5a3f;border-radius:12px;padding:7px 10px;margin-bottom:7px;opacity:0;transform:translateY(8px);animation:rlbIn .4s forwards;text-align:left}
+        @keyframes rlbIn{to{opacity:1;transform:none}}
+        .rlb-row.r1{padding:10px 12px;background:linear-gradient(90deg,rgba(241,196,15,.26),#0b2217 75%);border:1.5px solid #f1c40f;box-shadow:0 0 14px rgba(241,196,15,.22)}
+        .rlb-row.r2{background:linear-gradient(90deg,rgba(207,216,220,.2),#0b2217 75%);border:1.5px solid #b0bec5}
+        .rlb-row.r3{background:linear-gradient(90deg,rgba(205,127,50,.24),#0b2217 75%);border:1.5px solid #cd7f32}
+        .rlb-med{width:44px;height:48px;flex:none;display:grid;place-items:center}
+        .rlb-row.r1 .rlb-med{width:50px;height:54px}
+        .rlb-num{width:28px;height:28px;margin:0 8px;flex:none;border-radius:50%;background:#1b4d3e;border:1px solid #27ae60;color:#cfe9d8;font-weight:bold;font-size:12px;display:grid;place-items:center}
+        .rlb-info{flex:1;min-width:0;line-height:1.25}
+        .rlb-nm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .rlb-row.r1 .rlb-nm{color:#ffcc00;font-weight:bold;font-size:16px}
+        .rlb-row.r2 .rlb-nm,.rlb-row.r3 .rlb-nm{font-weight:bold;font-size:15px}
+        .rlb-code{display:block;margin-top:2px;font-size:10.5px;color:#9fd8b5;letter-spacing:.6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .rlb-code i{font-style:normal;opacity:.75}
+        .rlb-cnt{text-align:right;line-height:1.1;flex:none}
+        .rlb-cnt b{display:block;font-size:16px;color:#fff}
+        .rlb-cnt small{font-size:10px;color:#9fd8b5}
+        .rlb-row.r1 .rlb-cnt b{font-size:19px;color:#f1c40f}
+        .rlb-row.r2 .rlb-cnt b{font-size:18px;color:#e3eaee}
+        .rlb-row.r3 .rlb-cnt b{font-size:18px;color:#ffb866}
+        .rlb-row.mine{outline:2px dashed #2ecc71;outline-offset:-2px}
+        .rlb-me{border:1.5px dashed #2ecc71;background:#103a28;margin-top:12px;margin-bottom:0;opacity:1;transform:none;animation:none}
+        .rlb-me .rlb-nm{color:#2ecc71}
+        .rlb-note{font-size:11.5px;color:#9fd8b5;text-align:center;margin-top:8px;line-height:1.5}
+        .rlb-empty{padding:18px 8px;text-align:center;color:#cfe9d8;font-size:13px;line-height:1.6}
+        @media (prefers-reduced-motion: reduce){.rlb-row{animation:none;opacity:1;transform:none}}
+
+        /* ===== অ্যাডমিন ইউজার স্ট্যাটস ===== */
+        .aus{display:grid;grid-template-columns:1fr 1px 1fr;align-items:center;background:#0b2217;border:1.5px solid #27ae60;border-radius:12px;padding:8px 6px 7px;margin-bottom:12px;position:relative;overflow:hidden}
+        .aus::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:var(--p,0%);background:linear-gradient(90deg,#27ae60,#f1c40f);border-radius:0 3px 3px 0;transition:width 1.2s ease}
+        .aus .dv{height:30px;background:#27ae60;opacity:.55}
+        .aus .it{display:flex;align-items:center;justify-content:center;gap:9px;padding:2px 6px}
+        .aus .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px;background:#1b4d3e;border:1px solid #27ae60;flex:none}
+        .aus .tx{text-align:left;line-height:1.15}
+        .aus .n{display:block;font-size:19px;font-weight:800}
+        .aus .l{font-size:11px;color:#cfe9d8}
+        .aus .act .ic{background:#3b3208;border-color:#f1c40f}
+        .aus .act .n{color:#f1c40f}
+        .aus-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#2ecc71;margin-right:4px;vertical-align:1px;animation:ausPl 1.4s infinite}
+        @keyframes ausPl{0%{box-shadow:0 0 0 0 rgba(46,204,113,.7)}100%{box-shadow:0 0 0 6px rgba(46,204,113,0)}}
+        .aus-pct{font-size:10.5px;color:#9fd8b5;margin:-6px 0 12px;text-align:center}
+
         .stats-container {
             display: flex;
             gap: 10px;
@@ -1748,6 +1795,18 @@
 
                 <button class="btn btn-main" onclick="copyReferLink()">📋 লিংক কপি করুন</button>
             </div>
+
+            <div class="card rlb-card">
+                <h3>🏆 টপ রেফারার্স</h3>
+                <div class="rlb-sub">যারা সবচেয়ে বেশি বন্ধু ইনভাইট করেছেন<br>(লিডারবোর্ডে ঢুকতে সর্বনিম্ন ২০টি রেফার লাগবে)</div>
+                <div id="rlb-list"><div class="rlb-empty">লোড হচ্ছে...</div></div>
+                <div class="rlb-row rlb-me" id="rlb-me" style="display:none;">
+                    <div class="rlb-num" id="rlb-me-rank">—</div>
+                    <div class="rlb-info"><div class="rlb-nm">আপনি</div><span class="rlb-code" id="rlb-me-code"></span></div>
+                    <div class="rlb-cnt"><b id="rlb-me-cnt">0</b><small>মোট রেফার</small></div>
+                </div>
+                <div class="rlb-note" id="rlb-note"></div>
+            </div>
         </div>
 
         <div id="withdraw" class="page">
@@ -1816,6 +1875,13 @@
         <div id="admin" class="page">
             <div class="card">
                 <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
+
+                <div class="aus" id="aus-box">
+                    <div class="it"><div class="ic">👥</div><div class="tx"><span class="n" id="aus-total">0</span><span class="l">Total User</span></div></div>
+                    <div class="dv"></div>
+                    <div class="it act"><div class="ic">⚡</div><div class="tx"><span class="n" id="aus-active">0</span><span class="l"><i class="aus-dot"></i>Active Users</span></div></div>
+                </div>
+                <div class="aus-pct" id="aus-pct"></div>
 
                 <button class="btn btn-gift" onclick="openAdminTaskControlModal()" style="margin-bottom: 12px;">
                     ⚙️ টাস্ক অন/অফ কন্ট্রোল পেজ ওপেন করুন
@@ -2842,6 +2908,7 @@
                 listenAdminData();
                 listenBannedUsersList();
                 listenGiftCodesList();
+                listenAdminUserStats();
             }
 
             // পপ-আপ সেটিংস রিয়েলটাইম লিসেনার
@@ -3031,6 +3098,7 @@
 
             balanceLoaded = false;
             updateUI();
+            listenReferLeaderboard();
             db.ref('users/' + currentUserKey).on('value', (snapshot) => {
                 const val = snapshot.val();
                 balanceLoaded = true;
@@ -3072,6 +3140,7 @@
                     if(refCodeInput) refCodeInput.value = userReferralCode;
                 }
                 updateUI();
+                if (typeof renderReferLeaderboard === 'function') renderReferLeaderboard(rlbLast);
                 renderBoundWaNumbers();
             });
 
@@ -4962,6 +5031,129 @@
                 document.getElementById('authModal').style.display = 'flex';
             }
         };
+
+        /* ===== রেফার লিডারবোর্ড (সর্বনিম্ন ২০ রেফার, সর্বোচ্চ ১০ জন) ===== */
+        const LB_MIN_REFER = 20;
+        const LB_MAX_SHOW = 10;
+        let rlbRef = null, rlbLast = [];
+
+        function bnDigits(n) {
+            const bn = '০১২৩৪৫৬৭৮৯';
+            return String(n).replace(/\d/g, d => bn[d]);
+        }
+        function escHtml(t) {
+            return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        function rlbMedal(r) {
+            const C = {1:["#fff3b0","#f1c40f","#a8730a","#e74c3c"],2:["#ffffff","#cfd8dc","#6f8591","#3498db"],3:["#ffd9b0","#cd7f32","#74431a","#27ae60"]};
+            const c = C[r];
+            return '<svg width="100%" height="100%" viewBox="0 0 40 46"><path d="M10 0h8l4 17h-9z" fill="'+c[3]+'"/><path d="M30 0h-8l-4 17h9z" fill="'+c[3]+'" opacity=".75"/>'
+                + '<defs><radialGradient id="rlbg'+r+'" cx="35%" cy="30%"><stop offset="0" stop-color="'+c[0]+'"/><stop offset=".55" stop-color="'+c[1]+'"/><stop offset="1" stop-color="'+c[2]+'"/></radialGradient></defs>'
+                + '<circle cx="20" cy="29" r="15" fill="url(#rlbg'+r+')" stroke="'+c[2]+'" stroke-width="1.5"/><circle cx="20" cy="29" r="11" fill="none" stroke="'+c[0]+'" stroke-width="1" stroke-dasharray="2 1.6" opacity=".8"/>'
+                + '<text x="20" y="34.5" text-anchor="middle" font-size="15" font-weight="bold" fill="'+c[2]+'">'+bnDigits(r)+'</text></svg>';
+        }
+        function listenReferLeaderboard() {
+            if (rlbRef) rlbRef.off();
+            rlbRef = db.ref('users').orderByChild('refCount').startAt(LB_MIN_REFER);
+            rlbRef.on('value', (snapshot) => {
+                let arr = [];
+                snapshot.forEach((child) => {
+                    let u = child.val() || {};
+                    let cnt = parseInt(u.refCount || 0);
+                    if (cnt >= LB_MIN_REFER && u.isBanned !== true) {
+                        arr.push({ key: child.key, name: u.fullName || 'ইউজার', code: u.refCode || '', cnt: cnt });
+                    }
+                });
+                arr.sort((a, b) => b.cnt - a.cnt);
+                arr = arr.slice(0, LB_MAX_SHOW);
+                rlbLast = arr;
+                renderReferLeaderboard(arr);
+            });
+        }
+        function renderReferLeaderboard(arr) {
+            let listEl = document.getElementById('rlb-list');
+            if (!listEl) return;
+            let myInList = false;
+            let h = '';
+            arr.forEach((d, i) => {
+                let r = i + 1;
+                let mine = (String(d.key) === String(currentUserKey));
+                if (mine) myInList = true;
+                h += '<div class="rlb-row ' + (r < 4 ? 'r' + r : '') + (mine ? ' mine' : '') + '" style="animation-delay:' + (i * 0.06) + 's">'
+                    + (r < 4 ? '<div class="rlb-med">' + rlbMedal(r) + '</div>' : '<div class="rlb-num">' + bnDigits(r) + '</div>')
+                    + '<div class="rlb-info"><div class="rlb-nm">' + escHtml(d.name) + (mine ? ' (আপনি)' : '') + '</div>'
+                    + '<span class="rlb-code"><i>ID:</i> ' + escHtml(d.code) + '</span></div>'
+                    + '<div class="rlb-cnt"><b>' + bnDigits(d.cnt) + '</b><small>মোট রেফার</small></div></div>';
+            });
+            if (!arr.length) {
+                h = '<div class="rlb-empty">🏁 এখনো কেউ লিডারবোর্ডে জায়গা পাননি।<br>সর্বনিম্ন <b>' + bnDigits(LB_MIN_REFER) + 'টি</b> রেফার করে প্রথম হয়ে যান!</div>';
+            }
+            listEl.innerHTML = h;
+
+            let meRow = document.getElementById('rlb-me');
+            let note = document.getElementById('rlb-note');
+            if (!currentUserKey) { if (meRow) meRow.style.display = 'none'; return; }
+            if (myInList) {
+                if (meRow) meRow.style.display = 'none';
+                if (note) note.innerText = 'অভিনন্দন! আপনি টপ রেফারার্সের তালিকায় আছেন 🎉';
+            } else {
+                if (meRow) meRow.style.display = 'flex';
+                let me = document.getElementById('rlb-me-cnt'); if (me) me.innerText = bnDigits(referCount);
+                let rk = document.getElementById('rlb-me-rank'); if (rk) rk.innerText = '—';
+                let cd = document.getElementById('rlb-me-code'); if (cd) cd.innerHTML = '<i>ID:</i> ' + escHtml(userReferralCode);
+                if (note) {
+                    if (referCount >= LB_MIN_REFER) note.innerText = 'আরও রেফার করে টপ ' + bnDigits(LB_MAX_SHOW) + '-এ উঠুন!';
+                    else note.innerText = 'লিডারবোর্ডে ঢুকতে আর ' + bnDigits(LB_MIN_REFER - referCount) + 'টি রেফার দরকার!';
+                }
+            }
+        }
+
+        /* ===== অ্যাডমিন: Total / Active ইউজার স্ট্যাটস (Active = ৳৩০+ ইনকাম) ===== */
+        const ACTIVE_MIN_INCOME = 30;
+        let ausUsers = {}, ausWithdrawn = {}, ausPrevT = 0, ausPrevA = 0, ausRefs = null;
+
+        function ausCount(el, from, to) {
+            if (!el) return;
+            let t0 = performance.now();
+            (function f(t) {
+                let p = Math.min((t - t0) / 800, 1);
+                el.textContent = bnDigits(Math.round(from + (to - from) * p));
+                if (p < 1) requestAnimationFrame(f);
+            })(t0);
+        }
+        function ausRender() {
+            let total = 0, active = 0;
+            Object.keys(ausUsers).forEach((k) => {
+                total++;
+                // মোট ইনকাম = বর্তমান ব্যালেন্স + তোলা টাকা (Reject বাদে)
+                let income = parseFloat(ausUsers[k].balance || 0) + (ausWithdrawn[k] || 0);
+                if (income >= ACTIVE_MIN_INCOME) active++;
+            });
+            ausCount(document.getElementById('aus-total'), ausPrevT, total);
+            ausCount(document.getElementById('aus-active'), ausPrevA, active);
+            ausPrevT = total; ausPrevA = active;
+            let pc = total ? Math.round(active / total * 100) : 0;
+            let box = document.getElementById('aus-box');
+            if (box) box.style.setProperty('--p', pc + '%');
+            let pt = document.getElementById('aus-pct');
+            if (pt) pt.textContent = 'মোট ইউজারের ' + bnDigits(pc) + '% একটিভ (৳' + bnDigits(ACTIVE_MIN_INCOME) + '+ ইনকাম)';
+        }
+        function listenAdminUserStats() {
+            if (ausRefs) { ausRefs.forEach(r => r.off()); }
+            let uRef = db.ref('users'), wRef = db.ref('withdrawals');
+            ausRefs = [uRef, wRef];
+            uRef.on('value', (snap) => { ausUsers = snap.val() || {}; ausRender(); });
+            wRef.on('value', (snap) => {
+                let m = {};
+                snap.forEach((c) => {
+                    let w = c.val() || {};
+                    if (w.status !== 'Rejected' && w.userId) {
+                        m[w.userId] = (m[w.userId] || 0) + Number(w.requestedAmount || 0);
+                    }
+                });
+                ausWithdrawn = m; ausRender();
+            });
+        }
 
         function switchTab(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
