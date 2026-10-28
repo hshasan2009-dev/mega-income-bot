@@ -1138,6 +1138,45 @@
         .dots-loader i:nth-child(3) { animation-delay:.3s; }
         @keyframes dotBounce { 0%,80%,100% { opacity:.3; transform:translateY(0); } 40% { opacity:1; transform:translateY(-5px); } }
     </style>
+<style>
+/* ===== রেজিস্ট্রেশন টাস্ক নতুন ডিজাইন ===== */
+.rg-box{background:#113626;border:2px solid #27ae60;border-radius:14px;padding:14px;width:92%;max-width:400px;max-height:92vh;overflow-y:auto;margin:auto;box-shadow:0 0 18px rgba(39,174,96,.35);text-align:left;}
+.rg-hd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.rg-hd h3{margin:0;font-size:17px;color:#ffcc00;flex:1;}
+.rg-adm{padding:6px 10px;border-radius:8px;border:1px solid #f1c40f;background:#2a2406;color:#f1c40f;font-size:12px;font-weight:700;cursor:pointer;}
+.rg-x{width:30px;height:30px;border-radius:8px;border:none;background:#c0392b;color:#fff;font-size:14px;cursor:pointer;}
+.rg-sum{display:flex;gap:8px;margin-bottom:10px;}
+.rg-sm{flex:1;background:#0c2317;border:1px solid #1f6b43;border-radius:10px;padding:8px;text-align:center;}
+.rg-sm b{display:block;font-size:16px;color:#f1c40f;}
+.rg-sm span{font-size:11px;color:#9fd8b5;}
+.rg-how{font-size:12px;color:#cfe;background:#0c2317;border-radius:10px;padding:9px 10px;margin-bottom:12px;line-height:1.7;}
+.rg-it{background:#0c2317;border:1px solid #1f6b43;border-radius:12px;padding:10px;margin-bottom:10px;}
+.rg-r1{display:flex;align-items:center;gap:10px;}
+.rg-ic{width:40px;height:40px;border-radius:50%;background:#173f2b;border:1px solid #f1c40f;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.rg-nm{flex:1;min-width:0;}
+.rg-nm b{display:block;font-size:14px;color:#fff;word-break:break-word;}
+.rg-nm span{font-size:12px;color:#9fd8b5;}
+.rg-ch{font-size:11px;padding:3px 8px;border-radius:20px;background:#173f2b;color:#9fd8b5;white-space:nowrap;}
+.rg-ch.w{background:#4a3b05;color:#f1c40f;}
+.rg-ch.d{background:#1b5e3a;color:#7dffb0;}
+.rg-bt{width:100%;margin-top:9px;padding:11px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;color:#fff;}
+.rg-bt.y{background:#f1c40f;color:#000;}
+.rg-bt.o{background:linear-gradient(135deg,#f39c12,#d35400);}
+.rg-bt.g,.rg-bt.l{background:#1b3d2b;color:#7a9;cursor:default;}
+.rg-bt.g{color:#6f9;}
+.rg-close{width:100%;padding:11px;border:none;border-radius:10px;background:#c0392b;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.rg-empty{text-align:center;color:#9fd8b5;font-size:13px;padding:14px 6px;}
+.rg-ap{background:#0c2317;border:2px dashed #f1c40f;border-radius:12px;padding:12px;margin-bottom:12px;}
+.rg-ap h4{margin:0 0 8px;font-size:14px;color:#f1c40f;}
+.rg-tm{display:flex;align-items:center;gap:8px;background:#113626;border:1px solid #1f6b43;border-radius:10px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:#cfe;}
+.rg-in{background:#113626;border:1px solid #1f6b43;border-radius:8px;padding:8px;color:#fff;font-size:13px;width:100%;box-sizing:border-box;}
+.rg-in.sm{width:70px;text-align:center;border-color:#27ae60;}
+.rg-row{background:#113626;border:1px solid #1f6b43;border-radius:10px;padding:8px;margin-bottom:8px;}
+.rg-row .l1{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.rg-row .l2{display:flex;gap:6px;align-items:center;margin-top:6px;font-size:12px;color:#cfe;}
+.rg-del{border:none;background:#c0392b;color:#fff;border-radius:8px;padding:7px 9px;cursor:pointer;}
+.rg-ab{width:100%;padding:10px;border:none;border-radius:10px;background:#27ae60;color:#fff;font-weight:700;font-size:13px;margin-top:4px;cursor:pointer;}
+</style>
 </head>
 <body>
 
@@ -1647,14 +1686,20 @@
         </div>
 
         <div id="reg-task-modal" class="modal-overlay" style="align-items:center; justify-content:center;">
-            <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:380px; text-align:center; margin:auto;">
-                <h3 style="color:#ffcc00; margin-bottom:10px;">✨ রেজিস্ট্রেশন টাস্ক</h3>
-                <p style="color:#ccc; font-size:13px; margin-bottom:15px;" id="modal-instruction-text">প্রথমে লিংকে ক্লিক করে নিয়ম মেনে কাজটি সম্পূর্ণ করুন:</p>
-                
-                <button class="btn btn-official" onclick="goToRegLink()" style="margin-bottom:10px;">🌐 রেজিস্ট্রেশন পেজে যান</button>
-                <button class="btn btn-gift" onclick="completeRegTask()" style="margin-bottom:10px;">✅ সম্পূর্ণ হয়েছে</button>
-                <button class="btn btn-support" onclick="changeRegLink()" style="margin-bottom:15px;">🔄 লিংক পরিবর্তন করুন</button>
-                <button class="btn" onclick="closeRegTaskPage()" style="background:#c0392b;">বন্ধ করুন</button>
+            <div class="rg-box">
+                <div class="rg-hd">
+                    <h3>⭐ রেজিস্ট্রেশন টাস্ক</h3>
+                    <button id="rg-admin-btn" class="rg-adm" style="display:none;" onclick="toggleRegAdminPanel()">🛠 এডমিন</button>
+                    <button class="rg-x" onclick="closeRegTaskPage()">✕</button>
+                </div>
+                <div id="rg-admin-panel" class="rg-ap" style="display:none;"></div>
+                <div class="rg-sum">
+                    <div class="rg-sm"><b id="rg-done">0/0</b><span>সম্পন্ন</span></div>
+                    <div class="rg-sm"><b id="rg-earn">৳0.00</b><span>এই টাস্কে আয়</span></div>
+                </div>
+                <div class="rg-how">১. নিচের বাটনে চেপে রেজিস্ট্রেশন পেজে যান<br>২. নিয়ম মেনে রেজিস্ট্রেশন সম্পূর্ণ করুন<br>৩. অ্যাপে ফিরে এসে রিওয়ার্ড ক্লেম করুন</div>
+                <div id="rg-list"></div>
+                <button class="rg-close" onclick="closeRegTaskPage()">বন্ধ করুন</button>
             </div>
         </div>
 
@@ -1885,16 +1930,7 @@
                 </div>
             </div>
 
-            <!-- 6. Special Reg Task Reward -->
-            <div class="reward-setup-card">
-                <div class="reward-setup-title">⭐ ৬. স্পেশাল রেজিস্ট্রেশন টাস্ক রিওয়ার্ড (USD)</div>
-                <div class="reward-setup-flex">
-                    <input type="number" step="0.001" id="rew-set-reg" class="input-control" placeholder="যেমন: 0.03">
-                    <button class="reward-setup-btn" onclick="saveSingleTaskReward('regTask', 'rew-set-reg', 'রেজিস্ট্রেশন টাস্ক')">💾 Save</button>
-                </div>
-            </div>
-
-            <!-- 7. Pin Offers Rewards -->
+                        <!-- 7. Pin Offers Rewards -->
             <div class="reward-setup-card">
                 <div class="reward-setup-title">🔵 ৭.১ Grameenphone Pin Reward</div>
                 <div class="reward-setup-flex">
@@ -2906,6 +2942,8 @@
                 }
             });
 
+            listenRegTaskConfig();
+
             db.ref('wa_country_settings').on('value', (snapshot) => {
                 let val = snapshot.val();
                 if (val) {
@@ -2975,6 +3013,7 @@
                     referCount = parseInt(val.refCount || 0);
                     referBonus = parseFloat(val.refBonus || 0);
                     currentTaskIndex = parseInt(val.regTaskIndex || 0);
+                    regDone = val.regDone || {};
                     completedTasksCount = parseInt(val.completedTasksCount || 0);
                     waTotalIncome = parseFloat(val.waTotalIncome || 0);
                     userBoundWaNumbers = val.boundWaNumbers || [];
@@ -3715,6 +3754,7 @@
                 refCount: referCount,
                 refBonus: referBonus,
                 regTaskIndex: currentTaskIndex,
+                regDone: regDone,
                 completedTasksCount: completedTasksCount,
                 waTotalIncome: waTotalIncome,
                 boundWaNumbers: userBoundWaNumbers,
@@ -4456,43 +4496,198 @@
             });
         }
 
+        /* ===== রেজিস্ট্রেশন টাস্ক (নতুন) + অ্যাপের বাইরে থাকার সময় মাপা ===== */
+        let regConfigExists = false;
+        let regConfigLinks = [];
+        let regMinAwaySec = 110;
+        let regDone = {};
+        let regDraft = [];
+        let rgAdminOpen = false;
+
+        // অ্যাপ ছেড়ে বাইরে (ব্রাউজারে) কতক্ষণ ছিল সেটা মাপার ট্র্যাকার
+        let regTrack = { id: null, awayMs: 0, hiddenAt: null, startedAt: 0 };
+        let monetagPending = false;
+        const MONETAG_MIN_AWAY_SEC = 15;
+
+        function trackSave() { try { localStorage.setItem('awayTrack', JSON.stringify(regTrack)); } catch (e) {} }
+        function trackLoad() {
+            try {
+                let t = JSON.parse(localStorage.getItem('awayTrack') || 'null');
+                if (t && t.id && (Date.now() - (t.startedAt || 0)) < 24 * 3600 * 1000) {
+                    regTrack = t;
+                    if (regTrack.hiddenAt) {
+                        regTrack.awayMs += Date.now() - regTrack.hiddenAt;
+                        regTrack.hiddenAt = null;
+                        trackSave();
+                    }
+                }
+            } catch (e) {}
+        }
+        function startAwayTracking(id) {
+            if (id !== 'monetag') monetagPending = false;
+            regTrack = { id: id, awayMs: 0, hiddenAt: null, startedAt: Date.now() };
+            trackSave();
+        }
+        function clearAwayTracking() {
+            regTrack = { id: null, awayMs: 0, hiddenAt: null, startedAt: 0 };
+            trackSave();
+        }
+        function onAppHidden() {
+            if (regTrack.id && !regTrack.hiddenAt) { regTrack.hiddenAt = Date.now(); trackSave(); }
+        }
+        function onAppVisible() {
+            if (regTrack.id && regTrack.hiddenAt) {
+                regTrack.awayMs += Date.now() - regTrack.hiddenAt;
+                regTrack.hiddenAt = null;
+                trackSave();
+            }
+            finishMonetagIfPending();
+            let m = document.getElementById("reg-task-modal");
+            if (m && m.style.display === "flex") renderRegModal();
+        }
+        trackLoad();
+        document.addEventListener('visibilitychange', () => { if (document.hidden) onAppHidden(); else onAppVisible(); });
+        try {
+            if (tg && tg.onEvent) {
+                tg.onEvent('deactivated', onAppHidden);
+                tg.onEvent('activated', onAppVisible);
+            }
+        } catch (e) {}
+
+        function rgEsc(v) {
+            return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function isRegAdmin() {
+            return String(currentUserKey) === sanitizeKey(ADMIN_CHAT_ID);
+        }
+
+        // ফায়ারবেসে কনফিগ না থাকলে আগের লিংকটাই ডিফল্ট হিসেবে দেখাবে
+        function getRegLinks() {
+            if (regConfigExists) return regConfigLinks;
+            let first = regTasksList && regTasksList[0] ? regTasksList[0] : null;
+            if (!first) return [];
+            let usd = parseFloat(dynamicTaskRewards.regTask || first.usd || 0.03);
+            return [{ id: 'default1', title: 'রেজিস্ট্রেশন ১', url: first.url, reward: (usd * 100) * 0.50, enabled: true, order: 0 }];
+        }
+
+        function listenRegTaskConfig() {
+            db.ref('reg_task_config').on('value', (snap) => {
+                let v = snap.val();
+                if (v) {
+                    regConfigExists = true;
+                    let m = parseInt(v.minAwaySec);
+                    regMinAwaySec = isNaN(m) ? 110 : m;
+                    let arr = [];
+                    let obj = v.links || {};
+                    Object.keys(obj).forEach(k => {
+                        let l = obj[k] || {};
+                        arr.push({ id: k, title: l.title || 'রেজিস্ট্রেশন', url: l.url || '', reward: parseFloat(l.reward || 0), enabled: l.enabled !== false, order: parseInt(l.order || 0) });
+                    });
+                    arr.sort((x, y) => x.order - y.order);
+                    regConfigLinks = arr;
+                } else {
+                    regConfigExists = false;
+                    regConfigLinks = [];
+                    regMinAwaySec = 110;
+                }
+                let m2 = document.getElementById("reg-task-modal");
+                if (m2 && m2.style.display === "flex") renderRegModal();
+            });
+        }
+
+        function renderRegModal() {
+            let list = document.getElementById("rg-list");
+            if (!list) return;
+            let links = getRegLinks().filter(l => l.enabled && l.url);
+            let html = '';
+            let done = 0, earned = 0;
+            let unlockedShown = false;
+
+            links.forEach((l) => {
+                let isDone = !!regDone[l.id];
+                if (isDone) { done++; earned += l.reward; }
+            });
+
+            links.forEach((l) => {
+                let isDone = !!regDone[l.id];
+                let opened = regTrack.id === l.id;
+                let chip = '<span class="rg-ch">করা হয়নি</span>';
+                let btn = '';
+                let icon = '⭐';
+
+                if (isDone) {
+                    chip = '<span class="rg-ch d">✔ সম্পন্ন</span>';
+                    btn = '<button class="rg-bt g">রিওয়ার্ড পেয়েছেন</button>';
+                    icon = '✅';
+                } else if (unlockedShown) {
+                    chip = '<span class="rg-ch">🔒 লক</span>';
+                    btn = '<button class="rg-bt l">আগের টাস্ক শেষ করুন</button>';
+                } else {
+                    unlockedShown = true;
+                    if (opened) {
+                        chip = '<span class="rg-ch w">পেজ খোলা হয়েছে</span>';
+                        btn = '<button class="rg-bt o" onclick="claimRegLink(\'' + l.id + '\')">✅ আমি রেজিস্ট্রেশন করেছি, ক্লেম করুন</button>' +
+                              '<button class="rg-bt y" style="margin-top:6px;" onclick="goToRegLink(\'' + l.id + '\')">🔁 আবার পেজ খুলুন</button>';
+                    } else {
+                        btn = '<button class="rg-bt y" onclick="goToRegLink(\'' + l.id + '\')">🌐 রেজিস্ট্রেশন করুন</button>';
+                    }
+                }
+
+                html += '<div class="rg-it"><div class="rg-r1"><div class="rg-ic">' + icon + '</div>' +
+                        '<div class="rg-nm"><b>' + rgEsc(l.title) + '</b><span>রিওয়ার্ড ৳' + l.reward.toFixed(2) + '</span></div>' + chip + '</div>' + btn + '</div>';
+            });
+
+            if (links.length === 0) {
+                html = '<div class="rg-empty">এখন কোনো রেজিস্ট্রেশন টাস্ক নেই। পরে আবার দেখুন।</div>';
+            } else if (done === links.length) {
+                html += '<div class="rg-empty">🎉 সব রেজিস্ট্রেশন সম্পন্ন! নতুন লিংক এলে এখানে দেখতে পাবেন।</div>';
+            }
+
+            list.innerHTML = html;
+            document.getElementById("rg-done").innerText = done + '/' + links.length;
+            document.getElementById("rg-earn").innerText = '৳' + earned.toFixed(2);
+        }
+
         function openRegTaskPage() {
             let modal = document.getElementById("reg-task-modal");
-            if(modal) modal.style.display = "flex";
-            taskOpenTimestamp = 0; 
+            if (modal) modal.style.display = "flex";
+            let ab = document.getElementById("rg-admin-btn");
+            if (ab) ab.style.display = isRegAdmin() ? "block" : "none";
+            rgAdminOpen = false;
+            let ap = document.getElementById("rg-admin-panel");
+            if (ap) ap.style.display = "none";
+            renderRegModal();
         }
 
         function closeRegTaskPage() {
             let modal = document.getElementById("reg-task-modal");
-            if(modal) modal.style.display = "none";
+            if (modal) modal.style.display = "none";
         }
 
-        function goToRegLink() {
-            let task = regTasksList[currentTaskIndex];
-            openTelegramLink(task.url);
-            taskOpenTimestamp = Date.now(); 
+        function goToRegLink(id) {
+            let link = getRegLinks().find(l => l.id === id);
+            if (!link || !link.url) return;
+            startAwayTracking(id);
+            openTelegramLink(link.url);
+            renderRegModal();
         }
 
-        function changeRegLink() {
-            currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
-            taskOpenTimestamp = 0;
-            updateFirebaseProfile();
-            alert(`🔄 পরবর্তী টাস্ক লিংক লোড করা হয়েছে!`);
-        }
+        function claimRegLink(id) {
+            let link = getRegLinks().find(l => l.id === id);
+            if (!link || regDone[id]) return;
 
-        function completeRegTask() {
-            if (taskOpenTimestamp === 0 || (Date.now() - taskOpenTimestamp < 110000)) {
+            let awayMs = regTrack.id === id ? regTrack.awayMs : 0;
+            if (regTrack.id !== id || awayMs < regMinAwaySec * 1000) {
                 alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
                 return;
             }
 
-            let task = regTasksList[currentTaskIndex];
-            let currentUsdRate = parseFloat(dynamicTaskRewards.regTask || task.usd || 0.03);
-            let rewardInBDT = (currentUsdRate * 100) * 0.50; 
-            
+            let rewardInBDT = parseFloat(link.reward || 0);
             currentBalance += rewardInBDT;
             completedTasksCount += 1;
-            
+            regDone[id] = true;
+
             let today = getTodayString();
             ensureTodayIncome();
             if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
@@ -4502,14 +4697,82 @@
             }
 
             giveReferralCommission(rewardInBDT);
-            taskOpenTimestamp = 0;
-            currentTaskIndex = (currentTaskIndex + 1) % regTasksList.length;
+            clearAwayTracking();
 
             updateFirebaseProfile();
             updateUI();
+            renderRegModal();
 
-            alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}`);
-            closeRegTaskPage();
+            alert(`🎉 অভিনন্দন! আপনি রিওয়ার্ড পেয়েছেন: ৳${rewardInBDT.toFixed(2)}`);
+        }
+
+        /* ----- এডমিন প্যানেল (শুধু রেজিস্ট্রেশন পেজে, শুধু এডমিন দেখবে) ----- */
+        function toggleRegAdminPanel() {
+            if (!isRegAdmin()) return;
+            rgAdminOpen = !rgAdminOpen;
+            let ap = document.getElementById("rg-admin-panel");
+            if (!ap) return;
+            if (rgAdminOpen) {
+                regDraft = getRegLinks().map(l => ({ id: l.id, title: l.title, url: l.url, reward: l.reward, enabled: l.enabled }));
+                renderRegAdminPanel();
+                ap.style.display = "block";
+            } else {
+                ap.style.display = "none";
+            }
+        }
+
+        function renderRegAdminPanel() {
+            let ap = document.getElementById("rg-admin-panel");
+            if (!ap) return;
+            let h = '<h4>🛠 এডমিন প্যানেল (শুধু আপনি দেখছেন)</h4>' +
+                '<div class="rg-tm"><span style="flex:1;">ইউজার অ্যাপের বাইরে থাকতে হবে কমপক্ষে</span>' +
+                '<input type="number" min="0" id="rg-min-away" class="rg-in sm" value="' + regMinAwaySec + '"><span>সেকেন্ড</span></div>';
+            regDraft.forEach((l, i) => {
+                h += '<div class="rg-row">' +
+                    '<div class="l1"><input class="rg-in" placeholder="নাম (যেমন: রেজিস্ট্রেশন ১)" value="' + rgEsc(l.title) + '" oninput="regDraft[' + i + '].title=this.value">' +
+                    '<button class="rg-del" onclick="deleteRegDraft(' + i + ')">🗑</button></div>' +
+                    '<input class="rg-in" placeholder="রেজিস্ট্রেশন লিংক (https://...)" value="' + rgEsc(l.url) + '" oninput="regDraft[' + i + '].url=this.value">' +
+                    '<div class="l2"><span>রিওয়ার্ড ৳</span><input type="number" step="0.01" min="0" class="rg-in sm" value="' + l.reward + '" oninput="regDraft[' + i + '].reward=this.value">' +
+                    '<label style="margin-left:auto;display:flex;align-items:center;gap:5px;"><input type="checkbox" ' + (l.enabled ? 'checked' : '') + ' onchange="regDraft[' + i + '].enabled=this.checked"> চালু</label></div>' +
+                    '</div>';
+            });
+            h += '<button class="rg-ab" onclick="addRegDraft()">➕ নতুন লিংক যোগ করুন</button>' +
+                 '<button class="rg-ab" style="background:#f1c40f;color:#000;" onclick="saveRegConfig()">💾 সেভ করুন</button>';
+            ap.innerHTML = h;
+        }
+
+        function addRegDraft() {
+            regDraft.push({ id: 'l' + Date.now(), title: 'রেজিস্ট্রেশন ' + (regDraft.length + 1), url: '', reward: 1, enabled: true });
+            renderRegAdminPanel();
+        }
+
+        function deleteRegDraft(i) {
+            if (!confirm("এই লিংকটি মুছে ফেলবেন?")) return;
+            regDraft.splice(i, 1);
+            renderRegAdminPanel();
+        }
+
+        function saveRegConfig() {
+            if (!isRegAdmin()) return;
+            let minAway = parseInt(document.getElementById("rg-min-away").value);
+            if (isNaN(minAway) || minAway < 0 || minAway > 3600) {
+                alert("⚠️ সময় ০ থেকে ৩৬০০ সেকেন্ডের মধ্যে দিন!");
+                return;
+            }
+            let links = {};
+            for (let i = 0; i < regDraft.length; i++) {
+                let l = regDraft[i];
+                let url = String(l.url || '').trim();
+                let reward = parseFloat(l.reward);
+                if (!/^https?:\/\//i.test(url)) { alert("⚠️ " + (i + 1) + " নম্বর লিংক ঠিক নয় (https:// দিয়ে শুরু হতে হবে)!"); return; }
+                if (isNaN(reward) || reward < 0) { alert("⚠️ " + (i + 1) + " নম্বর লিংকের রিওয়ার্ড ঠিক নয়!"); return; }
+                links[l.id] = { title: String(l.title || 'রেজিস্ট্রেশন').trim(), url: url, reward: reward, enabled: !!l.enabled, order: i };
+            }
+            db.ref('reg_task_config').set({ minAwaySec: minAway, links: links }).then(() => {
+                alert("✅ রেজিস্ট্রেশন টাস্ক সেভ হয়েছে, সবার কাছে সাথে সাথে আপডেট হবে!");
+            }).catch(() => {
+                alert("❌ সেভ হয়নি, আবার চেষ্টা করুন।");
+            });
         }
 
         function getTodayString() {
@@ -4764,59 +5027,66 @@
             });
         }
 
-        let isMonetagAdRunning = false;
+        /* ===== Monetag: বিজ্ঞাপন দেখে অ্যাপে ফিরে এলে (কমপক্ষে নির্দিষ্ট সময় বাইরে থাকলে) তবেই রিওয়ার্ড ===== */
+        function resetMonetagButton() {
+            let monetagBtn = document.querySelector("#card-monetag-task button");
+            if (monetagBtn) {
+                monetagBtn.disabled = false;
+                monetagBtn.innerText = "🎬 Monetag এডস দেখুন";
+            }
+        }
 
         function watchMonetagAdTask() {
-            if (isMonetagAdRunning) {
-                alert("⚠️ আপনার একটি অ্যাড ইতিমধ্যে চলছে, অনুগ্রহ করে শেষ হওয়া পর্যন্ত অপেক্ষা করুন!");
+            startAwayTracking('monetag');
+            monetagPending = true;
+
+            let monetagBtn = document.querySelector("#card-monetag-task button");
+            if (monetagBtn) monetagBtn.innerText = "👀 বিজ্ঞাপন সম্পূর্ণ দেখে অ্যাপে ফিরে আসুন";
+
+            try {
+                if (typeof show_12093219 === 'function') {
+                    show_12093219().catch(e => {
+                        console.log("Monetag trigger info:", e);
+                        if (monetagPending) {
+                            monetagPending = false;
+                            clearAwayTracking();
+                            resetMonetagButton();
+                            alert("⚠️ এই মুহূর্তে বিজ্ঞাপন পাওয়া যাচ্ছে না, একটু পরে আবার চেষ্টা করুন।");
+                        }
+                    });
+                }
+            } catch (e) { console.log("Monetag error:", e); }
+        }
+
+        function finishMonetagIfPending() {
+            if (!monetagPending || regTrack.id !== 'monetag') return;
+            monetagPending = false;
+            let awayMs = regTrack.awayMs;
+            clearAwayTracking();
+            resetMonetagButton();
+
+            if (awayMs < MONETAG_MIN_AWAY_SEC * 1000) {
+                alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখেননি, তাই রিওয়ার্ড পাবেন না। আবার চেষ্টা করুন।");
                 return;
             }
 
-            isMonetagAdRunning = true;
-            let monetagBtn = document.querySelector("#card-monetag-task button");
-            let originalText = "🎬 Monetag এডস দেখুন";
+            let earned = parseFloat(dynamicTaskRewards.monetagTask || 1.00);
+            currentBalance += earned;
+            completedTasksCount += 1;
 
-            if (typeof show_12093219 === 'function') {
-                show_12093219().catch(e => console.log("Monetag trigger info:", e));
-            }
-
-            let timerSec = 15;
-            if (monetagBtn) {
-                monetagBtn.disabled = true;
-                monetagBtn.innerText = `⏳ বিজ্ঞাপন লোড হচ্ছে, অপেক্ষা করুন...`;
-            }
-
-            let adTimer = setInterval(() => {
-                timerSec--;
-
-                if (timerSec <= 0) {
-                    clearInterval(adTimer);
-                    isMonetagAdRunning = false;
-
-                    if (monetagBtn) {
-                        monetagBtn.disabled = false;
-                        monetagBtn.innerText = originalText;
-                    }
-
-                    let earned = parseFloat(dynamicTaskRewards.monetagTask || 1.00);
-                    currentBalance += earned;
-                    completedTasksCount += 1;
-                    
-                    let today = getTodayString();
-                    ensureTodayIncome();
+            let today = getTodayString();
+            ensureTodayIncome();
             if (lastCheckinDate !== today && todayEarnedTaskIncome === 0) {
-                        todayEarnedTaskIncome = earned;
-                    } else {
-                        todayEarnedTaskIncome += earned;
-                    }
+                todayEarnedTaskIncome = earned;
+            } else {
+                todayEarnedTaskIncome += earned;
+            }
 
-                    giveReferralCommission(earned);
-                    updateFirebaseProfile();
-                    updateUI();
+            giveReferralCommission(earned);
+            updateFirebaseProfile();
+            updateUI();
 
-                    alert(`🎉 অভিনন্দন! Monetag বিজ্ঞাপন সম্পূর্ণ দেখে ৳${earned.toFixed(2)} বোনাস পেয়েছেন!`);
-                }
-            }, 1000);
+            alert(`🎉 অভিনন্দন! Monetag বিজ্ঞাপন সম্পূর্ণ দেখে ৳${earned.toFixed(2)} বোনাস পেয়েছেন!`);
         }
 
         /* ===== স্পন্সর এড (ExoClick) — "এড দেখুন" টাস্ক ও ডেইলি সাইন-ইনে ব্যবহৃত ===== */
