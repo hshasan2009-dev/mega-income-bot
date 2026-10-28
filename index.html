@@ -1149,7 +1149,11 @@
 .rg-sm{flex:1;background:#0c2317;border:1px solid #1f6b43;border-radius:10px;padding:8px;text-align:center;}
 .rg-sm b{display:block;font-size:16px;color:#f1c40f;}
 .rg-sm span{font-size:11px;color:#9fd8b5;}
-.rg-how{font-size:12px;color:#cfe;background:#0c2317;border-radius:10px;padding:9px 10px;margin-bottom:12px;line-height:1.7;}
+.rg-rules{background:linear-gradient(160deg,#16452d,#0c2317);border:1.5px solid #f1c40f;border-radius:12px;padding:10px 12px;margin-bottom:12px;box-shadow:0 0 14px rgba(241,196,15,.25);}
+.rg-rules .rt{font-size:14px;font-weight:700;color:#ffcc00;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.rg-rules .st{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#e8fff1;margin-bottom:7px;line-height:1.5;}
+.rg-rules .st i{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#27ae60;color:#fff;font-style:normal;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.rg-rules .wn{margin-top:4px;background:rgba(192,57,43,.22);border:1px solid #e74c3c;border-radius:8px;padding:7px 9px;font-size:12px;color:#ffb4a8;line-height:1.5;}
 .rg-it{background:#0c2317;border:1px solid #1f6b43;border-radius:12px;padding:10px;margin-bottom:10px;}
 .rg-r1{display:flex;align-items:center;gap:10px;}
 .rg-ic{width:40px;height:40px;border-radius:50%;background:#173f2b;border:1px solid #f1c40f;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
@@ -1159,7 +1163,9 @@
 .rg-ch{font-size:11px;padding:3px 8px;border-radius:20px;background:#173f2b;color:#9fd8b5;white-space:nowrap;}
 .rg-ch.w{background:#4a3b05;color:#f1c40f;}
 .rg-ch.d{background:#1b5e3a;color:#7dffb0;}
-.rg-bt{width:100%;margin-top:9px;padding:11px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;color:#fff;}
+.rg-btns{display:grid;grid-template-columns:1fr;gap:8px;margin-top:9px;}
+.rg-btns.two{grid-template-columns:1fr 1fr;}
+.rg-bt{width:100%;height:46px;padding:0 8px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;color:#fff;}
 .rg-bt.y{background:#f1c40f;color:#000;}
 .rg-bt.o{background:linear-gradient(135deg,#f39c12,#d35400);}
 .rg-bt.g,.rg-bt.l{background:#1b3d2b;color:#7a9;cursor:default;}
@@ -1697,7 +1703,13 @@
                     <div class="rg-sm"><b id="rg-done">0/0</b><span>সম্পন্ন</span></div>
                     <div class="rg-sm"><b id="rg-earn">৳0.00</b><span>এই টাস্কে আয়</span></div>
                 </div>
-                <div class="rg-how">১. নিচের বাটনে চেপে রেজিস্ট্রেশন পেজে যান<br>২. নিয়ম মেনে রেজিস্ট্রেশন সম্পূর্ণ করুন<br>৩. অ্যাপে ফিরে এসে রিওয়ার্ড ক্লেম করুন</div>
+                <div class="rg-rules">
+                    <div class="rt">📌 টাস্কের নিয়ম</div>
+                    <div class="st"><i>১</i><span>যেকোনো একটি বাটনে চেপে রেজিস্ট্রেশন পেজে যান</span></div>
+                    <div class="st"><i>২</i><span>নিয়ম মেনে রেজিস্ট্রেশন সম্পূর্ণ করুন</span></div>
+                    <div class="st"><i>৩</i><span>অ্যাপে ফিরে এসে রিওয়ার্ড ক্লেম করুন</span></div>
+                    <div class="wn">⚠️ রেজিস্ট্রেশন সম্পূর্ণ না করে ফিরে এলে বা এই পেজ বন্ধ করলে রিওয়ার্ড পাবেন না, আবার প্রথম থেকে করতে হবে।</div>
+                </div>
                 <div id="rg-list"></div>
                 <button class="rg-close" onclick="closeRegTaskPage()">বন্ধ করুন</button>
             </div>
@@ -4600,16 +4612,17 @@
             let list = document.getElementById("rg-list");
             if (!list) return;
             let links = getRegLinks().filter(l => l.enabled && l.url);
+
+            // সম্পন্ন টাস্ক সবার নিচে (এডমিন ডিলিট না করা পর্যন্ত থাকবে)
+            let pending = links.filter(l => !regDone[l.id]);
+            let finished = links.filter(l => !!regDone[l.id]);
+            let ordered = pending.concat(finished);
+
+            let earned = 0;
+            finished.forEach(l => { earned += l.reward; });
+
             let html = '';
-            let done = 0, earned = 0;
-            let unlockedShown = false;
-
-            links.forEach((l) => {
-                let isDone = !!regDone[l.id];
-                if (isDone) { done++; earned += l.reward; }
-            });
-
-            links.forEach((l) => {
+            ordered.forEach((l) => {
                 let isDone = !!regDone[l.id];
                 let opened = regTrack.id === l.id;
                 let chip = '<span class="rg-ch">করা হয়নি</span>';
@@ -4618,20 +4631,14 @@
 
                 if (isDone) {
                     chip = '<span class="rg-ch d">✔ সম্পন্ন</span>';
-                    btn = '<button class="rg-bt g">রিওয়ার্ড পেয়েছেন</button>';
+                    btn = '<div class="rg-btns"><button class="rg-bt g">রিওয়ার্ড পেয়েছেন</button></div>';
                     icon = '✅';
-                } else if (unlockedShown) {
-                    chip = '<span class="rg-ch">🔒 লক</span>';
-                    btn = '<button class="rg-bt l">আগের টাস্ক শেষ করুন</button>';
+                } else if (opened) {
+                    chip = '<span class="rg-ch w">পেজ খোলা হয়েছে</span>';
+                    btn = '<div class="rg-btns two"><button class="rg-bt o" onclick="claimRegLink(\'' + l.id + '\')">✅ ক্লেম করুন</button>' +
+                          '<button class="rg-bt y" onclick="goToRegLink(\'' + l.id + '\')">🔁 আবার খুলুন</button></div>';
                 } else {
-                    unlockedShown = true;
-                    if (opened) {
-                        chip = '<span class="rg-ch w">পেজ খোলা হয়েছে</span>';
-                        btn = '<button class="rg-bt o" onclick="claimRegLink(\'' + l.id + '\')">✅ আমি রেজিস্ট্রেশন করেছি, ক্লেম করুন</button>' +
-                              '<button class="rg-bt y" style="margin-top:6px;" onclick="goToRegLink(\'' + l.id + '\')">🔁 আবার পেজ খুলুন</button>';
-                    } else {
-                        btn = '<button class="rg-bt y" onclick="goToRegLink(\'' + l.id + '\')">🌐 রেজিস্ট্রেশন করুন</button>';
-                    }
+                    btn = '<div class="rg-btns"><button class="rg-bt y" onclick="goToRegLink(\'' + l.id + '\')">🌐 রেজিস্ট্রেশন করুন</button></div>';
                 }
 
                 html += '<div class="rg-it"><div class="rg-r1"><div class="rg-ic">' + icon + '</div>' +
@@ -4640,18 +4647,19 @@
 
             if (links.length === 0) {
                 html = '<div class="rg-empty">এখন কোনো রেজিস্ট্রেশন টাস্ক নেই। পরে আবার দেখুন।</div>';
-            } else if (done === links.length) {
+            } else if (pending.length === 0) {
                 html += '<div class="rg-empty">🎉 সব রেজিস্ট্রেশন সম্পন্ন! নতুন লিংক এলে এখানে দেখতে পাবেন।</div>';
             }
 
             list.innerHTML = html;
-            document.getElementById("rg-done").innerText = done + '/' + links.length;
+            document.getElementById("rg-done").innerText = finished.length + '/' + links.length;
             document.getElementById("rg-earn").innerText = '৳' + earned.toFixed(2);
         }
 
         function openRegTaskPage() {
             let modal = document.getElementById("reg-task-modal");
             if (modal) modal.style.display = "flex";
+            if (regTrack.id && regTrack.id !== 'monetag') clearAwayTracking();
             let ab = document.getElementById("rg-admin-btn");
             if (ab) ab.style.display = isRegAdmin() ? "block" : "none";
             rgAdminOpen = false;
@@ -4663,6 +4671,8 @@
         function closeRegTaskPage() {
             let modal = document.getElementById("reg-task-modal");
             if (modal) modal.style.display = "none";
+            // পেজ বন্ধ করলে চলমান রেজিস্ট্রেশন চেষ্টা বাতিল, আবার প্রথম থেকে করতে হবে
+            if (regTrack.id && regTrack.id !== 'monetag') clearAwayTracking();
         }
 
         function goToRegLink(id) {
