@@ -2793,6 +2793,8 @@
                     refCode: randomRefCode,
                     balance: 0.00,
                     refCount: 0,
+                    joinedAt: Date.now(),
+                    refScore: calcRefScore(0, nowSec()),
                     refBonus: 0.00,
                     regTaskIndex: 0,
                     completedTasksCount: 0,
@@ -2809,7 +2811,9 @@
                     newUserObj.referrer = refCode;
                     db.ref('users').orderByChild('refCode').equalTo(refCode).once('value', (refSnap) => {
                         refSnap.forEach(cSnap => {
-                            db.ref('users/' + cSnap.key + '/refCount').transaction((count) => (count || 0) + 1);
+                            db.ref('users/' + cSnap.key + '/refCount').transaction((count) => (count || 0) + 1, (err, committed, snapRes) => {
+                                if (committed && snapRes) db.ref('users/' + cSnap.key + '/refScore').set(calcRefScore(snapRes.val(), nowSec()));
+                            });
                         });
                     });
                 }
@@ -3124,6 +3128,11 @@
                 if (val) {
                     currentBalance = parseFloat(val.balance || 0);
                     referCount = parseInt(val.refCount || 0);
+                    myRefScore = (val.refScore != null) ? Number(val.refScore) : null;
+                    if (!refScoreMatches(val.refScore, referCount)) {
+                        let fixCnt = referCount;
+                        db.ref('users/' + currentUserKey + '/refScore').transaction((cur) => refScoreMatches(cur, fixCnt) ? cur : calcRefScore(fixCnt, nowSec()));
+                    }
                     referBonus = parseFloat(val.refBonus || 0);
                     currentTaskIndex = parseInt(val.regTaskIndex || 0);
                     regDone = val.regDone || {};
@@ -5052,9 +5061,15 @@
         };
 
         /* ===== রেফার লিডারবোর্ড (সর্বনিম্ন ২০ রেফার, সর্বোচ্চ ১০ জন) ===== */
+        /* সিরিয়াল স্কোর: বেশি রেফার = বড় স্কোর; রেফার সমান হলে যে আগে পৌঁছেছে তার স্কোর বড় */
+        var REF_SCALE = 1e10;
+        function nowSec() { return Math.floor(Date.now() / 1000); }
+        function calcRefScore(cnt, tsSec) { return (parseInt(cnt || 0) * REF_SCALE) + (REF_SCALE - tsSec); }
+        function refScoreMatches(score, cnt) { return score != null && Math.floor(score / REF_SCALE) === parseInt(cnt || 0); }
+
         const LB_MIN_REFER = 20;
         const LB_MAX_SHOW = 10;
-        let rlbRef = null, rlbLast = [];
+        let rlbRef = null, rlbLast = [], myRefScore = null;
 
         function bnDigits(n) {
             const bn = '০১২৩৪৫৬৭৮৯';
@@ -5073,17 +5088,17 @@
         }
         function listenReferLeaderboard() {
             if (rlbRef) rlbRef.off();
-            rlbRef = db.ref('users').orderByChild('refCount').startAt(LB_MIN_REFER);
+            rlbRef = db.ref('users').orderByChild('refScore').startAt(LB_MIN_REFER * REF_SCALE).limitToLast(LB_MAX_SHOW + 5);
             rlbRef.on('value', (snapshot) => {
                 let arr = [];
                 snapshot.forEach((child) => {
                     let u = child.val() || {};
                     let cnt = parseInt(u.refCount || 0);
                     if (cnt >= LB_MIN_REFER && u.isBanned !== true) {
-                        arr.push({ key: child.key, name: u.fullName || 'ইউজার', code: u.refCode || '', cnt: cnt });
+                        arr.push({ key: child.key, name: u.fullName || 'ইউজার', code: u.refCode || '', cnt: cnt, score: Number(u.refScore || 0) });
                     }
                 });
-                arr.sort((a, b) => b.cnt - a.cnt);
+                arr.sort((a, b) => b.score - a.score);
                 arr = arr.slice(0, LB_MAX_SHOW);
                 rlbLast = arr;
                 renderReferLeaderboard(arr);
@@ -5138,12 +5153,13 @@
         function updateMyRank() {
             let el = document.getElementById('rlb-me-rank');
             if (!el || !currentUserKey) return;
-            let sig = rlbLast.map(x => x.key + ':' + x.cnt).join('|');
-            let fresh = (myRankCache.count === referCount && myRankCache.lb === sig && (Date.now() - myRankCache.t) < 60000);
+            if (myRefScore == null) return;
+            let sig = rlbLast.map(x => x.key + ':' + x.score).join('|');
+            let fresh = (myRankCache.count === myRefScore && myRankCache.lb === sig && (Date.now() - myRankCache.t) < 60000);
             if (fresh && myRankCache.rank !== null) { el.innerText = myRankCache.rank; setMyNote(); return; }
             if (myRankCache.rank !== null) el.innerText = myRankCache.rank;
-            let myCnt = referCount;
-            db.ref('users').orderByChild('refCount').startAt(myCnt + 1).limitToFirst(100).once('value').then((snap) => {
+            let myCnt = myRefScore;
+            db.ref('users').orderByChild('refScore').startAt(myCnt + 1).limitToFirst(100).once('value').then((snap) => {
                 let ahead = 0;
                 snap.forEach((c) => { let u = c.val() || {}; if (u.isBanned !== true && String(c.key) !== String(currentUserKey)) ahead++; });
                 let rank = ahead + 1;
@@ -5156,7 +5172,7 @@
 
         /* ===== অ্যাডমিন: Total / Active ইউজার স্ট্যাটস (Active = ৳৩০+ ইনকাম) ===== */
         const ACTIVE_MIN_INCOME = 30;
-        let ausUsers = {}, ausWithdrawn = {}, ausPrevT = 0, ausPrevA = 0, ausRefs = null;
+        let ausBackfilled = false, ausUsers = {}, ausWithdrawn = {}, ausPrevT = 0, ausPrevA = 0, ausRefs = null;
 
         function ausCount(el, from, to) {
             if (!el) return;
@@ -5184,11 +5200,29 @@
             let pt = document.getElementById('aus-pct');
             if (pt) pt.textContent = 'মোট ইউজারের ' + bnDigits(pc) + '% একটিভ (৳' + bnDigits(ACTIVE_MIN_INCOME) + '+ ইনকাম)';
         }
+        /* পুরোনো ইউজারদের সিরিয়াল স্কোর একবার বসিয়ে দেয় (প্রত্যেকের আলাদা সময় দিয়ে, যাতে সিরিয়াল একই না হয়) */
+        function backfillRefScores(users) {
+            let base = nowSec(), i = 0, upd = {};
+            Object.keys(users).forEach((k) => {
+                let u = users[k] || {};
+                if (!refScoreMatches(u.refScore, u.refCount)) {
+                    let ts = u.joinedAt ? Math.floor(Number(u.joinedAt) / 1000) : (base + i);
+                    i++;
+                    upd[k + '/refScore'] = calcRefScore(u.refCount, ts);
+                }
+            });
+            if (Object.keys(upd).length) db.ref('users').update(upd).catch(() => {});
+        }
+
         function listenAdminUserStats() {
             if (ausRefs) { ausRefs.forEach(r => r.off()); }
             let uRef = db.ref('users'), wRef = db.ref('withdrawals');
             ausRefs = [uRef, wRef];
-            uRef.on('value', (snap) => { ausUsers = snap.val() || {}; ausRender(); });
+            uRef.on('value', (snap) => {
+                ausUsers = snap.val() || {};
+                ausRender();
+                if (!ausBackfilled) { ausBackfilled = true; backfillRefScores(ausUsers); }
+            });
             wRef.on('value', (snap) => {
                 let m = {};
                 snap.forEach((c) => {
