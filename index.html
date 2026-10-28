@@ -4540,15 +4540,15 @@
         }
         function startAwayTracking(id) {
             if (id !== 'monetag') monetagPending = false;
-            regTrack = { id: id, awayMs: 0, hiddenAt: null, startedAt: Date.now() };
+            regTrack = { id: id, awayMs: 0, hiddenAt: null, startedAt: Date.now(), sawHide: false };
             trackSave();
         }
         function clearAwayTracking() {
-            regTrack = { id: null, awayMs: 0, hiddenAt: null, startedAt: 0 };
+            regTrack = { id: null, awayMs: 0, hiddenAt: null, startedAt: 0, sawHide: false };
             trackSave();
         }
         function onAppHidden() {
-            if (regTrack.id && !regTrack.hiddenAt) { regTrack.hiddenAt = Date.now(); trackSave(); }
+            if (regTrack.id && !regTrack.hiddenAt) { regTrack.hiddenAt = Date.now(); regTrack.sawHide = true; trackSave(); }
         }
         function onAppVisible() {
             if (regTrack.id && regTrack.hiddenAt) {
@@ -4643,9 +4643,9 @@
                     icon = '✅';
                 } else if (isLocked) {
                     cls = 'rg-it lk';
-                    chip = '<span class="rg-ch k">🔒 বন্ধ</span>';
-                    btn = '<div class="rg-btns"><button class="rg-bt l">🔒 এই টাস্কটি এখন বন্ধ আছে</button></div>';
-                    icon = '🔒';
+                    chip = '<span class="rg-ch k">🔜 Coming Soon</span>';
+                    btn = '<div class="rg-btns"><button class="rg-bt l">🔜 Coming Soon</button></div>';
+                    icon = '🔜';
                 } else if (opened) {
                     chip = '<span class="rg-ch w">পেজ খোলা হয়েছে</span>';
                     btn = '<div class="rg-btns two"><button class="rg-bt o" onclick="claimRegLink(\'' + l.id + '\')">✅ ক্লেম করুন</button>' +
@@ -4702,7 +4702,12 @@
             if (!link || regDone[id]) return;
             if (!link.enabled) { alert("⚠️ এই টাস্কটি বর্তমানে বন্ধ আছে!"); return; }
 
-            let awayMs = regTrack.id === id ? regTrack.awayMs : 0;
+            // অ্যাপ যদি "বাইরে গেছে" সংকেত দেয় তবে বাইরে থাকার সময় ধরা হবে।
+            // কিছু ফোনে (Telegram এর ভেতরের ব্রাউজারে) এই সংকেত আসে না, তখন লিংক খোলার পর থেকে পার হওয়া সময় ধরা হবে।
+            let awayMs = 0;
+            if (regTrack.id === id) {
+                awayMs = regTrack.sawHide ? regTrack.awayMs : (Date.now() - regTrack.startedAt);
+            }
             if (regTrack.id !== id || awayMs < regMinAwaySec * 1000) {
                 alert("⚠️ আপনি এখনো রেজিষ্ট্রেশন সম্পুর্ণ করেন নি");
                 return;
