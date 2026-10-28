@@ -2364,6 +2364,14 @@
                     <span class="slider"></span>
                 </label>
             </div>
+
+            <div class="switch-container">
+                <span>📣 অটো ইন-অ্যাপ বিজ্ঞাপন (Monetag)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-inapp" onchange="toggleTaskStatus('inAppAd', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
     </div>
 
@@ -2602,7 +2610,7 @@
         let waPendingPhone = "";
         let waStatusMonitorStarted = false;
 
-        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, facebookTask: true, monetagTask: true, exoAdTask: true, checkinTask: true };
+        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, facebookTask: true, monetagTask: true, exoAdTask: true, checkinTask: true, inAppAd: true };
 
         let checkinStreak = 0;
         let checkinTotalIncome = 0.00;
@@ -2987,6 +2995,8 @@
                 taskStatusSettings.monetagTask = settings.monetagTask !== false;
                 taskStatusSettings.exoAdTask = settings.exoAdTask !== false;
                 taskStatusSettings.checkinTask = settings.checkinTask !== false;
+                taskStatusSettings.inAppAd = settings.inAppAd !== false;
+                taskSettingsLoaded = true;
 
                 if (document.getElementById('sw-pin')) document.getElementById('sw-pin').checked = taskStatusSettings.pinTask;
                 if (document.getElementById('sw-reg')) document.getElementById('sw-reg').checked = taskStatusSettings.regTask;
@@ -2997,6 +3007,7 @@
                 if (document.getElementById('sw-exo')) document.getElementById('sw-exo').checked = taskStatusSettings.exoAdTask;
                 if (document.getElementById('sw-wa')) document.getElementById('sw-wa').checked = taskStatusSettings.waTask;
                 if (document.getElementById('sw-checkin')) document.getElementById('sw-checkin').checked = taskStatusSettings.checkinTask;
+                if (document.getElementById('sw-inapp')) document.getElementById('sw-inapp').checked = taskStatusSettings.inAppAd;
 
                 updateTaskCardVisuals('card-wa-task', taskStatusSettings.waTask);
                 updateTaskCardVisuals('card-pin-task', taskStatusSettings.pinTask);
@@ -3132,6 +3143,26 @@
                 alert("✅ পপ-আপ নোটিশ সেটিংস সফলভাবে সেভ হয়েছে!");
             });
         }
+
+        /* ===== অটো ইন-অ্যাপ বিজ্ঞাপন (Monetag) — অ্যাডমিন প্যানেলের টাস্ক অন/অফ থেকে কন্ট্রোল হয় ===== */
+        let taskSettingsLoaded = false;
+        let inAppAdStarted = false;
+        function tryStartInAppAds() {
+            try {
+                if (inAppAdStarted || !taskSettingsLoaded) return;
+                if (taskStatusSettings.inAppAd === false) return;
+                if (!currentUserKey || document.hidden) return;
+                if (monetagPending || regTrack.id || exoAdRunning) return;
+                if (typeof show_12093219 !== 'function') return;
+                inAppAdStarted = true;
+                let r = show_12093219({
+                    type: 'inApp',
+                    inAppSettings: { frequency: 2, capping: 0.1, interval: 30, timeout: 5, everyPage: false }
+                });
+                if (r && typeof r.catch === 'function') r.catch(e => console.log('InApp ad info:', e));
+            } catch (e) { inAppAdStarted = false; console.log('InApp ad error:', e); }
+        }
+        setInterval(tryStartInAppAds, 3000);
 
         function updateTaskCardVisuals(cardId, isEnabled) {
             let card = document.getElementById(cardId);
