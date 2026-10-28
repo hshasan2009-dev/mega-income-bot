@@ -1171,6 +1171,9 @@
 .rg-bt.g,.rg-bt.l{background:#1b3d2b;color:#7a9;cursor:default;}
 .rg-bt.g{color:#6f9;}
 .rg-close{width:100%;padding:11px;border:none;border-radius:10px;background:#c0392b;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.rg-it.lk{opacity:.78;border-style:dashed;border-color:#4b6b58;}
+.rg-it.lk .rg-ic{border-color:#6b7f73;filter:grayscale(1);}
+.rg-ch.k{background:#2b2f2d;color:#aab7b0;}
 .rg-empty{text-align:center;color:#9fd8b5;font-size:13px;padding:14px 6px;}
 .rg-ap{background:#0c2317;border:2px dashed #f1c40f;border-radius:12px;padding:12px;margin-bottom:12px;}
 .rg-ap h4{margin:0 0 8px;font-size:14px;color:#f1c40f;}
@@ -4611,28 +4614,38 @@
         function renderRegModal() {
             let list = document.getElementById("rg-list");
             if (!list) return;
-            let links = getRegLinks().filter(l => l.enabled && l.url);
 
-            // সম্পন্ন টাস্ক সবার নিচে (এডমিন ডিলিট না করা পর্যন্ত থাকবে)
-            let pending = links.filter(l => !regDone[l.id]);
+            // বন্ধ (টিক ছাড়া) টাস্কও দেখাবে, শুধু ডিলিট করলে হারাবে। চালু অথচ লিংক ফাঁকা হলে লুকানো থাকবে
+            let links = getRegLinks().filter(l => !(l.enabled && !l.url));
+
+            let active = links.filter(l => l.enabled && !regDone[l.id]);
+            let locked = links.filter(l => !l.enabled && !regDone[l.id]);
             let finished = links.filter(l => !!regDone[l.id]);
-            let ordered = pending.concat(finished);
+            let ordered = active.concat(locked, finished);
 
             let earned = 0;
             finished.forEach(l => { earned += l.reward; });
+            let total = active.length + finished.length;
 
             let html = '';
             ordered.forEach((l) => {
                 let isDone = !!regDone[l.id];
+                let isLocked = !l.enabled && !isDone;
                 let opened = regTrack.id === l.id;
                 let chip = '<span class="rg-ch">করা হয়নি</span>';
                 let btn = '';
                 let icon = '⭐';
+                let cls = 'rg-it';
 
                 if (isDone) {
                     chip = '<span class="rg-ch d">✔ সম্পন্ন</span>';
                     btn = '<div class="rg-btns"><button class="rg-bt g">রিওয়ার্ড পেয়েছেন</button></div>';
                     icon = '✅';
+                } else if (isLocked) {
+                    cls = 'rg-it lk';
+                    chip = '<span class="rg-ch k">🔒 বন্ধ</span>';
+                    btn = '<div class="rg-btns"><button class="rg-bt l">🔒 এই টাস্কটি এখন বন্ধ আছে</button></div>';
+                    icon = '🔒';
                 } else if (opened) {
                     chip = '<span class="rg-ch w">পেজ খোলা হয়েছে</span>';
                     btn = '<div class="rg-btns two"><button class="rg-bt o" onclick="claimRegLink(\'' + l.id + '\')">✅ ক্লেম করুন</button>' +
@@ -4641,18 +4654,18 @@
                     btn = '<div class="rg-btns"><button class="rg-bt y" onclick="goToRegLink(\'' + l.id + '\')">🌐 রেজিস্ট্রেশন করুন</button></div>';
                 }
 
-                html += '<div class="rg-it"><div class="rg-r1"><div class="rg-ic">' + icon + '</div>' +
+                html += '<div class="' + cls + '"><div class="rg-r1"><div class="rg-ic">' + icon + '</div>' +
                         '<div class="rg-nm"><b>' + rgEsc(l.title) + '</b><span>রিওয়ার্ড ৳' + l.reward.toFixed(2) + '</span></div>' + chip + '</div>' + btn + '</div>';
             });
 
             if (links.length === 0) {
                 html = '<div class="rg-empty">এখন কোনো রেজিস্ট্রেশন টাস্ক নেই। পরে আবার দেখুন।</div>';
-            } else if (pending.length === 0) {
+            } else if (active.length === 0 && locked.length === 0) {
                 html += '<div class="rg-empty">🎉 সব রেজিস্ট্রেশন সম্পন্ন! নতুন লিংক এলে এখানে দেখতে পাবেন।</div>';
             }
 
             list.innerHTML = html;
-            document.getElementById("rg-done").innerText = finished.length + '/' + links.length;
+            document.getElementById("rg-done").innerText = finished.length + '/' + total;
             document.getElementById("rg-earn").innerText = '৳' + earned.toFixed(2);
         }
 
@@ -4678,6 +4691,7 @@
         function goToRegLink(id) {
             let link = getRegLinks().find(l => l.id === id);
             if (!link || !link.url) return;
+            if (!link.enabled) { alert("⚠️ এই টাস্কটি বর্তমানে বন্ধ আছে!"); return; }
             startAwayTracking(id);
             openTelegramLink(link.url);
             renderRegModal();
@@ -4686,6 +4700,7 @@
         function claimRegLink(id) {
             let link = getRegLinks().find(l => l.id === id);
             if (!link || regDone[id]) return;
+            if (!link.enabled) { alert("⚠️ এই টাস্কটি বর্তমানে বন্ধ আছে!"); return; }
 
             let awayMs = regTrack.id === id ? regTrack.awayMs : 0;
             if (regTrack.id !== id || awayMs < regMinAwaySec * 1000) {
