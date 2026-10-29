@@ -1227,7 +1227,9 @@
 
         /* lighter glow: drop the heavy blurred second layer, keep the rotating ring */
         .gb::after, #task .card:not(.disabled-task)::after { display: none !important; }
-        .gb::before, #task .card:not(.disabled-task)::before { will-change: auto; backface-visibility: visible; }
+        .gb::before, #task .card:not(.disabled-task)::before { will-change: transform; backface-visibility: hidden; }
+        /* শুধু রেজিস্ট্রেশন টাস্ক খোলা থাকলে: পেছনের আলোর লেয়ার আলাদা GPU লেয়ারে ওঠে না (এনিমেশন একই থাকে) */
+        html.rg-open .gb::before, html.rg-open #task .card:not(.disabled-task)::before { will-change: auto; backface-visibility: visible; }
         /* রেজিস্ট্রেশন টাস্ক পপআপ: নিজস্ব লেয়ারে আলাদা, স্ক্রল গ্লিচ ঠেকাতে */
         .rg-box { isolation: isolate; transform: translateZ(0); -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         .rg-it, .rg-bt { backface-visibility: hidden; transform: translateZ(0); }
@@ -6245,5 +6247,16 @@
         })();
     </script>
 
+<script>
+/* রেজিস্ট্রেশন টাস্ক খোলা/বন্ধ হলে html-এ rg-open ক্লাস বসে/সরে (এনিমেশন বদলায় না) */
+(function () {
+    var m = document.getElementById('reg-task-modal');
+    if (!m) return;
+    var root = document.documentElement;
+    function sync() { root.classList.toggle('rg-open', window.getComputedStyle(m).display !== 'none'); }
+    new MutationObserver(sync).observe(m, { attributes: true, attributeFilter: ['style', 'class'] });
+    sync();
+})();
+</script>
 </body>
 </html>
