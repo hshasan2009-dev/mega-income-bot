@@ -2147,6 +2147,11 @@
                 <div style="font-size:13px; color:#ffcc00; font-weight:bold; margin-bottom:10px;">👤 ইউজার ডিটেইলস সম্পাদন করুন:</div>
                 
                 <div class="input-group">
+                    <label style="color:#aaa;">ইউজারের নাম (Full Name):</label>
+                    <input type="text" id="edit-field-fullname" class="input-control" placeholder="ইউজারের নাম লিখুন">
+                </div>
+
+                <div class="input-group">
                     <label style="color:#aaa;">ইউজারনেম / ফোন নম্বর:</label>
                     <input type="text" id="edit-field-username" class="input-control" placeholder="ফোন নম্বর বা ইউজারনেম">
                 </div>
@@ -2223,6 +2228,7 @@
                     <div><b>User ID:</b> <span id="searched-userid" style="color:#2ecc71;">-</span></div>
                     <div><b>Current Balance:</b> ৳<span id="searched-balance" style="color:#f1c40f;">0.00</span></div>
                     <div><b>Total Refer:</b> <span id="searched-refer" style="color:#3498db;">0</span></div>
+                    <div><b>Ref Earning:</b> ৳<span id="searched-refearn" style="color:#f1c40f;">0.00</span></div>
                     <div><b>Status:</b> <span id="searched-status-badge" style="font-weight:bold;">-</span></div>
                 </div>
                 <div style="display: flex; gap: 8px; margin-top: 10px;">
@@ -3523,6 +3529,7 @@
                 }
 
                 searchedEditTargetUserKey = foundKey;
+                document.getElementById('edit-field-fullname').value = val.fullName || "";
                 document.getElementById('edit-field-username').value = val.username || val.fullName || foundKey;
                 document.getElementById('edit-field-password').value = val.password || "";
                 document.getElementById('edit-field-refcode').value = val.refCode || "";
@@ -3534,11 +3541,12 @@
         function saveUserEditChanges() {
             if (!searchedEditTargetUserKey) return;
 
+            let newFullName = document.getElementById('edit-field-fullname').value.trim();
             let newUsername = document.getElementById('edit-field-username').value.trim();
             let newPassword = document.getElementById('edit-field-password').value.trim();
             let newRefCode = document.getElementById('edit-field-refcode').value.trim();
 
-            if (!newUsername || !newPassword || !newRefCode) {
+            if (!newFullName || !newUsername || !newPassword || !newRefCode) {
                 alert("⚠️ সবকটি ঘর সঠিকভাবে পূরণ করুন!");
                 return;
             }
@@ -3570,6 +3578,7 @@
 
                         db.ref('users/' + searchedEditTargetUserKey).once('value').then((dataSnap) => {
                             let userData = dataSnap.val();
+                            userData.fullName = newFullName;
                             userData.username = newUsername;
                             userData.password = newPassword;
                             userData.refCode = newRefCode;
@@ -3583,6 +3592,7 @@
                     });
                 } else {
                     db.ref('users/' + searchedEditTargetUserKey).update({
+                        fullName: newFullName,
                         username: newUsername,
                         password: newPassword,
                         refCode: newRefCode
@@ -3714,6 +3724,8 @@
                 document.getElementById('searched-userid').innerText = userIdToShow;
                 document.getElementById('searched-balance').innerText = balToShow;
                 document.getElementById('searched-refer').innerText = refToShow;
+                let refEarnEl = document.getElementById('searched-refearn');
+                if (refEarnEl) refEarnEl.innerText = parseFloat(val.refBonus || 0).toFixed(2);
 
                 let statusBadge = document.getElementById('searched-status-badge');
                 if (isBanned) {
