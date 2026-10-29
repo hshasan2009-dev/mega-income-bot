@@ -262,6 +262,24 @@
             }
         }
 
+
+        .mr-box{margin-top:14px;border:1.5px dashed #e0a030;border-radius:14px;padding:14px 10px 4px;background:#0f2a1f;text-align:left;animation:mrSoft 3s ease-in-out infinite}
+        @keyframes mrSoft{0%,100%{box-shadow:0 0 0 0 rgba(224,160,48,0)}50%{box-shadow:0 0 14px 1px rgba(224,160,48,.28)}}
+        .mr-title{text-align:center;color:#f5a623;font-size:17px;font-weight:bold;margin-bottom:12px}
+        .mr-title i{font-style:normal;display:inline-block;animation:mrWob 2.4s ease-in-out infinite}
+        @keyframes mrWob{0%,100%{transform:rotate(0)}10%{transform:rotate(-12deg)}20%{transform:rotate(10deg)}30%{transform:rotate(0)}}
+        .mr-row{position:relative;display:flex;align-items:center;gap:10px;border-radius:10px;padding:10px 11px;margin-bottom:10px;overflow:hidden;opacity:0;transform:translateY(10px);animation:mrUp .6s ease forwards}
+        .mr-d2{animation-delay:.15s}.mr-d3{animation-delay:.3s}
+        @keyframes mrUp{to{opacity:1;transform:none}}
+        .mr-row::after{content:"";position:absolute;top:0;left:-50%;width:30%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.12),transparent);transform:skewX(-20deg);animation:mrSh 4.5s ease-in-out infinite}
+        @keyframes mrSh{0%{left:-50%}55%,100%{left:130%}}
+        .mr-w{background:#2a1a1a;border:1px solid #d9534f;color:#ffb3b0}
+        .mr-g{background:#12392a;border:1px solid #27ae60;color:#eafff3}
+        .mr-y{background:#2b2a12;border:1px solid #c9a227;color:#fff3c4}
+        .mr-ic{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;background:rgba(255,255,255,.08)}
+        .mr-t{font-size:14px;line-height:1.55;position:relative;z-index:1}
+        .mr-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ecc71;margin-left:7px;animation:mrBl 1.3s ease-in-out infinite}
+        @keyframes mrBl{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.6)}}
         .rules-box {
             text-align: left;
             border: 1px dashed #f39c12;
@@ -1435,11 +1453,11 @@
                 🛠 লাইভ সাপোর্ট
             </button>
 
-            <div class="rules-box">
-                <div class="rules-title">⚠️ কাজের নিয়মাবলী</div>
-                <div class="rule-warning">❌ ১.নিয়ম মেনে কাজ না করলে আপনার অ্যাকাউন্ট চিরতরে ব্যান হতে পারে!</div>
-                <div class="rule-item">📺 ২. রেজিস্ট্রেশন সম্পূর্ণ না করলে কোনো ব্যালেন্স জোগ হবে না ।</div>
-                <div class="rule-item">💳 ৩. উপার্জিত টাকা সরাসরি বিকাশ, নগদ বা রকেটের মাধ্যমে তুলতে পারবেন।</div>
+            <div class="mr-box">
+                <div class="mr-title"><i>⚠️</i> কাজের নিয়মাবলী</div>
+                <div class="mr-row mr-w"><div class="mr-ic">❌</div><div class="mr-t">অবৈধভাবে কাজ করলে আপনার একাউন্ট চিরতরে ব্যান হতে পারে</div></div>
+                <div class="mr-row mr-g mr-d2"><div class="mr-ic">🎧</div><div class="mr-t">২৪ ঘন্টা লাইভ সাপোর্ট<span class="mr-dot"></span></div></div>
+                <div class="mr-row mr-y mr-d3"><div class="mr-ic">💳</div><div class="mr-t">উপার্জিত টাকা সরাসরি বিকাশ, নগদ এবং রকেটের মাধ্যমে উইথড্র করতে পারবেন।</div></div>
             </div>
         </div>
 
@@ -1900,10 +1918,6 @@
             <div class="card rlb-card">
                 <h3>🏆 টপ রেফারার্স</h3>
                 <div class="rlb-sub">যাদের সবচেয়ে বেশি একটিভ বন্ধু আছে</div>
-                <div class="rlb-warn">
-                    <div class="wi">⚠️</div>
-                    <div><b>ফেক রেফার করলে অ্যাকাউন্ট ব্যান!</b><small>ভুয়া বা নিজের একাধিক অ্যাকাউন্ট দিয়ে রেফার করলে আপনার অ্যাকাউন্ট ব্যান হতে পারে।</small></div>
-                </div>
                 <div id="rlb-list"><div class="rlb-empty">লোড হচ্ছে...</div></div>
                 <div id="rlb-me-wrap" style="display:none;margin-top:12px;">
                     <div class="rlb-row rlb-me" id="rlb-me">
