@@ -5,6 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="6a97888e-site-verification" content="cad8c97911212b690963aa90040d677b">
     <title>Mega Income Pro</title>
+    
+    <script>
+    /* ===== থিম সিস্টেম (সব রং এখান থেকেই নিয়ন্ত্রিত হয়) ===== */
+    (function(){
+      function h2r(h){h=h.replace('#','');if(h.length==3)h=h.replace(/./g,'$&$&');return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];}
+      function mix(a,b,t){var x=h2r(a),y=h2r(b);return '#'+[0,1,2].map(function(i){var v=Math.round(x[i]*(1-t)+y[i]*t);return ('0'+v.toString(16)).slice(-2);}).join('');}
+      function build(o){
+        var bg=o.bg,card=o.card,bd=o.bd,acc=o.acc;
+        return {
+          '--bg':bg,'--bg2':mix(bg,'#000000',.06),'--bg3':mix(bg,'#000000',.38),
+          '--bar':o.bar,'--card':card,'--card2':mix(card,bg,.5),
+          '--bd':bd,'--bd2':mix(bd,bg,.68),'--bdrgb':h2r(bd).join(','),
+          '--acc':acc,'--accrgb':h2r(acc).join(','),
+          '--btn':o.btn,'--btn2':o.btn2,'--btnTxt':o.btnTxt,
+          '--gift1':o.btn,'--gift2':o.btn2,'--giftTxt':o.btnTxt,
+          '--txt':o.txt,'--txt2':mix(o.txt,bg,.12),'--sub':o.sub,'--sub2':mix(o.sub,bg,.25),
+          '--navAct':acc,'--off':mix(bd,'#000000',.32),'--sup':o.sup||'#9b2c35'
+        };
+      }
+      var T=[
+        {id:'green',name:'ক্লাসিক গ্রিন (আগের)',tag:'আগের ডিজাইন',vars:{
+          '--bg':'#0c2317','--bg2':'#0b2217','--bg3':'#081a11','--bar':'#1b4d3e','--card':'#113626','--card2':'#0f2a1f',
+          '--bd':'#27ae60','--bd2':'#1f6b43','--bdrgb':'39,174,96','--acc':'#ffcc00','--accrgb':'255,204,0',
+          '--btn':'#f1c40f','--btn2':'#f1c40f','--btnTxt':'#000000','--gift1':'#f39c12','--gift2':'#d35400','--giftTxt':'#ffffff',
+          '--txt':'#ffffff','--txt2':'#cfe9d8','--sub':'#cccccc','--sub2':'#9fd8b5','--navAct':'#2ecc71','--off':'#2980b9','--sup':'#c0392b'}},
+        {id:'choco',name:'ডার্ক চকলেট গোল্ড',tag:'সবচেয়ে প্রিমিয়াম',o:{bg:'#1d130d',bar:'#2e1d12',card:'#2c1d14',bd:'#a97c3d',acc:'#e6c27a',btn:'#f0d28a',btn2:'#b98a3e',btnTxt:'#2a1a0c',txt:'#f8ecd9',sub:'#cdb89a'}},
+        {id:'mocha',name:'হালকা চকলেট মোচা',tag:'নরম ও উষ্ণ',o:{bg:'#34261d',bar:'#463227',card:'#473428',bd:'#c9a46a',acc:'#f1d9a4',btn:'#f6e0ac',btn2:'#c79a52',btnTxt:'#33200f',txt:'#fbf1e1',sub:'#dcc8a8'}},
+        {id:'gold',name:'রয়্যাল ব্ল্যাক গোল্ড',tag:'কালো ও সোনালি',o:{bg:'#100e08',bar:'#1c170b',card:'#1a160c',bd:'#d4af37',acc:'#f3d36b',btn:'#fbe08a',btn2:'#c8962a',btnTxt:'#1a1204',txt:'#fff7dc',sub:'#cfc093'}},
+        {id:'rose',name:'রোজ গোল্ড',tag:'গোলাপি সোনালি',o:{bg:'#1f1415',bar:'#35201f',card:'#2d1c1d',bd:'#c88b7d',acc:'#f2c1b0',btn:'#f7d3c4',btn2:'#c9826f',btnTxt:'#3a1c16',txt:'#fbeee8',sub:'#d9b8ad'}},
+        {id:'navy',name:'মিডনাইট নেভি গোল্ড',tag:'গাঢ় নীল ও সোনালি',o:{bg:'#0b1220',bar:'#14203a',card:'#111b30',bd:'#b8963e',acc:'#e8c872',btn:'#f0d68a',btn2:'#b8963e',btnTxt:'#14110a',txt:'#f3f0e6',sub:'#b9c0d0'}},
+        {id:'purple',name:'রয়্যাল পার্পল',tag:'বেগুনি ও সোনালি',o:{bg:'#150f22',bar:'#261a3d',card:'#1f1631',bd:'#a98bd6',acc:'#e9d28c',btn:'#efd98f',btn2:'#b99a45',btnTxt:'#1d1330',txt:'#f5f0fb',sub:'#c3b6da'}},
+        {id:'wine',name:'ওয়াইন বারগান্ডি',tag:'গাঢ় লাল ও সোনালি',o:{bg:'#1e0d12',bar:'#3a141f',card:'#2b121a',bd:'#c0885a',acc:'#f0c987',btn:'#f4d79c',btn2:'#bb7f45',btnTxt:'#2a0f14',txt:'#fbefe8',sub:'#d9b9ae',sup:'#b3263a'}},
+        {id:'emerald',name:'এমারেল্ড গোল্ড',tag:'গাঢ় সবুজ ও সোনালি',o:{bg:'#081a14',bar:'#0f3326',card:'#0d261d',bd:'#c9a24a',acc:'#efd382',btn:'#f3dc93',btn2:'#bb9231',btnTxt:'#0f1f10',txt:'#f4f1e0',sub:'#b9cbbf'}},
+        {id:'teal',name:'ডিপ টিল গোল্ড',tag:'সবুজাভ নীল ও সোনালি',o:{bg:'#07191c',bar:'#0e3338',card:'#0b2a2e',bd:'#cba35c',acc:'#f0d58c',btn:'#f4de9c',btn2:'#c1953d',btnTxt:'#0c1f21',txt:'#eff7f5',sub:'#a9c7c4'}},
+        {id:'bronze',name:'কপার ব্রোঞ্জ',tag:'তামা ও ব্রোঞ্জ',o:{bg:'#1c120b',bar:'#33200f',card:'#2a1a0f',bd:'#b8703a',acc:'#e8a86a',btn:'#f2bf8a',btn2:'#b8703a',btnTxt:'#2a1507',txt:'#fbeee0',sub:'#d6b99d'}},
+        {id:'platinum',name:'চারকোল প্ল্যাটিনাম',tag:'কালো ও রুপালি',o:{bg:'#121316',bar:'#1e2025',card:'#1a1c21',bd:'#a9afbb',acc:'#e3e7ee',btn:'#eef1f6',btn2:'#aab1c0',btnTxt:'#15171c',txt:'#f4f6fa',sub:'#b4bac6'}}
+      ];
+      T.forEach(function(x){ if(!x.vars) x.vars=build(x.o); });
+      var all=T.reduce(function(a,x){Object.keys(x.vars).forEach(function(k){a[k]=1});return a;},{});
+      window.SITE_THEMES=T;
+      window.applySiteTheme=function(id){
+        var th=T.filter(function(x){return x.id===id})[0]||T[0];
+        var st=document.documentElement.style;
+        if(th.id==='green'){Object.keys(all).forEach(function(k){st.removeProperty(k)});}
+        else{Object.keys(th.vars).forEach(function(k){st.setProperty(k,th.vars[k])});}
+        window.__curThemeId=th.id;
+        return th;
+      };
+      try{var c=localStorage.getItem('siteThemeId'); if(c) window.applySiteTheme(c);}catch(e){}
+    })();
+    </script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
@@ -28,8 +79,8 @@
             -webkit-tap-highlight-color: transparent;
         }
         body {
-            background-color: #0c2317;
-            color: #ffffff;
+            background-color: var(--bg);
+            color: var(--txt);
             min-height: 100vh;
             padding-bottom: 90px;
             position: relative;
@@ -46,8 +97,8 @@
             background: linear-gradient(
                 115deg,
                 transparent 0%,
-                rgba(39, 174, 96, 0.05) 30%,
-                rgba(241, 196, 15, 0.18) 50%,
+                rgba(var(--bdrgb), 0.05) 30%,
+                rgba(var(--accrgb), 0.18) 50%,
                 rgba(46, 204, 113, 0.05) 70%,
                 transparent 100%
             );
@@ -70,7 +121,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #05140c;
+            background-color: var(--bg3);
             z-index: 9999999;
             flex-direction: column;
             align-items: center;
@@ -82,7 +133,7 @@
             height: 90px;
             border-radius: 50%;
             padding: 7px;
-            background: conic-gradient(from 0deg, #2ecc71, #f1c40f, #e74c3c, #3498db, #2ecc71);
+            background: conic-gradient(from 0deg, #2ecc71, var(--btn), #e74c3c, #3498db, #2ecc71);
             -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff 0);
             mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #fff 0);
             animation: spinRing 1.2s linear infinite;
@@ -95,22 +146,22 @@
         }
 
         .loading-title-text {
-            color: #f1c40f;
+            color: var(--acc);
             font-size: 26px;
             font-weight: bold;
             letter-spacing: 0.5px;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            text-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
+            text-shadow: 0 0 10px rgba(var(--accrgb), 0.3);
         }
 
         .top-title-bar {
-            background-color: #1b4d3e;
-            color: #ffcc00;
+            background-color: var(--bar);
+            color: var(--acc);
             text-align: center;
             padding: 12px;
             font-size: 18px;
             font-weight: bold;
-            border-bottom: 2px solid #27ae60;
+            border-bottom: 2px solid var(--bd);
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             display: flex;
             justify-content: space-between;
@@ -141,8 +192,8 @@
             display: block;
         }
         .card {
-            background-color: #113626;
-            border: 2px solid #27ae60;
+            background-color: var(--card);
+            border: 2px solid var(--bd);
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 15px;
@@ -166,22 +217,22 @@
             font-weight: bold;
         }
         .balance-card {
-            background-color: #113626;
-            border: 2px solid #27ae60;
+            background-color: var(--card);
+            border: 2px solid var(--bd);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
             text-align: center;
         }
         .balance-title {
-            color: #ffcc00;
+            color: var(--acc);
             font-size: 14px;
             font-weight: bold;
             letter-spacing: 1px;
             margin-bottom: 5px;
         }
         .balance-amount {
-            color: #ffffff;
+            color: var(--txt);
             font-size: 32px;
             font-weight: bold;
         }
@@ -220,10 +271,10 @@
             opacity: 0.6;
             transform: none !important;
         }
-        .btn-official { background-color: #2980b9; }
-        .btn-support { background-color: #c0392b; }
-        .btn-gift { background: linear-gradient(135deg, #f39c12, #d35400); color: white; }
-        .btn-main { background-color: #f1c40f; color: #000; font-size: 17px; }
+        .btn-official { background-color: var(--off); }
+        .btn-support { background-color: var(--sup); }
+        .btn-gift { background: linear-gradient(135deg, var(--gift1), var(--gift2)); color: var(--giftTxt); }
+        .btn-main { background: linear-gradient(135deg, var(--btn), var(--btn2)); color: var(--btnTxt); font-size: 17px; }
         .btn-whatsapp { background-color: #25d366; color: #fff; font-size: 16px; }
         .btn-facebook { background-color: #1877f2; color: #fff; font-size: 16px; }
         .btn-monetag { background: linear-gradient(135deg, #8e44ad, #9b59b6); color: #fff; font-size: 16px; }
@@ -238,7 +289,7 @@
 
         .admin-badge {
             background-color: #ff3333;
-            color: #ffffff;
+            color: var(--txt);
             font-size: 12px;
             font-weight: 800;
             padding: 3px 8px;
@@ -263,7 +314,7 @@
         }
 
 
-        .mr-box{margin-top:14px;border:1.5px dashed #e0a030;border-radius:14px;padding:14px 10px 4px;background:#0f2a1f;text-align:left;animation:mrSoft 3s ease-in-out infinite}
+        .mr-box{margin-top:14px;border:1.5px dashed #e0a030;border-radius:14px;padding:14px 10px 4px;background:var(--card2);text-align:left;animation:mrSoft 3s ease-in-out infinite}
         @keyframes mrSoft{0%,100%{box-shadow:0 0 0 0 rgba(224,160,48,0)}50%{box-shadow:0 0 14px 1px rgba(224,160,48,.28)}}
         .mr-title{text-align:center;color:#f5a623;font-size:17px;font-weight:bold;margin-bottom:12px}
         .mr-title i{font-style:normal;display:inline-block;animation:mrWob 2.4s ease-in-out infinite}
@@ -274,7 +325,7 @@
         .mr-row::after{content:"";position:absolute;top:0;left:-50%;width:30%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.12),transparent);transform:skewX(-20deg);animation:mrSh 4.5s ease-in-out infinite}
         @keyframes mrSh{0%{left:-50%}55%,100%{left:130%}}
         .mr-w{background:#2a1a1a;border:1px solid #d9534f;color:#ffb3b0}
-        .mr-g{background:#12392a;border:1px solid #27ae60;color:#eafff3}
+        .mr-g{background:var(--card2);border:1px solid var(--bd);color:#eafff3}
         .mr-y{background:#2b2a12;border:1px solid #c9a227;color:#fff3c4}
         .mr-ic{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;background:rgba(255,255,255,.08)}
         .mr-t{font-size:14px;line-height:1.55;position:relative;z-index:1}
@@ -282,14 +333,14 @@
         @keyframes mrBl{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.6)}}
         .rules-box {
             text-align: left;
-            border: 1px dashed #f39c12;
+            border: 1px dashed var(--gift1);
             padding: 12px;
             border-radius: 8px;
             background: rgba(0, 0, 0, 0.2);
             margin-top: 10px;
         }
         .rules-title {
-            color: #f39c12;
+            color: var(--gift1);
             font-weight: bold;
             margin-bottom: 8px;
             text-align: center;
@@ -316,14 +367,14 @@
             display: block;
             margin-bottom: 4px;
             font-size: 13px;
-            color: #ddd;
+            color: var(--sub);
         }
         .input-control {
             width: 100%;
             padding: 10px;
             border-radius: 8px;
-            border: 1px solid #27ae60;
-            background: #0c2317;
+            border: 1px solid var(--bd);
+            background: var(--bg);
             color: #fff;
             font-size: 14px;
             outline: none;
@@ -331,57 +382,57 @@
 
 
         /* ===== রেফার লিডারবোর্ড ===== */
-        .rlb-card{border-color:#f1c40f;box-shadow:0 0 18px rgba(241,196,15,.16);padding:16px 12px 14px}
-        .rlb-card h3{color:#ffcc00;text-align:center;font-size:18px;margin-bottom:6px}
-        .rlb-sub{font-size:12.5px;color:#cfe9d8;text-align:center;line-height:1.5;margin-bottom:12px}
-        .rlb-row{display:flex;align-items:center;gap:10px;background:#0b2217;border:1px solid #1f5a3f;border-radius:12px;padding:7px 10px;margin-bottom:7px;opacity:0;transform:translateY(8px);animation:rlbIn .4s forwards;text-align:left}
+        .rlb-card{border-color:var(--acc);box-shadow:0 0 18px rgba(var(--accrgb),.16);padding:16px 12px 14px}
+        .rlb-card h3{color:var(--acc);text-align:center;font-size:18px;margin-bottom:6px}
+        .rlb-sub{font-size:12.5px;color:var(--txt2);text-align:center;line-height:1.5;margin-bottom:12px}
+        .rlb-row{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--bd2);border-radius:12px;padding:7px 10px;margin-bottom:7px;opacity:0;transform:translateY(8px);animation:rlbIn .4s forwards;text-align:left}
         @keyframes rlbIn{to{opacity:1;transform:none}}
-        .rlb-row.r1{padding:10px 12px;background:linear-gradient(90deg,rgba(241,196,15,.26),#0b2217 75%);border:1.5px solid #f1c40f;box-shadow:0 0 14px rgba(241,196,15,.22)}
-        .rlb-row.r2{background:linear-gradient(90deg,rgba(207,216,220,.2),#0b2217 75%);border:1.5px solid #b0bec5}
-        .rlb-row.r3{background:linear-gradient(90deg,rgba(205,127,50,.24),#0b2217 75%);border:1.5px solid #cd7f32}
+        .rlb-row.r1{padding:10px 12px;background:linear-gradient(90deg,rgba(var(--accrgb),.26),var(--bg2) 75%);border:1.5px solid var(--acc);box-shadow:0 0 14px rgba(var(--accrgb),.22)}
+        .rlb-row.r2{background:linear-gradient(90deg,rgba(207,216,220,.2),var(--bg2) 75%);border:1.5px solid #b0bec5}
+        .rlb-row.r3{background:linear-gradient(90deg,rgba(205,127,50,.24),var(--bg2) 75%);border:1.5px solid #cd7f32}
         .rlb-med{width:44px;height:48px;flex:none;display:grid;place-items:center}
         .rlb-row.r1 .rlb-med{width:50px;height:54px}
-        .rlb-num{width:28px;height:28px;margin:0 8px;flex:none;border-radius:50%;background:#1b4d3e;border:1px solid #27ae60;color:#cfe9d8;font-weight:bold;font-size:12px;display:grid;place-items:center}
+        .rlb-num{width:28px;height:28px;margin:0 8px;flex:none;border-radius:50%;background:var(--bar);border:1px solid var(--bd);color:var(--txt2);font-weight:bold;font-size:12px;display:grid;place-items:center}
         .rlb-info{flex:1;min-width:0;line-height:1.25}
         .rlb-nm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .rlb-row.r1 .rlb-nm{color:#ffcc00;font-weight:bold;font-size:16px}
+        .rlb-row.r1 .rlb-nm{color:var(--acc);font-weight:bold;font-size:16px}
         .rlb-row.r2 .rlb-nm,.rlb-row.r3 .rlb-nm{font-weight:bold;font-size:15px}
-        .rlb-code{display:block;margin-top:2px;font-size:10.5px;color:#9fd8b5;letter-spacing:.6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .rlb-code{display:block;margin-top:2px;font-size:10.5px;color:var(--sub2);letter-spacing:.6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .rlb-code i{font-style:normal;opacity:.75}
         .rlb-cnt{text-align:right;line-height:1.1;flex:none}
         .rlb-cnt b{display:block;font-size:16px;color:#fff}
-        .rlb-cnt small{font-size:10px;color:#9fd8b5}
-        .rlb-row.r1 .rlb-cnt b{font-size:19px;color:#f1c40f}
+        .rlb-cnt small{font-size:10px;color:var(--sub2)}
+        .rlb-row.r1 .rlb-cnt b{font-size:19px;color:var(--acc)}
         .rlb-row.r2 .rlb-cnt b{font-size:18px;color:#e3eaee}
         .rlb-row.r3 .rlb-cnt b{font-size:18px;color:#ffb866}
         .rlb-row.mine{outline:2px dashed #2ecc71;outline-offset:-2px}
         .rlb-me{border:1.5px dashed #2ecc71;background:#103a28;margin-top:0;margin-bottom:0;opacity:1;transform:none;animation:none}
         .rlb-me .rlb-nm{color:#2ecc71}
-        .rlb-note{font-size:11.5px;color:#9fd8b5;text-align:center;margin-top:8px;line-height:1.5}
+        .rlb-note{font-size:11.5px;color:var(--sub2);text-align:center;margin-top:8px;line-height:1.5}
         .rlb-warn{display:flex;align-items:center;gap:10px;text-align:left;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.55);border-radius:12px;padding:9px 11px;margin:0 0 12px}
         .rlb-warn .wi{width:30px;height:30px;flex:none;border-radius:50%;background:rgba(231,76,60,.22);border:1px solid rgba(231,76,60,.7);display:grid;place-items:center;font-size:15px}
         .rlb-warn b{display:block;color:#ff8a7a;font-size:13px;margin-bottom:2px}
         .rlb-warn small{display:block;color:#f3d3cd;font-size:11.5px;line-height:1.45}
-        .rlb-rk{min-width:28px;height:28px;margin:0 8px;padding:0 6px;border-radius:14px;flex:none;background:#1b4d3e;border:1px solid #27ae60;color:#cfe9d8;font-weight:bold;font-size:12px;display:grid;place-items:center}
+        .rlb-rk{min-width:28px;height:28px;margin:0 8px;padding:0 6px;border-radius:14px;flex:none;background:var(--bar);border:1px solid var(--bd);color:var(--txt2);font-weight:bold;font-size:12px;display:grid;place-items:center}
         .code-wrap{position:relative}
         .code-wrap .input-control{padding-left:86px;padding-right:86px}
-        .code-copy-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:#f1c40f;color:#000;border:none;border-radius:7px;padding:7px 11px;font-size:12.5px;font-weight:bold;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.3);white-space:nowrap}
+        .code-copy-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--btn);color:#000;border:none;border-radius:7px;padding:7px 11px;font-size:12.5px;font-weight:bold;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.3);white-space:nowrap}
         .code-copy-btn:active{transform:translateY(-50%) scale(.95)}
         .code-copy-btn.done{background:#2ecc71;color:#06210f}
-        .rlb-empty{padding:18px 8px;text-align:center;color:#cfe9d8;font-size:13px;line-height:1.6}
+        .rlb-empty{padding:18px 8px;text-align:center;color:var(--txt2);font-size:13px;line-height:1.6}
         @media (prefers-reduced-motion: reduce){.rlb-row{animation:none;opacity:1;transform:none}}
 
         /* ===== সাইট আপডেট মোড (পুরো স্ক্রিন) ===== */
         #maintenanceOverlay{display:none;position:fixed;inset:0;z-index:999990;background:#04120b;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-        #maintenanceOverlay::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(39,174,96,.22),transparent 60%);animation:mntBg 4s ease-in-out infinite}
+        #maintenanceOverlay::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(var(--bdrgb),.22),transparent 60%);animation:mntBg 4s ease-in-out infinite}
         @keyframes mntBg{0%,100%{opacity:.55}50%{opacity:1}}
-        .mnt-brand{position:relative;font-size:17px;font-weight:500;color:#ffcc00;letter-spacing:.6px;margin:0 0 14px;text-shadow:0 0 10px rgba(241,196,15,.3)}
-        .mnt-card{position:relative;width:84%;max-width:300px;border-radius:22px;padding:2px;overflow:hidden;box-shadow:0 0 30px rgba(241,196,15,.18)}
-        .mnt-card::before{content:"";position:absolute;left:50%;top:50%;width:200%;aspect-ratio:1;transform:translate(-50%,-50%);background:conic-gradient(from 0deg,transparent 0 55%,#f1c40f 70%,#2ecc71 85%,transparent 100%);animation:mntSpin 3s linear infinite}
+        .mnt-brand{position:relative;font-size:17px;font-weight:500;color:var(--acc);letter-spacing:.6px;margin:0 0 14px;text-shadow:0 0 10px rgba(var(--accrgb),.3)}
+        .mnt-card{position:relative;width:84%;max-width:300px;border-radius:22px;padding:2px;overflow:hidden;box-shadow:0 0 30px rgba(var(--accrgb),.18)}
+        .mnt-card::before{content:"";position:absolute;left:50%;top:50%;width:200%;aspect-ratio:1;transform:translate(-50%,-50%);background:conic-gradient(from 0deg,transparent 0 55%,var(--btn) 70%,#2ecc71 85%,transparent 100%);animation:mntSpin 3s linear infinite}
         @keyframes mntSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
-        .mnt-in{position:relative;background:#0b2217;border-radius:20px;padding:26px 18px 22px;text-align:center;font-weight:normal}
+        .mnt-in{position:relative;background:var(--bg2);border-radius:20px;padding:26px 18px 22px;text-align:center;font-weight:normal}
         .mnt-orb{position:relative;width:84px;height:84px;margin:0 auto 14px}
-        .mnt-orb i{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px;border-radius:50%;background:#f1c40f;animation:mntOrb 1.4s linear infinite}
+        .mnt-orb i{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px;border-radius:50%;background:var(--btn);animation:mntOrb 1.4s linear infinite}
         .mnt-orb i:nth-child(2){animation-delay:-.175s;background:#d9c022;opacity:.9}
         .mnt-orb i:nth-child(3){animation-delay:-.35s;background:#a6c93a;opacity:.8}
         .mnt-orb i:nth-child(4){animation-delay:-.525s;background:#6fd16a;opacity:.65}
@@ -390,43 +441,43 @@
         .mnt-orb i:nth-child(7){animation-delay:-1.05s;background:#2ecc71;opacity:.22}
         .mnt-orb i:nth-child(8){animation-delay:-1.225s;background:#2ecc71;opacity:.12}
         @keyframes mntOrb{from{transform:rotate(0) translateY(-35px)}to{transform:rotate(360deg) translateY(-35px)}}
-        .mnt-t{font-size:26px;font-weight:500;color:#ffcc00;letter-spacing:.5px;margin:0 0 4px}
+        .mnt-t{font-size:26px;font-weight:500;color:var(--acc);letter-spacing:.5px;margin:0 0 4px}
         .mnt-t span{display:inline-block;animation:mntDot 1.2s infinite}
         .mnt-t span:nth-child(2){animation-delay:.2s}.mnt-t span:nth-child(3){animation-delay:.4s}.mnt-t span:nth-child(4){animation-delay:.6s}
         @keyframes mntDot{0%,60%,100%{opacity:.2;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
         .mnt-s{font-size:15px;color:#2ecc71;font-weight:500;margin:0 0 10px}
-        .mnt-p{font-size:12.5px;color:#cfe9d8;line-height:1.7;margin:0 0 16px}
+        .mnt-p{font-size:12.5px;color:var(--txt2);line-height:1.7;margin:0 0 16px}
         .mnt-bar{height:6px;border-radius:3px;background:#133a28;overflow:hidden}
-        .mnt-bar i{display:block;height:100%;width:40%;border-radius:3px;background:linear-gradient(90deg,transparent,#f1c40f,#2ecc71,transparent);animation:mntMv 1.6s ease-in-out infinite}
+        .mnt-bar i{display:block;height:100%;width:40%;border-radius:3px;background:linear-gradient(90deg,transparent,var(--btn),#2ecc71,transparent);animation:mntMv 1.6s ease-in-out infinite}
         @keyframes mntMv{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
-        .mnt-join{margin-top:18px;padding-top:14px;border-top:1px dashed #1f5a3f}
-        .mnt-jt{font-size:12.5px;color:#cfe9d8;margin:0 0 10px}
-        .mnt-jb{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 12px;border:none;border-radius:12px;background:#f1c40f;color:#06210f;font-size:15px;font-weight:500;letter-spacing:.3px;cursor:pointer;animation:mntPulse 2s ease-in-out infinite;overflow:hidden}
+        .mnt-join{margin-top:18px;padding-top:14px;border-top:1px dashed var(--bd2)}
+        .mnt-jt{font-size:12.5px;color:var(--txt2);margin:0 0 10px}
+        .mnt-jb{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 12px;border:none;border-radius:12px;background:var(--btn);color:#06210f;font-size:15px;font-weight:500;letter-spacing:.3px;cursor:pointer;animation:mntPulse 2s ease-in-out infinite;overflow:hidden}
         .mnt-jb::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:rgba(255,255,255,.45);transform:skewX(-25deg);animation:mntShine 2.6s ease-in-out infinite}
         @keyframes mntShine{0%{left:-60%}60%,100%{left:140%}}
-        @keyframes mntPulse{0%,100%{box-shadow:0 0 0 0 rgba(241,196,15,.55)}50%{box-shadow:0 0 0 7px rgba(241,196,15,0)}}
+        @keyframes mntPulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--accrgb),.55)}50%{box-shadow:0 0 0 7px rgba(var(--accrgb),0)}}
         @media (prefers-reduced-motion: reduce){#maintenanceOverlay::before,.mnt-card::before,.mnt-orb i,.mnt-t span,.mnt-bar i,.mnt-jb,.mnt-jb::after{animation:none}}
         .logout-fixed-top{display:block;position:fixed;top:12px;right:15px;z-index:1000001}
 
         /* ===== অ্যাডমিন ইউজার স্ট্যাটস ===== */
-        .aus{display:grid;grid-template-columns:1fr 1px 1fr;align-items:center;background:#0b2217;border:1.5px solid #27ae60;border-radius:12px;padding:8px 6px 7px;margin-bottom:12px;position:relative;overflow:hidden}
-        .aus::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:var(--p,0%);background:linear-gradient(90deg,#27ae60,#f1c40f);border-radius:0 3px 3px 0;transition:width 1.2s ease}
+        .aus{display:grid;grid-template-columns:1fr 1px 1fr;align-items:center;background:var(--bg2);border:1.5px solid var(--bd);border-radius:12px;padding:8px 6px 7px;margin-bottom:12px;position:relative;overflow:hidden}
+        .aus::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:var(--p,0%);background:linear-gradient(90deg,var(--bd),var(--acc));border-radius:0 3px 3px 0;transition:width 1.2s ease}
         .aus .dv{height:30px;background:#27ae60;opacity:.55}
         .aus .it{display:flex;align-items:center;justify-content:center;gap:9px;padding:2px 6px}
-        .aus .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px;background:#1b4d3e;border:1px solid #27ae60;flex:none}
+        .aus .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px;background:var(--bar);border:1px solid var(--bd);flex:none}
         .aus .tx{text-align:left;line-height:1.15}
         .aus .n{display:block;font-size:19px;font-weight:800}
-        .aus .l{font-size:11px;color:#cfe9d8}
-        .aus .act .ic{background:#3b3208;border-color:#f1c40f}
-        .aus .act .n{color:#f1c40f}
+        .aus .l{font-size:11px;color:var(--txt2)}
+        .aus .act .ic{background:#3b3208;border-color:var(--acc)}
+        .aus .act .n{color:var(--acc)}
         .aus-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#2ecc71;margin-right:4px;vertical-align:1px;animation:ausPl 1.4s infinite}
         @keyframes ausPl{0%{box-shadow:0 0 0 0 rgba(46,204,113,.7)}100%{box-shadow:0 0 0 6px rgba(46,204,113,0)}}
-        .aus-pct{font-size:10.5px;color:#9fd8b5;margin:-6px 0 12px;text-align:center}
+        .aus-pct{font-size:10.5px;color:var(--sub2);margin:-6px 0 12px;text-align:center}
 
 
         /* ===== রেফার পেজ: ইনকাম ও রেফার স্ট্যাটস ===== */
-        .rinc-card{border-radius:14px;padding:9px 14px 9px 22px;background:linear-gradient(135deg,#17210f 0%,#3b2f06 50%,#17210f 100%);border:1.5px solid #f1c40f;display:flex;align-items:center;gap:14px;margin-bottom:10px;text-align:left}
-        .rinc-medal{width:44px;height:44px;border-radius:50%;background:linear-gradient(145deg,#fff1a8 0%,#f1c40f 55%,#b8860b 100%);box-shadow:0 0 0 3px rgba(241,196,15,.22);display:flex;align-items:center;justify-content:center;flex:none}
+        .rinc-card{border-radius:14px;padding:9px 14px 9px 22px;background:linear-gradient(135deg,var(--bg2) 0%,#3b2f06 50%,var(--bg2) 100%);border:1.5px solid var(--acc);display:flex;align-items:center;gap:14px;margin-bottom:10px;text-align:left}
+        .rinc-medal{width:44px;height:44px;border-radius:50%;background:linear-gradient(145deg,#fff1a8 0%,var(--btn) 55%,#b8860b 100%);box-shadow:0 0 0 3px rgba(var(--accrgb),.22);display:flex;align-items:center;justify-content:center;flex:none}
         .rinc-txt{flex:1;line-height:1.15;min-width:0}
         .rinc-lbl{font-size:12px;font-weight:500;color:#e8d48a}
         .rinc-val{font-size:26px;font-weight:700;color:#ffe27a;margin-top:2px}
@@ -447,8 +498,8 @@
         }
         .stat-box {
             flex: 1;
-            background-color: #1b4d3e;
-            border: 1px solid #27ae60;
+            background-color: var(--bar);
+            border: 1px solid var(--bd);
             border-radius: 10px;
             padding: 12px;
             text-align: center;
@@ -461,12 +512,12 @@
         }
         .history-table th, .history-table td {
             padding: 8px 5px;
-            border: 1px solid #27ae60;
+            border: 1px solid var(--bd);
             text-align: center;
         }
         .history-table th {
-            background-color: #1b4d3e;
-            color: #f1c40f;
+            background-color: var(--bar);
+            color: var(--acc);
         }
 
         /* ===== Withdraw method control (new) ===== */
@@ -474,7 +525,7 @@
         .wd-method {
             flex:1; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center;
             gap:6px; padding:14px 6px 10px; border-radius:14px; cursor:pointer;
-            background:linear-gradient(160deg,#10301f,#0b2015); border:2px solid #1f6b43;
+            background:linear-gradient(160deg,#10301f,#0b2015); border:2px solid var(--bd2);
             transition:all .25s ease; -webkit-tap-highlight-color:transparent;
         }
         .wd-method .wd-logo { height:44px; width:auto; max-width:76px; border-radius:11px; object-fit:contain; box-shadow:0 3px 8px rgba(0,0,0,.45); transition:all .25s ease; }
@@ -482,10 +533,10 @@
         .wd-method .wd-m-off { display:none; font-size:12px; font-weight:800; color:#ff2d2d; background:rgba(90,0,0,.55); border:1px solid #c0141c; padding:1px 10px; border-radius:9px; animation:wdOffUpDown 1.3s ease-in-out infinite; }
         .wd-method .wd-m-check {
             position:absolute; top:6px; right:6px; width:18px; height:18px; border-radius:50%;
-            background:#f1c40f; color:#0c2317; font-size:12px; font-weight:900; line-height:18px; text-align:center;
+            background:var(--btn); color:var(--bg); font-size:12px; font-weight:900; line-height:18px; text-align:center;
             transform:scale(0); transition:transform .25s ease;
         }
-        .wd-method.selected { border-color:#f1c40f; box-shadow:0 0 0 2px rgba(241,196,15,.25), 0 6px 16px rgba(241,196,15,.18); transform:translateY(-2px); }
+        .wd-method.selected { border-color:var(--acc); box-shadow:0 0 0 2px rgba(var(--accrgb),.25), 0 6px 16px rgba(var(--accrgb),.18); transform:translateY(-2px); }
         .wd-method.selected .wd-m-check { transform:scale(1); }
         .wd-method.m-off { pointer-events:none; box-shadow:none; transform:none; border-color:#1a4a31; }
         .wd-method.m-off .wd-logo, .wd-method.m-off .wd-m-name { opacity:.35; filter:grayscale(.7); }
@@ -514,7 +565,7 @@
         .wd-swap-btn {
             display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; padding:0;
             margin-left:6px; vertical-align:middle; border-radius:50%; border:none; cursor:pointer;
-            background:linear-gradient(135deg,#f1c40f,#e67e22); color:#0c2317;
+            background:linear-gradient(135deg,var(--btn),#e67e22); color:var(--bg);
             box-shadow:0 2px 6px rgba(0,0,0,.4); transition:transform .35s ease;
         }
         .wd-swap-btn:active { transform:rotate(180deg) scale(.9); }
@@ -532,25 +583,25 @@
         /* ===== Withdraw history cards (new) ===== */
         .wdh-tabs { display:flex; gap:8px; overflow-x:auto; padding:10px 2px 9px; scrollbar-width:none; }
         .wdh-tabs::-webkit-scrollbar { display:none; }
-        .wdh-tab { flex:0 0 auto; border:1.5px solid #1f6b43; background:#113626; color:#bfe3cc; padding:5px 14px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer; transition:all .2s ease; }
+        .wdh-tab { flex:0 0 auto; border:1.5px solid var(--bd2); background:var(--card); color:#bfe3cc; padding:5px 14px; border-radius:18px; font-size:12px; font-weight:700; cursor:pointer; transition:all .2s ease; }
         .wdh-tab:active { transform:scale(.94); }
-        .wdh-tab.active { background:linear-gradient(135deg,#f1c40f,#e6a911); color:#0c2317; border-color:#f1c40f; box-shadow:0 3px 10px rgba(241,196,15,.25); }
-        .wdh-card { position:relative; overflow:hidden; text-align:left; background:linear-gradient(160deg,#14412c 0%,#0f3022 100%); border:1.5px solid #1f6b43; border-radius:13px; padding:9px 12px 3px 15px; margin-bottom:8px; box-shadow:0 4px 12px rgba(0,0,0,.28); }
-        .wdh-card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:#f1c40f; }
+        .wdh-tab.active { background:linear-gradient(135deg,var(--btn),#e6a911); color:var(--bg); border-color:var(--acc); box-shadow:0 3px 10px rgba(var(--accrgb),.25); }
+        .wdh-card { position:relative; overflow:hidden; text-align:left; background:linear-gradient(160deg,#14412c 0%,#0f3022 100%); border:1.5px solid var(--bd2); border-radius:13px; padding:9px 12px 3px 15px; margin-bottom:8px; box-shadow:0 4px 12px rgba(0,0,0,.28); }
+        .wdh-card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--btn); }
         .wdh-card.st-success::before { background:#2ecc71; }
         .wdh-card.st-rejected::before { background:#e74c3c; }
-        .wdh-card.st-pending::before { background:#f1c40f; animation:wdhStrip 1.6s ease-in-out infinite; }
+        .wdh-card.st-pending::before { background:var(--btn); animation:wdhStrip 1.6s ease-in-out infinite; }
         .wdh-head { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
-        .wdh-amount { font-size:19px; font-weight:800; color:#f1c40f; line-height:1.15; }
-        .wdh-net { font-size:11px; color:#9fc4b0; margin-top:1px; }
+        .wdh-amount { font-size:19px; font-weight:800; color:var(--acc); line-height:1.15; }
+        .wdh-net { font-size:11px; color:var(--sub2); margin-top:1px; }
         .wdh-net b { color:#2ecc71; font-weight:800; }
-        .wdh-card.st-rejected .wdh-net b { color:#9fc4b0; text-decoration:line-through; }
+        .wdh-card.st-rejected .wdh-net b { color:var(--sub2); text-decoration:line-through; }
         .wdh-pill { display:inline-flex; align-items:center; gap:6px; padding:3px 11px; border-radius:12px; font-size:11px; font-weight:800; border:1px solid transparent; white-space:nowrap; }
         .wdh-pill .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex:none; }
         .wdh-pill .txt { display:inline-block; animation:wdhBob 1.8s ease-in-out infinite; }
         .wdh-pill.success { color:#2ecc71; background:rgba(46,204,113,.14); border-color:rgba(46,204,113,.45); animation:wdhGlowG 2.6s ease-in-out infinite; }
         .wdh-pill.rejected { color:#e74c3c; background:rgba(231,76,60,.14); border-color:rgba(231,76,60,.45); animation:wdhGlowR 3s ease-in-out infinite; }
-        .wdh-pill.pending { color:#f1c40f; background:rgba(241,196,15,.14); border-color:rgba(241,196,15,.45); animation:wdhGlowY 1.6s ease-in-out infinite; }
+        .wdh-pill.pending { color:var(--acc); background:rgba(var(--accrgb),.14); border-color:rgba(var(--accrgb),.45); animation:wdhGlowY 1.6s ease-in-out infinite; }
         .wdh-pill.success .txt { animation-duration:2.4s; }
         .wdh-pill.rejected .txt { animation-duration:2.8s; }
         .wdh-pill.pending .txt { animation-duration:1.3s; }
@@ -559,25 +610,25 @@
         @keyframes wdhDot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.35; transform:scale(.7); } }
         @keyframes wdhGlowG { 0%,100% { box-shadow:0 0 0 0 rgba(46,204,113,0); } 50% { box-shadow:0 0 10px 1px rgba(46,204,113,.35); } }
         @keyframes wdhGlowR { 0%,100% { box-shadow:0 0 0 0 rgba(231,76,60,0); } 50% { box-shadow:0 0 10px 1px rgba(231,76,60,.35); } }
-        @keyframes wdhGlowY { 0%,100% { box-shadow:0 0 0 0 rgba(241,196,15,0); } 50% { box-shadow:0 0 12px 2px rgba(241,196,15,.4); } }
+        @keyframes wdhGlowY { 0%,100% { box-shadow:0 0 0 0 rgba(var(--accrgb),0); } 50% { box-shadow:0 0 12px 2px rgba(var(--accrgb),.4); } }
         @keyframes wdhStrip { 0%,100% { opacity:1; } 50% { opacity:.45; } }
-        .wdh-line { height:1px; background:linear-gradient(90deg,#27ae60,rgba(39,174,96,.15)); margin:7px 0 2px; }
+        .wdh-line { height:1px; background:linear-gradient(90deg,#27ae60,rgba(var(--bdrgb),.15)); margin:7px 0 2px; }
         .wdh-row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:5px 0; font-size:12px; }
-        .wdh-row + .wdh-row { border-top:1px dashed rgba(39,174,96,.28); }
-        .wdh-row .k { color:#9fc4b0; }
+        .wdh-row + .wdh-row { border-top:1px dashed rgba(var(--bdrgb),.28); }
+        .wdh-row .k { color:var(--sub2); }
         .wdh-row.duo { justify-content:flex-start; gap:0; }
         .wdh-row.duo .half { flex:1; display:flex; justify-content:space-between; gap:8px; }
-        .wdh-row.duo .half:first-child { padding-right:10px; border-right:1px dashed rgba(39,174,96,.28); }
+        .wdh-row.duo .half:first-child { padding-right:10px; border-right:1px dashed rgba(var(--bdrgb),.28); }
         .wdh-row.duo .half:last-child { padding-left:10px; }
         .wdh-row .v { color:#fff; font-weight:600; text-align:right; word-break:break-all; }
-        .wdh-method { display:inline-block; padding:0 8px; margin-right:6px; border-radius:7px; font-size:11px; font-weight:800; color:#0c2317; background:#f1c40f; }
+        .wdh-method { display:inline-block; padding:0 8px; margin-right:6px; border-radius:7px; font-size:11px; font-weight:800; color:var(--bg); background:var(--btn); }
         .wdh-method.bkash { background:#e2136e; color:#fff; }
-        .wdh-method.nagad { background:#f6921e; color:#0c2317; }
+        .wdh-method.nagad { background:#f6921e; color:var(--bg); }
         .wdh-method.rocket { background:#8c3494; color:#fff; }
-        .wdh-empty { text-align:center; color:#9fc4b0; padding:26px 10px; border:1.5px dashed #1f6b43; border-radius:14px; }
+        .wdh-empty { text-align:center; color:var(--sub2); padding:26px 10px; border:1.5px dashed var(--bd2); border-radius:14px; }
         @media (prefers-reduced-motion: reduce) { .wdh-pill, .wdh-pill .txt, .wdh-pill .dot, .wdh-card::before { animation:none !important; } }
         /* ===== end withdraw history cards ===== */
-        .badge-pending { color: #f1c40f; font-weight: bold; }
+        .badge-pending { color: var(--acc); font-weight: bold; }
         .badge-success { color: #2ecc71; font-weight: bold; }
         .badge-rejected { color: #e74c3c; font-weight: bold; }
         .navbar {
@@ -585,11 +636,11 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: #0c2317;
+            background-color: var(--bg);
             display: flex;
             justify-content: space-around;
             padding: 8px 0;
-            border-top: 2px solid #27ae60;
+            border-top: 2px solid var(--bd);
             z-index: 1000;
         }
         .nav-item {
@@ -597,7 +648,7 @@
             flex-direction: column;
             align-items: center;
             font-size: 12px;
-            color: #aaa;
+            color: var(--sub);
             cursor: pointer;
             text-decoration: none;
             background: none;
@@ -617,13 +668,13 @@
             justify-content: center;
         }
         .nav-item.active {
-            color: #2ecc71;
-            background: rgba(39, 174, 96, 0.15);
+            color: var(--navAct);
+            background: rgba(var(--bdrgb), 0.15);
             border-radius: 8px;
         }
         .admin-item-card {
-            background: #081a11;
-            border: 1px solid #27ae60;
+            background: var(--bg3);
+            border: 1px solid var(--bd);
             border-radius: 8px;
             padding: 10px;
             margin-bottom: 10px;
@@ -647,11 +698,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #113626;
+            background: var(--card);
             padding: 10px 15px;
             border-radius: 8px;
             margin-bottom: 10px;
-            border: 1px solid #27ae60;
+            border: 1px solid var(--bd);
         }
         .switch {
             position: relative;
@@ -687,15 +738,15 @@
             backdrop-filter: blur(5px);
         }
         .custom-popup-box {
-            background: linear-gradient(145deg, #163827, #0b2217);
-            border: 2px solid #f1c40f;
+            background: linear-gradient(145deg, #163827, var(--bg2));
+            border: 2px solid var(--acc);
             border-radius: 20px;
             width: 100%;
             max-width: 350px;
             padding: 25px 20px;
             text-align: center;
             position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(241, 196, 15, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(var(--accrgb), 0.3);
             animation: popupScale 0.3s ease-out;
         }
         @keyframes popupScale {
@@ -726,18 +777,18 @@
         .custom-popup-logo {
             width: 75px;
             height: 75px;
-            background: radial-gradient(circle, #f1c40f 0%, #d35400 100%);
+            background: radial-gradient(circle, var(--btn) 0%, var(--gift2) 100%);
             border-radius: 50%;
             margin: 0 auto 15px auto;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 36px;
-            box-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+            box-shadow: 0 0 15px rgba(var(--accrgb), 0.5);
             border: 2px solid #fff;
         }
         .custom-popup-title {
-            color: #f1c40f;
+            color: var(--acc);
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 8px;
@@ -750,7 +801,7 @@
             margin-bottom: 20px;
         }
         .custom-popup-btn {
-            background: linear-gradient(135deg, #f1c40f, #d35400);
+            background: linear-gradient(135deg, var(--btn), var(--gift2));
             color: #000;
             border: none;
             width: 100%;
@@ -759,7 +810,7 @@
             font-weight: bold;
             font-size: 15px;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);
+            box-shadow: 0 4px 10px rgba(var(--accrgb), 0.4);
         }
 
         .wa-box-container {
@@ -809,7 +860,7 @@
         }
         .wa-close-btn {
             background: rgba(255, 255, 255, 0.08);
-            color: #aaa;
+            color: var(--sub);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             width: 30px;
@@ -828,12 +879,12 @@
         }
         .wa-stats-card {
             background: linear-gradient(135deg, rgba(17, 54, 38, 0.8), rgba(6, 25, 17, 0.9));
-            border: 1px solid rgba(39, 174, 96, 0.4);
+            border: 1px solid rgba(var(--bdrgb), 0.4);
             padding: 14px;
             border-radius: 14px;
             text-align: center;
             margin-bottom: 18px;
-            box-shadow: inset 0 0 15px rgba(39, 174, 96, 0.1);
+            box-shadow: inset 0 0 15px rgba(var(--bdrgb), 0.1);
             position: relative;
         }
         .wa-stats-card::after {
@@ -846,7 +897,7 @@
             background: linear-gradient(90deg, transparent, #25d366, transparent);
         }
         .wa-stats-title {
-            color: #f1c40f;
+            color: var(--acc);
             font-size: 11px;
             font-weight: 800;
             letter-spacing: 1.5px;
@@ -857,7 +908,7 @@
         .wa-stats-val {
             font-size: 24px;
             font-weight: 800;
-            color: #ffffff;
+            color: var(--txt);
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .wa-section-title {
@@ -887,7 +938,7 @@
         }
         .wa-country-badge {
             background: #142e20;
-            border: 1px solid rgba(39, 174, 96, 0.3);
+            border: 1px solid rgba(var(--bdrgb), 0.3);
             padding: 0 12px;
             border-radius: 10px;
             font-size: 13px;
@@ -905,7 +956,7 @@
             font-size: 13px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+            box-shadow: 0 4px 12px rgba(var(--bdrgb), 0.3);
             white-space: nowrap;
         }
         .wa-code-boxes {
@@ -917,7 +968,7 @@
         .wa-code-box {
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(37, 211, 102, 0.4);
-            color: #ffcc00;
+            color: var(--acc);
             font-weight: 800;
             font-size: 18px;
             width: 34px;
@@ -953,7 +1004,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
-            border: 1px solid rgba(39, 174, 96, 0.25);
+            border: 1px solid rgba(var(--bdrgb), 0.25);
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
         .wa-status-badge {
@@ -980,22 +1031,22 @@
             margin: 15px 0;
         }
         .checkin-day-box {
-            background: #0d271a;
-            border: 1px solid #27ae60;
+            background: var(--bg2);
+            border: 1px solid var(--bd);
             border-radius: 8px;
             padding: 8px 4px;
             text-align: center;
             position: relative;
         }
         .checkin-day-box.active-day {
-            background: linear-gradient(135deg, #f39c12, #d35400);
-            border-color: #ffcc00;
+            background: linear-gradient(135deg, var(--gift1), var(--gift2));
+            border-color: var(--acc);
             color: #fff;
             font-weight: bold;
             box-shadow: 0 0 8px rgba(243, 156, 18, 0.6);
         }
         .checkin-day-box.claimed-day {
-            background: #1b4d3e;
+            background: var(--bar);
             border-color: #2ecc71;
             opacity: 0.7;
         }
@@ -1006,28 +1057,28 @@
         }
         .checkin-day-amt {
             font-size: 11px;
-            color: #ffcc00;
+            color: var(--acc);
         }
         .checkin-day-box.active-day .checkin-day-amt {
-            color: #ffffff;
+            color: var(--txt);
         }
 
         .auth-card {
-            background-color: #0c2317;
-            border: 2px solid #27ae60;
+            background-color: var(--bg);
+            border: 2px solid var(--bd);
             border-radius: 16px;
             padding: 25px 20px;
             text-align: center;
             max-width: 360px;
             width: 100%;
-            box-shadow: 0 0 20px rgba(39, 174, 96, 0.2);
+            box-shadow: 0 0 20px rgba(var(--bdrgb), 0.2);
             margin: auto;
         }
         .auth-logo {
             width: 60px;
             height: 60px;
-            background: radial-gradient(circle, #2ecc71 0%, #113626 100%);
-            border: 2px solid #ffcc00;
+            background: radial-gradient(circle, #2ecc71 0%, var(--card) 100%);
+            border: 2px solid var(--acc);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -1037,19 +1088,19 @@
             box-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
         }
         .auth-title {
-            color: #ffcc00;
+            color: var(--acc);
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 4px;
         }
         .auth-sub {
-            color: #ccc;
+            color: var(--sub);
             font-size: 12px;
             margin-bottom: 20px;
         }
         .auth-label {
             text-align: left;
-            color: #ccc;
+            color: var(--sub);
             font-size: 11px;
             font-weight: bold;
             margin-bottom: 5px;
@@ -1063,8 +1114,8 @@
             width: 100%;
             padding: 12px;
             border-radius: 8px;
-            border: 1px solid #27ae60;
-            background: #113626;
+            border: 1px solid var(--bd);
+            background: var(--card);
             color: #fff;
             font-size: 13px;
             outline: none;
@@ -1076,10 +1127,10 @@
             transform: translateY(-50%);
             cursor: pointer;
             font-size: 16px;
-            color: #ffcc00;
+            color: var(--acc);
         }
         .auth-btn {
-            background-color: #f1c40f;
+            background-color: var(--btn);
             color: #000;
             font-weight: bold;
             font-size: 15px;
@@ -1093,10 +1144,10 @@
         .auth-switch {
             margin-top: 15px;
             font-size: 12px;
-            color: #ccc;
+            color: var(--sub);
         }
         .auth-switch a {
-            color: #ffcc00;
+            color: var(--acc);
             font-weight: bold;
             text-decoration: none;
             cursor: pointer;
@@ -1112,8 +1163,8 @@
         }
 
         .reward-setup-card {
-            background: linear-gradient(135deg, #0d271a, #081a11);
-            border: 1px solid #27ae60;
+            background: linear-gradient(135deg, var(--bg2), var(--bg3));
+            border: 1px solid var(--bd);
             border-radius: 12px;
             padding: 12px;
             margin-bottom: 12px;
@@ -1121,7 +1172,7 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
         .reward-setup-title {
-            color: #ffcc00;
+            color: var(--acc);
             font-size: 14px;
             font-weight: bold;
             margin-bottom: 8px;
@@ -1150,7 +1201,7 @@
         /* ===== টাস্ক বাটনের সাইড এনিমেশন (বাটনের সাইজ/লেখা/রং অপরিবর্তিত) ===== */
         #task .card { isolation: isolate; }
         @property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-        .gb { --c:#fff4b8; --c2:#ff9d00; --rgb:241,196,15; --d:0s; }
+        .gb { --c:#fff4b8; --c2:#ff9d00; --rgb:var(--accrgb); --d:0s; }
         .gb::before, .gb::after {
             content: ""; position: absolute; z-index: -1; border-radius: inherit; pointer-events: none;
             background: conic-gradient(from var(--ang), transparent 0deg, transparent 170deg, rgba(var(--rgb),.10) 215deg, rgba(var(--rgb),.35) 275deg, rgba(var(--rgb),.85) 330deg, var(--c) 346deg, #ffffff 357deg, transparent 360deg);
@@ -1161,13 +1212,13 @@
         @keyframes gbSpin { to { --ang: 360deg; } }
         @keyframes gbPulse { 0%,100% { opacity: .35; } 50% { opacity: .95; } }
         .gb-wa  { --c:#9dffc3; --rgb:37,211,102; --d:0s; }
-        .gb-gmail { --c:#fff4b8; --rgb:241,196,15; --d:-.6s; }
+        .gb-gmail { --c:#fff4b8; --rgb:var(--accrgb); --d:-.6s; }
         .gb-fb  { --c:#a7d0ff; --rgb:24,119,242; --d:-1.2s; }
         .gb-mon { --c:#e9c2ff; --c2:#ff7ad9; --rgb:155,89,182; --d:-1.8s; }
         .gb-exo { --c:#a8f3ff; --c2:#00bcd4; --rgb:0,188,212; --d:-1.4s; }
-        .gb-pin { --c:#fff4b8; --c2:#ff7a1a; --rgb:241,196,15; --d:-2.4s; }
-        .gb-reg { --c:#fff4b8; --rgb:241,196,15; --d:-.3s; }
-        .gb-ad  { --c:#fff4b8; --rgb:241,196,15; --d:-.9s; }
+        .gb-pin { --c:#fff4b8; --c2:#ff7a1a; --rgb:var(--accrgb); --d:-2.4s; }
+        .gb-reg { --c:#fff4b8; --rgb:var(--accrgb); --d:-.3s; }
+        .gb-ad  { --c:#fff4b8; --rgb:var(--accrgb); --d:-.9s; }
         .gb-chk { --c:#ffd98a; --rgb:243,156,18; --d:-1.5s; }
         .fx-dual::before, .fx-dual::after {
             background:
@@ -1188,7 +1239,7 @@
         .gb-sm::before { inset: -1.5px; }
 
         /* ===== টাস্ক কার্ডের চারপাশে ঘুরন্ত বর্ডার আলো (সাইজ/লোগো অপরিবর্তিত) ===== */
-        #task .card { --rgb:241,196,15; --c:#fff4b8; --c2:#ff9d00; --d:0s; }
+        #task .card { --rgb:var(--accrgb); --c:#fff4b8; --c2:#ff9d00; --d:0s; }
         #card-wa-task { --rgb:37,211,102; --c:#9dffc3; --c2:#25d366; --d:0s; }
         #card-gmail-task { --d:-1.2s; }
         #card-facebook-task { --rgb:24,119,242; --c:#a7d0ff; --c2:#1877f2; --d:-2.4s; }
@@ -1264,59 +1315,99 @@
         #exoAdOverlay .exo-box { background:#06141a; border:1px dashed rgba(0,188,212,.5); border-radius:10px; min-height:260px; display:flex; align-items:center; justify-content:center; overflow:auto; padding:6px; text-align:center; }
         #exoAdOverlay .exo-bar { height:10px; background:#12333d; border-radius:6px; overflow:hidden; margin:12px 0 6px; }
         #exoAdOverlay .exo-bar > div { height:100%; width:0%; background:linear-gradient(90deg,#00bcd4,#00e5ff); transition:width .9s linear; }
-        #exoAdOverlay .exo-time { font-size:14px; font-weight:bold; color:#ffcc00; text-align:center; }
+        #exoAdOverlay .exo-time { font-size:14px; font-weight:bold; color:var(--acc); text-align:center; }
         #exoAdOverlay .exo-note { font-size:12px; color:#9fc3cc; text-align:center; margin-top:6px; line-height:1.5; }
 .dots-loader { display:inline-flex; align-items:center; gap:4px; height:1em; vertical-align:middle; }
-        .dots-loader i { display:inline-block; width:7px; height:7px; border-radius:50%; background:#f1c40f; animation:dotBounce 1s infinite; }
+        .dots-loader i { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--btn); animation:dotBounce 1s infinite; }
         .dots-loader i:nth-child(2) { animation-delay:.15s; }
         .dots-loader i:nth-child(3) { animation-delay:.3s; }
         @keyframes dotBounce { 0%,80%,100% { opacity:.3; transform:translateY(0); } 40% { opacity:1; transform:translateY(-5px); } }
+
+        /* ===== থিম ভেরিয়েবল (ডিফল্ট = আগের সবুজ ডিজাইন) ===== */
+        :root{
+            --bg:#0c2317;--bg2:#0b2217;--bg3:#081a11;--bar:#1b4d3e;--card:#113626;--card2:#0f2a1f;
+            --bd:#27ae60;--bd2:#1f6b43;--bdrgb:39,174,96;--acc:#ffcc00;--accrgb:255,204,0;
+            --btn:#f1c40f;--btn2:#f1c40f;--btnTxt:#000000;--gift1:#f39c12;--gift2:#d35400;--giftTxt:#ffffff;
+            --txt:#ffffff;--txt2:#cfe9d8;--sub:#cccccc;--sub2:#9fd8b5;--navAct:#2ecc71;--off:#2980b9;--sup:#c0392b;
+        }
+        html{background:var(--bg3)}
+        body,.top-title-bar,.navbar,.card,.balance-card,.btn{transition:background-color .25s ease,border-color .25s ease,color .25s ease}
+        /* থিম কন্ট্রোল পেজ */
+        #adminThemeModal{background:var(--bg3);padding:0;z-index:100000}
+        .th-wrap{max-width:520px;margin:0 auto;padding:12px 14px 120px}
+        .th-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;position:sticky;top:0;background:var(--bg3);padding:8px 0;z-index:5}
+        .th-head h3{color:var(--acc);font-size:18px}
+        .th-close{background:var(--sup);color:#fff;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:13px}
+        .th-sec{color:var(--sub);font-size:12px;letter-spacing:1px;margin:14px 0 8px;font-weight:bold}
+        .th-pv{border:2px dashed var(--bd);border-radius:14px;padding:12px;background:var(--bg)}
+        .th-pv .balance-card{padding:14px;margin-bottom:10px}
+        .th-pv .balance-amount{font-size:26px}
+        .th-pv .btn{margin-bottom:8px;padding:10px;font-size:14px}
+        .th-pv .pv-task{display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--bd);border-radius:12px;padding:10px 12px;text-align:left}
+        .th-pv .pv-task .ic{flex:0 0 40px;height:40px;border-radius:10px;background:#25d366;display:flex;align-items:center;justify-content:center;font-size:20px}
+        .th-pv .pv-task h4{color:var(--acc);font-size:14px;margin-bottom:3px}
+        .th-pv .pv-task p{color:var(--sub);font-size:12px}
+        .th-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .th-card{border:2px solid transparent;border-radius:14px;padding:10px;cursor:pointer;text-align:left;position:relative;transition:transform .12s ease,border-color .2s ease}
+        .th-card:active{transform:scale(.97)}
+        .th-card.sel{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+        .th-card .sw{display:flex;height:26px;border-radius:7px;overflow:hidden;margin-bottom:8px;border:1px solid rgba(255,255,255,.12)}
+        .th-card .sw i{flex:1}
+        .th-card .nm{font-size:13px;font-weight:bold;line-height:1.3;margin-bottom:2px}
+        .th-card .tg{font-size:11px;opacity:.85;margin-bottom:6px}
+        .th-card .aa{font-size:12px;border-radius:7px;padding:5px 7px;display:flex;justify-content:space-between;align-items:center}
+        .th-card .ck{position:absolute;top:6px;right:8px;width:20px;height:20px;border-radius:50%;background:#fff;color:#000;font-size:12px;font-weight:bold;display:none;align-items:center;justify-content:center}
+        .th-card.sel .ck{display:flex}
+        .th-bar{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:2px solid var(--bd);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;z-index:6;max-width:100%}
+        .th-bar .btn{margin:0;flex:1;padding:12px;font-size:15px}
+        .th-bar .btn.cancel{background:transparent;color:var(--txt);border:1.5px solid var(--bd);box-shadow:none}
+        .th-state{font-size:12px;color:var(--sub);text-align:center;margin-top:8px;min-height:16px}
     </style>
 <style>
 /* ===== রেজিস্ট্রেশন টাস্ক নতুন ডিজাইন ===== */
-.rg-box{background:#113626;border:2px solid #27ae60;border-radius:14px;padding:14px;width:92%;max-width:400px;max-height:92vh;overflow-y:auto;margin:auto;box-shadow:0 0 18px rgba(39,174,96,.35);text-align:left;}
+.rg-box{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:14px;width:92%;max-width:400px;max-height:92vh;overflow-y:auto;margin:auto;box-shadow:0 0 18px rgba(var(--bdrgb),.35);text-align:left;}
 .rg-hd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
-.rg-hd h3{margin:0;font-size:17px;color:#ffcc00;flex:1;}
-.rg-adm{padding:6px 10px;border-radius:8px;border:1px solid #f1c40f;background:#2a2406;color:#f1c40f;font-size:12px;font-weight:700;cursor:pointer;}
+.rg-hd h3{margin:0;font-size:17px;color:var(--acc);flex:1;}
+.rg-adm{padding:6px 10px;border-radius:8px;border:1px solid var(--acc);background:#2a2406;color:var(--acc);font-size:12px;font-weight:700;cursor:pointer;}
 .rg-x{width:30px;height:30px;border-radius:8px;border:none;background:#c0392b;color:#fff;font-size:14px;cursor:pointer;}
 .rg-sum{display:flex;gap:8px;margin-bottom:10px;}
-.rg-sm{flex:1;background:#0c2317;border:1px solid #1f6b43;border-radius:10px;padding:8px;text-align:center;}
-.rg-sm b{display:block;font-size:16px;color:#f1c40f;}
-.rg-sm span{font-size:11px;color:#9fd8b5;}
-.rg-rules{background:linear-gradient(160deg,#16452d,#0c2317);border:1.5px solid #f1c40f;border-radius:12px;padding:10px 12px;margin-bottom:12px;box-shadow:0 0 14px rgba(241,196,15,.25);}
-.rg-rules .rt{font-size:14px;font-weight:700;color:#ffcc00;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.rg-sm{flex:1;background:var(--bg);border:1px solid var(--bd2);border-radius:10px;padding:8px;text-align:center;}
+.rg-sm b{display:block;font-size:16px;color:var(--acc);}
+.rg-sm span{font-size:11px;color:var(--sub2);}
+.rg-rules{background:linear-gradient(160deg,#16452d,var(--bg));border:1.5px solid var(--acc);border-radius:12px;padding:10px 12px;margin-bottom:12px;box-shadow:0 0 14px rgba(var(--accrgb),.25);}
+.rg-rules .rt{font-size:14px;font-weight:700;color:var(--acc);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
 .rg-rules .st{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#e8fff1;margin-bottom:7px;line-height:1.5;}
 .rg-rules .st i{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#27ae60;color:#fff;font-style:normal;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .rg-rules .wn{margin-top:4px;background:rgba(192,57,43,.22);border:1px solid #e74c3c;border-radius:8px;padding:7px 9px;font-size:12px;color:#ffb4a8;line-height:1.5;}
-.rg-it{background:#0c2317;border:1px solid #1f6b43;border-radius:12px;padding:10px;margin-bottom:10px;}
+.rg-it{background:var(--bg);border:1px solid var(--bd2);border-radius:12px;padding:10px;margin-bottom:10px;}
 .rg-r1{display:flex;align-items:center;gap:10px;}
-.rg-ic{width:40px;height:40px;border-radius:50%;background:#173f2b;border:1px solid #f1c40f;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.rg-ic{width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .rg-nm{flex:1;min-width:0;}
 .rg-nm b{display:block;font-size:14px;color:#fff;word-break:break-word;}
-.rg-nm span{font-size:12px;color:#9fd8b5;}
-.rg-ch{font-size:11px;padding:3px 8px;border-radius:20px;background:#173f2b;color:#9fd8b5;white-space:nowrap;}
-.rg-ch.w{background:#4a3b05;color:#f1c40f;}
+.rg-nm span{font-size:12px;color:var(--sub2);}
+.rg-ch{font-size:11px;padding:3px 8px;border-radius:20px;background:var(--card2);color:var(--sub2);white-space:nowrap;}
+.rg-ch.w{background:#4a3b05;color:var(--acc);}
 .rg-ch.d{background:#1b5e3a;color:#7dffb0;}
 .rg-btns{display:grid;grid-template-columns:1fr;gap:8px;margin-top:9px;}
 .rg-btns.two{grid-template-columns:1fr 1fr;}
 .rg-bt{width:100%;height:46px;padding:0 8px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;color:#fff;}
-.rg-bt.y{background:#f1c40f;color:#000;}
-.rg-bt.o{background:linear-gradient(135deg,#f39c12,#d35400);}
+.rg-bt.y{background:var(--btn);color:#000;}
+.rg-bt.o{background:linear-gradient(135deg,var(--gift1),var(--gift2));}
 .rg-bt.g,.rg-bt.l{background:#1b3d2b;color:#7a9;cursor:default;}
 .rg-bt.g{color:#6f9;}
 .rg-close{width:100%;padding:11px;border:none;border-radius:10px;background:#c0392b;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
 .rg-it.lk{opacity:.78;border-style:dashed;border-color:#4b6b58;}
 .rg-it.lk .rg-ic{border-color:#6b7f73;filter:grayscale(1);}
 .rg-ch.k{background:#2b2f2d;color:#aab7b0;}
-.rg-empty{text-align:center;color:#9fd8b5;font-size:13px;padding:14px 6px;}
-.rg-ap{background:#0c2317;border:2px dashed #f1c40f;border-radius:12px;padding:12px;margin-bottom:12px;}
-.rg-ap h4{margin:0 0 8px;font-size:14px;color:#f1c40f;}
-.rg-tm{display:flex;align-items:center;gap:8px;background:#113626;border:1px solid #1f6b43;border-radius:10px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:#cfe;}
-.rg-in{background:#113626;border:1px solid #1f6b43;border-radius:8px;padding:8px;color:#fff;font-size:13px;width:100%;box-sizing:border-box;}
-.rg-in.sm{width:70px;text-align:center;border-color:#27ae60;}
-.rg-row{background:#113626;border:1px solid #1f6b43;border-radius:10px;padding:8px;margin-bottom:8px;}
+.rg-empty{text-align:center;color:var(--sub2);font-size:13px;padding:14px 6px;}
+.rg-ap{background:var(--bg);border:2px dashed var(--acc);border-radius:12px;padding:12px;margin-bottom:12px;}
+.rg-ap h4{margin:0 0 8px;font-size:14px;color:var(--acc);}
+.rg-tm{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--bd2);border-radius:10px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:var(--txt2);}
+.rg-in{background:var(--card);border:1px solid var(--bd2);border-radius:8px;padding:8px;color:#fff;font-size:13px;width:100%;box-sizing:border-box;}
+.rg-in.sm{width:70px;text-align:center;border-color:var(--bd);}
+.rg-row{background:var(--card);border:1px solid var(--bd2);border-radius:10px;padding:8px;margin-bottom:8px;}
 .rg-row .l1{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
-.rg-row .l2{display:flex;gap:6px;align-items:center;margin-top:6px;font-size:12px;color:#cfe;}
+.rg-row .l2{display:flex;gap:6px;align-items:center;margin-top:6px;font-size:12px;color:var(--txt2);}
 .rg-del{border:none;background:#c0392b;color:#fff;border-radius:8px;padding:7px 9px;cursor:pointer;}
 .rg-ab{width:100%;padding:10px;border:none;border-radius:10px;background:#27ae60;color:#fff;font-weight:700;font-size:13px;margin-top:4px;cursor:pointer;}
 </style>
@@ -1339,7 +1430,7 @@
         <div class="loading-title-text">Mega Income</div>
     </div>
 
-    <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: #07150d;">
+    <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: var(--bg3);">
         <div id="loginBox" class="auth-card">
             <div class="auth-logo">🚀</div>
             <div class="auth-title">Mega Income Pro</div>
@@ -1467,7 +1558,7 @@
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="WhatsApp Logo">
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #25d366; margin-bottom: 4px;">💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতি মেসেজে পাবেন <span id="ui-reward-wa">৳1.00</span> টাকা। হোয়াটসঅ্যাপ অ্যাকাউন্ট বাঁধুন এবং মেসেজ পাঠিয়ে আয় করুন!</p>
+                    <p style="color: var(--sub); margin-bottom: 8px; font-size: 12px;">প্রতি মেসেজে পাবেন <span id="ui-reward-wa">৳1.00</span> টাকা। হোয়াটসঅ্যাপ অ্যাকাউন্ট বাঁধুন এবং মেসেজ পাঠিয়ে আয় করুন!</p>
                     <button class="btn btn-whatsapp gb gb-wa" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('waTask', openWhatsAppTaskModal)">🚀 WhatsApp কাজের পেজে যান</button>
                 </div>
             </div>
@@ -1475,8 +1566,8 @@
             <div class="card" id="card-gmail-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Gmail Logo">
                 <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📧 জিমেইল সেল টাস্ক</h3>
-                    <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক জিমেইল সেল করার জন্য <span id="ui-reward-gmail">১৫</span> টাকা পাবেন।</p>
+                    <h3 style="color: var(--acc); margin-bottom: 4px;">📧 জিমেইল সেল টাস্ক</h3>
+                    <p style="color: var(--txt); margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক জিমেইল সেল করার জন্য <span id="ui-reward-gmail">১৫</span> টাকা পাবেন।</p>
                     <button class="btn btn-main gb gb-gmail fx-dual" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('gmailTask', openGmailSellPage)">জিমেইল সেল করুন</button>
                 </div>
             </div>
@@ -1485,7 +1576,7 @@
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Facebook Logo">
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #1877f2; margin-bottom: 4px;">📘 ফেসবুক সেল টাস্ক</h3>
-                    <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক ফেসবুক আইডি সেল করার জন্য <span id="ui-reward-facebook">৫</span> টাকা পাবেন।</p>
+                    <p style="color: var(--txt); margin-bottom: 8px; font-size: 12px;">প্রতি সঠিক ফেসবুক আইডি সেল করার জন্য <span id="ui-reward-facebook">৫</span> টাকা পাবেন।</p>
                     <button class="btn btn-facebook gb gb-fb fx-pulse" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('facebookTask', openFacebookSellPage)">ফেসবুক সেল করুন</button>
                 </div>
             </div>
@@ -1501,7 +1592,7 @@
                 </div>
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #00bcd4; margin-bottom: 4px;">📢 স্পন্সর এড টাস্ক</h3>
-                    <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখলে পাবেন <span id="ui-reward-exo">৳1.00</span> টাকা।</p>
+                    <p style="color: var(--txt); margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখলে পাবেন <span id="ui-reward-exo">৳1.00</span> টাকা।</p>
                     <button class="btn btn-exo gb gb-exo fx-pulse" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('exoAdTask', openExoAdTask)">📢 এড দেখুন</button>
                 </div>
             </div>
@@ -1516,16 +1607,16 @@
                 </div>
                 <div style="flex-grow: 1; width: 100%;">
                     <h3 style="color: #9b59b6; margin-bottom: 4px;">🎬 Monetag স্মার্ট এডস</h3>
-                    <p style="color: #ffffff; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখলে পাবেন <span id="ui-reward-monetag">৳1.00</span> টাকা।</p>
+                    <p style="color: var(--txt); margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখলে পাবেন <span id="ui-reward-monetag">৳1.00</span> টাকা।</p>
                     <button class="btn btn-monetag gb gb-mon fx-aurora" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('monetagTask', watchMonetagAdTask)">🎬 Monetag এডস দেখুন</button>
                 </div>
             </div>
 
-            <div class="card" id="card-pin-task" style="border: 2px solid #f1c40f; display: flex; align-items: center; text-align: left; gap: 12px;">
+            <div class="card" id="card-pin-task" style="border: 2px solid var(--acc); display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Pin Logo">
                 <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
+                    <h3 style="color: var(--acc); margin-bottom: 4px;">📱 পিন সাবমিট টাস্ক</h3>
+                    <p style="color: var(--sub); margin-bottom: 8px; font-size: 12px;">আপনার সিম অনুযায়ী অফার সম্পূর্ণ করুন এবং প্রুফ আপলোড দিন!</p>
                     <button class="btn btn-main gb gb-pin fx-aurora" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('pinTask', openPinSubmitModal)">🚀 পিন সাবমিট কাজ শুরু করুন</button>
                 </div>
             </div>
@@ -1533,8 +1624,8 @@
             <div class="card" id="card-reg-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Registration Logo">
                 <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">⭐ রেজিস্ট্রেশন টাস্ক</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
+                    <h3 style="color: var(--acc); margin-bottom: 4px;">⭐ রেজিস্ট্রেশন টাস্ক</h3>
+                    <p style="color: var(--sub); margin-bottom: 8px; font-size: 12px;">প্রতিটি রেজিস্ট্রেশন সম্পন্ন করলে নির্দিষ্ট রিওয়ার্ড পাবেন!</p>
                     <button class="btn btn-main gb gb-reg fx-pulse" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('regTask', openRegTaskPage)">রেজিস্ট্রেশন শুরু করুন</button>
                 </div>
             </div>
@@ -1542,17 +1633,17 @@
             <div class="card" id="card-ad-task" style="display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/2983/2983797.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Video Ads Logo">
                 <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📺 ভিডিও এডস টাস্ক</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখে পাবেন <span id="ui-reward-ad">৳1.00</span> টাকা</p>
+                    <h3 style="color: var(--acc); margin-bottom: 4px;">📺 ভিডিও এডস টাস্ক</h3>
+                    <p style="color: var(--sub); margin-bottom: 8px; font-size: 12px;">সম্পূর্ণ বিজ্ঞাপন দেখে পাবেন <span id="ui-reward-ad">৳1.00</span> টাকা</p>
                     <button class="btn btn-main gb gb-ad fx-dual" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('adTask', watchAdTask)">📺 বিজ্ঞাপন দেখুন</button>
                 </div>
             </div>
 
-            <div class="card" id="card-checkin-task" style="border: 2px solid #f39c12; display: flex; align-items: center; text-align: left; gap: 12px;">
+            <div class="card" id="card-checkin-task" style="border: 2px solid var(--gift1); display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" style="width: 48px; height: 48px; flex-shrink: 0;" alt="Daily Checkin Logo">
                 <div style="flex-grow: 1; width: 100%;">
-                    <h3 style="color: #ffcc00; margin-bottom: 4px;">📅 ডেইলি সাইন-ইন / চেক-ইন</h3>
-                    <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">প্রতিদিন সাইন-ইন করে ফ্রি ক্যাশ রিওয়ার্ড নিন!</p>
+                    <h3 style="color: var(--acc); margin-bottom: 4px;">📅 ডেইলি সাইন-ইন / চেক-ইন</h3>
+                    <p style="color: var(--sub); margin-bottom: 8px; font-size: 12px;">প্রতিদিন সাইন-ইন করে ফ্রি ক্যাশ রিওয়ার্ড নিন!</p>
                     <button class="btn btn-gift gb gb-chk" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('checkinTask', openDailyCheckinModal)">📅 ডেইলি সাইন-ইন করুন</button>
                 </div>
             </div>
@@ -1572,24 +1663,24 @@
         </div>
 
         <div id="dailyCheckinModal" class="modal-overlay">
-            <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center; color:#fff;">
-                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #27ae60; padding-bottom:8px; margin-bottom:15px;">
-                    <h3 style="color:#ffcc00; font-size:18px;">📅 ডেইলি সাইন-ইন</h3>
+            <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center; color:#fff;">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--bd); padding-bottom:8px; margin-bottom:15px;">
+                    <h3 style="color:var(--acc); font-size:18px;">📅 ডেইলি সাইন-ইন</h3>
                     <button onclick="closeDailyCheckinModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">বন্ধ করুন ✖</button>
                 </div>
 
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
-                    <div style="flex:1; background:#0d271a; border:1px solid #27ae60; border-radius:8px; padding:10px;">
-                        <span style="font-size:11px; color:#aaa; display:block;">বর্তমান স্ট্রিক</span>
-                        <span id="checkin-streak-val" style="font-size:18px; font-weight:bold; color:#ffcc00;">0 দিন</span>
+                    <div style="flex:1; background:var(--bg2); border:1px solid var(--bd); border-radius:8px; padding:10px;">
+                        <span style="font-size:11px; color:var(--sub); display:block;">বর্তমান স্ট্রিক</span>
+                        <span id="checkin-streak-val" style="font-size:18px; font-weight:bold; color:var(--acc);">0 দিন</span>
                     </div>
-                    <div style="flex:1; background:#0d271a; border:1px solid #27ae60; border-radius:8px; padding:10px;">
-                        <span style="font-size:11px; color:#aaa; display:block;">মোট চেক-ইন ইনকাম</span>
+                    <div style="flex:1; background:var(--bg2); border:1px solid var(--bd); border-radius:8px; padding:10px;">
+                        <span style="font-size:11px; color:var(--sub); display:block;">মোট চেক-ইন ইনকাম</span>
                         <span style="font-size:18px; font-weight:bold; color:#2ecc71;">৳ <span id="checkin-total-val">0.00</span></span>
                     </div>
                 </div>
 
-                <p style="font-size:12px; color:#ddd; margin-bottom:10px;">প্রতিদিন নিয়মিত সাইন-ইন করে রিওয়ার্ড আনলক করুন:</p>
+                <p style="font-size:12px; color:var(--sub); margin-bottom:10px;">প্রতিদিন নিয়মিত সাইন-ইন করে রিওয়ার্ড আনলক করুন:</p>
 
                 <div class="checkin-grid" id="checkin-grid-container"></div>
 
@@ -1661,7 +1752,7 @@
                 </div>
 
                 <div class="wa-guide-box">
-                    <div style="color: #f1c40f; font-weight: bold; font-size: 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 5px;">
+                    <div style="color: var(--acc); font-weight: bold; font-size: 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 5px;">
                         💡 বাঁধার নির্দেশনা:
                     </div>
                     <ol style="color: #b0bec5; font-size: 11px; padding-left: 18px; line-height: 1.6;">
@@ -1675,12 +1766,12 @@
         </div>
 
         <div id="pinSubmitModal" class="modal-overlay">
-            <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
+            <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
                 <div style="text-align: right; margin-bottom: 10px;">
-                    <button onclick="closePinSubmitModal()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer;">বন্ধ করুন ✖</button>
+                    <button onclick="closePinSubmitModal()" style="background-color: #ff3333; color: var(--txt); border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer;">বন্ধ করুন ✖</button>
                 </div>
-                <h3 style="color:#ffcc00; margin-bottom:10px;">📱 আপনার অপারেটর বেছে নিন</h3>
-                <p style="color:#ccc; font-size:12px; margin-bottom:15px;">সঠিক সিম বেছে নিয়ে পিন সাবমিট টাস্ক সম্পূর্ণ করুন:</p>
+                <h3 style="color:var(--acc); margin-bottom:10px;">📱 আপনার অপারেটর বেছে নিন</h3>
+                <p style="color:var(--sub); font-size:12px; margin-bottom:15px;">সঠিক সিম বেছে নিয়ে পিন সাবমিট টাস্ক সম্পূর্ণ করুন:</p>
 
                 <button class="btn btn-gp" onclick="selectOperatorTask('GP')">🔵 Grameenphone Pin Offer (<span id="btn-reward-GP">৳8</span>)</button>
                 <button class="btn btn-bl" onclick="selectOperatorTask('BL')">🟠 Banglalink Pin Offer (<span id="btn-reward-BL">৳8</span>)</button>
@@ -1689,35 +1780,35 @@
                 <button class="btn btn-teletalk" onclick="selectOperatorTask('Teletalk')">🟢 Teletalk Pin Offer (<span id="btn-reward-Teletalk">৳5</span>)</button>
                 <button class="btn btn-wifi" onclick="selectOperatorTask('Wifi')">🌐 Wi-Fi User Offer (<span id="btn-reward-Wifi">৳5</span>)</button>
 
-                <hr style="border:0; border-top:1px solid #1a3325; margin:15px 0;">
+                <hr style="border:0; border-top:1px solid var(--bd2); margin:15px 0;">
                 <button onclick="togglePinHistory()" style="background:#495057; color:#fff; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-size:12px;">📜 পিন সাবমিট কাজ রিপোর্ট</button>
                 
-                <div id="pinHistorySection" style="display:none; margin-top:15px; text-align:left; background:#0d1e15; padding:10px; border-radius:8px;">
-                    <h5 style="color:#ffcc00; margin-bottom:8px;">আপনার সাবমিট করা প্রুফ লিস্ট:</h5>
+                <div id="pinHistorySection" style="display:none; margin-top:15px; text-align:left; background:var(--bg3); padding:10px; border-radius:8px;">
+                    <h5 style="color:var(--acc); margin-bottom:8px;">আপনার সাবমিট করা প্রুফ লিস্ট:</h5>
                     <ul id="pinHistoryLog" style="list-style:none; font-size:12px; line-height:1.8;"></ul>
                 </div>
             </div>
         </div>
 
         <div id="pinTaskWorkModal" class="modal-overlay">
-            <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
+            <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto; text-align:center;">
                 <div style="text-align: right; margin-bottom: 10px;">
-                    <button onclick="closePinWorkModal()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer;">বন্ধ করুন ✖</button>
+                    <button onclick="closePinWorkModal()" style="background-color: #ff3333; color: var(--txt); border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer;">বন্ধ করুন ✖</button>
                 </div>
-                <h3 id="selectedOpTitle" style="color:#ffcc00; margin-bottom:10px;">অফার ডিটেইলস</h3>
+                <h3 id="selectedOpTitle" style="color:var(--acc); margin-bottom:10px;">অফার ডিটেইলস</h3>
                 
                 <p style="color:#fff; font-size:12px; margin-bottom:5px;"><b>নমুনা পিকচার (Sample Work Screenshot):</b></p>
-                <div style="margin-bottom:12px; border:1px dashed #27ae60; padding:5px; border-radius:8px; background: #081a11;">
+                <div style="margin-bottom:12px; border:1px dashed var(--bd); padding:5px; border-radius:8px; background: var(--bg3);">
                     <img id="sampleWorkImg" src="" style="width:100%; max-height:180px; border-radius:6px; object-fit:contain; display:block; margin:0 auto;" alt="Sample Image">
                 </div>
 
                 <button class="btn btn-main" onclick="openOpLink()" style="margin-bottom:15px;">🌐 অফার লিংকে যান (Click Here)</button>
 
                 <div class="input-group">
-                    <label style="font-weight:bold; color:#ffcc00;">📸 আপনার কাজের স্ক্রিনশট সিলেক্ট করুন:</label>
+                    <label style="font-weight:bold; color:var(--acc);">📸 আপনার কাজের স্ক্রিনশট সিলেক্ট করুন:</label>
                     <input type="file" id="pinProofFileInput" accept="image/*" style="display:none;" onchange="previewUserSelectedImage(event)">
                     
-                    <div style="border:2px dashed #f1c40f; background:#0d271a; border-radius:10px; padding:15px; text-align:center; cursor:pointer;" onclick="document.getElementById('pinProofFileInput').click()">
+                    <div style="border:2px dashed var(--acc); background:var(--bg2); border-radius:10px; padding:15px; text-align:center; cursor:pointer;" onclick="document.getElementById('pinProofFileInput').click()">
                         <div id="uploadBoxContent">
                             <span style="font-size:28px;">➕</span>
                             <div style="font-size:13px; color:#fff; font-weight:bold; margin-top:5px;">গ্যালারি থেকে ছবি বেছে নিন</div>
@@ -1731,20 +1822,20 @@
         </div>
 
         <div id="gmailSellOverlay" class="modal-overlay">
-            <div style="background:#113626; border: 2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #27ae60; padding-bottom: 8px; margin-bottom: 15px;">
+            <div style="background:var(--card); border: 2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--bd); padding-bottom: 8px; margin-bottom: 15px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style="width: 28px; height: 28px;" alt="Gmail">
-                        <h2 style="color: #ffcc00; font-size: 18px; margin: 0;">Gmail Sell</h2>
+                        <h2 style="color: var(--acc); font-size: 18px; margin: 0;">Gmail Sell</h2>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="background: #a3e4d7; color: #0c2317; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 13px;">Rate: ৳<span id="rate-gmail-val">15</span></div>
-                        <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">বন্ধ করুন ✖</button>
+                        <div style="background: #a3e4d7; color: var(--bg); padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 13px;">Rate: ৳<span id="rate-gmail-val">15</span></div>
+                        <button onclick="closeGmailSellPage()" style="background-color: #ff3333; color: var(--txt); border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">বন্ধ করুন ✖</button>
                     </div>
                 </div>
 
-                <div style="background: linear-gradient(135deg, #fef9e7, #fcf3cf); border: 1.5px dashed #f39c12; border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: left;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #f39c12; padding-bottom: 8px;">
+                <div style="background: linear-gradient(135deg, #fef9e7, #fcf3cf); border: 1.5px dashed var(--gift1); border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: left;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed var(--gift1); padding-bottom: 8px;">
                         <div>
                             <span style="color: #b9770e; font-size: 12px; font-weight: bold; display: block;">👤 First Name:</span>
                             <span id="display-gmail-name-val" style="color: #27ae60; font-size: 15px; font-weight: bold;">Hasan</span>
@@ -1762,22 +1853,22 @@
                 </div>
 
                 <div style="margin: 15px 0; text-align: left;">
-                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 13px;">আপনার জিমেইল লিখুন (পাসওয়ার্ড বা অন্য কিছু নয়):</label>
+                    <label style="color: var(--txt); display: block; margin-bottom: 4px; font-size: 13px;">আপনার জিমেইল লিখুন (পাসওয়ার্ড বা অন্য কিছু নয়):</label>
                     <input type="text" id="gmailInputField" placeholder="exmaple@gmail.com" class="input-control">
                 </div>
 
                 <div style="margin-top: 15px;">
                     <button onclick="handleGmailSubmit()" class="btn btn-main" style="margin-bottom:10px;">🚀 সাবমিট করুন</button>
                     <button onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')" class="btn btn-official" style="margin-bottom:15px;">🎬 কাজের ভিডিও দেখুন</button>
-                    <hr style="border: 0; border-top: 1px solid #1a3325; margin-bottom: 15px;">
+                    <hr style="border: 0; border-top: 1px solid var(--bd2); margin-bottom: 15px;">
                     <div style="text-align: center;">
-                        <button onclick="toggleWorkHistory()" style="background-color: #495057; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 আমার সাবমিট করা জিমেইল লিস্ট</button>
+                        <button onclick="toggleWorkHistory()" style="background-color: #495057; color: var(--txt); border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 আমার সাবমিট করা জিমেইল লিস্ট</button>
                     </div>
                 </div>
 
-                <div id="gmailHistorySection" style="display: none; margin-top: 20px; background-color: #0d1e15; padding: 15px; border-radius: 8px; border: 1px solid #1a3325;">
-                    <h4 style="color: #ffcc00; margin: 0 0 12px 0; font-size: 14px;">আপনার জিমেইল সাবমিট রিপোর্ট:</h4>
-                    <ul id="gmailHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.6; width: 100%;"></ul>
+                <div id="gmailHistorySection" style="display: none; margin-top: 20px; background-color: var(--bg3); padding: 15px; border-radius: 8px; border: 1px solid var(--bd2);">
+                    <h4 style="color: var(--acc); margin: 0 0 12px 0; font-size: 14px;">আপনার জিমেইল সাবমিট রিপোর্ট:</h4>
+                    <ul id="gmailHistoryLog" style="color: var(--txt); list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.6; width: 100%;"></ul>
                 </div>
             </div>
         </div>
@@ -1790,8 +1881,8 @@
                         <h2 style="color: #1877f2; font-size: 18px; margin: 0; font-weight: bold;">Facebook Sell</h2>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="background: #1877f2; color: #ffffff; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 13px;">Rate: ৳<span id="rate-fb-val">5</span></div>
-                        <button onclick="closeFacebookSellPage()" style="background-color: #ff3333; color: #ffffff; border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">বন্ধ করুন ✖</button>
+                        <div style="background: #1877f2; color: var(--txt); padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 13px;">Rate: ৳<span id="rate-fb-val">5</span></div>
+                        <button onclick="closeFacebookSellPage()" style="background-color: #ff3333; color: var(--txt); border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">বন্ধ করুন ✖</button>
                     </div>
                 </div>
 
@@ -1822,12 +1913,12 @@
                 </div>
 
                 <div style="margin-bottom: 12px; text-align: left;">
-                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 13px;">১. ফেসবুক UID (User ID):</label>
+                    <label style="color: var(--txt); display: block; margin-bottom: 4px; font-size: 13px;">১. ফেসবুক UID (User ID):</label>
                     <input type="text" id="fbUidInputField" placeholder="ex: 1000859384912" class="input-control" style="background:#1e293b; border-color:#334155;">
                 </div>
 
                 <div style="margin-bottom: 15px; text-align: left;">
-                    <label style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 13px;">২. ফেসবুক কুকিজ (Facebook Cookies):</label>
+                    <label style="color: var(--txt); display: block; margin-bottom: 4px; font-size: 13px;">২. ফেসবুক কুকিজ (Facebook Cookies):</label>
                     <textarea id="fbCookiesInputField" rows="3" placeholder="Paste full facebook cookies here..." class="input-control" style="background:#1e293b; border-color:#334155; resize:none;"></textarea>
                 </div>
 
@@ -1838,13 +1929,13 @@
                     
                     <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
                     <div style="text-align: center;">
-                        <button onclick="toggleFbWorkHistory()" style="background-color: #334155; color: #ffffff; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 ফেসবুক সেল হিস্ট্রি</button>
+                        <button onclick="toggleFbWorkHistory()" style="background-color: #334155; color: var(--txt); border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 ফেসবুক সেল হিস্ট্রি</button>
                     </div>
                 </div>
 
                 <div id="fbHistorySection" style="display: none; margin-top: 20px; background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
                     <h4 style="color: #1877f2; margin: 0 0 12px 0; font-size: 14px;">আপনার ফেসবুক সাবমিট রিপোর্ট:</h4>
-                    <ul id="fbHistoryLog" style="color: #ffffff; list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.6; width: 100%;"></ul>
+                    <ul id="fbHistoryLog" style="color: var(--txt); list-style: none; padding: 0; font-size: 13px; margin: 0; line-height: 1.6; width: 100%;"></ul>
                 </div>
             </div>
         </div>
@@ -1876,7 +1967,7 @@
         <div id="refer" class="page">
             <div class="card">
                 <h3>👥 ইনভাইট ও ইনকাম</h3>
-                <p style="color: #ccc; margin: 8px 0 15px; font-size: 13px;">
+                <p style="color: var(--sub); margin: 8px 0 15px; font-size: 13px;">
                     আপনার রেফারেল লিংকের মাধ্যমে বন্ধু যুক্ত করুন। প্রতি টাস্ক থেকে পাবেন ২৫% কমিশন!
                 </p>
 
@@ -1902,7 +1993,7 @@
                 <div class="input-group">
                     <label>আপনার ইউনিক রেফার কোড (ID):</label>
                     <div class="code-wrap">
-                        <input type="text" id="user-ref-code" class="input-control" readonly style="font-weight:bold; color:#ffcc00; text-align:center;" value="তৈরি হচ্ছে...">
+                        <input type="text" id="user-ref-code" class="input-control" readonly style="font-weight:bold; color:var(--acc); text-align:center;" value="তৈরি হচ্ছে...">
                         <button type="button" class="code-copy-btn" id="code-copy-btn" onclick="copyReferCode()">📋 কপি</button>
                     </div>
                 </div>
@@ -1933,7 +2024,7 @@
         <div id="withdraw" class="page">
             <div class="card">
                 <h3>💳 টাকা তুলুন</h3>
-                <p style="color: #ccc; margin-bottom: 8px; font-size: 12px;">সর্বনিম্ন উইথড্র limit: <b>১৫০ টাকা</b> (৫% সার্ভিস ফি)</p>
+                <p style="color: var(--sub); margin-bottom: 8px; font-size: 12px;">সর্বনিম্ন উইথড্র limit: <b>১৫০ টাকা</b> (৫% সার্ভিস ফি)</p>
                 
                 <div class="wd-off-banner" id="wd-off-banner">⚠️ উইথড্র সিস্টেম সাময়িক সময়ের জন্য বন্ধ আছে</div>
 
@@ -1995,7 +2086,7 @@
 
         <div id="admin" class="page">
             <div class="card">
-                <h3 style="color:#ffcc00; margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
+                <h3 style="color:var(--acc); margin-bottom: 15px;">🛠️ অ্যাডমিন প্যানেল</h3>
 
                 <div class="aus" id="aus-box">
                     <div class="it"><div class="ic">👥</div><div class="tx"><span class="n" id="aus-total">0</span><span class="l">Total User</span></div></div>
@@ -2008,6 +2099,10 @@
                     ⚙️ টাস্ক অন/অফ কন্ট্রোল পেজ ওপেন করুন
                 </button>
 
+                <button class="btn btn-gift" onclick="openAdminThemeModal()" style="margin-bottom: 12px;">
+                    🎨 সাইটের থিম ও কালার কন্ট্রোল
+                </button>
+
                 <button class="btn btn-whatsapp" onclick="openAdminWaSettingsModal()" style="margin-bottom: 12px;">
                     💬 WhatsApp টাস্ক & কান্ট্রি সেটিংস
                 </button>
@@ -2016,16 +2111,16 @@
                     📧 টাক্স নাম পাসওয়ার্ড সেটআপ
                 </button>
 
-                <button class="btn btn-gift" onclick="openAdminTaskRewardSetupModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #f1c40f, #d35400); color:#000;">
+                <button class="btn btn-gift" onclick="openAdminTaskRewardSetupModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, var(--btn), var(--gift2)); color:#000;">
                     💰 টাক্স রিওয়ার্ড সেটআপ
                 </button>
 
-                <button class="btn btn-gift" onclick="openGiftManagementModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #f39c12, #d35400);">
+                <button class="btn btn-gift" onclick="openGiftManagementModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, var(--gift1), var(--gift2));">
                     🎁 Gift Code Management
                 </button>
 
                 <!-- ব্রডকাস্ট ও পপ-আপ সেটিংস বাটন -->
-                <button class="btn btn-gift" onclick="openAdminBroadcastModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #e67e22, #d35400);">
+                <button class="btn btn-gift" onclick="openAdminBroadcastModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #e67e22, var(--gift2));">
                     📢 Broadcast & Popup Notice Settings
                 </button>
 
@@ -2033,7 +2128,7 @@
                     🚫 User Ban Control
                 </button>
 
-                <button class="btn btn-gift" onclick="openAdminAccountEditModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, #27ae60, #113626); border: 1px solid #2ecc71;">
+                <button class="btn btn-gift" onclick="openAdminAccountEditModal()" style="margin-bottom: 12px; background: linear-gradient(135deg, var(--bd), var(--card)); border: 1px solid #2ecc71;">
                     ✏️ অ্যাকাউন্ট তথ্য এডিট ও রিকভারি
                 </button>
 
@@ -2063,9 +2158,9 @@
 
     <!-- ADMIN TASK REWARD SETUP MODAL -->
     <div id="adminTaskRewardSetupModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">💰 টাক্স রিওয়ার্ড সেটআপ</h3>
+        <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--bd); padding-bottom:8px;">
+                <h3 style="color:var(--acc); font-size:16px;">💰 টাক্স রিওয়ার্ড সেটআপ</h3>
                 <button onclick="closeAdminTaskRewardSetupModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
 
@@ -2185,9 +2280,9 @@
     </div>
 
     <div id="giftManagementModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">🎁 Gift Code Management</h3>
+        <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--bd); padding-bottom:8px;">
+                <h3 style="color:var(--acc); font-size:16px;">🎁 Gift Code Management</h3>
                 <button onclick="closeGiftManagementModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
 
@@ -2195,28 +2290,28 @@
                 ➕ Create a new Gift Code
             </button>
 
-            <div id="giftCodeFormContainer" style="display:none; background:#081a11; border:1px solid #f39c12; padding:15px; border-radius:8px; margin-bottom:15px; text-align:left; position:relative;">
+            <div id="giftCodeFormContainer" style="display:none; background:var(--bg3); border:1px solid var(--gift1); padding:15px; border-radius:8px; margin-bottom:15px; text-align:left; position:relative;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h4 id="giftFormTitle" style="color:#ffcc00; font-size:14px; margin:0;">Create New Gift Code</h4>
+                    <h4 id="giftFormTitle" style="color:var(--acc); font-size:14px; margin:0;">Create New Gift Code</h4>
                     <button id="btnDeleteGiftCode" onclick="deleteGiftCode()" style="display:none; background:#e74c3c; color:#fff; border:none; padding:4px 10px; border-radius:5px; font-weight:bold; font-size:11px; cursor:pointer;">🗑 Delete</button>
                 </div>
                 
                 <div class="input-group">
-                    <label style="color:#aaa;">Gift Code:</label>
+                    <label style="color:var(--sub);">Gift Code:</label>
                     <input type="text" id="gc-code-input" class="input-control" placeholder="যেমন: BONUS100" style="text-transform:uppercase;">
                 </div>
 
                 <div style="display:flex; gap:8px; margin-bottom:12px;">
                     <div style="flex:1;">
-                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Amount (৳)</label>
+                        <label style="display:block; font-size:11px; color:var(--sub); margin-bottom:4px;">Amount (৳)</label>
                         <input type="number" id="gc-amount-input" class="input-control" placeholder="50">
                     </div>
                     <div style="flex:1;">
-                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Limit (ইউজার সংখ্যা)</label>
+                        <label style="display:block; font-size:11px; color:var(--sub); margin-bottom:4px;">Limit (ইউজার সংখ্যা)</label>
                         <input type="number" id="gc-limit-input" class="input-control" placeholder="100">
                     </div>
                     <div style="flex:1.2;">
-                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Time (যেমন 30min / 2hour / 1day)</label>
+                        <label style="display:block; font-size:11px; color:var(--sub); margin-bottom:4px;">Time (যেমন 30min / 2hour / 1day)</label>
                         <input type="text" id="gc-time-input" class="input-control" placeholder="2hour">
                     </div>
                 </div>
@@ -2228,15 +2323,15 @@
 
             <h4 style="color:#2ecc71; text-align:left; margin-bottom:10px; font-size:14px;">📜 সকল গিফট কোডের তালিকা:</h4>
             <div id="admin-gift-list" style="max-height:300px; overflow-y:auto;">
-                <p style="color:#aaa; font-size:12px;">কোনো গিফট কোড পাওয়া যায়নি।</p>
+                <p style="color:var(--sub); font-size:12px;">কোনো গিফট কোড পাওয়া যায়নি।</p>
             </div>
         </div>
     </div>
 
     <div id="adminAccountEditModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">✏️ অ্যাকাউন্ট তথ্য এডিট ও রিকভারি</h3>
+        <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--bd); padding-bottom:8px;">
+                <h3 style="color:var(--acc); font-size:16px;">✏️ অ্যাকাউন্ট তথ্য এডিট ও রিকভারি</h3>
                 <button onclick="closeAdminAccountEditModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
 
@@ -2245,26 +2340,26 @@
                 <button onclick="searchUserForEdit()" style="background:#27ae60; color:#fff; border:none; padding:0 15px; border-radius:8px; font-weight:bold; cursor:pointer;">🔍 Search</button>
             </div>
 
-            <div id="user-edit-card" style="display:none; background:#081a11; border:1px solid #27ae60; padding:15px; border-radius:8px; text-align:left;">
-                <div style="font-size:13px; color:#ffcc00; font-weight:bold; margin-bottom:10px;">👤 ইউজার ডিটেইলস সম্পাদন করুন:</div>
+            <div id="user-edit-card" style="display:none; background:var(--bg3); border:1px solid var(--bd); padding:15px; border-radius:8px; text-align:left;">
+                <div style="font-size:13px; color:var(--acc); font-weight:bold; margin-bottom:10px;">👤 ইউজার ডিটেইলস সম্পাদন করুন:</div>
                 
                 <div class="input-group">
-                    <label style="color:#aaa;">ইউজারের নাম (Full Name):</label>
+                    <label style="color:var(--sub);">ইউজারের নাম (Full Name):</label>
                     <input type="text" id="edit-field-fullname" class="input-control" placeholder="ইউজারের নাম লিখুন">
                 </div>
 
                 <div class="input-group">
-                    <label style="color:#aaa;">ইউজারনেম / ফোন নম্বর:</label>
+                    <label style="color:var(--sub);">ইউজারনেম / ফোন নম্বর:</label>
                     <input type="text" id="edit-field-username" class="input-control" placeholder="ফোন নম্বর বা ইউজারনেম">
                 </div>
 
                 <div class="input-group">
-                    <label style="color:#aaa;">নতুন পাসওয়ার্ড:</label>
+                    <label style="color:var(--sub);">নতুন পাসওয়ার্ড:</label>
                     <input type="text" id="edit-field-password" class="input-control" placeholder="নতুন পাসওয়ার্ড দিন">
                 </div>
 
                 <div class="input-group">
-                    <label style="color:#aaa;">১০-ডিজিট রেফার কোড (User ID):</label>
+                    <label style="color:var(--sub);">১০-ডিজিট রেফার কোড (User ID):</label>
                     <input type="text" id="edit-field-refcode" class="input-control">
                 </div>
 
@@ -2274,20 +2369,20 @@
     </div>
 
     <div id="adminGmailCredentialsModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto; color:#fff;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">⚙️ টাক্স নাম পাসওয়ার্ড সেটআপ</h3>
+        <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto; color:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--bd); padding-bottom:8px;">
+                <h3 style="color:var(--acc); font-size:16px;">⚙️ টাক্স নাম পাসওয়ার্ড সেটআপ</h3>
                 <button onclick="closeAdminGmailCredentialsModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             
-            <h4 style="color:#2ecc71; margin-bottom:8px; font-size:14px; border-bottom:1px dashed #27ae60; padding-bottom:4px;">📧 জিমেইল সেটিংস</h4>
+            <h4 style="color:#2ecc71; margin-bottom:8px; font-size:14px; border-bottom:1px dashed var(--bd); padding-bottom:4px;">📧 জিমেইল সেটিংস</h4>
             <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">First Name (জিমেইল নাম):</label>
+                <label style="color:var(--acc); font-weight:bold;">First Name (জিমেইল নাম):</label>
                 <input type="text" id="admin-set-gmail-name" class="input-control" placeholder="যেমন: Hasan">
             </div>
 
             <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">Password (জিমেইল পাসওয়ার্ড):</label>
+                <label style="color:var(--acc); font-weight:bold;">Password (জিমেইল পাসওয়ার্ড):</label>
                 <input type="text" id="admin-set-gmail-pass" class="input-control" placeholder="যেমন: hasan#1122">
             </div>
             
@@ -2323,14 +2418,14 @@
                 <button onclick="searchUserForBan()" style="background:#27ae60; color:#fff; border:none; padding:0 15px; border-radius:8px; font-weight:bold; cursor:pointer;">🔍 Search</button>
             </div>
 
-            <div id="user-search-result-card" style="display:none; background: #081a11; border: 1px solid #27ae60; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: left;">
-                <div style="font-size: 13px; color: #ffcc00; font-weight: bold; margin-bottom: 6px;">👤 ইউজার ডিটেইলস:</div>
-                <div style="font-size: 12px; color: #ddd; line-height: 1.6;">
+            <div id="user-search-result-card" style="display:none; background: var(--bg3); border: 1px solid var(--bd); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: left;">
+                <div style="font-size: 13px; color: var(--acc); font-weight: bold; margin-bottom: 6px;">👤 ইউজার ডিটেইলস:</div>
+                <div style="font-size: 12px; color: var(--sub); line-height: 1.6;">
                     <div><b>Full Name:</b> <span id="searched-fullname" style="color:#fff;">-</span></div>
                     <div><b>User ID:</b> <span id="searched-userid" style="color:#2ecc71;">-</span></div>
-                    <div><b>Current Balance:</b> ৳<span id="searched-balance" style="color:#f1c40f;">0.00</span></div>
+                    <div><b>Current Balance:</b> ৳<span id="searched-balance" style="color:var(--acc);">0.00</span></div>
                     <div><b>Total Refer:</b> <span id="searched-refer" style="color:#3498db;">0</span></div>
-                    <div><b>Ref Earning:</b> ৳<span id="searched-refearn" style="color:#f1c40f;">0.00</span></div>
+                    <div><b>Ref Earning:</b> ৳<span id="searched-refearn" style="color:var(--acc);">0.00</span></div>
                     <div><b>Status:</b> <span id="searched-status-badge" style="font-weight:bold;">-</span></div>
                 </div>
                 <div style="display: flex; gap: 8px; margin-top: 10px;">
@@ -2339,18 +2434,18 @@
                 </div>
             </div>
 
-            <hr style="border:0; border-top:1px dashed #27ae60; margin:15px 0;">
+            <hr style="border:0; border-top:1px dashed var(--bd); margin:15px 0;">
 
-            <h4 style="color:#ffcc00; text-align:left; margin-bottom:10px; font-size:14px;">📜 ব্যান ইউজারদের তালিকা:</h4>
+            <h4 style="color:var(--acc); text-align:left; margin-bottom:10px; font-size:14px;">📜 ব্যান ইউজারদের তালিকা:</h4>
             <div id="banned-users-list" style="max-height: 250px; overflow-y: auto;">
-                <p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
+                <p style="color:var(--sub); font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
             </div>
         </div>
     </div>
 
     <div id="adminWithdrawModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
+        <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--bd); padding-bottom:8px;">
                 <h3 style="color:#2ecc71; font-size:16px;">💳 উইথড্র রিকোয়েস্টসমূহ</h3>
                 <button onclick="closeAdminWithdrawModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
@@ -2359,9 +2454,9 @@
     </div>
 
     <div id="adminGmailModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#f1c40f; font-size:16px;">📧 জিমেইল সাবমিট রিকোয়েস্টসমূহ</h3>
+        <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--bd); padding-bottom:8px;">
+                <h3 style="color:var(--acc); font-size:16px;">📧 জিমেইল সাবমিট রিকোয়েস্টসমূহ</h3>
                 <button onclick="closeAdminGmailModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             <div id="admin-gmail-list"></div>
@@ -2379,9 +2474,9 @@
     </div>
 
     <div id="adminPinModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">📱 পিন সাবমিট প্রুফসমূহ</h3>
+        <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--bd); padding-bottom:8px;">
+                <h3 style="color:var(--acc); font-size:16px;">📱 পিন সাবমিট প্রুফসমূহ</h3>
                 <button onclick="closeAdminPinModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             <div id="admin-pin-list"></div>
@@ -2389,22 +2484,22 @@
     </div>
 
     <div id="adminWaSettingsModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #25d366; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
+        <div style="background:var(--card); border:2px solid #25d366; padding:20px; border-radius:12px; width:100%; max-width:420px; margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--bd); padding-bottom:8px;">
                 <h3 style="color:#25d366; font-size:16px;">💬 WhatsApp টাস্ক & কান্ট্রি কনফিগারেশন</h3>
                 <button onclick="closeAdminWaSettingsModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             
             <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">মেসেজ ও লিংক টেক্সট:</label>
+                <label style="color:var(--acc); font-weight:bold;">মেসেজ ও লিংক টেক্সট:</label>
                 <textarea id="admin-wa-msg" class="input-control" rows="3" placeholder="Join now: https://t.me/MegaIncomeReal_bot/app?startapp=8049465500"></textarea>
             </div>
             
             <button class="btn btn-whatsapp" onclick="saveWaTaskSettings()" style="margin-bottom:15px;">💾 মেসেজ সেভ করুন</button>
 
-            <hr style="border:0; border-top:1px dashed #27ae60; margin:15px 0;">
+            <hr style="border:0; border-top:1px dashed var(--bd); margin:15px 0;">
 
-            <h4 style="color:#f1c40f; text-align:left; margin-bottom:10px; font-size:14px;">🌍 হোয়াটসঅ্যাপ কান্ট্রি অন/অফ তালিকা:</h4>
+            <h4 style="color:var(--acc); text-align:left; margin-bottom:10px; font-size:14px;">🌍 হোয়াটসঅ্যাপ কান্ট্রি অন/অফ তালিকা:</h4>
 
             <div class="switch-container">
                 <span>🇧🇩 Bangladesh (+880)</span>
@@ -2472,10 +2567,38 @@
         </div>
     </div>
 
+
+    <!-- থিম কন্ট্রোল পেজ (শুধু অ্যাডমিন) -->
+    <div id="adminThemeModal" class="modal-overlay">
+        <div class="th-wrap">
+            <div class="th-head">
+                <h3>🎨 সাইটের থিম ও কালার</h3>
+                <button class="th-close" onclick="closeAdminThemeModal(true)">✕ বন্ধ</button>
+            </div>
+
+            <div class="th-sec">লাইভ প্রিভিউ — নিচের যেকোনো রঙে চাপ দিলে পুরো সাইট এখনই সেই রঙে দেখাবে</div>
+            <div class="th-pv">
+                <div class="balance-card"><div class="balance-title">TOTAL BALANCE</div><div class="balance-amount">৳ 1,250.00</div></div>
+                <div class="btn btn-gift">🎁 গিফট কোড রিডিম করুন</div>
+                <div class="btn btn-main">জিমেইল সেল করুন</div>
+                <div class="btn btn-official">📢 অফিসিয়াল চ্যানেল</div>
+                <div class="pv-task"><div class="ic">💬</div><div><h4>💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</h4><p>প্রতি মেসেজে পাবেন ৳1.00 টাকা।</p></div></div>
+            </div>
+
+            <div class="th-sec">সব থিম</div>
+            <div class="th-grid" id="themeGrid"></div>
+            <div class="th-state" id="themeState"></div>
+        </div>
+        <div class="th-bar">
+            <button class="btn cancel" onclick="cancelThemePreview()">↩ বাতিল</button>
+            <button class="btn btn-main" id="themeSaveBtn" onclick="saveSiteTheme()">💾 সেভ করুন</button>
+        </div>
+    </div>
+
     <div id="adminTaskControlModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
+        <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="color:#f1c40f;">⚙️ টাস্ক অন/অফ কন্ট্রোল</h3>
+                <h3 style="color:var(--acc);">⚙️ টাস্ক অন/অফ কন্ট্রোল</h3>
                 <button onclick="closeAdminTaskControlModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             
@@ -2570,13 +2693,13 @@
 
     <!-- ব্রডকাস্ট এবং পপ-আপ নোটিশ সেটিংস মডাল -->
     <div id="adminBroadcastModal" class="modal-overlay">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #27ae60; padding-bottom:8px;">
-                <h3 style="color:#ffcc00; font-size:16px;">📢 ব্রডকাস্ট ও পপ-আপ নোটিশ কন্ট্রোল</h3>
+        <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:100%; max-width:440px; margin:20px auto; color:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--bd); padding-bottom:8px;">
+                <h3 style="color:var(--acc); font-size:16px;">📢 ব্রডকাস্ট ও পপ-আপ নোটিশ কন্ট্রোল</h3>
                 <button onclick="closeAdminBroadcastModal()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
             </div>
             
-            <h4 style="color:#f1c40f; margin-bottom:10px; font-size:14px;">🛠️ সাইট আপডেট মোড কন্ট্রোল:</h4>
+            <h4 style="color:var(--acc); margin-bottom:10px; font-size:14px;">🛠️ সাইট আপডেট মোড কন্ট্রোল:</h4>
 
             <div class="switch-container">
                 <span>আপডেট মোড অন/অফ সুইচ</span>
@@ -2587,16 +2710,16 @@
             </div>
 
             <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">প্রবেশের অনুমতি পাওয়া নম্বর / ইউজার আইডি:</label>
+                <label style="color:var(--acc); font-weight:bold;">প্রবেশের অনুমতি পাওয়া নম্বর / ইউজার আইডি:</label>
                 <input type="text" id="maint-allowed-input" class="input-control" placeholder="01960711825/123456757">
-                <div style="font-size:11px; color:#9fd8b5; margin-top:5px; line-height:1.5;">একাধিক হলে / চিহ্ন দিয়ে আলাদা করুন। অ্যাডমিন সবসময় ঢুকতে পারবেন।</div>
+                <div style="font-size:11px; color:var(--sub2); margin-top:5px; line-height:1.5;">একাধিক হলে / চিহ্ন দিয়ে আলাদা করুন। অ্যাডমিন সবসময় ঢুকতে পারবেন।</div>
             </div>
 
             <button class="btn btn-main" onclick="saveMaintenanceSettings()" style="margin-top:5px; margin-bottom:15px; background-color:#27ae60; color:#fff;">💾 আপডেট মোড সেভ করুন</button>
 
-            <hr style="border:0; border-top:1px dashed #27ae60; margin:15px 0;">
+            <hr style="border:0; border-top:1px dashed var(--bd); margin:15px 0;">
 
-            <h4 style="color:#f1c40f; margin-bottom:10px; font-size:14px;">✨ মিনি অ্যাপ পপ-আপ নোটিশ সেটিংস:</h4>
+            <h4 style="color:var(--acc); margin-bottom:10px; font-size:14px;">✨ মিনি অ্যাপ পপ-আপ নোটিশ সেটিংস:</h4>
 
             <div class="switch-container">
                 <span>পপ-আপ নোটিশ অন/অফ সুইচ</span>
@@ -2607,21 +2730,21 @@
             </div>
 
             <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">২. পপ-আপ বড় মূল শিরোনাম (Title):</label>
+                <label style="color:var(--acc); font-weight:bold;">২. পপ-আপ বড় মূল শিরোনাম (Title):</label>
                 <input type="text" id="popup-title-input" class="input-control" placeholder="যেমন: সাইন-আপ বোনাস +৫০০ পয়েন্ট">
             </div>
 
             <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">৩. পপ-আপ বিস্তারিত বা সাব-হেডিং লেখা:</label>
+                <label style="color:var(--acc); font-weight:bold;">৩. পপ-আপ বিস্তারিত বা সাব-হেডিং লেখা:</label>
                 <textarea id="popup-desc-input" class="input-control" rows="2" placeholder="যেমন: টাস্ক দাবি করুন · বার্তা পাঠান · পয়েন্ট আয় করুন"></textarea>
             </div>
 
             <div class="input-group">
-                <label style="color:#ffcc00; font-weight:bold;">৪. পপ-আপ বাটন লিংক (ঐচ্ছিক):</label>
+                <label style="color:var(--acc); font-weight:bold;">৪. পপ-আপ বাটন লিংক (ঐচ্ছিক):</label>
                 <input type="text" id="popup-link-input" class="input-control" placeholder="যেমন: https://t.me/... (খালি রাখলে শুধু পপআপ বন্ধ হবে)">
             </div>
 
-            <button class="btn btn-gift" onclick="savePopupSettings()" style="margin-top:5px; background: linear-gradient(135deg, #f39c12, #d35400);">💾 পপ-আপ সেটিংস সেভ করুন</button>
+            <button class="btn btn-gift" onclick="savePopupSettings()" style="margin-top:5px; background: linear-gradient(135deg, var(--gift1), var(--gift2));">💾 পপ-আপ সেটিংস সেভ করুন</button>
         </div>
     </div>
 
@@ -2677,9 +2800,9 @@
     </div>
 
     <div id="giftModal" class="modal-overlay" style="align-items:center; justify-content:center;">
-        <div style="background:#113626; border:2px solid #27ae60; padding:20px; border-radius:12px; width:90%; max-width:350px; text-align:center; margin:auto;">
-            <h3 style="color:#ffcc00; margin-bottom:10px;">🎁 গিফট কোড রিডিম</h3>
-            <p style="color:#ccc; font-size:13px; margin-bottom:15px;">আপনার প্রোমো বা গিফট কোডটি নিচে লিখুন:</p>
+        <div style="background:var(--card); border:2px solid var(--bd); padding:20px; border-radius:12px; width:90%; max-width:350px; text-align:center; margin:auto;">
+            <h3 style="color:var(--acc); margin-bottom:10px;">🎁 গিফট কোড রিডিম</h3>
+            <p style="color:var(--sub); font-size:13px; margin-bottom:15px;">আপনার প্রোমো বা গিফট কোডটি নিচে লিখুন:</p>
             <input type="text" id="gift-code-input" class="input-control" placeholder="যেমন: BONUS50" style="margin-bottom:12px; text-align:center; text-transform:uppercase;">
             <button class="btn btn-main" id="redeem-gift-btn" onclick="redeemGiftCode()" style="margin-bottom:8px;">সাবমিট করুন</button>
             <button class="btn" onclick="closeGiftModal()" style="background:#c0392b;">বন্ধ করুন</button>
@@ -3559,16 +3682,16 @@
                 });
 
                 if (giftCodesList.length === 0) {
-                    container.innerHTML = `<p style="color:#aaa; font-size:12px;">কোনো গিফট কোড পাওয়া যায়নি।</p>`;
+                    container.innerHTML = `<p style="color:var(--sub); font-size:12px;">কোনো গিফট কোড পাওয়া যায়নি।</p>`;
                     return;
                 }
 
                 giftCodesList.forEach((item, index) => {
                     let used = item.usedCount || 0;
                     container.innerHTML += `
-                        <div class="admin-item-card" style="display:flex; justify-content:space-between; align-items:center; border-color:#f39c12; margin-bottom:8px;">
+                        <div class="admin-item-card" style="display:flex; justify-content:space-between; align-items:center; border-color:var(--gift1); margin-bottom:8px;">
                             <div>
-                                <div style="color:#ffcc00; font-weight:bold; font-size:14px;">${index + 1}. Code:${item.code}</div>
+                                <div style="color:var(--acc); font-weight:bold; font-size:14px;">${index + 1}. Code:${item.code}</div>
                                 <div style="color:#fff; font-size:12px; margin-top:2px;">Amount: <b>৳${item.amount}</b> \vert{} Use: <b>${used} / ${item.limit}</b> \vert{} Time: <b>${item.timeStr || ''}</b></div>
                             </div>
                             <button onclick="editGiftCode('${item.key}')" style="background:#2980b9; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Edit</button>
@@ -3880,10 +4003,10 @@
                         let uName = uVal.fullName || uVal.username || uId;
                         let userDisplayId = uVal.refCode || uId;
                         container.innerHTML += `
-                            <div style="background:#081a11; border:1px solid #e74c3c; border-radius:6px; padding:8px 10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                            <div style="background:var(--bg3); border:1px solid #e74c3c; border-radius:6px; padding:8px 10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
                                 <div>
-                                    <span style="color:#ffcc00; font-weight:bold;">${bannedCount}.${uName}</span>
-                                    <span style="color:#aaa; font-size:10px; display:block;">User ID: ${userDisplayId}</span>
+                                    <span style="color:var(--acc); font-weight:bold;">${bannedCount}.${uName}</span>
+                                    <span style="color:var(--sub); font-size:10px; display:block;">User ID: ${userDisplayId}</span>
                                 </div>
                                 <button onclick="unbanSpecificUser('${uId}')" style="background:#2ecc71; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-weight:bold; cursor:pointer;">Unban</button>
                             </div>
@@ -3892,7 +4015,7 @@
                 });
 
                 if (bannedCount === 0) {
-                    container.innerHTML = `<p style="color:#aaa; font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>`;
+                    container.innerHTML = `<p style="color:var(--sub); font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>`;
                 }
             });
         }
@@ -4036,7 +4159,7 @@
                                     <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
                                     <div>📅 <b>তারিখ:</b> ${item.date}</div>
                                     <div>📱 <b>অপারেটর:</b> ${item.operatorTitle}</div>
-                                    <div>🖼️ <b>প্রুফ পিকচার:</b> <a href="${item.proofUrl}" target="_blank" style="color:#ffcc00;">[বড় করে দেখুন]</a></div>
+                                    <div>🖼️ <b>প্রুফ পিকচার:</b> <a href="${item.proofUrl}" target="_blank" style="color:var(--acc);">[বড় করে দেখুন]</a></div>
                                     <div style="margin-top:5px;"><img src="${item.proofUrl}" style="max-width:100%; max-height:150px; border-radius:5px;"></div>
                                     <div style="display:flex; gap:8px; margin-top:8px;">
                                         <button onclick="adminApprovePin('${key}', '${item.userId}', ${item.reward})" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Accept (৳${item.reward})</button>
@@ -4057,7 +4180,7 @@
                     }
                 }
 
-                if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং পিন সাবমিট রিকোয়েস্ট নেই।</p>";
+                if (container && pendingCount === 0) container.innerHTML = "<p style='color:var(--sub); font-size:12px;'>কোনো পেন্ডিং পিন সাবমিট রিকোয়েস্ট নেই।</p>";
             });
 
             db.ref('withdrawals').on('value', (snapshot) => {
@@ -4097,7 +4220,7 @@
                     }
                 }
 
-                if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং উইথড্র রিকোয়েস্ট নেই।</p>";
+                if (container && pendingCount === 0) container.innerHTML = "<p style='color:var(--sub); font-size:12px;'>কোনো পেন্ডিং উইথড্র রিকোয়েস্ট নেই।</p>";
             });
 
             db.ref('gmail_submits').on('value', (snapshot) => {
@@ -4116,7 +4239,7 @@
                                 <div class="admin-item-card">
                                     <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
                                     <div>📅 <b>তারিখ:</b> ${item.date}</div>
-                                    <div style="margin-top:2px;">📧 <b>জিমেইল:</b> <code style="color:#ffcc00; word-break: break-all; font-size:13px;">${item.info}</code> <button onclick="copyToClipboard('${item.info}')" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; margin-left:5px;">COPY</button></div>
+                                    <div style="margin-top:2px;">📧 <b>জিমেইল:</b> <code style="color:var(--acc); word-break: break-all; font-size:13px;">${item.info}</code> <button onclick="copyToClipboard('${item.info}')" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; margin-left:5px;">COPY</button></div>
                                     <div style="display:flex; gap:8px; margin-top:8px;">
                                         <button onclick="adminApproveGmail('${key}', '${item.userId}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Accept</button>
                                         <button onclick="adminRejectGmail('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">❌ Reject</button>
@@ -4136,7 +4259,7 @@
                     }
                 }
 
-                if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং জিমেইল রিকোয়েস্ট নেই।</p>";
+                if (container && pendingCount === 0) container.innerHTML = "<p style='color:var(--sub); font-size:12px;'>কোনো পেন্ডিং জিমেইল রিকোয়েস্ট নেই।</p>";
             });
 
             db.ref('facebook_submits').on('value', (snapshot) => {
@@ -4176,7 +4299,7 @@
                     }
                 }
 
-                if (container && pendingCount === 0) container.innerHTML = "<p style='color:#aaa; font-size:12px;'>কোনো পেন্ডিং ফেসবুক সেল রিকোয়েস্ট নেই।</p>";
+                if (container && pendingCount === 0) container.innerHTML = "<p style='color:var(--sub); font-size:12px;'>কোনো পেন্ডিং ফেসবুক সেল রিকোয়েস্ট নেই।</p>";
             });
         }
 
@@ -4466,7 +4589,7 @@
                     <div class="wa-number-item">
                         <div style="display: flex; align-items: center;">
                             <span class="wa-status-badge"></span>
-                            <span style="font-weight:bold; color:#ffffff; font-size: 13px;">+880 ${item.number}</span>
+                            <span style="font-weight:bold; color:var(--txt); font-size: 13px;">+880 ${item.number}</span>
                         </div>
                         <div>
                             <button id="send-btn-${actualIndex}" onclick="sendWaMessage(${actualIndex}, this)" style="background: linear-gradient(135deg, #2ecc71, #27ae60); color:#fff; border:none; padding:6px 14px; border-radius:8px; font-weight:bold; cursor:pointer; font-size: 12px; box-shadow: 0 2px 6px rgba(46,204,113,0.3);">Send 🚀</button>
@@ -4731,12 +4854,12 @@
 
             historyLog.innerHTML = "";
             if (pinHistoryData.length === 0) {
-                historyLog.innerHTML = "<li style='color: #aaa; padding: 5px 0;'>কোনো পিন সাবমিট কাজ জমা দেওয়া হয়নি।</li>";
+                historyLog.innerHTML = "<li style='color: var(--sub); padding: 5px 0;'>কোনো পিন সাবমিট কাজ জমা দেওয়া হয়নি।</li>";
                 return;
             }
 
             pinHistoryData.forEach(item => {
-                let badge = `<span style='color:#f1c40f;'>Pending</span>`;
+                let badge = `<span style='color:var(--acc);'>Pending</span>`;
                 if (item.status === "Success") badge = `<span style='color:#2ecc71;'>Success (+৳${item.reward})</span>`;
                 if (item.status === "Rejected") badge = `<span style='color:#e74c3c;'>Rejected</span>`;
 
@@ -5004,7 +5127,7 @@
                     '</div>';
             });
             h += '<button class="rg-ab" onclick="addRegDraft()">➕ নতুন লিংক যোগ করুন</button>' +
-                 '<button class="rg-ab" style="background:#f1c40f;color:#000;" onclick="saveRegConfig()">💾 সেভ করুন</button>';
+                 '<button class="rg-ab" style="background:var(--btn);color:#000;" onclick="saveRegConfig()">💾 সেভ করুন</button>';
             ap.innerHTML = h;
         }
 
@@ -5128,7 +5251,7 @@
             startExoAdSession({
                 seconds: getExoAdSeconds(),
                 title: '📅 সাইন-ইন বিজ্ঞাপন',
-                note: 'সাইন-ইন রিওয়ার্ড পেতে বিজ্ঞাপনটি <b style="color:#ffcc00;">সম্পূর্ণ</b> দেখুন। সময় শেষ হলে স্বয়ংক্রিয়ভাবে সাইন-ইন সম্পন্ন হবে।',
+                note: 'সাইন-ইন রিওয়ার্ড পেতে বিজ্ঞাপনটি <b style="color:var(--acc);">সম্পূর্ণ</b> দেখুন। সময় শেষ হলে স্বয়ংক্রিয়ভাবে সাইন-ইন সম্পন্ন হবে।',
                 onComplete: completeDailyCheckin
             });
         }
@@ -5189,7 +5312,7 @@
             return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         }
         function rlbMedal(r) {
-            const C = {1:["#fff3b0","#f1c40f","#a8730a","#e74c3c"],2:["#ffffff","#cfd8dc","#6f8591","#3498db"],3:["#ffd9b0","#cd7f32","#74431a","#27ae60"]};
+            const C = {1:["#fff3b0","var(--acc)","#a8730a","#e74c3c"],2:["#ffffff","#cfd8dc","#6f8591","#3498db"],3:["#ffd9b0","#cd7f32","#74431a","#27ae60"]};
             const c = C[r];
             return '<svg width="100%" height="100%" viewBox="0 0 40 46"><path d="M10 0h8l4 17h-9z" fill="'+c[3]+'"/><path d="M30 0h-8l-4 17h9z" fill="'+c[3]+'" opacity=".75"/>'
                 + '<defs><radialGradient id="rlbg'+r+'" cx="35%" cy="30%"><stop offset="0" stop-color="'+c[0]+'"/><stop offset=".55" stop-color="'+c[1]+'"/><stop offset="1" stop-color="'+c[2]+'"/></radialGradient></defs>'
@@ -5789,7 +5912,7 @@
             startExoAdSession({
                 seconds: getExoAdSeconds(),
                 title: '📢 স্পন্সর বিজ্ঞাপন',
-                note: 'বিজ্ঞাপনটি সম্পূর্ণ দেখুন, সময় শেষ হলে <b style="color:#ffcc00;">৳' + reward.toFixed(2) + '</b> স্বয়ংক্রিয়ভাবে যোগ হবে।',
+                note: 'বিজ্ঞাপনটি সম্পূর্ণ দেখুন, সময় শেষ হলে <b style="color:var(--acc);">৳' + reward.toFixed(2) + '</b> স্বয়ংক্রিয়ভাবে যোগ হবে।',
                 onComplete: grantExoAdTaskReward
             });
         }
@@ -6090,7 +6213,7 @@
             gmailHistoryLog.innerHTML = ""; 
             
             if (gmailHistoryData.length === 0) {
-                gmailHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
+                gmailHistoryLog.innerHTML = "<li style='color: var(--sub); text-align: center; padding: 10px 0;'>কোনো জিমেইল সাবমিট করা হয়নি।</li>";
                 return;
             }
             
@@ -6102,7 +6225,7 @@
                 if (item.status === "Pending") {
                     statusBadge = `
                         <div style="text-align: right; flex-shrink: 0; min-width: 90px;">
-                            <span style='color: #f1c40f; font-weight: bold; font-size: 13px; display: block;'>Pending</span>
+                            <span style='color: var(--acc); font-weight: bold; font-size: 13px; display: block;'>Pending</span>
                         </div>`;
                 } else if (item.status === "Success" || item.status === "Approved") {
                     statusBadge = `
@@ -6125,7 +6248,7 @@
                 li.style.alignItems = "center";
                 li.style.gap = "10px";
                 
-                li.innerHTML = `<span style='color: #ffffff; word-break: break-all; flex-grow: 1; font-size: 12px;'>📧 ${maskedGmail}</span>${statusBadge}`;
+                li.innerHTML = `<span style='color: var(--txt); word-break: break-all; flex-grow: 1; font-size: 12px;'>📧 ${maskedGmail}</span>${statusBadge}`;
                 gmailHistoryLog.appendChild(li);
             });
         } 
@@ -6136,7 +6259,7 @@
 
             fbHistoryLog.innerHTML = "";
             if (facebookHistoryData.length === 0) {
-                fbHistoryLog.innerHTML = "<li style='color: #aaa; text-align: center; padding: 10px 0;'>কোনো ফেসবুক আইডি সাবমিট করা হয়নি।</li>";
+                fbHistoryLog.innerHTML = "<li style='color: var(--sub); text-align: center; padding: 10px 0;'>কোনো ফেসবুক আইডি সাবমিট করা হয়নি।</li>";
                 return;
             }
 
@@ -6145,7 +6268,7 @@
                 let displayAmount = item.amount ? Number(item.amount).toFixed(2) : parseFloat(dynamicTaskRewards.facebookTask || 5.00).toFixed(2);
 
                 if (item.status === "Pending") {
-                    statusBadge = `<span style='color: #f1c40f; font-weight: bold; font-size: 12px;'>Pending</span>`;
+                    statusBadge = `<span style='color: var(--acc); font-weight: bold; font-size: 12px;'>Pending</span>`;
                 } else if (item.status === "Success" || item.status === "Approved") {
                     statusBadge = `<span style='color: #2ecc71; font-weight: bold; font-size: 12px;'>Success (+৳${displayAmount})</span>`;
                 } else {
@@ -6272,5 +6395,84 @@
     sync();
 })();
 </script>
+
+<script>
+/* ===== থিম: ফায়ারবেস সিঙ্ক + অ্যাডমিন কন্ট্রোল ===== */
+var savedThemeId = (function(){ try{ return localStorage.getItem('siteThemeId') || 'green'; }catch(e){ return 'green'; } })();
+var pendingThemeId = null;
+
+db.ref('site_theme').on('value', function(snap){
+    var v = snap.val();
+    var id = (v && v.id) ? v.id : 'green';
+    savedThemeId = id;
+    try{ localStorage.setItem('siteThemeId', id); }catch(e){}
+    var m = document.getElementById('adminThemeModal');
+    var open = m && m.style.display === 'block';
+    if (!open) window.applySiteTheme(id);
+});
+
+function openAdminThemeModal(){
+    if (typeof isRegAdmin === 'function' && !isRegAdmin()) return;
+    pendingThemeId = savedThemeId;
+    renderThemeGrid();
+    document.getElementById('adminThemeModal').style.display = 'block';
+    updateThemeState();
+}
+function renderThemeGrid(){
+    var g = document.getElementById('themeGrid'); if(!g) return;
+    g.innerHTML = window.SITE_THEMES.map(function(th){
+        var v = th.vars;
+        var sel = th.id === pendingThemeId ? ' sel' : '';
+        return '<div class="th-card'+sel+'" data-id="'+th.id+'" onclick="previewTheme(\''+th.id+'\')" style="background:'+v['--card']+';color:'+v['--txt']+'">'+
+            '<span class="ck">✓</span>'+
+            '<div class="sw"><i style="background:'+v['--bg']+'"></i><i style="background:'+v['--card']+'"></i><i style="background:'+v['--bd']+'"></i><i style="background:'+v['--acc']+'"></i><i style="background:'+v['--btn']+'"></i></div>'+
+            '<div class="nm" style="color:'+v['--acc']+'">'+th.name+'</div>'+
+            '<div class="tg" style="color:'+v['--sub']+'">'+th.tag+'</div>'+
+            '<div class="aa" style="background:'+v['--bg']+';border:1px solid '+v['--bd']+'"><span style="color:'+v['--txt']+'">৳ 1,250</span><b style="color:'+v['--btnTxt']+';background:linear-gradient(135deg,'+v['--btn']+','+v['--btn2']+');padding:2px 8px;border-radius:6px;font-size:11px">Aa</b></div>'+
+        '</div>';
+    }).join('');
+}
+function previewTheme(id){
+    pendingThemeId = id;
+    window.applySiteTheme(id);
+    document.querySelectorAll('#themeGrid .th-card').forEach(function(c){ c.classList.toggle('sel', c.getAttribute('data-id') === id); });
+    updateThemeState();
+}
+function updateThemeState(){
+    var el = document.getElementById('themeState'); if(!el) return;
+    var cur = window.SITE_THEMES.filter(function(x){return x.id===savedThemeId})[0];
+    var pen = window.SITE_THEMES.filter(function(x){return x.id===pendingThemeId})[0];
+    if (pendingThemeId === savedThemeId) el.textContent = 'বর্তমানে চালু: ' + (cur ? cur.name : '');
+    else el.textContent = 'প্রিভিউ চলছে: ' + (pen ? pen.name : '') + ' — সেভ না করলে সাইটে কার্যকর হবে না';
+}
+function cancelThemePreview(){
+    pendingThemeId = savedThemeId;
+    window.applySiteTheme(savedThemeId);
+    renderThemeGrid();
+    updateThemeState();
+}
+function closeAdminThemeModal(revert){
+    if (revert) window.applySiteTheme(savedThemeId);
+    pendingThemeId = null;
+    document.getElementById('adminThemeModal').style.display = 'none';
+}
+function saveSiteTheme(){
+    if (typeof isRegAdmin === 'function' && !isRegAdmin()) { alert('⚠️ শুধু অ্যাডমিন থিম পরিবর্তন করতে পারবেন।'); return; }
+    if (!pendingThemeId) return;
+    var id = pendingThemeId;
+    var btn = document.getElementById('themeSaveBtn');
+    btn.disabled = true;
+    db.ref('site_theme').set({ id: id, updatedAt: Date.now() }).then(function(){
+        savedThemeId = id;
+        try{ localStorage.setItem('siteThemeId', id); }catch(e){}
+        btn.disabled = false;
+        updateThemeState();
+        alert('✅ থিম সেভ হয়েছে! এখন পুরো সাইটে এই রং দেখা যাবে।');
+    }).catch(function(){
+        btn.disabled = false;
+        alert('❌ সেভ হয়নি, আবার চেষ্টা করুন।');
+    });
+}
+</script>
 </body>
-</html>
+    </html>
