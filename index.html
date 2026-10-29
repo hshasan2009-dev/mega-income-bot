@@ -1228,10 +1228,9 @@
         /* lighter glow: drop the heavy blurred second layer, keep the rotating ring */
         .gb::after, #task .card:not(.disabled-task)::after { display: none !important; }
         .gb::before, #task .card:not(.disabled-task)::before { will-change: auto; backface-visibility: visible; }
-        /* স্ক্রল চলার সময় ঘুরন্ত আলো থামিয়ে রাখা হয় (গ্লিচ/ভাঙা টাইল বন্ধ), স্ক্রল থামলেই আবার চলে */
-        html.is-scrolling .gb::before, html.is-scrolling .gb::after,
-        html.is-scrolling #task .card::before, html.is-scrolling #task .card::after,
-        html.is-scrolling body::before { animation-play-state: paused !important; }
+        /* রেজিস্ট্রেশন টাস্ক পপআপ: নিজস্ব লেয়ারে আলাদা, স্ক্রল গ্লিচ ঠেকাতে */
+        .rg-box { isolation: isolate; transform: translateZ(0); -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+        .rg-it, .rg-bt { backface-visibility: hidden; transform: translateZ(0); }
         .btn, .auth-btn { will-change: auto; }
         .page { contain: layout style; }
         .modal-overlay { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
@@ -6245,19 +6244,6 @@
             });
         })();
     </script>
-<script>
-/* স্ক্রল গ্লিচ ফিক্স: স্ক্রল চলাকালীন এনিমেশন পজ, থামার ~২০০ms পরে আবার চালু */
-(function () {
-    var t = null, root = document.documentElement;
-    function onScroll() {
-        if (!root.classList.contains('is-scrolling')) root.classList.add('is-scrolling');
-        clearTimeout(t);
-        t = setTimeout(function () { root.classList.remove('is-scrolling'); }, 200);
-    }
-    document.addEventListener('scroll', onScroll, { capture: true, passive: true });
-    document.addEventListener('touchmove', onScroll, { passive: true });
-    document.addEventListener('wheel', onScroll, { passive: true });
-})();
-</script>
+
 </body>
 </html>
