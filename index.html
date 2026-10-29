@@ -354,27 +354,16 @@
         @media (prefers-reduced-motion: reduce){.rlb-row{animation:none;opacity:1;transform:none}}
 
         /* ===== সাইট আপডেট মোড (পুরো স্ক্রিন) ===== */
-        #maintenanceOverlay{display:none;position:fixed;inset:0;z-index:999990;background:#04120b;align-items:center;justify-content:center;overflow:hidden}
+        #maintenanceOverlay{display:none;position:fixed;inset:0;z-index:999990;background:#04120b;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
         #maintenanceOverlay::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(39,174,96,.22),transparent 60%);animation:mntBg 4s ease-in-out infinite}
         @keyframes mntBg{0%,100%{opacity:.55}50%{opacity:1}}
+        .mnt-brand{position:relative;font-size:17px;font-weight:500;color:#ffcc00;letter-spacing:.6px;margin:0 0 14px;text-shadow:0 0 10px rgba(241,196,15,.3)}
         .mnt-card{position:relative;width:84%;max-width:300px;border-radius:22px;padding:2px;overflow:hidden;box-shadow:0 0 30px rgba(241,196,15,.18)}
         .mnt-card::before{content:"";position:absolute;left:50%;top:50%;width:200%;aspect-ratio:1;transform:translate(-50%,-50%);background:conic-gradient(from 0deg,transparent 0 55%,#f1c40f 70%,#2ecc71 85%,transparent 100%);animation:mntSpin 3s linear infinite}
         @keyframes mntSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
         .mnt-in{position:relative;background:#0b2217;border-radius:20px;padding:26px 18px 22px;text-align:center;font-weight:normal}
-        .mnt-gear{width:84px;height:84px;margin:0 auto 14px;position:relative;display:grid;place-items:center}
-        .mnt-gear::before,.mnt-gear::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #2ecc71;animation:mntRing 2.2s ease-out infinite}
-        .mnt-gear::after{animation-delay:1.1s}
-        @keyframes mntRing{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.45);opacity:0}}
-        .mnt-gear svg{animation:mntGear 5s linear infinite}
-        @keyframes mntGear{to{transform:rotate(360deg)}}
-        .mnt-t{font-size:26px;font-weight:500;color:#ffcc00;letter-spacing:.5px;margin:0 0 4px}
-        .mnt-t span{display:inline-block;animation:mntDot 1.2s infinite}
-        .mnt-t span:nth-child(2){animation-delay:.2s}.mnt-t span:nth-child(3){animation-delay:.4s}.mnt-t span:nth-child(4){animation-delay:.6s}
-        @keyframes mntDot{0%,60%,100%{opacity:.2;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
-        .mnt-s{font-size:15px;color:#2ecc71;font-weight:500;margin:0 0 10px}
-        .mnt-p{font-size:12.5px;color:#cfe9d8;line-height:1.7;margin:0 0 16px}
-        .mnt-orb{position:relative;width:78px;height:78px;margin:0 auto}
-        .mnt-orb i{position:absolute;left:50%;top:50%;width:11px;height:11px;margin:-5.5px;border-radius:50%;background:#f1c40f;animation:mntOrb 1.4s linear infinite}
+        .mnt-orb{position:relative;width:84px;height:84px;margin:0 auto 14px}
+        .mnt-orb i{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px;border-radius:50%;background:#f1c40f;animation:mntOrb 1.4s linear infinite}
         .mnt-orb i:nth-child(2){animation-delay:-.175s;background:#d9c022;opacity:.9}
         .mnt-orb i:nth-child(3){animation-delay:-.35s;background:#a6c93a;opacity:.8}
         .mnt-orb i:nth-child(4){animation-delay:-.525s;background:#6fd16a;opacity:.65}
@@ -382,9 +371,17 @@
         .mnt-orb i:nth-child(6){animation-delay:-.875s;background:#2ecc71;opacity:.35}
         .mnt-orb i:nth-child(7){animation-delay:-1.05s;background:#2ecc71;opacity:.22}
         .mnt-orb i:nth-child(8){animation-delay:-1.225s;background:#2ecc71;opacity:.12}
-        @keyframes mntOrb{from{transform:rotate(0) translateY(-32px)}to{transform:rotate(360deg) translateY(-32px)}}
-        .mnt-f{margin-top:14px;font-size:10.5px;color:#7fb897;letter-spacing:.4px}
-        @media (prefers-reduced-motion: reduce){#maintenanceOverlay::before,.mnt-card::before,.mnt-gear::before,.mnt-gear::after,.mnt-gear svg,.mnt-t span,.mnt-orb i{animation:none}}
+        @keyframes mntOrb{from{transform:rotate(0) translateY(-35px)}to{transform:rotate(360deg) translateY(-35px)}}
+        .mnt-t{font-size:26px;font-weight:500;color:#ffcc00;letter-spacing:.5px;margin:0 0 4px}
+        .mnt-t span{display:inline-block;animation:mntDot 1.2s infinite}
+        .mnt-t span:nth-child(2){animation-delay:.2s}.mnt-t span:nth-child(3){animation-delay:.4s}.mnt-t span:nth-child(4){animation-delay:.6s}
+        @keyframes mntDot{0%,60%,100%{opacity:.2;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+        .mnt-s{font-size:15px;color:#2ecc71;font-weight:500;margin:0 0 10px}
+        .mnt-p{font-size:12.5px;color:#cfe9d8;line-height:1.7;margin:0 0 16px}
+        .mnt-bar{height:6px;border-radius:3px;background:#133a28;overflow:hidden}
+        .mnt-bar i{display:block;height:100%;width:40%;border-radius:3px;background:linear-gradient(90deg,transparent,#f1c40f,#2ecc71,transparent);animation:mntMv 1.6s ease-in-out infinite}
+        @keyframes mntMv{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+        @media (prefers-reduced-motion: reduce){#maintenanceOverlay::before,.mnt-card::before,.mnt-orb i,.mnt-t span,.mnt-bar i{animation:none}}
         .logout-fixed-top{display:block;position:fixed;top:12px;right:15px;z-index:1000001}
 
         /* ===== অ্যাডমিন ইউজার স্ট্যাটস ===== */
@@ -1368,15 +1365,13 @@
 
     <div id="maintenanceOverlay">
         <button class="logout-btn-top logout-fixed-top" onclick="handleLogout()">Log Out</button>
+        <div class="mnt-brand">Mega Income Pro</div>
         <div class="mnt-card"><div class="mnt-in">
-            <div class="mnt-gear">
-                <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#f1c40f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg>
-            </div>
+            <div class="mnt-orb"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
             <p class="mnt-t">Updating<span>.</span><span>.</span><span>.</span></p>
             <p class="mnt-s">সাইটের আপডেট কাজ চলছে</p>
             <p class="mnt-p">আমরা আপনাদের জন্য নতুন ফিচার ও আরও ভালো সার্ভিস প্রস্তুত করছি।<br>দয়া করে কিছুক্ষণ অপেক্ষা করুন, আপডেট শেষ হলেই সাইট আবার চালু হবে।</p>
-            <div class="mnt-orb"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            <div class="mnt-f">Mega Income Pro</div>
+            <div class="mnt-bar"><i></i></div>
         </div></div>
     </div>
 
