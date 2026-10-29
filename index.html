@@ -405,6 +405,23 @@
         @keyframes ausPl{0%{box-shadow:0 0 0 0 rgba(46,204,113,.7)}100%{box-shadow:0 0 0 6px rgba(46,204,113,0)}}
         .aus-pct{font-size:10.5px;color:#9fd8b5;margin:-6px 0 12px;text-align:center}
 
+
+        /* ===== রেফার পেজ: ইনকাম ও রেফার স্ট্যাটস ===== */
+        .rinc-card{border-radius:14px;padding:9px 14px 9px 22px;background:linear-gradient(135deg,#17210f 0%,#3b2f06 50%,#17210f 100%);border:1.5px solid #f1c40f;display:flex;align-items:center;gap:14px;margin-bottom:10px;text-align:left}
+        .rinc-medal{width:44px;height:44px;border-radius:50%;background:linear-gradient(145deg,#fff1a8 0%,#f1c40f 55%,#b8860b 100%);box-shadow:0 0 0 3px rgba(241,196,15,.22);display:flex;align-items:center;justify-content:center;flex:none}
+        .rinc-txt{flex:1;line-height:1.15;min-width:0}
+        .rinc-lbl{font-size:12px;font-weight:500;color:#e8d48a}
+        .rinc-val{font-size:26px;font-weight:700;color:#ffe27a;margin-top:2px}
+        .rinc-trend{width:34px;height:34px;border-radius:10px;background:rgba(46,204,113,.16);border:1px solid rgba(46,204,113,.5);display:flex;align-items:center;justify-content:center;flex:none}
+        .rstat-row{display:flex;gap:8px;margin-bottom:15px}
+        .rstat{flex:1;min-width:0;border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:9px;text-align:left}
+        .rstat-total{background:linear-gradient(135deg,#1558b0 0%,#0b7f8f 100%)}
+        .rstat-active{background:linear-gradient(135deg,#7b2fa0 0%,#b8336a 100%);border:1.5px solid #ffd54a}
+        .rstat-ic{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none}
+        .rstat-tx{line-height:1.15;min-width:0}
+        .rstat-lb{font-size:11.5px;font-weight:500;color:#e3f1ff}
+        .rstat-active .rstat-lb{color:#ffe9a8;font-weight:600}
+        .rstat-nm{font-size:20px;font-weight:700;color:#fff}
         .stats-container {
             display: flex;
             gap: 10px;
@@ -1210,7 +1227,11 @@
 
         /* lighter glow: drop the heavy blurred second layer, keep the rotating ring */
         .gb::after, #task .card:not(.disabled-task)::after { display: none !important; }
-        .gb::before, #task .card:not(.disabled-task)::before { will-change: transform; backface-visibility: hidden; }
+        .gb::before, #task .card:not(.disabled-task)::before { will-change: auto; backface-visibility: visible; }
+        /* স্ক্রল চলার সময় ঘুরন্ত আলো থামিয়ে রাখা হয় (গ্লিচ/ভাঙা টাইল বন্ধ), স্ক্রল থামলেই আবার চলে */
+        html.is-scrolling .gb::before, html.is-scrolling .gb::after,
+        html.is-scrolling #task .card::before, html.is-scrolling #task .card::after,
+        html.is-scrolling body::before { animation-play-state: paused !important; }
         .btn, .auth-btn { will-change: auto; }
         .page { contain: layout style; }
         .modal-overlay { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
@@ -1840,14 +1861,22 @@
                     আপনার রেফারেল লিংকের মাধ্যমে বন্ধু যুক্ত করুন। প্রতি টাস্ক থেকে পাবেন ২৫% কমিশন!
                 </p>
 
-                <div class="stats-container">
-                    <div class="stat-box">
-                        <div class="stat-num" id="ref-count">0</div>
-                        <div class="stat-label">মোট ইনভাইট</div>
+                <div class="rinc-card">
+                    <div class="rinc-medal"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2a1c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h18v12H3z"/><path d="M3 7l2-3h14l2 3"/><circle cx="16" cy="13" r="1.5"/></svg></div>
+                    <div class="rinc-txt">
+                        <div class="rinc-lbl">মোট রেফার ইনকাম</div>
+                        <div class="rinc-val">৳ <span id="ref-bonus-val">0.00</span></div>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-num">৳ <span id="ref-bonus-val">0.00</span></div>
-                        <div class="stat-label">মোট রেফার বোনাস</div>
+                    <div class="rinc-trend"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5be08f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
+                </div>
+                <div class="rstat-row">
+                    <div class="rstat rstat-total">
+                        <div class="rstat-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.8c2 .7 3.2 2.4 3.5 5.2"/></svg></div>
+                        <div class="rstat-tx"><div class="rstat-lb">মোট রেফার</div><div class="rstat-nm" id="ref-count">0</div></div>
+                    </div>
+                    <div class="rstat rstat-active">
+                        <div class="rstat-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffe27a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.4 6.8 19.2l1-5.9L3.5 9.2l5.9-.8z"/></svg></div>
+                        <div class="rstat-tx"><div class="rstat-lb">একটিভ রেফার</div><div class="rstat-nm" id="active-ref-count">0</div></div>
                     </div>
                 </div>
 
@@ -1869,7 +1898,7 @@
 
             <div class="card rlb-card">
                 <h3>🏆 টপ রেফারার্স</h3>
-                <div class="rlb-sub">যারা সবচেয়ে বেশি বন্ধু ইনভাইট করেছেন</div>
+                <div class="rlb-sub">যাদের সবচেয়ে বেশি একটিভ বন্ধু আছে</div>
                 <div class="rlb-warn">
                     <div class="wi">⚠️</div>
                     <div><b>ফেক রেফার করলে অ্যাকাউন্ট ব্যান!</b><small>ভুয়া বা নিজের একাধিক অ্যাকাউন্ট দিয়ে রেফার করলে আপনার অ্যাকাউন্ট ব্যান হতে পারে।</small></div>
@@ -1879,7 +1908,7 @@
                     <div class="rlb-row rlb-me" id="rlb-me">
                         <div class="rlb-rk" id="rlb-me-rank">—</div>
                         <div class="rlb-info"><div class="rlb-nm">আপনি</div><span class="rlb-code" id="rlb-me-code"></span></div>
-                        <div class="rlb-cnt"><b id="rlb-me-cnt">0</b><small>মোট রেফার</small></div>
+                        <div class="rlb-cnt"><b id="rlb-me-cnt">0</b><small>একটিভ রেফার</small></div>
                     </div>
                 </div>
                 <div class="rlb-note" id="rlb-note"></div>
@@ -2743,6 +2772,7 @@
         let referLink = "";
         let currentBalance = 0.00;
         let referCount = 0;
+        let activeReferCount = 0;
         let referBonus = 0.00;
         let completedTasksCount = 0;
         let historyData = [];
@@ -2870,6 +2900,8 @@
                     refCount: 0,
                     joinedAt: Date.now(),
                     refScore: calcRefScore(0, nowSec()),
+                    activeRefCount: 0,
+                    activeRefScore: calcRefScore(0, nowSec()),
                     refBonus: 0.00,
                     regTaskIndex: 0,
                     completedTasksCount: 0,
@@ -3204,10 +3236,15 @@
                 if (val) {
                     currentBalance = parseFloat(val.balance || 0);
                     referCount = parseInt(val.refCount || 0);
-                    myRefScore = (val.refScore != null) ? Number(val.refScore) : null;
+                    activeReferCount = parseInt(val.activeRefCount || 0);
+                    myRefScore = (val.activeRefScore != null) ? Number(val.activeRefScore) : null;
+                    if (!refScoreMatches(val.activeRefScore, activeReferCount)) {
+                        let fixCnt = activeReferCount;
+                        db.ref('users/' + currentUserKey + '/activeRefScore').transaction((cur) => refScoreMatches(cur, fixCnt) ? cur : calcRefScore(fixCnt, nowSec()));
+                    }
                     if (!refScoreMatches(val.refScore, referCount)) {
-                        let fixCnt = referCount;
-                        db.ref('users/' + currentUserKey + '/refScore').transaction((cur) => refScoreMatches(cur, fixCnt) ? cur : calcRefScore(fixCnt, nowSec()));
+                        let fixCnt2 = referCount;
+                        db.ref('users/' + currentUserKey + '/refScore').transaction((cur) => refScoreMatches(cur, fixCnt2) ? cur : calcRefScore(fixCnt2, nowSec()));
                     }
                     referBonus = parseFloat(val.refBonus || 0);
                     currentTaskIndex = parseInt(val.regTaskIndex || 0);
@@ -5124,7 +5161,8 @@
         function calcRefScore(cnt, tsSec) { return (parseInt(cnt || 0) * REF_SCALE) + (REF_SCALE - tsSec); }
         function refScoreMatches(score, cnt) { return score != null && Math.floor(score / REF_SCALE) === parseInt(cnt || 0); }
 
-        const LB_MIN_REFER = 20;
+        const LB_MIN_REFER = 20;      // লিডারবোর্ডে ঢুকতে সর্বনিম্ন একটিভ রেফার
+        const ACTIVE_REF_MIN = 2;     // রেফার করা ইউজার কমপক্ষে এত টাকা আর্নিং করলে একটিভ (ইউজারকে দেখানো হয় না)
         const LB_MAX_SHOW = 10;
         let rlbRef = null, rlbLast = [], myRefScore = null;
 
@@ -5145,14 +5183,14 @@
         }
         function listenReferLeaderboard() {
             if (rlbRef) rlbRef.off();
-            rlbRef = db.ref('users').orderByChild('refScore').startAt(LB_MIN_REFER * REF_SCALE).limitToLast(LB_MAX_SHOW + 5);
+            rlbRef = db.ref('users').orderByChild('activeRefScore').startAt(LB_MIN_REFER * REF_SCALE).limitToLast(LB_MAX_SHOW + 5);
             rlbRef.on('value', (snapshot) => {
                 let arr = [];
                 snapshot.forEach((child) => {
                     let u = child.val() || {};
-                    let cnt = parseInt(u.refCount || 0);
+                    let cnt = parseInt(u.activeRefCount || 0);
                     if (cnt >= LB_MIN_REFER && u.isBanned !== true) {
-                        arr.push({ key: child.key, name: u.fullName || 'ইউজার', code: u.refCode || '', cnt: cnt, score: Number(u.refScore || 0) });
+                        arr.push({ key: child.key, name: u.fullName || 'ইউজার', code: u.refCode || '', cnt: cnt, score: Number(u.activeRefScore || 0) });
                     }
                 });
                 arr.sort((a, b) => b.score - a.score);
@@ -5174,10 +5212,10 @@
                     + (r < 4 ? '<div class="rlb-med">' + rlbMedal(r) + '</div>' : '<div class="rlb-num">' + bnDigits(r) + '</div>')
                     + '<div class="rlb-info"><div class="rlb-nm">' + escHtml(d.name) + (mine ? ' (আপনি)' : '') + '</div>'
                     + '<span class="rlb-code"><i>ID:</i> ' + escHtml(d.code) + '</span></div>'
-                    + '<div class="rlb-cnt"><b>' + bnDigits(d.cnt) + '</b><small>মোট রেফার</small></div></div>';
+                    + '<div class="rlb-cnt"><b>' + bnDigits(d.cnt) + '</b><small>একটিভ রেফার</small></div></div>';
             });
             if (!arr.length) {
-                h = '<div class="rlb-empty">🏁 এখনো কেউ লিডারবোর্ডে জায়গা পাননি।<br>সর্বনিম্ন <b>' + bnDigits(LB_MIN_REFER) + 'টি</b> রেফার করে প্রথম হয়ে যান!</div>';
+                h = '<div class="rlb-empty">🏁 এখনো কেউ লিডারবোর্ডে জায়গা পাননি।<br>সর্বনিম্ন <b>' + bnDigits(LB_MIN_REFER) + 'টি</b> একটিভ রেফার করে প্রথম হয়ে যান!</div>';
             }
             listEl.innerHTML = h;
 
@@ -5189,7 +5227,7 @@
                 if (note) note.innerText = 'অভিনন্দন! আপনি টপ রেফারার্সের তালিকায় আছেন 🎉';
             } else {
                 if (meWrap) meWrap.style.display = 'block';
-                let me = document.getElementById('rlb-me-cnt'); if (me) me.innerText = bnDigits(referCount);
+                let me = document.getElementById('rlb-me-cnt'); if (me) me.innerText = bnDigits(activeReferCount);
                 let cd = document.getElementById('rlb-me-code'); if (cd) cd.innerHTML = '<i>ID:</i> ' + escHtml(userReferralCode);
                 setMyNote();
                 updateMyRank();
@@ -5201,9 +5239,9 @@
         function setMyNote() {
             let note = document.getElementById('rlb-note');
             if (!note) return;
-            let tail = (referCount >= LB_MIN_REFER)
-                ? 'আরও রেফার করে টপ ' + bnDigits(LB_MAX_SHOW) + '-এ উঠুন!'
-                : 'লিডারবোর্ডে ঢুকতে আর ' + bnDigits(LB_MIN_REFER - referCount) + 'টি রেফার দরকার!';
+            let tail = (activeReferCount >= LB_MIN_REFER)
+                ? 'আরও একটিভ রেফার করে টপ ' + bnDigits(LB_MAX_SHOW) + '-এ উঠুন!'
+                : 'লিডারবোর্ডে ঢুকতে আর ' + bnDigits(LB_MIN_REFER - activeReferCount) + 'টি একটিভ রেফার দরকার!';
             let head = (myRankCache.rank !== null) ? 'আপনার অবস্থান ' + myRankCache.rank + (myRankCache.rank.indexOf('+') > -1 ? '' : 'তম') + ' · ' : '';
             note.innerText = head + tail;
         }
@@ -5216,7 +5254,7 @@
             if (fresh && myRankCache.rank !== null) { el.innerText = myRankCache.rank; setMyNote(); return; }
             if (myRankCache.rank !== null) el.innerText = myRankCache.rank;
             let myCnt = myRefScore;
-            db.ref('users').orderByChild('refScore').startAt(myCnt + 1).limitToFirst(100).once('value').then((snap) => {
+            db.ref('users').orderByChild('activeRefScore').startAt(myCnt + 1).limitToFirst(100).once('value').then((snap) => {
                 let ahead = 0;
                 snap.forEach((c) => { let u = c.val() || {}; if (u.isBanned !== true && String(c.key) !== String(currentUserKey)) ahead++; });
                 let rank = ahead + 1;
@@ -5229,7 +5267,7 @@
 
         /* ===== অ্যাডমিন: Total / Active ইউজার স্ট্যাটস (Active = ৳৩০+ ইনকাম) ===== */
         const ACTIVE_MIN_INCOME = 30;
-        let ausBackfilled = false, ausUsers = {}, ausWithdrawn = {}, ausPrevT = 0, ausPrevA = 0, ausRefs = null;
+        let ausActiveDone = false, ausWLoaded = false, ausBackfilled = false, ausUsers = {}, ausWithdrawn = {}, ausPrevT = 0, ausPrevA = 0, ausRefs = null;
 
         function ausCount(el, from, to) {
             if (!el) return;
@@ -5271,6 +5309,37 @@
             if (Object.keys(upd).length) db.ref('users').update(upd).catch(() => {});
         }
 
+        /* পুরোনো ইউজারদের জন্য একবার: যাদের মোট ইনকাম ≥ ACTIVE_REF_MIN তাদের একটিভ ধরে রেফারারের একটিভ কাউন্ট বসায় */
+        function backfillActiveRefs() {
+            if (ausActiveDone || !ausWLoaded || !Object.keys(ausUsers).length) return;
+            ausActiveDone = true;
+            let codeToKey = {}, counts = {}, upd = {};
+            Object.keys(ausUsers).forEach((k) => { let c = (ausUsers[k] || {}).refCode; if (c) codeToKey[c] = k; });
+            Object.keys(ausUsers).forEach((k) => {
+                let u = ausUsers[k] || {};
+                if (!u.referrer || !codeToKey[u.referrer]) return;
+                let income = parseFloat(u.balance || 0) + (ausWithdrawn[k] || 0);
+                let active = (u.refActive === true) || income >= ACTIVE_REF_MIN;
+                if (!active) return;
+                if (u.refActive !== true) upd[k + '/refActive'] = true;
+                let rk = codeToKey[u.referrer];
+                counts[rk] = (counts[rk] || 0) + 1;
+            });
+            let base = nowSec(), i = 0;
+            Object.keys(ausUsers).forEach((k) => {
+                let u = ausUsers[k] || {};
+                let want = counts[k] || 0;
+                let have = parseInt(u.activeRefCount || 0);
+                if (want > have || !refScoreMatches(u.activeRefScore, have)) {
+                    let n = Math.max(want, have);
+                    let ts = u.joinedAt ? Math.floor(Number(u.joinedAt) / 1000) : (base + i++);
+                    upd[k + '/activeRefCount'] = n;
+                    upd[k + '/activeRefScore'] = calcRefScore(n, ts);
+                }
+            });
+            if (Object.keys(upd).length) db.ref('users').update(upd).catch(() => {});
+        }
+
         function listenAdminUserStats() {
             if (ausRefs) { ausRefs.forEach(r => r.off()); }
             let uRef = db.ref('users'), wRef = db.ref('withdrawals');
@@ -5278,9 +5347,11 @@
             uRef.on('value', (snap) => {
                 ausUsers = snap.val() || {};
                 ausRender();
+                backfillActiveRefs();
                 if (!ausBackfilled) { ausBackfilled = true; backfillRefScores(ausUsers); }
             });
             wRef.on('value', (snap) => {
+                ausWLoaded = true;
                 let m = {};
                 snap.forEach((c) => {
                     let w = c.val() || {};
@@ -5289,6 +5360,7 @@
                     }
                 });
                 ausWithdrawn = m; ausRender();
+                backfillActiveRefs();
             });
         }
 
@@ -5376,12 +5448,31 @@
                 }
             }
             if (refEl) refEl.innerText = referCount;
+            let actRefEl = document.getElementById("active-ref-count");
+            if (actRefEl) actRefEl.innerText = activeReferCount;
             if (refBonEl) refBonEl.innerText = referBonus.toFixed(2);
             if (waIncomeEl) waIncomeEl.innerText = waTotalIncome.toFixed(2);
         }
 
         function giveReferralCommission(earnedAmount) {
             giveReferralCommissionForUser(currentUserKey, earnedAmount);
+        }
+
+        /* রেফার করা ইউজার মোট ACTIVE_REF_MIN টাকা আর্নিং করলে একবারই রেফারারের একটিভ রেফার +১ হয় */
+        function trackActiveReferral(refereeKey, earnedAmount, referrerSnap) {
+            let amt = parseFloat(earnedAmount || 0);
+            if (!(amt > 0)) return;
+            db.ref('users/' + refereeKey + '/refEarned').transaction((v) => (parseFloat(v || 0) + amt), (err, committed, snap) => {
+                if (err || !committed || !snap || parseFloat(snap.val() || 0) < ACTIVE_REF_MIN) return;
+                db.ref('users/' + refereeKey + '/refActive').transaction((a) => a ? undefined : true, (e2, done) => {
+                    if (e2 || !done) return;
+                    referrerSnap.forEach(cSnap => {
+                        db.ref('users/' + cSnap.key + '/activeRefCount').transaction((n) => (n || 0) + 1, (e3, ok3, s3) => {
+                            if (ok3 && s3) db.ref('users/' + cSnap.key + '/activeRefScore').set(calcRefScore(s3.val(), nowSec()));
+                        });
+                    });
+                });
+            });
         }
 
         function giveReferralCommissionForUser(userIdKey, earnedAmount) {
@@ -5394,6 +5485,7 @@
                             db.ref('users/' + cSnap.key + '/balance').transaction((bal) => (bal || 0) + commission);
                             db.ref('users/' + cSnap.key + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
                         });
+                        trackActiveReferral(userIdKey, earnedAmount, refSnap);
                     });
                 }
             });
@@ -6153,5 +6245,19 @@
             });
         })();
     </script>
+<script>
+/* স্ক্রল গ্লিচ ফিক্স: স্ক্রল চলাকালীন এনিমেশন পজ, থামার ~২০০ms পরে আবার চালু */
+(function () {
+    var t = null, root = document.documentElement;
+    function onScroll() {
+        if (!root.classList.contains('is-scrolling')) root.classList.add('is-scrolling');
+        clearTimeout(t);
+        t = setTimeout(function () { root.classList.remove('is-scrolling'); }, 200);
+    }
+    document.addEventListener('scroll', onScroll, { capture: true, passive: true });
+    document.addEventListener('touchmove', onScroll, { passive: true });
+    document.addEventListener('wheel', onScroll, { passive: true });
+})();
+</script>
 </body>
 </html>
