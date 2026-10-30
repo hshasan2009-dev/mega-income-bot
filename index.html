@@ -177,6 +177,16 @@
             padding-left: 15px;
             padding-right: 15px;
         }
+        .tt-left { display:flex; flex-direction:column; align-items:flex-start; text-align:left; line-height:1.25; min-width:0; }
+        .tt-user { display:none; align-items:center; gap:6px; margin-top:2px; font-size:12.5px; font-weight:normal; color:var(--txt2); max-width:62vw; }
+        .tt-user.show { display:flex; }
+        .tt-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:.2px; }
+        .tt-dot { width:8px; height:8px; border-radius:50%; flex:none; background:#2ecc71; transition:background-color .3s ease; }
+        .tt-dot.on { background:#2ecc71; animation:ttPulseOn 1.8s ease-out infinite; }
+        .tt-dot.off { background:#e74c3c; animation:ttPulseOff 1.2s ease-out infinite; }
+        @keyframes ttPulseOn { 0% { box-shadow:0 0 0 0 rgba(46,204,113,.65); } 100% { box-shadow:0 0 0 7px rgba(46,204,113,0); } }
+        @keyframes ttPulseOff { 0% { box-shadow:0 0 0 0 rgba(231,76,60,.7); } 100% { box-shadow:0 0 0 7px rgba(231,76,60,0); } }
+        @media (prefers-reduced-motion: reduce) { .tt-dot.on, .tt-dot.off { animation:none; } }
         .logout-btn-top {
             background-color: #e74c3c;
             color: #fff;
@@ -1554,7 +1564,10 @@
     </div>
 
     <div class="top-title-bar">
-        <span>🚀 Mega Income Pro</span>
+        <div class="tt-left">
+            <span>🚀 Mega Income Pro</span>
+            <span class="tt-user" id="ttUser"><i class="tt-dot" id="ttDot" style="background:#7f8c8d"></i><span class="tt-name" id="ttName"></span></span>
+        </div>
         <button class="logout-btn-top" id="logoutBtn" onclick="handleLogout()">Log Out</button>
     </div>
 
@@ -3445,6 +3458,7 @@
                     completedTasksCount = parseInt(val.completedTasksCount || 0);
                     waTotalIncome = parseFloat(val.waTotalIncome || 0);
                     userBoundWaNumbers = val.boundWaNumbers || [];
+                    if (typeof setHeaderUser === 'function') setHeaderUser(val.fullName || val.username || '');
 
                     checkinStreak = parseInt(val.checkinStreak || 0);
                     checkinTotalIncome = parseFloat(val.checkinTotalIncome || 0);
@@ -6638,6 +6652,47 @@ function fillRqNames(){
 (function(){
   var tm=null;
   new MutationObserver(function(){ clearTimeout(tm); tm=setTimeout(fillRqNames,60); }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+
+<script>
+/* ===== হেডারে ইউজারের নাম + একটিভ ডট (মোট ইনকাম ৳30+ হলে সবুজ, নাহলে লাল) ===== */
+(function () {
+    var wdLoaded = false;
+
+    function totalIncome() {
+        var withdrawn = 0;
+        (historyData || []).forEach(function (w) {
+            if (w && w.status !== 'Rejected') withdrawn += Number(w.requestedAmount || 0);
+        });
+        return Number(currentBalance || 0) + withdrawn;
+    }
+
+    window.refreshActiveDot = function () {
+        var dot = document.getElementById('ttDot');
+        if (!dot) return;
+        if (!balanceLoaded || !wdLoaded) { dot.className = 'tt-dot'; dot.style.background = '#7f8c8d'; return; }
+        dot.style.background = '';
+        var active = totalIncome() >= ACTIVE_MIN_INCOME;
+        dot.className = 'tt-dot ' + (active ? 'on' : 'off');
+        dot.title = active ? 'একটিভ' : 'নন-একটিভ';
+    };
+
+    window.setHeaderUser = function (name) {
+        var box = document.getElementById('ttUser');
+        var nm = document.getElementById('ttName');
+        if (!box || !nm) return;
+        name = String(name || '').trim();
+        nm.textContent = name;
+        box.classList.toggle('show', !!name);
+        refreshActiveDot();
+    };
+
+    var _ui = window.updateUI || updateUI;
+    updateUI = function () { _ui.apply(this, arguments); refreshActiveDot(); };
+
+    var _rh = renderHistory;
+    renderHistory = function () { wdLoaded = true; _rh.apply(this, arguments); refreshActiveDot(); };
 })();
 </script>
 </body>
