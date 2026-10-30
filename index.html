@@ -1352,6 +1352,17 @@
         .pl-row .op-logo{width:30px;height:30px;flex-basis:30px;border-radius:7px}
         .pl-row label{display:block;font-size:11px;color:var(--sub);margin:5px 0 3px}
         .pl-row input,.pl-in{width:100%;padding:8px;border-radius:8px;border:1px solid var(--bd2);background:var(--bg);color:var(--txt);font-size:12px}
+
+        /* রিকোয়েস্ট কার্ড – গোছানো লেআউট */
+        .admin-item-card{line-height:1.5;font-size:14px}
+        .admin-item-card > div{margin-top:5px}
+        .admin-item-card > div:first-child{margin-top:0}
+        .admin-item-card .rq-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+        .rq-name{color:var(--acc);font-weight:bold}
+        .rq-code{color:var(--txt);font-size:13px;word-break:break-all;background:rgba(255,255,255,.07);padding:2px 7px;border-radius:6px}
+        .rq-code.rq-green{color:#2ecc71;font-weight:bold}
+        .rq-cp{background:var(--bar);border:1px solid var(--bd);color:var(--acc);padding:3px 11px;border-radius:6px;font-weight:bold;font-size:11px;cursor:pointer}
+        .rq-cp:active{transform:scale(.95)}
         /* থিম কন্ট্রোল পেজ */
         #adminThemeModal{background:var(--bg3);padding:0;z-index:100000}
         .th-wrap{max-width:520px;margin:0 auto;padding:12px 14px 120px}
@@ -1933,7 +1944,7 @@
                             <span style="color: #94a3b8; font-size: 11px; font-weight: bold; display: block;">👤 First Name:</span>
                             <span id="display-fb-firstname" style="color: #38bdf8; font-size: 15px; font-weight: bold;">-</span>
                         </div>
-                        <button onclick="copyFbFirstName()" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
+                        <button onclick="copyFbFirstName()" class="rq-cp">COPY</button>
                     </div>
 
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed rgba(255, 255, 255, 0.1); padding-bottom: 8px;">
@@ -1941,7 +1952,7 @@
                             <span style="color: #94a3b8; font-size: 11px; font-weight: bold; display: block;">👤 Last Name:</span>
                             <span id="display-fb-lastname" style="color: #38bdf8; font-size: 15px; font-weight: bold;">-</span>
                         </div>
-                        <button onclick="copyFbLastName()" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
+                        <button onclick="copyFbLastName()" class="rq-cp">COPY</button>
                     </div>
 
                     <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -1949,7 +1960,7 @@
                             <span style="color: #94a3b8; font-size: 11px; font-weight: bold; display: block;">🔑 Password to use:</span>
                             <span id="display-fb-password" style="color: #f43f5e; font-size: 15px; font-weight: bold; word-break: break-all;">-</span>
                         </div>
-                        <button onclick="copyFbPassword()" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;">COPY</button>
+                        <button onclick="copyFbPassword()" class="rq-cp">COPY</button>
                     </div>
                 </div>
 
@@ -2401,7 +2412,7 @@
 
                 <div class="input-group">
                     <label style="color:var(--sub);">১০-ডিজিট রেফার কোড (User ID):</label>
-                    <input type="text" id="edit-field-refcode" class="input-control">
+                    <input type="text" id="edit-field-refcode" class="input-control" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" placeholder="১০ ডিজিটের UID" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
                 </div>
 
                 <button onclick="saveUserEditChanges()" class="btn btn-main" style="margin-top:10px;">💾 আপডেট সেভ করুন</button>
@@ -2914,7 +2925,7 @@
         }
 
         function generate10DigitRandomId() {
-            return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+            var id = Math.floor(1000000000 + Math.random() * 9000000000).toString(); return id.length === 10 ? id : generate10DigitRandomId();
         }
 
         let mobipiumOffers = {
@@ -3811,6 +3822,10 @@
                 alert("⚠️ সবকটি ঘর সঠিকভাবে পূরণ করুন!");
                 return;
             }
+            if (!/^[0-9]{10}$/.test(newRefCode)) {
+                alert("❌ UID / রেফার কোড অবশ্যই ঠিক ১০ ডিজিটের সংখ্যা হতে হবে (১০ এর কম বা বেশি হলে সেভ হবে না)।");
+                return;
+            }
 
             db.ref('users').once('value').then((snap) => {
                 let refCodeExistsInOtherUser = false;
@@ -4197,7 +4212,7 @@
                         if (container) {
                             container.innerHTML += `
                                 <div class="admin-item-card">
-                                    <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                    ${rqUserBlock(item)}
                                     <div>📅 <b>তারিখ:</b> ${item.date}</div>
                                     <div>📱 <b>অপারেটর:</b> ${item.operatorTitle}</div>
                                     <div>🖼️ <b>প্রুফ পিকচার:</b> <a href="${item.proofUrl}" target="_blank" style="color:var(--acc);">[বড় করে দেখুন]</a></div>
@@ -4238,9 +4253,10 @@
                         if (container) {
                             container.innerHTML += `
                                 <div class="admin-item-card">
-                                    <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                    ${rqUserBlock(item)}
                                     <div>📅 <b>তারিখ:</b> ${item.date}</div>
-                                    <div style="margin-top:2px;">💳 <b>মেথড:</b> ${item.method} (<code style="color:#2ecc71; font-weight:bold; font-size:13px;">${item.account}</code>) <button onclick="copyToClipboard('${item.account}')" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; margin-left:5px;">COPY</button></div>
+                                    <div class="rq-row">💳 <b>মেথড:</b> ${item.method}</div>
+                                    <div class="rq-row">🔢 <b>একাউন্ট নম্বর:</b> <code class="rq-code rq-green">${item.account}</code> <button class="rq-cp" onclick="copyToClipboard('${item.account}')">COPY</button></div>
                                     <div style="margin-top:2px;">💰 <b>পরিমাণ:</b> ৳${item.requestedAmount} (ফি বাদে: <b>৳${item.netAmount.toFixed(2)}</b>)</div>
                                     <div style="display:flex; gap:8px; margin-top:8px;">
                                         <button onclick="adminApproveWithdraw('${key}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Approve</button>
@@ -4278,9 +4294,9 @@
                         if (container) {
                             container.innerHTML += `
                                 <div class="admin-item-card">
-                                    <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                    ${rqUserBlock(item)}
                                     <div>📅 <b>তারিখ:</b> ${item.date}</div>
-                                    <div style="margin-top:2px;">📧 <b>জিমেইল:</b> <code style="color:var(--acc); word-break: break-all; font-size:13px;">${item.info}</code> <button onclick="copyToClipboard('${item.info}')" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; margin-left:5px;">COPY</button></div>
+                                    <div style="margin-top:2px;">📧 <b>জিমেইল:</b> <code style="color:var(--acc); word-break: break-all; font-size:13px;">${item.info}</code> <button onclick="copyToClipboard('${item.info}')" class="rq-cp">COPY</button></div>
                                     <div style="display:flex; gap:8px; margin-top:8px;">
                                         <button onclick="adminApproveGmail('${key}', '${item.userId}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">✅ Accept</button>
                                         <button onclick="adminRejectGmail('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold;">❌ Reject</button>
@@ -4317,10 +4333,10 @@
                         if (container) {
                             container.innerHTML += `
                                 <div class="admin-item-card" style="border-color:#1877f2;">
-                                    <div>👤 <b>ইউজার:</b> ${item.userName} (${item.userId})</div>
+                                    ${rqUserBlock(item)}
                                     <div>📅 <b>তারিখ:</b> ${item.date}</div>
-                                    <div style="margin-top:4px;">🆔 <b>UID:</b> <code style="color:#38bdf8;">${item.uid}</code> <button onclick="copyToClipboard('${item.uid}')" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; margin-left:5px;">COPY</button></div>
-                                    <div style="margin-top:4px; word-break:break-all;">🍪 <b>Cookies:</b> <code style="color:#f43f5e; font-size:11px;">${item.cookies}</code> <button onclick="copyToClipboard(\`${item.cookies}\`)" style="background: #334155; border: 1px solid #475569; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; cursor: pointer; margin-left:5px;">COPY</button></div>
+                                    <div style="margin-top:4px;">🆔 <b>UID:</b> <code style="color:#38bdf8;">${item.uid}</code> <button onclick="copyToClipboard('${item.uid}')" class="rq-cp">COPY</button></div>
+                                    <div style="margin-top:4px; word-break:break-all;">🍪 <b>Cookies:</b> <code style="color:#f43f5e; font-size:11px;">${item.cookies}</code> <button onclick="copyToClipboard(\`${item.cookies}\`)" class="rq-cp">COPY</button></div>
                                     <div style="display:flex; gap:8px; margin-top:10px;">
                                         <button onclick="adminApproveFacebook('${key}', '${item.userId}')" style="background:#2ecc71; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold; cursor:pointer;">✅ Accept (৳${parseFloat(dynamicTaskRewards.facebookTask || 5.00).toFixed(0)})</button>
                                         <button onclick="adminRejectFacebook('${key}')" style="background:#e74c3c; color:#fff; border:none; padding:6px; border-radius:5px; flex:1; font-weight:bold; cursor:pointer;">❌ Reject</button>
@@ -6586,6 +6602,35 @@ function savePinLinkSettings(){
     btn.disabled=false; alert('✅ পিন টাস্কের লিংক সেভ হয়েছে!'); closePinLinkSettings();
   }).catch(function(){ btn.disabled=false; alert('❌ সেভ হয়নি, আবার চেষ্টা করুন।'); });
 }
+</script>
+
+<script>
+/* ===== রিকোয়েস্ট কার্ড: নাম + নম্বর ===== */
+var _rqNameCache = {};
+function _rqEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function rqUserBlock(item){
+  var uid = String(item.userId || '');
+  var nm = (item.userName && String(item.userName) !== uid) ? String(item.userName) : (_rqNameCache[uid] || '');
+  var nameHtml = nm ? '<span class="rq-name" data-done="1">'+_rqEsc(nm)+'</span>' : '<span class="rq-name" data-k="'+_rqEsc(uid)+'">লোড হচ্ছে...</span>';
+  return '<div class="rq-row">👤 <b>নাম:</b> '+nameHtml+'</div>'+
+         '<div class="rq-row">📞 <b>নম্বর:</b> <code class="rq-code">'+_rqEsc(uid)+'</code> <button class="rq-cp" onclick="copyToClipboard(\''+_rqEsc(uid)+'\')">COPY</button></div>';
+}
+function fillRqNames(){
+  document.querySelectorAll('.rq-name[data-k]:not([data-done]):not([data-pend])').forEach(function(el){
+    var k = el.getAttribute('data-k');
+    if (_rqNameCache[k]) { el.textContent = _rqNameCache[k]; el.setAttribute('data-done','1'); return; }
+    el.setAttribute('data-pend','1');
+    db.ref('users/' + k + '/fullName').once('value').then(function(s){
+      var n = s.val() || 'নাম পাওয়া যায়নি';
+      if (s.val()) _rqNameCache[k] = n;
+      document.querySelectorAll('.rq-name[data-k]').forEach(function(e){ if (e.getAttribute('data-k') === k) { e.textContent = n; e.setAttribute('data-done','1'); } });
+    }).catch(function(){ el.textContent = 'নাম পাওয়া যায়নি'; el.setAttribute('data-done','1'); });
+  });
+}
+(function(){
+  var tm=null;
+  new MutationObserver(function(){ clearTimeout(tm); tm=setTimeout(fillRqNames,60); }).observe(document.body,{childList:true,subtree:true});
+})();
 </script>
 </body>
 </html>
