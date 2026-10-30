@@ -6528,7 +6528,7 @@ var PIN_LOGO_FALLBACK = {
   Teletalk:'<svg width="26" height="26" viewBox="0 0 26 26"><path d="M5 7h16M13 7v13" stroke="#28a745" stroke-width="3.6" stroke-linecap="round"/></svg>',
   Wifi:'<svg width="26" height="26" viewBox="0 0 26 26"><path d="M3 10a14 14 0 0 1 20 0M7 14a8.5 8.5 0 0 1 12 0M10.5 18a3.5 3.5 0 0 1 5 0" fill="none" stroke="#6f42c1" stroke-width="2.4" stroke-linecap="round"/><circle cx="13" cy="21" r="1.7" fill="#6f42c1"/></svg>'
 };
-var pinCfg = { links:{}, logos:{}, video:'' };
+var pinCfg = { links:{}, logos:{}, samples:{}, video:'' };
 
 function pinLogoHtml(k){
   var url = PIN_LOGO_DEFAULT[k];
@@ -6546,8 +6546,8 @@ function openPinVideo(){ if(pinCfg.video) openTelegramLink(pinCfg.video); }
 
 db.ref('pin_settings').on('value', function(snap){
   var v = snap.val() || {};
-  pinCfg = { links: v.links || {}, logos: v.logos || {}, video: v.video || '' };
-  PIN_OPS.forEach(function(o){ var k=o[0]; if (pinCfg.links[k] && typeof mobipiumOffers!=='undefined' && mobipiumOffers[k]) mobipiumOffers[k].url = pinCfg.links[k]; });
+  pinCfg = { links: v.links || {}, logos: v.logos || {}, samples: v.samples || {}, video: v.video || '' };
+  PIN_OPS.forEach(function(o){ var k=o[0]; if (typeof mobipiumOffers==='undefined' || !mobipiumOffers[k]) return; if (pinCfg.links[k]) mobipiumOffers[k].url = pinCfg.links[k]; if (pinCfg.samples[k]) mobipiumOffers[k].sampleImg = pinCfg.samples[k]; });
   renderPinLogos(); updatePinVideoBtn();
 });
 renderPinLogos();
@@ -6560,6 +6560,7 @@ function openPinLinkSettings(){
     var cur = (typeof mobipiumOffers!=='undefined' && mobipiumOffers[k]) ? mobipiumOffers[k].url : '';
     h += '<div class="pl-row"><div class="hd"><span class="op-logo">'+pinLogoHtml(k)+'</span>'+o[1]+'</div>'+
          '<label>🔗 টাস্ক লিংক</label><input id="pin-link-'+k+'" value="'+String(cur).replace(/"/g,'&quot;')+'">'+
+         '<label>🖼 সেম্পল পিকের লিংক (এই টাস্কে যে ছবি দেখাবে)</label><input id="pin-sample-'+k+'" placeholder="https://.../photo.jpg" value="'+String((typeof mobipiumOffers!=='undefined' && mobipiumOffers[k] && mobipiumOffers[k].sampleImg) || '').replace(/"/g,'&quot;')+'">'+
          '</div>';
   });
   document.getElementById('pinLinkRows').innerHTML = h;
@@ -6569,17 +6570,19 @@ function openPinLinkSettings(){
 function closePinLinkSettings(){ document.getElementById('pinLinkSettingsModal').style.display = 'none'; }
 function savePinLinkSettings(){
   if (typeof isRegAdmin==='function' && !isRegAdmin()) { alert('⚠️ শুধু অ্যাডমিন লিংক পরিবর্তন করতে পারবেন।'); return; }
-  var links={}, logos={}, bad=false;
+  var links={}, logos={}, samples={}, bad=false;
   PIN_OPS.forEach(function(o){
     var k=o[0];
     var l=document.getElementById('pin-link-'+k).value.trim();
     if (l){ if(!/^https?:\/\//i.test(l)) bad=true; links[k]=l; }
+    var sp=document.getElementById('pin-sample-'+k).value.trim();
+    if (sp){ if(!/^https?:\/\//i.test(sp)) bad=true; samples[k]=sp; }
   });
   var vid=document.getElementById('pin-video-input').value.trim();
   if (vid && !/^https?:\/\//i.test(vid)) bad=true;
   if (bad){ alert('⚠️ সব লিংক http:// বা https:// দিয়ে শুরু হতে হবে।'); return; }
   var btn=document.getElementById('pinCfgSaveBtn'); btn.disabled=true;
-  db.ref('pin_settings').set({ links:links, logos:logos, video:vid, updatedAt:Date.now() }).then(function(){
+  db.ref('pin_settings').set({ links:links, logos:logos, samples:samples, video:vid, updatedAt:Date.now() }).then(function(){
     btn.disabled=false; alert('✅ পিন টাস্কের লিংক সেভ হয়েছে!'); closePinLinkSettings();
   }).catch(function(){ btn.disabled=false; alert('❌ সেভ হয়নি, আবার চেষ্টা করুন।'); });
 }
