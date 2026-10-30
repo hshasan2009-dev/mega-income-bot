@@ -1355,13 +1355,16 @@
 
         /* রিকোয়েস্ট কার্ড – গোছানো লেআউট */
         .admin-item-card{line-height:1.5;font-size:14px}
-        .admin-item-card > div{margin-top:5px}
+        .admin-item-card > div{margin-top:4px}
         .admin-item-card > div:first-child{margin-top:0}
-        .admin-item-card .rq-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+        .admin-item-card .rq-row{display:flex;align-items:center;flex-wrap:nowrap;gap:6px;white-space:nowrap}
+        .admin-item-card .rq-row > b{flex:0 0 auto}
+        .rq-row .rq-code{flex:0 1 auto;min-width:0;white-space:normal;padding:2px 6px;font-size:13px}
+        .rq-row .rq-cp{flex:0 0 auto}
         .rq-name{color:var(--acc);font-weight:bold}
         .rq-code{color:var(--txt);font-size:13px;word-break:break-all;background:rgba(255,255,255,.07);padding:2px 7px;border-radius:6px}
         .rq-code.rq-green{color:#2ecc71;font-weight:bold}
-        .rq-cp{background:var(--bar);border:1px solid var(--bd);color:var(--acc);padding:3px 11px;border-radius:6px;font-weight:bold;font-size:11px;cursor:pointer}
+        .rq-cp{background:var(--bar);border:1px solid var(--bd);color:var(--acc);padding:2px 9px;border-radius:6px;font-weight:bold;font-size:11px;cursor:pointer}
         .rq-cp:active{transform:scale(.95)}
         /* থিম কন্ট্রোল পেজ */
         #adminThemeModal{background:var(--bg3);padding:0;z-index:100000}
@@ -2112,7 +2115,7 @@
 
                 <div class="input-group">
                     <label>অ্যাকাউন্ট নম্বর</label>
-                    <input type="number" id="account-num" class="input-control" placeholder="017XXXXXXXX">
+                    <input type="tel" id="account-num" class="input-control" placeholder="017XXXXXXXX" maxlength="11" inputmode="numeric" pattern="[0-9]{11}" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,11)">
                 </div>
 
                 <div class="input-group">
@@ -6097,6 +6100,11 @@
 
             if (!account || !amount || amount <= 0) {
                 alert("⚠ সঠিক মেথড, অ্যাকাউন্ট নাম্বার ও টাকার পরিমাণ দিন!");
+                return;
+            }
+
+            if (!/^[0-9]{11}$/.test(account)) {
+                alert("❌ অ্যাকাউন্ট নম্বর অবশ্যই ঠিক ১১ ডিজিটের হতে হবে (১১ এর কম বা বেশি হলে রিকোয়েস্ট যাবে না)।");
                 return;
             }
 
