@@ -177,8 +177,9 @@
             padding-left: 15px;
             padding-right: 15px;
         }
-        .tt-left { display:flex; flex-direction:column; align-items:flex-start; text-align:left; line-height:1.25; min-width:0; }
-        .tt-user { display:none; align-items:center; gap:6px; margin-top:2px; font-size:12.5px; font-weight:normal; color:var(--txt2); max-width:62vw; }
+        .tt-right { display:flex; flex-direction:column; align-items:flex-end; gap:5px; min-width:0; }
+        .tt-user { display:none; align-items:center; gap:6px; font-size:12.5px; font-weight:normal; color:var(--txt2); max-width:48vw; line-height:1.2; }
+        .tt-name { max-width:42vw; }
         .tt-user.show { display:flex; }
         .tt-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:.2px; }
         .tt-dot { width:8px; height:8px; border-radius:50%; flex:none; background:#2ecc71; transition:background-color .3s ease; }
@@ -1356,6 +1357,11 @@
         .op-btn .op-name{flex:1;font-size:15px;line-height:1.3}
         .op-logo{flex:0 0 42px;width:42px;height:42px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.35)}
         .op-logo img{width:100%;height:100%;object-fit:cover;display:block}
+        .work-vid-row{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 15px}
+        .work-vid{display:none;background:transparent;border:1px solid var(--bd);color:var(--acc);border-radius:20px;padding:6px 18px;font-size:12px;font-weight:bold;cursor:pointer}
+        .work-vid.show{display:inline-block}
+        .work-vid-edit{display:none;width:28px;height:28px;padding:0;border-radius:50%;background:var(--bar);border:1px solid var(--bd);color:var(--acc);font-size:13px;line-height:1;cursor:pointer;align-items:center;justify-content:center}
+        .work-vid-edit.show{display:inline-flex}
         .pin-vid{display:none;margin:2px auto 0;background:transparent;border:1px solid var(--bd);color:var(--acc);border-radius:20px;padding:5px 16px;font-size:12px;font-weight:bold;cursor:pointer}
         .pl-row{border:1.5px solid var(--bd);border-radius:12px;padding:10px;margin-bottom:10px;background:var(--bg3);text-align:left}
         .pl-row .hd{display:flex;align-items:center;gap:8px;font-weight:bold;font-size:13px;color:var(--acc);margin-bottom:6px}
@@ -1564,11 +1570,11 @@
     </div>
 
     <div class="top-title-bar">
-        <div class="tt-left">
-            <span>🚀 Mega Income Pro</span>
+        <span>🚀 Mega Income Pro</span>
+        <div class="tt-right">
+            <button class="logout-btn-top" id="logoutBtn" onclick="handleLogout()">Log Out</button>
             <span class="tt-user" id="ttUser"><i class="tt-dot" id="ttDot" style="background:#7f8c8d"></i><span class="tt-name" id="ttName"></span></span>
         </div>
-        <button class="logout-btn-top" id="logoutBtn" onclick="handleLogout()">Log Out</button>
     </div>
 
     <div class="container">
@@ -1872,6 +1878,19 @@
         </div>
 
 
+        <div id="videoLinkEditModal" class="modal-overlay" style="z-index:100003;">
+            <div style="background:var(--card); border:2px solid var(--bd); padding:16px; border-radius:12px; width:100%; max-width:400px; margin:60px auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <h3 id="videoLinkEditTitle" style="color:var(--acc); font-size:16px;">▶ ভিডিও লিংক সেটিং</h3>
+                    <button onclick="closeVideoLinkEdit()" style="background:#ff3333; color:var(--txt); border:none; padding:5px 10px; border-radius:6px; cursor:pointer;">✕</button>
+                </div>
+                <p style="color:var(--sub); font-size:12px; margin-bottom:10px;">নতুন ভিডিও লিংক দিয়ে সেভ করুন। ফাঁকা রেখে সেভ করলে ভিডিও বাটনটি ইউজারদের কাছে দেখাবে না।</p>
+                <input type="hidden" id="videoLinkEditKey">
+                <input type="text" id="videoLinkEditInput" class="input-control" placeholder="https://..." style="margin-bottom:12px;">
+                <button class="btn btn-main" id="videoLinkSaveBtn" onclick="saveVideoLink()" style="margin-bottom:0;">💾 সেভ করুন</button>
+            </div>
+        </div>
+
         <div id="pinLinkSettingsModal" class="modal-overlay">
             <div style="background:var(--card); border:2px solid var(--bd); padding:16px; border-radius:12px; width:100%; max-width:400px; margin:20px auto;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
@@ -1927,7 +1946,10 @@
 
                 <div style="margin-top: 15px;">
                     <button onclick="handleGmailSubmit()" class="btn btn-main" style="margin-bottom:10px;">🚀 সাবমিট করুন</button>
-                    <button onclick="openTelegramLink('https://t.me/+BAquPEEqEhM2NTNl')" class="btn btn-official" style="margin-bottom:15px;">🎬 কাজের ভিডিও দেখুন</button>
+                    <div class="work-vid-row">
+                        <button id="vidBtn-gmail" class="work-vid show" onclick="openVideoLink('gmail')">▶ কাজের ভিডিও দেখুন</button>
+                        <button id="vidEdit-gmail" class="work-vid-edit" onclick="openVideoLinkEdit('gmail')" aria-label="ভিডিও লিংক এডিট">✏️</button>
+                    </div>
                     <hr style="border: 0; border-top: 1px solid var(--bd2); margin-bottom: 15px;">
                     <div style="text-align: center;">
                         <button onclick="toggleWorkHistory()" style="background-color: #495057; color: var(--txt); border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 আমার সাবমিট করা জিমেইল লিস্ট</button>
@@ -1993,7 +2015,10 @@
                 <div style="margin-top: 15px;">
                     <button onclick="handleFacebookSubmit()" class="btn btn-facebook" style="margin-bottom:10px; font-size:16px;">Confirm & Send 🚀</button>
                     
-                    <button onclick="openTelegramLink('https://t.me/+p9RYb3sEcSc5ODBl')" class="btn btn-official" style="margin-bottom:12px; font-size:14px; background: linear-gradient(135deg, #0284c7, #0369a1);">🎬 কিভাবে কাজ করবো.?</button>
+                    <div class="work-vid-row" style="margin-bottom:12px;">
+                        <button id="vidBtn-facebook" class="work-vid show" onclick="openVideoLink('facebook')">▶ কাজের ভিডিও দেখুন</button>
+                        <button id="vidEdit-facebook" class="work-vid-edit" onclick="openVideoLinkEdit('facebook')" aria-label="ভিডিও লিংক এডিট">✏️</button>
+                    </div>
                     
                     <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
                     <div style="text-align: center;">
@@ -6694,6 +6719,70 @@ function fillRqNames(){
     var _rh = renderHistory;
     renderHistory = function () { wdLoaded = true; _rh.apply(this, arguments); refreshActiveDot(); };
 })();
+</script>
+
+<script>
+/* ===== জিমেইল / ফেসবুক টাস্কের "কাজের ভিডিও দেখুন" বাটন + অ্যাডমিন এডিট ===== */
+var VIDEO_DEFAULTS = { gmail: 'https://t.me/+BAquPEEqEhM2NTNl', facebook: 'https://t.me/+p9RYb3sEcSc5ODBl' };
+var VIDEO_KEYS = { gmail: 'জিমেইল টাস্ক', facebook: 'ফেসবুক টাস্ক' };
+var videoLinks = { gmail: VIDEO_DEFAULTS.gmail, facebook: VIDEO_DEFAULTS.facebook };
+
+function paintVideoButtons() {
+    Object.keys(VIDEO_KEYS).forEach(function (k) {
+        var b = document.getElementById('vidBtn-' + k);
+        var e = document.getElementById('vidEdit-' + k);
+        if (b) b.classList.toggle('show', !!videoLinks[k]);
+        if (e) e.classList.toggle('show', typeof isRegAdmin === 'function' && isRegAdmin());
+    });
+}
+
+db.ref('video_links').on('value', function (snap) {
+    var v = snap.val() || {};
+    Object.keys(VIDEO_KEYS).forEach(function (k) {
+        videoLinks[k] = (typeof v[k] === 'string') ? v[k] : VIDEO_DEFAULTS[k];
+    });
+    paintVideoButtons();
+});
+
+(function () {
+    var g = openGmailSellPage, f = openFacebookSellPage;
+    openGmailSellPage = function () { g.apply(this, arguments); paintVideoButtons(); };
+    openFacebookSellPage = function () { f.apply(this, arguments); paintVideoButtons(); };
+})();
+
+function openVideoLink(k) {
+    if (videoLinks[k]) openTelegramLink(videoLinks[k]);
+}
+
+function openVideoLinkEdit(k) {
+    if (typeof isRegAdmin === 'function' && !isRegAdmin()) return;
+    document.getElementById('videoLinkEditKey').value = k;
+    document.getElementById('videoLinkEditTitle').innerText = '▶ ' + VIDEO_KEYS[k] + ' ভিডিও লিংক';
+    document.getElementById('videoLinkEditInput').value = videoLinks[k] || '';
+    document.getElementById('videoLinkEditModal').style.display = 'block';
+}
+
+function closeVideoLinkEdit() {
+    document.getElementById('videoLinkEditModal').style.display = 'none';
+}
+
+function saveVideoLink() {
+    if (typeof isRegAdmin === 'function' && !isRegAdmin()) { alert('⚠️ শুধু অ্যাডমিন লিংক পরিবর্তন করতে পারবেন।'); return; }
+    var k = document.getElementById('videoLinkEditKey').value;
+    var link = document.getElementById('videoLinkEditInput').value.trim();
+    if (!VIDEO_KEYS[k]) return;
+    if (link && !/^https?:\/\//i.test(link)) { alert('⚠️ লিংক http:// বা https:// দিয়ে শুরু হতে হবে।'); return; }
+    var btn = document.getElementById('videoLinkSaveBtn');
+    btn.disabled = true;
+    db.ref('video_links/' + k).set(link).then(function () {
+        btn.disabled = false;
+        closeVideoLinkEdit();
+        alert('✅ ভিডিও লিংক সেভ হয়েছে!');
+    }).catch(function () {
+        btn.disabled = false;
+        alert('❌ সেভ হয়নি, আবার চেষ্টা করুন।');
+    });
+}
 </script>
 </body>
 </html>
