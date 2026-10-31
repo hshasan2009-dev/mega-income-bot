@@ -793,6 +793,18 @@
             background: #e74c3c;
             border-color: #e74c3c;
         }
+        .custom-popup-site {
+            height: 32px;
+            line-height: 32px;
+            margin: -12px 40px 16px;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: .4px;
+            color: var(--txt);
+            border-bottom: 1px solid rgba(var(--accrgb), 0.35);
+            padding-bottom: 6px;
+            box-sizing: content-box;
+        }
         .custom-popup-logo {
             width: 75px;
             height: 75px;
@@ -1476,6 +1488,25 @@
         .btn-support .hb-ic{color:var(--sup)}
         .hb-ic.hb-tg{background:#0d2b45;color:#f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.55),0 2px 6px rgba(0,0,0,.4)}
 
+        /* ===== টাস্ক পিন ও হট/নতুন ট্যাগ ===== */
+        .tk-tag{position:absolute;top:7px;left:12px;z-index:2;display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 6px;border-radius:14px;font-size:10.5px;font-weight:800;color:#fff;letter-spacing:.2px;line-height:1.5;pointer-events:none;animation:tkGlow 2.6s ease-in-out infinite}
+        .tk-tag svg{width:13px;height:13px;display:block;flex:none}
+        .tk-hot{background:linear-gradient(135deg,#ff8a1f,#e5301c);--tg:255,110,40}
+        .tk-new{background:linear-gradient(135deg,#34d67b,#10964f);--tg:46,204,113}
+        @keyframes tkGlow{0%,100%{box-shadow:0 2px 6px rgba(0,0,0,.35),0 0 0 0 rgba(var(--tg),0)}50%{box-shadow:0 2px 6px rgba(0,0,0,.35),0 0 10px 1px rgba(var(--tg),.55)}}
+        .tk-ctl{margin-left:auto;margin-right:10px;display:flex;align-items:center;gap:7px;flex:none}
+        .switch-container > span:first-child{min-width:0}
+        .tk-pin{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(245,197,66,.65);background:transparent;color:#f5c542;display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .2s cubic-bezier(.2,.9,.3,1.3),background .25s ease,box-shadow .25s ease}
+        .tk-pin svg{width:17px;height:17px;display:block;transition:transform .25s ease}
+        .tk-pin:active{transform:scale(.88)}
+        .tk-pin.on{background:linear-gradient(135deg,#ffe08a,#d9a62e);color:#2a1a0c;border-color:#ffe08a;box-shadow:0 0 12px rgba(245,197,66,.55)}
+        .tk-pin.on svg{transform:rotate(-35deg)}
+        .tk-tgb{min-width:44px;height:28px;padding:0 9px;border-radius:14px;border:1px solid rgba(255,255,255,.28);background:transparent;color:var(--sub);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .15s ease,background .25s ease}
+        .tk-tgb:active{transform:scale(.92)}
+        .tk-tgb.hot{background:linear-gradient(135deg,#ff8a1f,#e5301c);border-color:transparent;color:#fff}
+        .tk-tgb.new{background:linear-gradient(135deg,#34d67b,#10964f);border-color:transparent;color:#fff}
+        @media (prefers-reduced-motion:reduce){.tk-tag{animation:none}}
+
         /* রেফার লিংক কপি বাটন — কপি হলে বাটনেই ফিডব্যাক */
         .btn.copy-done{background:#2ecc71!important;color:#06210f!important;border-color:#2ecc71!important;transition:background .25s ease,color .25s ease}
 </style>
@@ -1534,6 +1565,7 @@
     <div id="dynamicNoticePopup" class="custom-popup-overlay">
         <div class="custom-popup-box">
             <button class="custom-popup-close" onclick="closeDynamicNotice()">✕</button>
+            <div class="custom-popup-site">Mega Income Pro</div>
             <div class="custom-popup-logo">🚀</div>
             <h3 id="popupMainTitle" class="custom-popup-title">সাইন-আপ বোনাস +৫০০ পয়েন্ট</h3>
             <p id="popupSubDesc" class="custom-popup-desc">টাস্ক দাবি করুন · বার্তা পাঠান · পয়েন্ট আয় করুন</p>
@@ -3514,6 +3546,10 @@
                 updateTaskCardVisuals('card-monetag-task', taskStatusSettings.monetagTask);
                 updateTaskCardVisuals('card-exo-task', taskStatusSettings.exoAdTask);
                 updateTaskCardVisuals('card-checkin-task', taskStatusSettings.checkinTask);
+            });
+
+            db.ref('task_layout').on('value', (snapshot) => {
+                if (window.tkApplyLayout) window.tkApplyLayout(snapshot.val() || {});
             });
 
             db.ref('withdraw_settings').on('value', (snapshot) => {
@@ -6926,6 +6962,82 @@ function saveVideoLink() {
   window.alert=function(msg){window.mpOpen(msg,false)};
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&current)window.mpClose(false)});
   document.addEventListener('click',function(e){if(e.target&&e.target.id==='mpOv'&&current&&!current.confirm)window.mpClose(true)});
+})();
+</script>
+
+<script>
+/* ===== টাস্ক পিন + হট/নতুন ট্যাগ + অন/অফ তালিকার ক্রম ===== */
+(function(){
+  var TK=[
+    {k:'waTask',sw:'sw-wa',card:'card-wa-task'},
+    {k:'gmailTask',sw:'sw-gmail',card:'card-gmail-task'},
+    {k:'facebookTask',sw:'sw-facebook',card:'card-facebook-task'},
+    {k:'exoAdTask',sw:'sw-exo',card:'card-exo-task'},
+    {k:'monetagTask',sw:'sw-monetag',card:'card-monetag-task'},
+    {k:'pinTask',sw:'sw-pin',card:'card-pin-task'},
+    {k:'regTask',sw:'sw-reg',card:'card-reg-task'},
+    {k:'adTask',sw:'sw-ad',card:'card-ad-task'},
+    {k:'checkinTask',sw:'sw-checkin',card:'card-checkin-task'}
+  ];
+  var layout={},ready=false,cardMk=[],rowMk=[];
+  var PIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5-1.5l1.5-4l4-4"/><path d="M9 15l-4.5 4.5"/><path d="M14.5 4l5.5 5.5"/></svg>';
+  var FLAME='<svg viewBox="0 0 24 24" fill="rgba(255,255,255,.3)" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c2-2.96 0-7-1-8c0 3.038-1.773 4.741-3 6c-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5c-1.786 3-2.791 3-4 2z"/></svg>';
+  var SPARK='<svg viewBox="0 0 24 24" fill="rgba(255,255,255,.3)" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm0-12a2 2 0 0 1 2 2a2 2 0 0 1 2-2a2 2 0 0 1-2-2a2 2 0 0 1-2 2zm-7 12a6 6 0 0 1 6-6a6 6 0 0 1-6-6a6 6 0 0 1-6 6a6 6 0 0 1 6 6z"/></svg>';
+  function g(id){return document.getElementById(id)}
+  function rowOf(it){var s=g(it.sw);return s&&s.closest?s.closest('.switch-container'):null}
+  function init(){
+    if(ready)return; ready=true;
+    TK.forEach(function(it){
+      var c=g(it.card),r=rowOf(it);
+      var m1=document.createComment('tk');if(c&&c.parentNode)c.parentNode.insertBefore(m1,c);cardMk.push(m1);
+      var m2=document.createComment('tk');if(r&&r.parentNode)r.parentNode.insertBefore(m2,r);rowMk.push(m2);
+      if(r&&!r.querySelector('.tk-ctl')){
+        var d=document.createElement('div');d.className='tk-ctl';
+        d.innerHTML='<button type="button" class="tk-pin" data-k="'+it.k+'" aria-label="পিন">'+PIN+'</button><button type="button" class="tk-tgb" data-k="'+it.k+'">নেই</button>';
+        var sw=r.querySelector('label.switch');
+        r.insertBefore(d,sw||null);
+        d.querySelector('.tk-pin').onclick=function(){pinToggle(it.k)};
+        d.querySelector('.tk-tgb').onclick=function(){tagCycle(it.k)};
+      }
+    });
+  }
+  function pinVal(k){var v=layout[k]&&layout[k].pin;return +v>0?+v:0}
+  function tagVal(k){var v=layout[k]&&layout[k].tag;return v==='hot'||v==='new'?v:''}
+  function order(){
+    var idx={};TK.forEach(function(it,i){idx[it.k]=i});
+    return TK.map(function(it){return it.k}).sort(function(a,b){
+      var pa=pinVal(a),pb=pinVal(b);
+      if(pa&&pb)return pb-pa;
+      if(pa)return -1;
+      if(pb)return 1;
+      return idx[a]-idx[b];
+    });
+  }
+  function apply(){
+    init();
+    var ks=order(),byK={};TK.forEach(function(it){byK[it.k]=it});
+    ks.forEach(function(k,i){
+      var it=byK[k],c=g(it.card),r=rowOf(it);
+      if(c&&cardMk[i]&&cardMk[i].parentNode)cardMk[i].parentNode.insertBefore(c,cardMk[i].nextSibling);
+      if(r&&rowMk[i]&&rowMk[i].parentNode)rowMk[i].parentNode.insertBefore(r,rowMk[i].nextSibling);
+    });
+    TK.forEach(function(it){
+      var c=g(it.card),tg=tagVal(it.k),old=c&&c.querySelector('.tk-tag');
+      if(old)old.remove();
+      if(c&&tg){
+        var s=document.createElement('span');s.className='tk-tag tk-'+tg;
+        s.innerHTML=(tg==='hot'?FLAME+'হট':SPARK+'নতুন');
+        c.appendChild(s);
+      }
+      var r=rowOf(it);if(!r)return;
+      var pb=r.querySelector('.tk-pin'),tb=r.querySelector('.tk-tgb');
+      if(pb)pb.classList.toggle('on',!!pinVal(it.k));
+      if(tb){tb.className='tk-tgb'+(tg?' '+tg:'');tb.textContent=tg==='hot'?'হট':tg==='new'?'নতুন':'ট্যাগ'}
+    });
+  }
+  function pinToggle(k){db.ref('task_layout/'+k+'/pin').set(pinVal(k)?0:Date.now())}
+  function tagCycle(k){var c=tagVal(k),n=c===''?'hot':c==='hot'?'new':'';db.ref('task_layout/'+k+'/tag').set(n)}
+  window.tkApplyLayout=function(v){layout=v||{};apply()};
 })();
 </script>
 </body>
