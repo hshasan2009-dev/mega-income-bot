@@ -7010,7 +7010,7 @@ function saveVideoLink() {
     var idx={};TK.forEach(function(it,i){idx[it.k]=i});
     return TK.map(function(it){return it.k}).sort(function(a,b){
       var pa=pinVal(a),pb=pinVal(b);
-      if(pa&&pb)return pb-pa;
+      if(pa&&pb)return pa-pb;
       if(pa)return -1;
       if(pb)return 1;
       return idx[a]-idx[b];
