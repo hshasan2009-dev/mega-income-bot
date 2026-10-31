@@ -1324,7 +1324,7 @@
         .btn, .auth-btn { will-change: auto; }
         .page { contain: layout style; }
         .modal-overlay { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
-        .custom-popup-overlay { backdrop-filter: none; background: rgba(0,0,0,.85); }
+        .custom-popup-overlay { backdrop-filter: none; }
         /* ===== এড দেখুন টাস্ক মোডাল ===== */
         #exoAdOverlay { z-index: 100001; }
         #exoAdOverlay .exo-panel { background:#0b1f26; border:2px solid #00bcd4; padding:18px; border-radius:16px; width:100%; max-width:400px; margin:20px auto; box-shadow:0 10px 30px rgba(0,188,212,.3); color:#fff; }
@@ -1412,7 +1412,67 @@
         .th-bar .btn{margin:0;flex:1;padding:12px;font-size:15px}
         .th-bar .btn.cancel{background:transparent;color:var(--txt);border:1.5px solid var(--bd);box-shadow:none}
         .th-state{font-size:12px;color:var(--sub);text-align:center;margin-top:8px;min-height:16px}
-    </style>
+    
+        /* ===== নতুন পপআপ ডিজাইন (থিম অনুযায়ী স্বয়ংক্রিয় রং) ===== */
+        .mp-ov{position:fixed;inset:0;z-index:2000000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+        .mp-ov.show{display:flex;animation:mpFade .22s ease both}
+        .mp-ov.hide{display:flex;animation:mpFadeOut .18s ease both;pointer-events:none}
+        @keyframes mpFade{from{opacity:0}to{opacity:1}}
+        @keyframes mpFadeOut{from{opacity:1}to{opacity:0}}
+        .mp-box{position:relative;width:100%;max-width:340px;border-radius:24px;overflow:hidden;
+            background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0) 40%),var(--card);
+            border:1px solid rgba(var(--bdrgb),.35);box-shadow:0 18px 50px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.4);
+            animation:mpPop .3s cubic-bezier(.2,.9,.3,1.15) both}
+        .mp-ov.hide .mp-box{animation:mpPopOut .18s ease-in both}
+        @keyframes mpPop{from{transform:scale(.88) translateY(12px);opacity:0}to{transform:none;opacity:1}}
+        @keyframes mpPopOut{from{transform:none;opacity:1}to{transform:scale(.92) translateY(6px);opacity:0}}
+        .mp-head{position:relative;padding:20px 52px 16px;text-align:center;background:linear-gradient(180deg,rgba(var(--accrgb),.10),rgba(var(--accrgb),.02));border-bottom:1px solid rgba(var(--bdrgb),.18)}
+        .mp-title{font-size:20px;font-weight:700;color:var(--txt);letter-spacing:.2px}
+        .mp-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:var(--txt);display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .2s ease,background .2s ease}
+        .mp-x:hover{background:rgba(255,255,255,.24);transform:rotate(90deg)}
+        .mp-x:active{transform:scale(.88) rotate(90deg)}
+        .mp-body{padding:22px 22px 8px;text-align:center;font-size:16px;line-height:1.65;color:var(--txt);white-space:pre-line;word-break:break-word;max-height:55vh;overflow-y:auto;animation:mpUp .4s .08s ease both}
+        .mp-btns{display:flex;gap:12px;padding:18px 20px 22px}
+        .mp-btn{position:relative;overflow:hidden;flex:1;height:48px;border-radius:24px;font-size:16px;font-weight:600;cursor:pointer;
+            transition:transform .18s cubic-bezier(.2,.9,.3,1.3),box-shadow .25s ease,background .25s ease,filter .25s ease;animation:mpUp .42s ease both;-webkit-appearance:none;appearance:none}
+        .mp-btn:nth-child(1){animation-delay:.12s}
+        .mp-btn:nth-child(2){animation-delay:.2s}
+        @keyframes mpUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+        .mp-btn:hover{transform:translateY(-1px)}
+        .mp-btn:active{transform:scale(.95)}
+        .mp-btn .mp-rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);pointer-events:none;animation:mpRip .55s ease-out forwards}
+        @keyframes mpRip{to{transform:scale(1);opacity:0}}
+        .mp-cancel{background:transparent;border:1px solid rgba(var(--bdrgb),.45);color:var(--sub)}
+        .mp-cancel:hover{background:rgba(var(--bdrgb),.12)}
+        .mp-ok{border:1px solid rgba(var(--accrgb),.55);color:#fff;background:linear-gradient(100deg,rgba(0,0,0,.45) 0%,rgba(var(--bdrgb),.7) 60%,var(--btn) 140%)}
+        .mp-ok:hover{box-shadow:0 6px 18px rgba(var(--accrgb),.28);filter:brightness(1.08)}
+        .mp-ok::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-20deg);animation:mpShine 3.2s ease-in-out 1s infinite;pointer-events:none}
+        @keyframes mpShine{0%{left:-70%}45%,100%{left:130%}}
+        @media (prefers-reduced-motion:reduce){.mp-box,.mp-ov.show,.mp-ov.hide,.mp-ov.hide .mp-box,.mp-body,.mp-btn,.mp-ok::after{animation:none!important}.mp-btn,.mp-x{transition:none}}
+
+        /* ===== অ্যাডমিন নোটিশ পপআপ — একই নতুন ডিজাইন ===== */
+        .custom-popup-overlay{background:rgba(0,0,0,.62)!important;-webkit-backdrop-filter:blur(3px)!important;backdrop-filter:blur(3px)!important;z-index:1999990}
+        .custom-popup-box{border-radius:24px!important;max-width:340px!important;padding:26px 22px 22px!important;
+            background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0) 40%),var(--card)!important;
+            border:1px solid rgba(var(--bdrgb),.35)!important;box-shadow:0 18px 50px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.4)!important;
+            animation:mpPop .3s cubic-bezier(.2,.9,.3,1.15) both!important}
+        .custom-popup-close{top:12px!important;right:12px!important;width:34px!important;height:34px!important;border:none!important;background:rgba(255,255,255,.14)!important;color:var(--txt)!important;transition:transform .2s ease,background .2s ease!important}
+        .custom-popup-close:hover{background:rgba(255,255,255,.24)!important;transform:rotate(90deg)}
+        .custom-popup-close:active{transform:scale(.88) rotate(90deg)}
+        .custom-popup-logo{width:64px!important;height:64px!important;font-size:30px!important;border:1px solid rgba(var(--accrgb),.55)!important;box-shadow:0 0 18px rgba(var(--accrgb),.35)!important}
+        .custom-popup-title{color:var(--txt)!important;font-size:20px!important;text-shadow:none!important}
+        .custom-popup-desc{color:var(--sub)!important;font-size:14px!important;line-height:1.65!important}
+        .custom-popup-btn{position:relative;overflow:hidden;height:48px;padding:0!important;border-radius:24px!important;font-size:16px!important;font-weight:600!important;color:#fff!important;
+            background:linear-gradient(100deg,rgba(0,0,0,.45) 0%,rgba(var(--bdrgb),.7) 60%,var(--btn) 140%)!important;border:1px solid rgba(var(--accrgb),.55)!important;box-shadow:none!important;
+            transition:transform .18s cubic-bezier(.2,.9,.3,1.3),box-shadow .25s ease,filter .25s ease}
+        .custom-popup-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(var(--accrgb),.28)!important;filter:brightness(1.08)}
+        .custom-popup-btn:active{transform:scale(.95)}
+        .custom-popup-btn::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-20deg);animation:mpShine 3.2s ease-in-out 1s infinite;pointer-events:none}
+        @media (prefers-reduced-motion:reduce){.custom-popup-box,.custom-popup-btn::after{animation:none!important}}
+
+        /* রেফার লিংক কপি বাটন — কপি হলে বাটনেই ফিডব্যাক */
+        .btn.copy-done{background:#2ecc71!important;color:#06210f!important;border-color:#2ecc71!important;transition:background .25s ease,color .25s ease}
+</style>
 <style>
 /* ===== রেজিস্ট্রেশন টাস্ক নতুন ডিজাইন ===== */
 .rg-box{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:14px;width:92%;max-width:400px;max-height:92vh;overflow-y:auto;margin:auto;box-shadow:0 0 18px rgba(var(--bdrgb),.35);text-align:left;}
@@ -2096,7 +2156,7 @@
                     <input type="text" id="ref-link" class="input-control" readonly value="তৈরি হচ্ছে...">
                 </div>
 
-                <button class="btn btn-main" onclick="copyReferLink()">📋 লিংক কপি করুন</button>
+                <button class="btn btn-main" id="link-copy-btn" onclick="copyReferLink()">📋 লিংক কপি করুন</button>
             </div>
 
             <div class="card rlb-card">
@@ -3215,10 +3275,11 @@
         }
 
         function handleLogout() {
-            if (confirm("আপনি কি নিশ্চিৎ যে লগআউট করতে চান?")) {
+            mpConfirm("আপনি কি নিশ্চিৎ যে লগআউট করতে চান?", function(ok) {
+                if (!ok) return;
                 localStorage.removeItem("loggedInUserKey");
                 location.reload();
-            }
+            });
         }
 
         function getYesterdayString() {
@@ -3753,12 +3814,13 @@
             let editKey = document.getElementById('gc-edit-key').value;
             if (!editKey) return;
 
-            if (confirm("আপনি কি নিশ্চিৎ যে এই গিফট কোডটি মুছে ফেলতে চান?")) {
+            mpConfirm("আপনি কি নিশ্চিৎ যে এই গিফট কোডটি মুছে ফেলতে চান?", function(ok) {
+                if (!ok) return;
                 db.ref('gift_codes/' + editKey).remove().then(() => {
                     alert("🗑️ গিফট কোডটি সফলভাবে ডিলিট করা হয়েছে!");
                     document.getElementById('giftCodeFormContainer').style.display = 'none';
                 });
-            }
+            });
         }
 
         function listenGiftCodesList() {
@@ -5236,9 +5298,11 @@
         }
 
         function deleteRegDraft(i) {
-            if (!confirm("এই লিংকটি মুছে ফেলবেন?")) return;
-            regDraft.splice(i, 1);
-            renderRegAdminPanel();
+            mpConfirm("এই লিংকটি মুছে ফেলবেন?", function(ok) {
+                if (!ok) return;
+                regDraft.splice(i, 1);
+                renderRegAdminPanel();
+            });
         }
 
         function saveRegConfig() {
@@ -5926,7 +5990,10 @@
 
         function closeExoAdModal() {
             if (exoAdTimer && exoAdRemaining > 0) {
-                if (!confirm('এখন বন্ধ করলে রিওয়ার্ড পাবেন না। বন্ধ করতে চান?')) return;
+                mpConfirm('এখন বন্ধ করলে রিওয়ার্ড পাবেন না। বন্ধ করতে চান?', function(ok) {
+                    if (ok) exoAdAbort();
+                });
+                return;
             }
             exoAdAbort();
         }
@@ -6109,11 +6176,32 @@
 
         function copyReferLink() {
             let linkInput = document.getElementById("ref-link");
+            let btn = document.getElementById("link-copy-btn");
             if (!linkInput) return;
+            let orig = '📋 লিংক কপি করুন';
+            let done = () => {
+                if (!btn) return;
+                btn.classList.add('copy-done');
+                btn.innerText = '✅ কপি হয়েছে';
+                clearTimeout(btn._t);
+                btn._t = setTimeout(() => { btn.classList.remove('copy-done'); btn.innerText = orig; }, 1600);
+            };
+            let fallback = () => {
+                try {
+                    linkInput.removeAttribute('readonly');
+                    linkInput.select();
+                    linkInput.setSelectionRange(0, 99999);
+                    document.execCommand('copy');
+                    linkInput.setAttribute('readonly', 'readonly');
+                    done();
+                } catch (e) {}
+            };
             linkInput.select();
-            navigator.clipboard.writeText(linkInput.value).then(() => {
-                alert("✅ রেফার লিংক কপি হয়েছে!");
-            });
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(linkInput.value).then(done).catch(fallback);
+            } else {
+                fallback();
+            }
         }
 
         function submitWithdrawal() {
@@ -6783,6 +6871,63 @@ function saveVideoLink() {
         alert('❌ সেভ হয়নি, আবার চেষ্টা করুন।');
     });
 }
+</script>
+
+<!-- ===== কমন পপআপ (alert/confirm এর বদলে) ===== -->
+<div class="mp-ov" id="mpOv">
+  <div class="mp-box" role="dialog" aria-modal="true" aria-labelledby="mpTitle">
+    <div class="mp-head">
+      <div class="mp-title" id="mpTitle">Mega Income Pro</div>
+      <button class="mp-x" type="button" onclick="mpClose(false)" aria-label="বন্ধ">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+      </button>
+    </div>
+    <div class="mp-body" id="mpMsg"></div>
+    <div class="mp-btns">
+      <button class="mp-btn mp-cancel" type="button" id="mpCancel" onclick="mpClose(false)">বাতিল</button>
+      <button class="mp-btn mp-ok" type="button" id="mpOk" onclick="mpClose(true)">ঠিক আছে</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var queue=[],current=null,busy=false;
+  function $(id){return document.getElementById(id)}
+  function next(){
+    if(busy||current||!queue.length)return;
+    var ov=$('mpOv'); if(!ov)return;
+    current=queue.shift();
+    $('mpMsg').textContent=current.msg;
+    $('mpCancel').style.display=current.confirm?'block':'none';
+    ov.classList.remove('hide');
+    void ov.offsetWidth;
+    ov.classList.add('show');
+    setTimeout(function(){var b=$('mpOk');if(b&&b.focus)try{b.focus({preventScroll:true})}catch(e){}},60);
+  }
+  window.mpOpen=function(msg,confirmMode,cb){
+    queue.push({msg:String(msg==null?'':msg),confirm:!!confirmMode,cb:cb||null});
+    if($('mpOv'))next();
+    else document.addEventListener('DOMContentLoaded',next);
+  };
+  window.mpClose=function(ok){
+    var ov=$('mpOv'); if(!ov||!current)return;
+    var c=current; current=null; busy=true;
+    ov.classList.remove('show'); ov.classList.add('hide');
+    setTimeout(function(){ov.classList.remove('hide');busy=false;next()},190);
+    if(c.cb){try{c.cb(!!ok)}catch(e){console.error(e)}}
+  };
+  window.mpConfirm=function(msg,cb){window.mpOpen(msg,true,cb)};
+  window.alert=function(msg){window.mpOpen(msg,false)};
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.mp-btn'); if(!b)return;
+    var r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*1.6,sp=document.createElement('span');
+    sp.className='mp-rip';sp.style.width=sp.style.height=s+'px';
+    sp.style.left=(e.clientX-r.left-s/2)+'px';sp.style.top=(e.clientY-r.top-s/2)+'px';
+    b.appendChild(sp);setTimeout(function(){sp.remove()},600);
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&current)window.mpClose(false)});
+  document.addEventListener('click',function(e){if(e.target&&e.target.id==='mpOv'&&current&&!current.confirm)window.mpClose(true)});
+})();
 </script>
 </body>
 </html>
