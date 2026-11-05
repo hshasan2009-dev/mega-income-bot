@@ -5916,8 +5916,8 @@
             if (waIncomeEl) waIncomeEl.innerText = waTotalIncome.toFixed(2);
         }
 
-        function giveReferralCommission(earnedAmount) {
-            giveReferralCommissionForUser(currentUserKey, earnedAmount);
+        function giveReferralCommission(earnedAmount, rate) {
+            giveReferralCommissionForUser(currentUserKey, earnedAmount, rate);
         }
 
         /* রেফার করা ইউজার মোট ACTIVE_REF_MIN টাকা আর্নিং করলে একবারই রেফারারের একটিভ রেফার +১ হয় */
@@ -5937,11 +5937,12 @@
             });
         }
 
-        function giveReferralCommissionForUser(userIdKey, earnedAmount) {
+        function giveReferralCommissionForUser(userIdKey, earnedAmount, rate) {
             db.ref('users/' + userIdKey + '/referrer').once('value').then((snapshot) => {
                 let myReferrerCode = snapshot.val();
                 if (myReferrerCode) {
-                    let commission = earnedAmount * 0.25;
+                    let commission = earnedAmount * (typeof rate === 'number' ? rate : 0.25);
+                    commission = Math.round(commission * 100) / 100;
                     db.ref('users').orderByChild('refCode').equalTo(myReferrerCode).once('value', (refSnap) => {
                         refSnap.forEach(cSnap => {
                             db.ref('users/' + cSnap.key + '/balance').transaction((bal) => (bal || 0) + commission);
@@ -7172,8 +7173,8 @@ function saveVideoLink() {
 (function(){
   var PK=[{n:1,price:150,daily:10},{n:2,price:250,daily:25},{n:3,price:300,daily:30},{n:4,price:500,daily:50}];
   var DAYS=30,AMTS=[150,200,250,300,500],DAY=86400000;
-  var S={bkashNo:'',nagadNo:'',bkashOn:true,nagadOn:true,bg:'#eef3fd',l1:'',l2:'',l3:'',l4:''};
-  var W={bal:0,today:'',todayInc:0},PACKS={},DEPS={},ADEPS={};
+  var S={bkashNo:'',nagadNo:'',bkashOn:true,nagadOn:true,bg:'#eef3fd',l1:'',l2:'',l3:'',l4:'',refPct:0};
+  var W={bal:0,income:0,today:'',todayInc:0},PACKS={},DEPS={},ADEPS={};
   var scr='home',atab='pend',selAmt=0,payM='',busy=false,started=false,adminOn=false,uname='',cdT=null;
   var P={
     home:'<path d="M5 12l-2 0l9 -9l9 9l-2 0"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>',
@@ -7225,9 +7226,9 @@ function saveVideoLink() {
   }
   function vHome(){
     var h='<div class="sp-top"><div class="sp-h">স্পেশাল প্ল্যান প্যাক</div><span class="sp-ib" onclick="spClose()">'+ic('x',22)+'</span></div>';
-    h+='<div class="sp-r2"><div class="sp-c"><div class="sp-fl"><span class="sp-lbl">Wallet Balance</span><span class="sp-rf" onclick="spRefresh(this)">'+ic('refresh',17)+'</span></div><div class="sp-amt"><small>Tk</small>'+money(W.bal)+'</div></div>'+
+    h+='<div class="sp-r2"><div class="sp-c"><span class="sp-lbl">মোট ইনকাম</span><div class="sp-amt o" style="margin-top:12px"><small class="o">৳</small>'+money(W.income)+'</div></div>'+
        '<div class="sp-c"><span class="sp-lbl">আজকের ইনকাম</span><div class="sp-amt o" style="margin-top:12px"><small class="o">৳</small>'+money(todayInc())+'</div></div></div>';
-    h+='<button class="sp-add" onclick="spGo(\'add\')">Add Money</button>';
+    h+='<div class="sp-c"><div class="sp-fl"><span class="sp-lbl">Wallet Balance</span><span class="sp-rf" onclick="spRefresh(this)">'+ic('refresh',17)+'</span></div><div class="sp-amt" style="margin-bottom:14px"><small>Tk</small>'+money(W.bal)+'</div><button class="sp-add" style="margin-bottom:0" onclick="spGo(\'add\')">Add Money</button></div>';
     h+='<div class="sp-sec">চালু প্যাকেজ</div>';
     var ks=Object.keys(PACKS).filter(function(k){return isActive(PACKS[k])}).sort(function(a,b){return PACKS[b].start-PACKS[a].start});
     if(!ks.length)h+='<div class="sp-c" style="text-align:center"><div class="sp-lbl" style="margin-bottom:12px">এখনো কোনো প্যাকেজ চালু নেই</div><button class="sp-buy" onclick="spGo(\'pk\')">প্যাকেজ দেখুন</button></div>';
@@ -7282,7 +7283,8 @@ function saveVideoLink() {
   function vSet(){
     var sw=function(k,l){return '<div class="sp-fl2">'+l+'<span class="sp-sw'+(S[k]!==false?'':' o2')+'" onclick="spTog(\''+k+'\',this)"></span></div>'};
     var cols=['#eef3fd','#ffffff','#fff7e6','#eafaf1','#f4ecff','#0c2317','#101b36'];
-    var h='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">পেমেন্ট সেটিংস</div><div class="sp-lbl2">bKash নম্বর</div><input class="sp-ip" id="spNb" value="'+esc(S.bkashNo)+'" placeholder="01XXXXXXXXX"><div class="sp-lbl2">নগদ নম্বর</div><input class="sp-ip" id="spNn" value="'+esc(S.nagadNo)+'" placeholder="01XXXXXXXXX">'+sw('bkashOn','bKash চালু')+sw('nagadOn','নগদ চালু')+'<button class="sp-buy" style="margin-top:10px" onclick="spSaveNums()">নম্বর সেভ করুন</button></div>';
+    var h='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">রেফার কমিশন (%)</div><div class="sp-lbl2">এই টাস্কের ক্লেম থেকে রেফারার কত % পাবে</div><input class="sp-ip" id="spRef" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="'+esc(S.refPct||0)+'" placeholder="0"><button class="sp-buy" style="margin-top:4px" onclick="spSaveRef()">কমিশন সেভ করুন</button></div>';
+    h+='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">পেমেন্ট সেটিংস</div><div class="sp-lbl2">bKash নম্বর</div><input class="sp-ip" id="spNb" value="'+esc(S.bkashNo)+'" placeholder="01XXXXXXXXX"><div class="sp-lbl2">নগদ নম্বর</div><input class="sp-ip" id="spNn" value="'+esc(S.nagadNo)+'" placeholder="01XXXXXXXXX">'+sw('bkashOn','bKash চালু')+sw('nagadOn','নগদ চালু')+'<button class="sp-buy" style="margin-top:10px" onclick="spSaveNums()">নম্বর সেভ করুন</button></div>';
     h+='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">ক্লেম ভিডিও লিংক</div>';
     PK.forEach(function(p){h+='<div class="sp-lbl2">স্পেশাল প্যাক '+p.n+' (৳'+p.price+')</div><input class="sp-ip" id="spL'+p.n+'" value="'+esc(S['l'+p.n])+'" placeholder="https://...">'});
     h+='<button class="sp-buy" style="margin-top:10px" onclick="spSaveLinks()">লিংক সেভ করুন</button></div>';
@@ -7356,18 +7358,14 @@ function saveVideoLink() {
     db.ref(pref+'/lastClaim').transaction(function(c){return c===today?undefined:today},function(err,ok){
       if(err){alert('⚠️ ক্লেম করা যায়নি: '+emsg(err));return}
       if(!ok){alert('আজকের ক্লেম আগেই সম্পন্ন হয়েছে');return}
-      // ধাপ ১: সাইটের মূল ব্যালেন্স
+      // ইনকাম সরাসরি সাইটের মূল ব্যালেন্সে (ওয়ালেটে নয়)
       add('users/'+u+'/balance',function(b){return rd((+b||0)+amt)}).then(function(){
-        // ধাপ ২: টাস্ক ওয়ালেট
-        return add('sp_users/'+u+'/bal',function(b){return rd((+b||0)+amt)}).then(function(){
-          add(pref+'/claimed',function(c){return (+c||0)+1}).catch(function(){});
-          add('sp_users/'+u+'/income',function(c){return rd((+c||0)+amt)}).catch(function(){});
-          db.ref('sp_users/'+u+'/today').set(today).catch(function(){});
-          add('sp_users/'+u+'/todayInc',function(c){return rd((sameDay?(+c||0):0)+amt)}).catch(function(){});
-          alert('🎉 অভিনন্দন! ক্লেম সফল হয়েছে: ৳'+money(amt));
-        },function(e){
-          alert('⚠️ মূল ব্যালেন্সে ৳'+money(amt)+' যোগ হয়েছে, কিন্তু টাস্ক ওয়ালেটে যোগ করা যায়নি ('+emsg(e)+'). এডমিনকে জানান।');
-        });
+        try{var pc=+S.refPct||0;if(pc>0)giveReferralCommission(amt,Math.min(pc,100)/100)}catch(e){console.error(e)}
+        add(pref+'/claimed',function(c){return (+c||0)+1}).catch(function(){});
+        add('sp_users/'+u+'/income',function(c){return rd((+c||0)+amt)}).catch(function(){});
+        db.ref('sp_users/'+u+'/today').set(today).catch(function(){});
+        add('sp_users/'+u+'/todayInc',function(c){return rd((sameDay?(+c||0):0)+amt)}).catch(function(){});
+        alert('🎉 অভিনন্দন! ক্লেম সফল হয়েছে: ৳'+money(amt)+'\nটাকা আপনার মূল ব্যালেন্সে যোগ হয়েছে।');
       },function(e){
         db.ref(pref+'/lastClaim').set(pk.lastClaim||'');
         alert('⚠️ ক্লেমের টাকা যোগ করা যায়নি ('+emsg(e)+'). আবার চেষ্টা করুন।');
@@ -7419,14 +7417,18 @@ function saveVideoLink() {
     var o={};PK.forEach(function(p){o['l'+p.n]=($('spL'+p.n).value||'').trim()});
     db.ref('sp_settings').update(o).then(function(){Object.assign(S,o);alert('✅ ক্লেম লিংক সেভ হয়েছে')});
   };
+  window.spSaveRef=function(){
+    var v=parseFloat($('spRef').value);if(!(v>=0))v=0;if(v>100)v=100;v=Math.round(v*100)/100;
+    db.ref('sp_settings/refPct').set(v).then(function(){S.refPct=v;$('spRef').value=v;alert('✅ রেফার কমিশন '+v+'% সেভ হয়েছে')}).catch(function(){alert('⚠️ সেভ করা যায়নি, আবার চেষ্টা করুন')});
+  };
   window.spBg=function(c){S.bg=c;applyBg();var i=$('spBgIn');if(i&&/^#[0-9a-f]{6}$/i.test(c))i.value=c;db.ref('sp_settings/bg').set(c)};
 
   /* ---------- শুরু / বন্ধ ---------- */
   function start(){
     if(started)return;started=true;adminOn=isAdm();
     db.ref('users/'+uid()).once('value').then(function(s){var v=s.val()||{};uname=v.fullName||v.username||''});
-    db.ref('sp_settings').on('value',function(s){var v=s.val()||{};S=Object.assign({bkashNo:'',nagadNo:'',bkashOn:true,nagadOn:true,bg:'#eef3fd',l1:'',l2:'',l3:'',l4:''},v);applyBg();refresh()});
-    db.ref('sp_users/'+uid()).on('value',function(s){var v=s.val()||{};W={bal:+v.bal||0,today:v.today||'',todayInc:+v.todayInc||0};refresh()});
+    db.ref('sp_settings').on('value',function(s){var v=s.val()||{};S=Object.assign({bkashNo:'',nagadNo:'',bkashOn:true,nagadOn:true,bg:'#eef3fd',l1:'',l2:'',l3:'',l4:'',refPct:0},v);applyBg();refresh()});
+    db.ref('sp_users/'+uid()).on('value',function(s){var v=s.val()||{};W={bal:+v.bal||0,income:+v.income||0,today:v.today||'',todayInc:+v.todayInc||0};refresh()});
     db.ref('sp_packs/'+uid()).on('value',function(s){PACKS=s.val()||{};refresh()});
     db.ref('sp_udeps/'+uid()).limitToLast(20).on('value',function(s){DEPS=s.val()||{};refresh()});
   }
