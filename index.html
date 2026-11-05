@@ -7327,16 +7327,7 @@ function saveVideoLink() {
     db.ref('sp_users/'+uid()+'/bal').transaction(function(b){if(b===null)return 0;b=+b||0;if(b<p.price)return;return Math.round((b-p.price)*100)/100},function(err,ok){
       if(err||!ok){busy=false;alert('ব্যালেন্স পর্যাপ্ত নয় বা কোনো সমস্যা হয়েছে, আবার চেষ্টা করুন');return}
       db.ref('sp_packs/'+uid()).push({idx:n,price:p.price,daily:p.daily,start:now,end:now+DAYS*DAY,lastClaim:'',claimed:0}).then(function(){
-        // প্যাকেজ চালু হয়েছে: ওয়ালেটে যা বাকি আছে সেটা সাইটের মূল ব্যালেন্সে সরে যাবে (মোট টাকা একই থাকবে)
-        var moved=0;
-        db.ref('sp_users/'+uid()+'/bal').transaction(function(b){moved=Math.round((+b||0)*100)/100;return 0},function(e2,done){
-          var fin=function(extra){busy=false;alert('🎉 স্পেশাল প্যাক '+n+' সফলভাবে চালু হয়েছে! এখন প্রতিদিন ক্লেম করতে পারবেন.'+(extra||''));spGo('home')};
-          if(e2||!done||!(moved>0)){fin();return}
-          db.ref('users/'+uid()+'/balance').transaction(function(m){return Math.round(((+m||0)+moved)*100)/100},function(e3,ok3){
-            if(e3||!ok3){db.ref('sp_users/'+uid()+'/bal').transaction(function(b){return Math.round(((+b||0)+moved)*100)/100});fin();return}
-            fin('\nবাকি ৳'+money(moved)+' আপনার সাইটের মূল ব্যালেন্সে যোগ হয়েছে।');
-          });
-        });
+        busy=false;alert('🎉 স্পেশাল প্যাক '+n+' সফলভাবে চালু হয়েছে! এখন প্রতিদিন ক্লেম করতে পারবেন।');spGo('home');
       }).catch(function(){
         db.ref('sp_users/'+uid()+'/bal').transaction(function(b){return Math.round(((+b||0)+p.price)*100)/100});busy=false;alert('প্যাকেজ চালু করা যায়নি, টাকা ফেরত দেওয়া হয়েছে। আবার চেষ্টা করুন।');
       });
@@ -7365,14 +7356,18 @@ function saveVideoLink() {
     db.ref(pref+'/lastClaim').transaction(function(c){return c===today?undefined:today},function(err,ok){
       if(err){alert('⚠️ ক্লেম করা যায়নি: '+emsg(err));return}
       if(!ok){alert('আজকের ক্লেম আগেই সম্পন্ন হয়েছে');return}
-      // ইনকাম সরাসরি সাইটের মূল ব্যালেন্সে
+      // ধাপ ১: সাইটের মূল ব্যালেন্স
       add('users/'+u+'/balance',function(b){return rd((+b||0)+amt)}).then(function(){
-        try{giveReferralCommission(amt)}catch(e){console.error(e)}   // সাইটের একই ২৫% রেফার কমিশন (মূল ব্যালেন্স + রেফার পেজ)
-        add(pref+'/claimed',function(c){return (+c||0)+1}).catch(function(){});
-        add('sp_users/'+u+'/income',function(c){return rd((+c||0)+amt)}).catch(function(){});
-        db.ref('sp_users/'+u+'/today').set(today).catch(function(){});
-        add('sp_users/'+u+'/todayInc',function(c){return rd((sameDay?(+c||0):0)+amt)}).catch(function(){});
-        alert('🎉 অভিনন্দন! ক্লেম সফল হয়েছে: ৳'+money(amt)+'\nটাকা আপনার মূল ব্যালেন্সে যোগ হয়েছে।');
+        // ধাপ ২: টাস্ক ওয়ালেট
+        return add('sp_users/'+u+'/bal',function(b){return rd((+b||0)+amt)}).then(function(){
+          add(pref+'/claimed',function(c){return (+c||0)+1}).catch(function(){});
+          add('sp_users/'+u+'/income',function(c){return rd((+c||0)+amt)}).catch(function(){});
+          db.ref('sp_users/'+u+'/today').set(today).catch(function(){});
+          add('sp_users/'+u+'/todayInc',function(c){return rd((sameDay?(+c||0):0)+amt)}).catch(function(){});
+          alert('🎉 অভিনন্দন! ক্লেম সফল হয়েছে: ৳'+money(amt));
+        },function(e){
+          alert('⚠️ মূল ব্যালেন্সে ৳'+money(amt)+' যোগ হয়েছে, কিন্তু টাস্ক ওয়ালেটে যোগ করা যায়নি ('+emsg(e)+'). এডমিনকে জানান।');
+        });
       },function(e){
         db.ref(pref+'/lastClaim').set(pk.lastClaim||'');
         alert('⚠️ ক্লেমের টাকা যোগ করা যায়নি ('+emsg(e)+'). আবার চেষ্টা করুন।');
@@ -7447,4 +7442,4 @@ function saveVideoLink() {
 })();
 </script>
 </body>
-    </html>
+        </html>
