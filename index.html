@@ -1510,6 +1510,101 @@
         @keyframes tkFloat{0%,100%{transform:translateY(1.5px)}50%{transform:translateY(-1.5px)}}
         @media (prefers-reduced-motion:reduce){.tk-tag,.tk-in{animation:none}}
 
+        /* ===== স্পেশাল প্ল্যান প্যাক পেজ ===== */
+        .sp-ticon{width:48px;height:48px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:24px;background:radial-gradient(circle at 30% 25%,#1e8a4c,#0c2317);border:2px solid #f5c542;box-shadow:0 0 12px rgba(245,197,66,.35)}
+        #spPage{position:fixed;inset:0;z-index:1500000;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--spbg,#eef3fd);color:var(--sptx,#16223f);font-family:'Hind Siliguri','Segoe UI',Tahoma,sans-serif;--spbg:#eef3fd;--sptx:#16223f;--splb:#6b7a99}
+        #spPage.show{display:block;animation:spIn .28s ease both}
+        @keyframes spIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+        #spPage .sp-in{max-width:480px;margin:0 auto;padding:16px 14px calc(110px + env(safe-area-inset-bottom,0px))}
+        #spPage button{font-family:inherit;-webkit-appearance:none;appearance:none}
+        #spPage .sp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+        #spPage .sp-h{font-size:20px;font-weight:800;color:var(--sptx)}
+        #spPage .sp-ib{width:38px;height:38px;border-radius:12px;background:#fff;display:grid;place-items:center;color:#6b7a99;cursor:pointer;box-shadow:0 3px 10px rgba(40,70,130,.1);transition:transform .15s}
+        #spPage .sp-ib:active{transform:scale(.9)}
+        #spPage .sp-tb{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:12px 16px;margin-bottom:14px;color:#6b7a99;box-shadow:0 4px 12px rgba(40,70,130,.06)}
+        #spPage .sp-tb .sp-ib{box-shadow:none;background:transparent;width:auto;height:auto}
+        #spPage .sp-lbl{font-size:13px;color:var(--splb);font-weight:600}
+        #spPage .sp-lbl2{font-size:13px;color:#6b7a99;font-weight:600}
+        #spPage .sp-c{background:#fff;border:1px solid #e3e9f5;border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 6px 18px rgba(40,70,130,.08);color:#16223f}
+        #spPage .sp-r2{display:flex;gap:12px}#spPage .sp-r2 .sp-c{flex:1;min-width:0}
+        #spPage .sp-fl{display:flex;justify-content:space-between;align-items:center;gap:8px}
+        #spPage .sp-amt{font-size:26px;font-weight:800;color:#16223f;line-height:1.2;margin-top:8px;word-break:break-all}
+        #spPage .sp-amt small{font-size:18px;color:#6b7a99;margin-right:5px;font-weight:700}
+        #spPage .o{color:#d97706}#spPage .g{color:#16a34a}#spPage .bl{color:#1d5fd8}
+        #spPage .sp-rf{width:32px;height:32px;border-radius:50%;border:1px solid #e3e9f5;background:#f7f9fe;display:grid;place-items:center;color:#16223f;flex:none;cursor:pointer;transition:transform .4s ease}
+        #spPage .sp-add{display:block;width:100%;border:none;border-radius:20px;height:54px;font-size:18px;font-weight:800;color:#fff;cursor:pointer;background:linear-gradient(100deg,#101b36,#1a4fb5 60%,#1a6dff);box-shadow:0 8px 20px rgba(26,109,255,.28);margin-bottom:14px;transition:transform .15s}
+        #spPage .sp-add:active,#spPage .sp-buy:active{transform:scale(.97)}
+        #spPage .sp-sec{font-size:15px;font-weight:800;margin:8px 2px 10px;color:var(--sptx)}
+        #spPage .sp-pk{border:1.5px solid #f7e3a1;border-radius:26px;padding:16px;background:#fff;box-shadow:0 8px 22px rgba(217,160,20,.14);margin-bottom:14px;color:#16223f}
+        #spPage .sp-t{display:flex;gap:14px;align-items:center}
+        #spPage .sp-lg{width:88px;height:88px;border-radius:20px;flex:none;background:radial-gradient(circle at 30% 25%,#1e8a4c,#0c2317);border:2px solid #f5d77a;display:grid;place-items:center;font-size:40px;box-shadow:0 6px 14px rgba(12,35,23,.3)}
+        #spPage .sp-lg.sm{width:60px;height:60px;border-radius:16px;font-size:28px}
+        #spPage .sp-nm{font-size:19px;font-weight:800;line-height:1.25}
+        #spPage .sp-vb{display:inline-flex;align-items:center;gap:4px;margin-top:6px;border:1px solid #f7d98a;background:#fff9e6;color:#d98a00;border-radius:14px;padding:3px 10px;font-size:12px;font-weight:700}
+        #spPage .sp-info{display:grid;grid-template-columns:1fr 1fr;gap:10px 8px;background:#fffaec;border:1px solid #f7e3a1;border-radius:18px;padding:14px;margin:14px 0}
+        #spPage .sp-info span{display:block;font-size:12px;color:#6b7a99;font-weight:600}
+        #spPage .sp-info b{font-size:18px;font-weight:800}
+        #spPage .sp-info .tot b{font-size:24px}
+        #spPage .sp-buy{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:50px;border:none;border-radius:16px;color:#fff;font-weight:800;font-size:17px;cursor:pointer;background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 8px 18px rgba(217,119,6,.3);transition:transform .15s,opacity .2s}
+        #spPage .sp-buy.dim{opacity:.4;pointer-events:none}
+        #spPage .sp-pb{height:7px;border-radius:4px;background:#f1e7c6;margin-top:8px;overflow:hidden}
+        #spPage .sp-pb i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#16a34a,#f59e0b)}
+        #spPage .sp-hero{width:100px;height:100px;border-radius:50%;background:#fff;margin:0 auto 10px;display:grid;place-items:center;color:#34b36b;box-shadow:0 6px 18px rgba(40,70,130,.1)}
+        #spPage .sp-ttl{text-align:center;font-size:24px;font-weight:800;color:#6b7a99;margin-bottom:16px}
+        #spPage .sp-bb{background:#0b4fb8;color:#fff;text-align:center;border-radius:12px;padding:11px;font-size:15px;margin:6px 0 14px}
+        #spPage .sp-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+        #spPage .sp-chips div{background:#f9fbfe;border:2px solid #e3e9f5;border-radius:18px;padding:17px 0;text-align:center;font-size:18px;font-weight:800;color:#1c2540;cursor:pointer;transition:transform .15s,background .2s,border-color .2s}
+        #spPage .sp-chips div:active{transform:scale(.95)}
+        #spPage .sp-chips div.on{background:#fffbea;border-color:#f59e0b;color:#e07b00}
+        #spPage .sp-mth{display:flex;gap:14px}
+        #spPage .sp-mth div{flex:1;background:#fff;border:1px solid #e3e9f5;border-radius:16px;height:84px;display:grid;place-items:center;font-weight:800;font-size:24px;position:relative;box-shadow:0 4px 12px rgba(40,70,130,.07);cursor:pointer;transition:transform .15s}
+        #spPage .sp-mth div:active{transform:scale(.96)}
+        #spPage .sp-mth .off{opacity:.5;filter:grayscale(1);cursor:default}
+        #spPage .sp-mth .off em{position:absolute;bottom:7px;font-size:12px;font-style:normal;color:#c0392b;font-weight:800;animation:spUD 1.6s ease-in-out infinite}
+        @keyframes spUD{0%,100%{transform:translateY(1px)}50%{transform:translateY(-3px)}}
+        #spPage .sp-lgh{background:#fff;border:1px solid #e3e9f5;border-radius:26px;height:76px;display:grid;place-items:center;font-size:30px;font-weight:800;margin-bottom:12px;box-shadow:0 4px 12px rgba(40,70,130,.07)}
+        #spPage .sp-pr{display:flex;align-items:center;gap:14px;background:#fff;border-radius:16px;padding:12px 16px;margin-bottom:12px;color:#6b7a99;font-weight:800;font-size:20px;box-shadow:0 4px 12px rgba(40,70,130,.06)}
+        #spPage .sp-ck{width:46px;height:46px;border-radius:50%;border:1px solid #e3e9f5;display:grid;place-items:center}
+        #spPage .sp-ck i{width:22px;height:22px;border-radius:50%;background:#34b36b;color:#fff;display:grid;place-items:center}
+        #spPage .sp-panel{border-radius:16px;padding:18px 16px;color:#fff;font-size:15px;line-height:1.7}
+        #spPage .sp-panel.nagad{background:#e11a22}#spPage .sp-panel.bkash{background:#d6146a}
+        #spPage .sp-panel h4{margin:0 0 10px;text-align:center;font-size:17px;font-weight:700}
+        #spPage .sp-panel input{width:100%;box-sizing:border-box;border:2px solid rgba(255,255,255,.55);border-radius:12px;padding:12px;font-size:16px;font-family:inherit;color:#333;margin-bottom:6px;background:#fff;outline:none;text-transform:uppercase}
+        #spPage .sp-panel input::placeholder{text-transform:none}
+        #spPage .sp-panel ul{padding:0;margin:0;list-style:none}
+        #spPage .sp-panel li{position:relative;padding:11px 0 11px 14px;border-top:1px solid rgba(255,255,255,.18)}
+        #spPage .sp-panel li::before{content:"";position:absolute;left:0;top:19px;width:6px;height:6px;border-radius:50%;background:#fff}
+        #spPage .sp-panel b{color:#ffe14d;font-size:16px;margin-left:4px;word-break:break-all}
+        #spPage .sp-cp{display:inline-flex;align-items:center;gap:5px;margin-top:4px;background:rgba(0,0,0,.25);border-radius:8px;padding:5px 12px;font-size:13px;font-weight:700;cursor:pointer}
+        #spPage .sp-vf{display:block;width:100%;border:none;text-align:center;border-radius:14px;padding:15px;margin-top:14px;color:#fff;font-size:17px;font-weight:800;cursor:pointer;transition:transform .15s}
+        #spPage .sp-vf:active{transform:scale(.97)}
+        #spPage .sp-vf.nagad{background:#a8101a}#spPage .sp-vf.bkash{background:#a30e52}
+        #spPage .sp-nav{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:480px;display:none;justify-content:space-around;background:#fff;border-radius:22px 22px 0 0;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 18px rgba(40,70,130,.14);z-index:2}
+        #spPage .sp-nav div{flex:1;text-align:center;padding:8px 0;font-size:12px;color:#8a97b4;font-weight:700;border-radius:16px;cursor:pointer;transition:background .2s,color .2s}
+        #spPage .sp-nav div svg{display:block;margin:0 auto 2px}
+        #spPage .sp-nav div.on{color:#1a6dff;background:#eaf1ff}
+        #spPage .sp-bd{display:inline-block;font-size:11px;font-weight:800;padding:3px 10px;border-radius:12px;white-space:nowrap}
+        #spPage .sp-seg{display:flex;background:#fff;border-radius:14px;padding:4px;margin-bottom:12px;box-shadow:0 4px 12px rgba(40,70,130,.06)}
+        #spPage .sp-seg div{flex:1;text-align:center;padding:9px 0;font-size:13px;font-weight:700;color:#6b7a99;border-radius:10px;cursor:pointer;transition:background .2s,color .2s}
+        #spPage .sp-seg div.on{background:#1a6dff;color:#fff}
+        #spPage .sp-sm{display:flex;gap:8px;margin-top:12px}
+        #spPage .sp-sm button{flex:1;border:none;border-radius:12px;padding:12px;color:#fff;font-weight:800;font-size:14px;cursor:pointer}
+        #spPage .sp-ip{width:100%;box-sizing:border-box;background:#f4f7fd;border:1px solid #e3e9f5;border-radius:12px;padding:11px;font-size:14px;margin:5px 0 10px;color:#16223f;font-family:inherit;outline:none}
+        #spPage .sp-fl2{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;margin:8px 0;color:#16223f}
+        #spPage .sp-sw{width:44px;height:25px;border-radius:13px;background:#34b36b;position:relative;flex:none;cursor:pointer;transition:background .2s}
+        #spPage .sp-sw::after{content:"";position:absolute;left:22px;top:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:left .2s}
+        #spPage .sp-sw.o2{background:#c5cde0}#spPage .sp-sw.o2::after{left:3px}
+        #spPage .sp-cols{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+        #spPage .sp-col{width:34px;height:34px;border-radius:50%;border:2px solid #cfd9ee;cursor:pointer}
+        #spPage .sp-cin{width:42px;height:38px;border:none;background:none;padding:0;cursor:pointer}
+        #spPage .sp-cdw{display:none;position:fixed;inset:0;z-index:3;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:24px}
+        #spPage .sp-cdw.on{display:flex}
+        #spPage .sp-cdb{background:#fff;border-radius:24px;padding:26px 22px;text-align:center;width:100%;max-width:320px;color:#16223f}
+        #spPage .sp-cdn{width:90px;height:90px;border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;font-size:34px;font-weight:800;color:#d97706;border:5px solid #f7d98a;background:#fffaec}
+        #spPage .sp-cdt{font-size:15px;line-height:1.6;margin-bottom:16px;font-weight:600}
+        #spPage .sp-cdb button{width:100%;border:1px solid #e3e9f5;background:#f4f7fd;border-radius:14px;padding:12px;font-weight:700;font-size:15px;color:#6b7a99;cursor:pointer}
+        @media (prefers-reduced-motion:reduce){#spPage.show,#spPage .sp-mth .off em{animation:none}}
+
         /* রেফার লিংক কপি বাটন — কপি হলে বাটনেই ফিডব্যাক */
         .btn.copy-done{background:#2ecc71!important;color:#06210f!important;border-color:#2ecc71!important;transition:background .25s ease,color .25s ease}
 </style>
@@ -1707,6 +1802,15 @@
         </div>
 
         <div id="task" class="page">
+
+            <div class="card" id="card-sp-task" style="border: 2px solid #f5c542; display: flex; align-items: center; text-align: left; gap: 12px;">
+                <div class="sp-ticon">🚀</div>
+                <div style="flex-grow: 1; width: 100%;">
+                    <h3 style="color: #f5c542; margin-bottom: 4px;">⭐ স্পেশাল প্ল্যান প্যাক</h3>
+                    <p style="color: var(--sub); margin-bottom: 8px; font-size: 12px;">প্যাকেজ কিনুন, প্রতিদিন ক্লেম করে আয় করুন!</p>
+                    <button class="btn btn-main" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="handleTaskClick('spTask', openSpPage)">🚀 স্পেশাল প্ল্যান পেজে যান</button>
+                </div>
+            </div>
 
             <div class="card" id="card-wa-task" style="border: 2px solid #25d366; display: flex; align-items: center; text-align: left; gap: 12px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width: 48px; height: 48px; flex-shrink: 0;" alt="WhatsApp Logo">
@@ -2804,6 +2908,14 @@
             </div>
 
             <div class="switch-container">
+                <span>⭐ স্পেশাল প্ল্যান প্যাক</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-sp" onchange="toggleTaskStatus('spTask', this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container">
                 <span>💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক</span>
                 <label class="switch">
                     <input type="checkbox" id="sw-wa" onchange="toggleTaskStatus('waTask', this.checked)">
@@ -3132,7 +3244,7 @@
         let waPendingPhone = "";
         let waStatusMonitorStarted = false;
 
-        let taskStatusSettings = { waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, facebookTask: true, monetagTask: true, exoAdTask: true, checkinTask: true, inAppAd: true };
+        let taskStatusSettings = { spTask: true, waTask: true, pinTask: true, regTask: true, adTask: true, gmailTask: true, facebookTask: true, monetagTask: true, exoAdTask: true, checkinTask: true, inAppAd: true };
 
         let checkinStreak = 0;
         let checkinTotalIncome = 0.00;
@@ -3517,6 +3629,7 @@
             db.ref('task_settings').on('value', (snapshot) => {
                 const settings = snapshot.val() || {};
                 
+                taskStatusSettings.spTask = settings.spTask !== false;
                 taskStatusSettings.waTask = settings.waTask !== false;
                 taskStatusSettings.pinTask = settings.pinTask !== false;
                 taskStatusSettings.regTask = settings.regTask !== false;
@@ -3529,6 +3642,7 @@
                 taskStatusSettings.inAppAd = settings.inAppAd !== false;
                 taskSettingsLoaded = true;
 
+                if (document.getElementById('sw-sp')) document.getElementById('sw-sp').checked = taskStatusSettings.spTask;
                 if (document.getElementById('sw-pin')) document.getElementById('sw-pin').checked = taskStatusSettings.pinTask;
                 if (document.getElementById('sw-reg')) document.getElementById('sw-reg').checked = taskStatusSettings.regTask;
                 if (document.getElementById('sw-ad')) document.getElementById('sw-ad').checked = taskStatusSettings.adTask;
@@ -3540,6 +3654,7 @@
                 if (document.getElementById('sw-checkin')) document.getElementById('sw-checkin').checked = taskStatusSettings.checkinTask;
                 if (document.getElementById('sw-inapp')) document.getElementById('sw-inapp').checked = taskStatusSettings.inAppAd;
 
+                updateTaskCardVisuals('card-sp-task', taskStatusSettings.spTask);
                 updateTaskCardVisuals('card-wa-task', taskStatusSettings.waTask);
                 updateTaskCardVisuals('card-pin-task', taskStatusSettings.pinTask);
                 updateTaskCardVisuals('card-reg-task', taskStatusSettings.regTask);
@@ -6579,7 +6694,7 @@
 
         /* ===== সব বাটনে অটো ঘুরন্ত আলো + ক্লিক এনিমেশন ===== */
         (function () {
-            const SKIP = '.nav-item,.wdh-tab,.custom-popup-close,.wa-close-btn,.wd-admin-btn,.gb,.tk-pin,.tk-tgb';
+            const SKIP = '.nav-item,.wdh-tab,.custom-popup-close,.wa-close-btn,.wd-admin-btn,.gb,.tk-pin,.tk-tgb,#spPage button';
             const MAP = {'btn-whatsapp':[37,211,102],'wa-get-btn':[39,174,96],'wa-copy-btn':[46,204,113],'reward-setup-btn':[46,204,113],'btn-facebook':[24,119,242],'btn-monetag':[155,89,182],'btn-gift':[243,156,18],'custom-popup-btn':[241,156,18],'btn-official':[41,128,185],'btn-support':[231,76,60],'btn-gp':[0,128,255],'btn-bl':[255,102,0],'btn-robi':[230,0,0],'btn-airtel':[204,0,82],'btn-teletalk':[40,167,69],'btn-wifi':[111,66,193],'btn-main':[241,196,15],'auth-btn':[241,196,15]};
             const FX = ['', 'fx-dual', 'fx-pulse', 'fx-aurora']; let n = 0;
             function rgbOf(b) {
@@ -6944,13 +7059,14 @@ function saveVideoLink() {
     current=queue.shift();
     $('mpMsg').textContent=current.msg;
     $('mpCancel').style.display=current.confirm?'block':'none';
+    $('mpOk').textContent=current.ok||'ঠিক আছে';
     ov.classList.remove('hide');
     void ov.offsetWidth;
     ov.classList.add('show');
     setTimeout(function(){var b=$('mpOk');if(b&&b.focus)try{b.focus({preventScroll:true})}catch(e){}},60);
   }
-  window.mpOpen=function(msg,confirmMode,cb){
-    queue.push({msg:String(msg==null?'':msg),confirm:!!confirmMode,cb:cb||null});
+  window.mpOpen=function(msg,confirmMode,cb,okLabel){
+    queue.push({msg:String(msg==null?'':msg),confirm:!!confirmMode,cb:cb||null,ok:okLabel||''});
     if($('mpOv'))next();
     else document.addEventListener('DOMContentLoaded',next);
   };
@@ -6961,7 +7077,7 @@ function saveVideoLink() {
     setTimeout(function(){ov.classList.remove('hide');busy=false;next()},190);
     if(c.cb){try{c.cb(!!ok)}catch(e){console.error(e)}}
   };
-  window.mpConfirm=function(msg,cb){window.mpOpen(msg,true,cb)};
+  window.mpConfirm=function(msg,cb,okLabel){window.mpOpen(msg,true,cb,okLabel)};
   window.alert=function(msg){window.mpOpen(msg,false)};
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&current)window.mpClose(false)});
   document.addEventListener('click',function(e){if(e.target&&e.target.id==='mpOv'&&current&&!current.confirm)window.mpClose(true)});
@@ -6972,6 +7088,7 @@ function saveVideoLink() {
 /* ===== টাস্ক পিন + হট/নতুন ট্যাগ + অন/অফ তালিকার ক্রম ===== */
 (function(){
   var TK=[
+    {k:'spTask',sw:'sw-sp',card:'card-sp-task'},
     {k:'waTask',sw:'sw-wa',card:'card-wa-task'},
     {k:'gmailTask',sw:'sw-gmail',card:'card-gmail-task'},
     {k:'facebookTask',sw:'sw-facebook',card:'card-facebook-task'},
@@ -7043,5 +7160,268 @@ function saveVideoLink() {
   window.tkApplyLayout=function(v){layout=v||{};apply()};
 })();
 </script>
+
+<!-- ===== স্পেশাল প্ল্যান প্যাক (ফুল পেজ) ===== -->
+<div id="spPage" aria-hidden="true">
+  <div class="sp-in"><div id="spBody"></div></div>
+  <div class="sp-nav" id="spNav"></div>
+  <div class="sp-cdw" id="spCd"></div>
+</div>
+<script>
+(function(){
+  var PK=[{n:1,price:150,daily:10},{n:2,price:250,daily:25},{n:3,price:300,daily:30},{n:4,price:500,daily:50}];
+  var DAYS=30,AMTS=[150,200,250,300,500],DAY=86400000;
+  var S={bkashNo:'',nagadNo:'',bkashOn:true,nagadOn:true,bg:'#eef3fd',l1:'',l2:'',l3:'',l4:''};
+  var W={bal:0,today:'',todayInc:0},PACKS={},DEPS={},ADEPS={};
+  var scr='home',atab='pend',selAmt=0,payM='',busy=false,started=false,adminOn=false,uname='',cdT=null;
+  var P={
+    home:'<path d="M5 12l-2 0l9 -9l9 9l-2 0"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>',
+    x:'<path d="M18 6l-12 12"/><path d="M6 6l12 12"/>',
+    back:'<path d="M15 6l-6 6l6 6"/>',
+    refresh:'<path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/>',
+    check:'<path d="M5 12l5 5l10 -10"/>',
+    copy:'<path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z"/><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1"/>',
+    pack:'<path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/>',
+    wallet:'<path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12"/><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4"/>',
+    flame:'<path d="M12 12c2-2.96 0-7-1-8c0 3.038-1.773 4.741-3 6c-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5c-1.786 3-2.791 3-4 2z"/>',
+    gem:'<path d="M6 5h12l3 5l-8.5 9.5a.7 .7 0 0 1 -1 0l-8.5 -9.5l3 -5"/><path d="M10 12l-2 -2.2l.6 -1"/>',
+    shield:'<path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06"/><path d="M15 19l2 2l4 -4"/>'
+  };
+  function ic(n,s){return '<svg width="'+(s||20)+'" height="'+(s||20)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>'}
+  function $(id){return document.getElementById(id)}
+  function uid(){return currentUserKey}
+  function isAdm(){try{return String(currentUserKey)===sanitizeKey(ADMIN_CHAT_ID)}catch(e){return false}}
+  function money(n){n=Math.round((+n||0)*100)/100;return n.toLocaleString('en-US',{maximumFractionDigits:2})}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function isActive(p){return p&&Date.now()<(+p.end||0)&&(+p.claimed||0)<DAYS}
+  function todayInc(){return W.today===getTodayString()?(+W.todayInc||0):0}
+  function dt(ts){var d=new Date(ts);return d.getDate()+'/'+(d.getMonth()+1)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+  function openLink(u){try{openTelegramLink(u)}catch(e){window.open(u,'_blank')}}
+
+  function applyBg(){
+    var pg=$('spPage');if(!pg)return;var c=S.bg||'#eef3fd';
+    pg.style.setProperty('--spbg',c);
+    var m=/^#([0-9a-f]{6})$/i.exec(c),dark=false;
+    if(m){var n=parseInt(m[1],16),r=n>>16,g=(n>>8)&255,b=n&255;dark=(0.299*r+0.587*g+0.114*b)<120}
+    pg.style.setProperty('--sptx',dark?'#f1f5ff':'#16223f');
+    pg.style.setProperty('--splb',dark?'#b9c6e6':'#6b7a99');
+  }
+
+  /* ---------- রেন্ডার ---------- */
+  function bar(left,right){return '<div class="sp-tb"><span class="sp-ib" onclick="'+left[1]+'">'+ic(left[0],22)+'</span>'+(right?'<span class="sp-ib" onclick="'+right[1]+'">'+ic(right[0],22)+'</span>':'<span></span>')+'</div>'}
+  function pkCard(p,mode,id,pk){
+    var logo='<div class="sp-lg">🚀</div>';
+    if(mode==='buy'){
+      var act=Object.keys(PACKS).some(function(k){return PACKS[k].idx===p.n&&isActive(PACKS[k])});
+      return '<div class="sp-pk"><div class="sp-t">'+logo+'<div><div class="sp-nm">স্পেশাল প্যাক '+p.n+'</div><span class="sp-vb">'+ic('gem',14)+'প্যাকেজ '+p.n+'</span></div></div>'+
+      '<div class="sp-info"><div><span>মূল্য</span><b class="o">৳'+money(p.price)+'</b></div><div><span>দৈনিক আয়</span><b class="g">৳'+money(p.daily)+'</b></div><div><span>মেয়াদ</span><b>'+DAYS+' দিন</b></div><div class="tot"><span>মোট আয়</span><b class="bl">৳'+money(p.daily*DAYS)+'</b></div></div>'+
+      '<button class="sp-buy'+(act?' dim':'')+'" onclick="spBuy('+p.n+')">'+(act?'চালু আছে':ic('flame',20)+' Buy Package')+'</button></div>';
+    }
+    var left=Math.max(1,Math.ceil((pk.end-Date.now())/DAY)),done=(pk.lastClaim===getTodayString());
+    var pct=Math.min(100,Math.round(((+pk.claimed||0)/DAYS)*100));
+    return '<div class="sp-pk" style="padding:14px"><div class="sp-t">'+logo.replace('sp-lg','sp-lg sm')+'<div style="flex:1;min-width:0"><div class="sp-nm" style="font-size:17px">স্পেশাল প্যাক '+p.n+'</div><div class="sp-lbl" style="margin-top:2px">দৈনিক ৳'+money(p.daily)+' &middot; বাকি '+left+' দিন</div><div class="sp-pb"><i style="width:'+pct+'%"></i></div></div></div>'+
+      '<button class="sp-buy'+(done?' dim':'')+'" style="margin-top:12px" onclick="spClaim(\''+id+'\')">'+(done?'আজকের ক্লেম সম্পন্ন':'ক্লেম ৳'+money(p.daily))+'</button></div>';
+  }
+  function vHome(){
+    var h='<div class="sp-top"><div class="sp-h">স্পেশাল প্ল্যান প্যাক</div><span class="sp-ib" onclick="spClose()">'+ic('x',22)+'</span></div>';
+    h+='<div class="sp-r2"><div class="sp-c"><div class="sp-fl"><span class="sp-lbl">Wallet Balance</span><span class="sp-rf" onclick="spRefresh(this)">'+ic('refresh',17)+'</span></div><div class="sp-amt"><small>Tk</small>'+money(W.bal)+'</div></div>'+
+       '<div class="sp-c"><span class="sp-lbl">আজকের ইনকাম</span><div class="sp-amt o" style="margin-top:12px"><small class="o">৳</small>'+money(todayInc())+'</div></div></div>';
+    h+='<button class="sp-add" onclick="spGo(\'add\')">Add Money</button>';
+    h+='<div class="sp-sec">চালু প্যাকেজ</div>';
+    var ks=Object.keys(PACKS).filter(function(k){return isActive(PACKS[k])}).sort(function(a,b){return PACKS[b].start-PACKS[a].start});
+    if(!ks.length)h+='<div class="sp-c" style="text-align:center"><div class="sp-lbl" style="margin-bottom:12px">এখনো কোনো প্যাকেজ চালু নেই</div><button class="sp-buy" onclick="spGo(\'pk\')">প্যাকেজ দেখুন</button></div>';
+    ks.forEach(function(k){var pk=PACKS[k];h+=pkCard(PK[pk.idx-1]||{n:pk.idx,daily:pk.daily},'act',k,pk)});
+    return h;
+  }
+  function vPk(){
+    var h='<div class="sp-top"><div class="sp-h">প্যাকেজ</div><span class="sp-ib" onclick="spClose()">'+ic('x',22)+'</span></div>';
+    PK.forEach(function(p){h+=pkCard(p,'buy')});return h;
+  }
+  function vAdd(){
+    var h=bar(['home',"spGo('home')"],['x',"spClose()"]);
+    h+='<div class="sp-hero">'+ic('wallet',34)+'</div><div class="sp-ttl">Add Money</div><div class="sp-bb">এমাউন্ট সিলেক্ট করুন</div><div class="sp-chips">';
+    AMTS.forEach(function(a){h+='<div class="'+(a===selAmt?'on':'')+'" onclick="spAmt('+a+')">৳ '+a+'</div>'});
+    h+='</div><div class="sp-bb" style="margin-top:16px">পেমেন্ট মেথড</div><div class="sp-mth">';
+    [['bkash','bKash','#e2136e'],['nagad','নগদ','#e8650f']].forEach(function(m){var on=S[m[0]+'On']!==false;
+      h+='<div class="'+(on?'':'off')+'" style="color:'+m[2]+'" onclick="spMeth(\''+m[0]+'\')">'+m[1]+(on?'':'<em>বন্ধ</em>')+'</div>'});
+    h+='</div>';
+    var ks=Object.keys(DEPS).sort(function(a,b){return DEPS[b].ts-DEPS[a].ts}).slice(0,10);
+    if(ks.length){h+='<div class="sp-sec" style="margin-top:18px">আপনার রিকোয়েস্ট</div>';
+      ks.forEach(function(k){var d=DEPS[k],st=d.status==='approved'?['সফল','#dcfce7','#15803d']:d.status==='rejected'?['বাতিল','#fee2e2','#b91c1c']:['পেন্ডিং','#fff3c4','#b57600'];
+        h+='<div class="sp-c" style="padding:12px 14px;display:flex;justify-content:space-between;align-items:center"><div><b>৳'+money(d.amount)+'</b> <span class="sp-lbl">&middot; '+(d.method==='nagad'?'নগদ':'bKash')+'</span><div class="sp-lbl" style="font-size:12px;margin-top:2px">'+esc(d.trx)+' &middot; '+dt(d.ts)+'</div></div><span class="sp-bd" style="background:'+st[1]+';color:'+st[2]+'">'+st[0]+'</span></div>'})}
+    return h;
+  }
+  function vPay(){
+    var nag=payM==='nagad',num=nag?S.nagadNo:S.bkashNo,nm=nag?'নগদ':'bKash',col=nag?'#e8650f':'#e2136e';
+    var h=bar(['back',"spGo('add')"],['x',"spClose()"]);
+    h+='<div class="sp-lgh" style="color:'+col+'">'+nm+'</div>';
+    h+='<div class="sp-pr"><div class="sp-ck"><i>'+ic('check',14)+'</i></div>Payment</div><div class="sp-pr" style="font-size:22px"><span style="color:#6b7a99">৳</span> '+selAmt+'</div>';
+    h+='<div class="sp-panel '+(nag?'nagad':'bkash')+'"><h4>ট্রানজেকশন আইডি দিন</h4><input id="spTrx" autocomplete="off" autocapitalize="characters" maxlength="'+(nag?8:10)+'" placeholder="ট্রানজেকশন আইডি দিন"><ul>'+
+      '<li>'+(nag?'*167# ডায়াল করে আপনার NAGAD মোবাইল মেনুতে যান অথবা NAGAD অ্যাপে যান।':'*247# ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।')+'</li>'+
+      '<li>Send Money -এ ক্লিক করুন।</li>'+
+      '<li>এই নম্বরে টাকা পাঠান। <b>'+esc(num||'নম্বর সেট করা হয়নি')+'</b><br><span class="sp-cp" id="spCp" onclick="spCopy()">'+ic('copy',15)+' কপি</span></li>'+
+      '<li>টাকার পরিমাণ: <b>'+selAmt+'</b></li><li>টাকা পাঠান এবং ট্রানজেকশন আইডি কপি করুন।</li><li>ট্রানজেকশন আইডি লিখে ভেরিফাই চাপুন।</li></ul></div>'+
+      '<button class="sp-vf '+(nag?'nagad':'bkash')+'" onclick="spSubmit()">ভেরিফাই</button>';
+    return h;
+  }
+  function vAdmin(){
+    var h='<div class="sp-top"><div class="sp-h">এডমিন প্যানেল</div><span class="sp-ib" onclick="spClose()">'+ic('x',22)+'</span></div>';
+    var pend=Object.keys(ADEPS).filter(function(k){return ADEPS[k].status==='pending'}).length;
+    h+='<div class="sp-seg"><div class="'+(atab==='pend'?'on':'')+'" onclick="spAt(\'pend\')">পেন্ডিং ('+pend+')</div><div class="'+(atab==='hist'?'on':'')+'" onclick="spAt(\'hist\')">হিস্ট্রি</div><div class="'+(atab==='set'?'on':'')+'" onclick="spAt(\'set\')">সেটিংস</div></div>';
+    if(atab==='set')return h+vSet();
+    var ks=Object.keys(ADEPS).filter(function(k){return atab==='pend'?ADEPS[k].status==='pending':ADEPS[k].status!=='pending'}).sort(function(a,b){return ADEPS[b].ts-ADEPS[a].ts}).slice(0,60);
+    if(!ks.length)return h+'<div class="sp-c sp-lbl" style="text-align:center">'+(atab==='pend'?'কোনো পেন্ডিং রিকোয়েস্ট নেই':'কোনো হিস্ট্রি নেই')+'</div>';
+    ks.forEach(function(k){var d=ADEPS[k];
+      h+='<div class="sp-c" style="border:1.5px solid #f7e3a1"><div class="sp-fl"><b style="font-size:16px">'+esc(d.name||'ইউজার')+'</b>'+(d.status==='pending'?'<span class="sp-bd" style="background:#fff3c4;color:#b57600">পেন্ডিং</span>':d.status==='approved'?'<span class="sp-bd" style="background:#dcfce7;color:#15803d">সফল</span>':'<span class="sp-bd" style="background:#fee2e2;color:#b91c1c">বাতিল</span>')+'</div>'+
+        '<div class="sp-lbl" style="margin:5px 0 10px;font-weight:500">ইউজার আইডি: '+esc(d.uid)+' &middot; '+(d.method==='nagad'?'নগদ':'bKash')+' &middot; '+dt(d.ts)+'</div>'+
+        '<div class="sp-info" style="margin:0"><div><span>টাকা</span><b class="o">৳'+money(d.amount)+'</b></div><div><span>ট্রানজেকশন আইডি</span><b style="font-size:15px;word-break:break-all">'+esc(d.trx)+'</b></div></div>'+
+        (d.status==='pending'?'<div class="sp-sm"><button style="background:#16a34a" onclick="spAcc(\''+k+'\')">অ্যাকসেপ্ট</button><button style="background:#dc2626" onclick="spRej(\''+k+'\')">রিজেক্ট</button></div>':'')+'</div>'});
+    return h;
+  }
+  function vSet(){
+    var sw=function(k,l){return '<div class="sp-fl2">'+l+'<span class="sp-sw'+(S[k]!==false?'':' o2')+'" onclick="spTog(\''+k+'\',this)"></span></div>'};
+    var cols=['#eef3fd','#ffffff','#fff7e6','#eafaf1','#f4ecff','#0c2317','#101b36'];
+    var h='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">পেমেন্ট সেটিংস</div><div class="sp-lbl2">bKash নম্বর</div><input class="sp-ip" id="spNb" value="'+esc(S.bkashNo)+'" placeholder="01XXXXXXXXX"><div class="sp-lbl2">নগদ নম্বর</div><input class="sp-ip" id="spNn" value="'+esc(S.nagadNo)+'" placeholder="01XXXXXXXXX">'+sw('bkashOn','bKash চালু')+sw('nagadOn','নগদ চালু')+'<button class="sp-buy" style="margin-top:10px" onclick="spSaveNums()">নম্বর সেভ করুন</button></div>';
+    h+='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">ক্লেম ভিডিও লিংক</div>';
+    PK.forEach(function(p){h+='<div class="sp-lbl2">স্পেশাল প্যাক '+p.n+' (৳'+p.price+')</div><input class="sp-ip" id="spL'+p.n+'" value="'+esc(S['l'+p.n])+'" placeholder="https://...">'});
+    h+='<button class="sp-buy" style="margin-top:10px" onclick="spSaveLinks()">লিংক সেভ করুন</button></div>';
+    h+='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">পেজের ব্যাকগ্রাউন্ড রং</div><div class="sp-cols">';
+    cols.forEach(function(c){h+='<span class="sp-col" style="background:'+c+'" onclick="spBg(\''+c+'\')"></span>'});
+    h+='<input type="color" id="spBgIn" value="'+(S.bg||'#eef3fd')+'" onchange="spBg(this.value)" class="sp-cin"></div><button class="sp-buy" style="margin-top:12px;background:#64748b;box-shadow:none" onclick="spBg(\'#eef3fd\')">ডিফল্ট রং</button></div>';
+    return h;
+  }
+  function render(){
+    var b=$('spBody'),n=$('spNav');if(!b)return;
+    var h=scr==='home'?vHome():scr==='pk'?vPk():scr==='add'?vAdd():scr==='pay'?vPay():vAdmin();
+    var y=window.scrollY;b.innerHTML=h;
+    var showNav=(scr==='home'||scr==='pk'||scr==='admin');
+    n.style.display=showNav?'flex':'none';
+    n.innerHTML='<div class="'+(scr==='home'?'on':'')+'" onclick="spGo(\'home\')">'+ic('home',24)+'হোম</div><div class="'+(scr==='pk'?'on':'')+'" onclick="spGo(\'pk\')">'+ic('pack',24)+'প্যাকেজ</div>'+(adminOn?'<div class="'+(scr==='admin'?'on':'')+'" onclick="spGo(\'admin\')">'+ic('shield',24)+'এডমিন</div>':'');
+  }
+  function refresh(){if(scr==='pay'||(scr==='admin'&&atab==='set'))return;render()}
+
+  /* ---------- অ্যাকশন ---------- */
+  window.spGo=function(s){scr=s;render();var p=$('spPage');if(p)p.scrollTop=0;if(s==='admin')watchAdmin()};
+  window.spAt=function(t){atab=t;render()};
+  window.spAmt=function(a){selAmt=a;render()};
+  window.spMeth=function(m){
+    if(S[m+'On']===false)return;
+    if(!selAmt){alert('আগে এমাউন্ট সিলেক্ট করুন');return}
+    payM=m;spGo('pay');
+  };
+  window.spRefresh=function(el){if(el){el.style.transform='rotate(360deg)';setTimeout(function(){el.style.transform=''},400)}render()};
+  window.spCopy=function(){
+    var num=payM==='nagad'?S.nagadNo:S.bkashNo;if(!num)return;
+    var el=$('spCp');
+    var done=function(){if(!el)return;el.innerHTML=ic('check',15)+' কপি হয়েছে';clearTimeout(el._t);el._t=setTimeout(function(){el.innerHTML=ic('copy',15)+' কপি'},1500)};
+    var fb=function(){try{var i=document.createElement('input');i.value=num;document.body.appendChild(i);i.select();document.execCommand('copy');i.remove();done()}catch(e){}};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(num).then(done).catch(fb);else fb();
+  };
+  window.spBuy=function(n){
+    var p=PK[n-1];if(!p||busy)return;
+    var act=Object.keys(PACKS).some(function(k){return PACKS[k].idx===n&&isActive(PACKS[k])});
+    if(act){alert('এই প্যাকেজটি ইতিমধ্যে চালু আছে, মেয়াদ শেষ হলে আবার কিনতে পারবেন।');return}
+    if(W.bal<p.price){mpConfirm('আপনার প্যাকেজটি একটিভ করার জন্য পর্যাপ্ত ব্যালেন্স নেই',function(ok){if(ok)spGo('add')},'Add Money');return}
+    busy=true;var now=Date.now();
+    db.ref('sp_users/'+uid()+'/bal').transaction(function(b){if(b===null)return 0;b=+b||0;if(b<p.price)return;return Math.round((b-p.price)*100)/100},function(err,ok){
+      if(err||!ok){busy=false;alert('ব্যালেন্স পর্যাপ্ত নয় বা কোনো সমস্যা হয়েছে, আবার চেষ্টা করুন');return}
+      db.ref('sp_packs/'+uid()).push({idx:n,price:p.price,daily:p.daily,start:now,end:now+DAYS*DAY,lastClaim:'',claimed:0}).then(function(){
+        busy=false;alert('🎉 স্পেশাল প্যাক '+n+' সফলভাবে চালু হয়েছে! এখন প্রতিদিন ক্লেম করতে পারবেন।');spGo('home');
+      }).catch(function(){
+        db.ref('sp_users/'+uid()+'/bal').transaction(function(b){return Math.round(((+b||0)+p.price)*100)/100});busy=false;alert('প্যাকেজ চালু করা যায়নি, টাকা ফেরত দেওয়া হয়েছে। আবার চেষ্টা করুন।');
+      });
+    });
+  };
+  window.spClaim=function(id){
+    var pk=PACKS[id];if(!pk||!isActive(pk)||busy||cdT)return;
+    if(pk.lastClaim===getTodayString())return;
+    var link=S['l'+pk.idx];
+    if(!link){alert('ক্লেম ভিডিওর লিংক এখনো সেট করা হয়নি, একটু পরে চেষ্টা করুন।');return}
+    openLink(link);startCd(id,60);
+  };
+  function startCd(id,sec){
+    var t0=Date.now(),w=$('spCd');
+    function draw(left){w.innerHTML='<div class="sp-cdb"><div class="sp-cdn">'+left+'</div><div class="sp-cdt">ভিডিওটি দেখুন, '+left+' সেকেন্ড পর ক্লেম হয়ে যাবে</div><button onclick="spCdCancel()">বাতিল</button></div>';w.classList.add('on')}
+    draw(sec);
+    cdT=setInterval(function(){var left=sec-Math.floor((Date.now()-t0)/1000);if(left<=0){clearInterval(cdT);cdT=null;w.classList.remove('on');w.innerHTML='';doClaim(id)}else draw(left)},500);
+  }
+  window.spCdCancel=function(){if(cdT){clearInterval(cdT);cdT=null}var w=$('spCd');w.classList.remove('on');w.innerHTML=''};
+  function doClaim(id){
+    var pk=PACKS[id];if(!pk)return;var today=getTodayString(),amt=+pk.daily||0;
+    db.ref('sp_packs/'+uid()+'/'+id+'/lastClaim').transaction(function(c){return c===today?undefined:today},function(err,ok){
+      if(err||!ok){alert('আজকের ক্লেম আগেই সম্পন্ন হয়েছে');return}
+      db.ref('sp_packs/'+uid()+'/'+id+'/claimed').transaction(function(c){return (+c||0)+1});
+      db.ref('sp_users/'+uid()).transaction(function(u){u=u||{};var same=u.today===today;u.bal=Math.round(((+u.bal||0)+amt)*100)/100;u.income=Math.round(((+u.income||0)+amt)*100)/100;u.todayInc=Math.round(((same?(+u.todayInc||0):0)+amt)*100)/100;u.today=today;return u});
+      db.ref('users/'+uid()+'/balance').transaction(function(b){return Math.round(((+b||0)+amt)*100)/100});
+      alert('🎉 অভিনন্দন! ক্লেম সফল হয়েছে: ৳'+money(amt));
+    });
+  }
+  window.spSubmit=function(){
+    var inp=$('spTrx');if(!inp||busy)return;
+    var v=(inp.value||'').replace(/\s+/g,'').toUpperCase(),len=payM==='nagad'?8:10;
+    if(!selAmt||!payM){alert('আগে এমাউন্ট ও মেথড সিলেক্ট করুন');return}
+    if(!/^[A-Z0-9]+$/.test(v)||v.length!==len){alert('সঠিক ট্রানজেকশন আইডি দিন ('+len+' অক্ষরের হতে হবে)');return}
+    busy=true;var amt=selAmt,m=payM;
+    db.ref('sp_trx_used/'+v).transaction(function(c){return c?undefined:{u:uid(),t:Date.now()}},function(err,ok){
+      if(err||!ok){busy=false;alert('এই ট্রানজেকশন আইডি আগেই ব্যবহার করা হয়েছে');return}
+      var id=db.ref('sp_deposits').push().key,ts=Date.now(),up={};
+      up['sp_deposits/'+id]={id:id,uid:uid(),name:uname,method:m,amount:amt,trx:v,status:'pending',ts:ts};
+      up['sp_udeps/'+uid()+'/'+id]={amount:amt,method:m,trx:v,status:'pending',ts:ts};
+      db.ref().update(up).then(function(){busy=false;selAmt=0;payM='';spGo('add');alert('✅ রিকোয়েস্ট জমা হয়েছে। এডমিন যাচাই করে টাকা যোগ করে দেবেন।')}).catch(function(){db.ref('sp_trx_used/'+v).remove();busy=false;alert('জমা দেওয়া যায়নি, আবার চেষ্টা করুন')});
+    });
+  };
+  /* ---------- এডমিন ---------- */
+  var watching=false;
+  function watchAdmin(){if(watching||!isAdm())return;watching=true;db.ref('sp_deposits').limitToLast(150).on('value',function(s){ADEPS=s.val()||{};if(scr==='admin')refresh()})}
+  window.spAcc=function(id){
+    var d=ADEPS[id];if(!d||d.status!=='pending')return;
+    db.ref('sp_deposits/'+id+'/status').transaction(function(s){return s==='pending'?'approved':undefined},function(err,ok){
+      if(err||!ok){alert('এই রিকোয়েস্ট আগেই প্রসেস হয়েছে');return}
+      db.ref('sp_users/'+d.uid+'/bal').transaction(function(b){return Math.round(((+b||0)+(+d.amount||0))*100)/100});
+      var up={};up['sp_udeps/'+d.uid+'/'+id+'/status']='approved';up['sp_deposits/'+id+'/doneTs']=Date.now();db.ref().update(up);
+      alert('✅ ৳'+money(d.amount)+' ইউজারের ওয়ালেটে যোগ হয়েছে');
+    });
+  };
+  window.spRej=function(id){
+    var d=ADEPS[id];if(!d||d.status!=='pending')return;
+    mpConfirm('এই রিকোয়েস্টটি বাতিল করবেন?',function(ok){if(!ok)return;
+      db.ref('sp_deposits/'+id+'/status').transaction(function(s){return s==='pending'?'rejected':undefined},function(err,done){
+        if(err||!done){alert('এই রিকোয়েস্ট আগেই প্রসেস হয়েছে');return}
+        var up={};up['sp_udeps/'+d.uid+'/'+id+'/status']='rejected';up['sp_deposits/'+id+'/doneTs']=Date.now();db.ref().update(up);
+        db.ref('sp_trx_used/'+d.trx).remove();
+      });
+    },'বাতিল করুন');
+  };
+  window.spTog=function(k,el){var nv=!(S[k]!==false);S[k]=nv;el.classList.toggle('o2',!nv);db.ref('sp_settings/'+k).set(nv)};
+  window.spSaveNums=function(){
+    var b=($('spNb').value||'').trim(),n=($('spNn').value||'').trim();
+    db.ref('sp_settings').update({bkashNo:b,nagadNo:n}).then(function(){S.bkashNo=b;S.nagadNo=n;alert('✅ নম্বর সেভ হয়েছে')});
+  };
+  window.spSaveLinks=function(){
+    var o={};PK.forEach(function(p){o['l'+p.n]=($('spL'+p.n).value||'').trim()});
+    db.ref('sp_settings').update(o).then(function(){Object.assign(S,o);alert('✅ ক্লেম লিংক সেভ হয়েছে')});
+  };
+  window.spBg=function(c){S.bg=c;applyBg();var i=$('spBgIn');if(i&&/^#[0-9a-f]{6}$/i.test(c))i.value=c;db.ref('sp_settings/bg').set(c)};
+
+  /* ---------- শুরু / বন্ধ ---------- */
+  function start(){
+    if(started)return;started=true;adminOn=isAdm();
+    db.ref('users/'+uid()).once('value').then(function(s){var v=s.val()||{};uname=v.fullName||v.username||''});
+    db.ref('sp_settings').on('value',function(s){var v=s.val()||{};S=Object.assign({bkashNo:'',nagadNo:'',bkashOn:true,nagadOn:true,bg:'#eef3fd',l1:'',l2:'',l3:'',l4:''},v);applyBg();refresh()});
+    db.ref('sp_users/'+uid()).on('value',function(s){var v=s.val()||{};W={bal:+v.bal||0,today:v.today||'',todayInc:+v.todayInc||0};refresh()});
+    db.ref('sp_packs/'+uid()).on('value',function(s){PACKS=s.val()||{};refresh()});
+    db.ref('sp_udeps/'+uid()).limitToLast(20).on('value',function(s){DEPS=s.val()||{};refresh()});
+  }
+  window.openSpPage=function(){
+    if(!currentUserKey){alert('আগে লগইন করুন');return}
+    var p=$('spPage');p.classList.add('show');p.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
+    start();scr='home';render();p.scrollTop=0;
+  };
+  window.spClose=function(){
+    window.spCdCancel();var p=$('spPage');p.classList.remove('show');p.setAttribute('aria-hidden','true');document.body.style.overflow='';
+  };
+  applyBg();
+})();
+</script>
 </body>
-</html>
+    </html>
