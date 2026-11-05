@@ -1512,10 +1512,11 @@
 
         /* ===== স্পেশাল প্ল্যান প্যাক পেজ ===== */
         .sp-ticon{width:48px;height:48px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:24px;background:radial-gradient(circle at 30% 25%,#1e8a4c,#0c2317);border:2px solid #f5c542;box-shadow:0 0 12px rgba(245,197,66,.35)}
-        #spPage{position:fixed;inset:0;z-index:1500000;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--spbg,#eef3fd);color:var(--sptx,#16223f);font-family:'Hind Siliguri','Segoe UI',Tahoma,sans-serif;--spbg:#eef3fd;--sptx:#16223f;--splb:#6b7a99}
-        #spPage.show{display:block;animation:spIn .28s ease both}
-        @keyframes spIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-        #spPage .sp-in{max-width:480px;margin:0 auto;padding:16px 14px calc(110px + env(safe-area-inset-bottom,0px))}
+        #spPage{position:fixed;inset:0;z-index:1500000;display:none;flex-direction:column;overflow:hidden;background:var(--spbg,#eef3fd);color:var(--sptx,#16223f);font-family:'Hind Siliguri','Segoe UI',Tahoma,sans-serif;--spbg:#eef3fd;--sptx:#16223f;--splb:#6b7a99}
+        #spPage.show{display:flex;animation:spIn .28s ease both}
+        @keyframes spIn{from{opacity:0}to{opacity:1}}
+        #spPage .sp-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+        #spPage .sp-in{max-width:480px;margin:0 auto;padding:16px 14px 24px}
         #spPage button{font-family:inherit;-webkit-appearance:none;appearance:none}
         #spPage .sp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
         #spPage .sp-h{font-size:20px;font-weight:800;color:var(--sptx)}
@@ -1579,7 +1580,7 @@
         #spPage .sp-vf{display:block;width:100%;border:none;text-align:center;border-radius:14px;padding:15px;margin-top:14px;color:#fff;font-size:17px;font-weight:800;cursor:pointer;transition:transform .15s}
         #spPage .sp-vf:active{transform:scale(.97)}
         #spPage .sp-vf.nagad{background:#a8101a}#spPage .sp-vf.bkash{background:#a30e52}
-        #spPage .sp-nav{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:480px;display:none;justify-content:space-around;background:#fff;border-radius:22px 22px 0 0;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 18px rgba(40,70,130,.14);z-index:2}
+        #spPage .sp-nav{flex:none;position:relative;width:100%;max-width:480px;align-self:center;display:none;justify-content:space-around;background:#fff;border-radius:22px 22px 0 0;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 18px rgba(40,70,130,.14);z-index:2}
         #spPage .sp-nav div{flex:1;text-align:center;padding:8px 0;font-size:12px;color:#8a97b4;font-weight:700;border-radius:16px;cursor:pointer;transition:background .2s,color .2s}
         #spPage .sp-nav div svg{display:block;margin:0 auto 2px}
         #spPage .sp-nav div.on{color:#1a6dff;background:#eaf1ff}
@@ -7163,7 +7164,7 @@ function saveVideoLink() {
 
 <!-- ===== স্পেশাল প্ল্যান প্যাক (ফুল পেজ) ===== -->
 <div id="spPage" aria-hidden="true">
-  <div class="sp-in"><div id="spBody"></div></div>
+  <div class="sp-scroll" id="spScroll"><div class="sp-in"><div id="spBody"></div></div></div>
   <div class="sp-nav" id="spNav"></div>
   <div class="sp-cdw" id="spCd"></div>
 </div>
@@ -7301,7 +7302,7 @@ function saveVideoLink() {
   function refresh(){if(scr==='pay'||(scr==='admin'&&atab==='set'))return;render()}
 
   /* ---------- অ্যাকশন ---------- */
-  window.spGo=function(s){scr=s;render();var p=$('spPage');if(p)p.scrollTop=0;if(s==='admin')watchAdmin()};
+  window.spGo=function(s){scr=s;render();var sc=$('spScroll');if(sc)sc.scrollTop=0;if(s==='admin')watchAdmin()};
   window.spAt=function(t){atab=t;render()};
   window.spAmt=function(a){selAmt=a;render()};
   window.spMeth=function(m){
@@ -7347,13 +7348,30 @@ function saveVideoLink() {
   }
   window.spCdCancel=function(){if(cdT){clearInterval(cdT);cdT=null}var w=$('spCd');w.classList.remove('on');w.innerHTML=''};
   function doClaim(id){
-    var pk=PACKS[id];if(!pk)return;var today=getTodayString(),amt=+pk.daily||0;
-    db.ref('sp_packs/'+uid()+'/'+id+'/lastClaim').transaction(function(c){return c===today?undefined:today},function(err,ok){
-      if(err||!ok){alert('আজকের ক্লেম আগেই সম্পন্ন হয়েছে');return}
-      db.ref('sp_packs/'+uid()+'/'+id+'/claimed').transaction(function(c){return (+c||0)+1});
-      db.ref('sp_users/'+uid()).transaction(function(u){u=u||{};var same=u.today===today;u.bal=Math.round(((+u.bal||0)+amt)*100)/100;u.income=Math.round(((+u.income||0)+amt)*100)/100;u.todayInc=Math.round(((same?(+u.todayInc||0):0)+amt)*100)/100;u.today=today;return u});
-      db.ref('users/'+uid()+'/balance').transaction(function(b){return Math.round(((+b||0)+amt)*100)/100});
-      alert('🎉 অভিনন্দন! ক্লেম সফল হয়েছে: ৳'+money(amt));
+    var pk=PACKS[id];if(!pk)return;
+    var today=getTodayString(),amt=+pk.daily||0,u=uid(),pref='sp_packs/'+u+'/'+id,sameDay=(W.today===today);
+    var rd=function(n){return Math.round(n*100)/100};
+    var add=function(path,fn){return new Promise(function(res,rej){db.ref(path).transaction(fn,function(e,ok){if(e)rej(e);else res(ok)})})};
+    var emsg=function(e){return (e&&(e.message||e.code))||'অনুমতি নেই'};
+    db.ref(pref+'/lastClaim').transaction(function(c){return c===today?undefined:today},function(err,ok){
+      if(err){alert('⚠️ ক্লেম করা যায়নি: '+emsg(err));return}
+      if(!ok){alert('আজকের ক্লেম আগেই সম্পন্ন হয়েছে');return}
+      // ধাপ ১: সাইটের মূল ব্যালেন্স
+      add('users/'+u+'/balance',function(b){return rd((+b||0)+amt)}).then(function(){
+        // ধাপ ২: টাস্ক ওয়ালেট
+        return add('sp_users/'+u+'/bal',function(b){return rd((+b||0)+amt)}).then(function(){
+          add(pref+'/claimed',function(c){return (+c||0)+1}).catch(function(){});
+          add('sp_users/'+u+'/income',function(c){return rd((+c||0)+amt)}).catch(function(){});
+          db.ref('sp_users/'+u+'/today').set(today).catch(function(){});
+          add('sp_users/'+u+'/todayInc',function(c){return rd((sameDay?(+c||0):0)+amt)}).catch(function(){});
+          alert('🎉 অভিনন্দন! ক্লেম সফল হয়েছে: ৳'+money(amt));
+        },function(e){
+          alert('⚠️ মূল ব্যালেন্সে ৳'+money(amt)+' যোগ হয়েছে, কিন্তু টাস্ক ওয়ালেটে যোগ করা যায়নি ('+emsg(e)+'). এডমিনকে জানান।');
+        });
+      },function(e){
+        db.ref(pref+'/lastClaim').set(pk.lastClaim||'');
+        alert('⚠️ ক্লেমের টাকা যোগ করা যায়নি ('+emsg(e)+'). আবার চেষ্টা করুন।');
+      });
     });
   }
   window.spSubmit=function(){
@@ -7415,7 +7433,7 @@ function saveVideoLink() {
   window.openSpPage=function(){
     if(!currentUserKey){alert('আগে লগইন করুন');return}
     var p=$('spPage');p.classList.add('show');p.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
-    start();scr='home';render();p.scrollTop=0;
+    start();scr='home';render();var sc=$('spScroll');if(sc)sc.scrollTop=0;
   };
   window.spClose=function(){
     window.spCdCancel();var p=$('spPage');p.classList.remove('show');p.setAttribute('aria-hidden','true');document.body.style.overflow='';
@@ -7424,4 +7442,4 @@ function saveVideoLink() {
 })();
 </script>
 </body>
-    </html>
+</html>
