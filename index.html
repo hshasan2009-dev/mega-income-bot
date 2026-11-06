@@ -48,7 +48,12 @@
         {id:'coral',name:'সানসেট কোরাল',tag:'লালচে কমলা',o:{bg:'#210e0e',bar:'#3d1816',card:'#2e1412',bd:'#ff6f61',acc:'#ffb3a8',btn:'#ff9a8f',btn2:'#e0483a',btnTxt:'#2a0b08',txt:'#fff1ee',sub:'#e3bab4'}},
         {id:'ocean',name:'ওশান ব্লু',tag:'উজ্জ্বল নীল',o:{bg:'#06142a',bar:'#0c2650',card:'#0a1f40',bd:'#3d9bff',acc:'#9fd0ff',btn:'#6fb7ff',btn2:'#1f6fd6',btnTxt:'#04152e',txt:'#eef6ff',sub:'#a9c3e3'}},
         {id:'lime',name:'নিয়ন লাইম',tag:'ঝলমলে সবুজ',o:{bg:'#0a1a0c',bar:'#12351a',card:'#0f2713',bd:'#5ee07a',acc:'#b4ffc4',btn:'#7ff09a',btn2:'#1fa84a',btnTxt:'#04200b',txt:'#effff2',sub:'#aed6b7'}},
-        {id:'cyan',name:'আইস সায়ান',tag:'হালকা নীলচে সবুজ',o:{bg:'#061a20',bar:'#0c3640',card:'#0a2a33',bd:'#36d1e0',acc:'#9ff3ff',btn:'#5eeaf7',btn2:'#0e9bb0',btnTxt:'#03222a',txt:'#eafcff',sub:'#a3d0d6'}}
+        {id:'cyan',name:'আইস সায়ান',tag:'হালকা নীলচে সবুজ',o:{bg:'#061a20',bar:'#0c3640',card:'#0a2a33',bd:'#36d1e0',acc:'#9ff3ff',btn:'#5eeaf7',btn2:'#0e9bb0',btnTxt:'#03222a',txt:'#eafcff',sub:'#a3d0d6'}},
+        {id:'white',name:'হোয়াইট ক্লিন ব্লু',tag:'সাদা ব্যাকগ্রাউন্ড ও নীল বাটন',vars:{
+          '--bg':'#ffffff','--bg2':'#ffffff','--bg3':'#f4f7fd','--bar':'#ffffff','--card':'#ffffff','--card2':'#f6f9ff',
+          '--bd':'#dfe6f3','--bd2':'#c9d5ea','--bdrgb':'223,230,243','--acc':'#1a5fe0','--accrgb':'26,95,224',
+          '--btn':'#141f3f','--btn2':'#1a68f0','--btnTxt':'#ffffff','--gift1':'#141f3f','--gift2':'#1a68f0','--giftTxt':'#ffffff',
+          '--txt':'#16223f','--txt2':'#2a3860','--sub':'#6b7a99','--sub2':'#8593b0','--navAct':'#1a68f0','--off':'#1a68f0','--sup':'#c0392b'}}
       ];
       T.forEach(function(x){ if(!x.vars) x.vars=build(x.o); });
       var all=T.reduce(function(a,x){Object.keys(x.vars).forEach(function(k){a[k]=1});return a;},{});
@@ -59,6 +64,7 @@
         if(th.id==='green'){Object.keys(all).forEach(function(k){st.removeProperty(k)});}
         else{Object.keys(th.vars).forEach(function(k){st.setProperty(k,th.vars[k])});}
         window.__curThemeId=th.id;
+        document.documentElement.setAttribute('data-site-theme',th.id);
         return th;
       };
       try{var c=localStorage.getItem('siteThemeId'); if(c) window.applySiteTheme(c);}catch(e){}
@@ -1340,6 +1346,28 @@
 
         /* ===== FIX: এডমিন হাইড করলে কার্ড সম্পূর্ণ লুকাবে (ID-সিলেক্টর + !important, তাই ওপরের display:flex !important কে হারায়) ===== */
         #task .card.tk-gone { display: none !important; }
+
+
+        /* ===== থিম: হোয়াইট ক্লিন ব্লু (শুধু এই থিম চালু থাকলে কাজ করে) ===== */
+        html[data-site-theme="white"] body { background:#ffffff; }
+        html[data-site-theme="white"] body::before { display:none !important; }
+        html[data-site-theme="white"] .card,
+        html[data-site-theme="white"] .balance-card,
+        html[data-site-theme="white"] .auth-card {
+            background:#ffffff; border:1px solid #e3e9f5; border-radius:18px;
+            box-shadow:0 6px 18px rgba(40,70,130,.08);
+        }
+        html[data-site-theme="white"] .btn:not(:disabled):not(.copy-done),
+        html[data-site-theme="white"] .auth-btn:not(:disabled) {
+            background:linear-gradient(90deg,#141f3f 0%,#1a68f0 100%) !important;
+            color:#ffffff !important; border:none !important; border-radius:20px !important;
+            box-shadow:0 10px 22px rgba(26,104,240,.25) !important; font-weight:700;
+        }
+        html[data-site-theme="white"] .btn:not(:disabled):not(.copy-done) .hb-ic { color:#ffffff; }
+        html[data-site-theme="white"] .navbar { background:#ffffff; border-top:1px solid #e3e9f5; box-shadow:0 -6px 18px rgba(40,70,130,.07); }
+        html[data-site-theme="white"] .nav-item.active { background:rgba(26,104,240,.1); }
+        html[data-site-theme="white"] .th-card.sel { border-color:#1a68f0; box-shadow:0 0 0 2px rgba(26,104,240,.25); }
+        html[data-site-theme="white"] .th-card .ck { background:#1a68f0; color:#ffffff; }
 
         /* lighter glow: drop the heavy blurred second layer, keep the rotating ring */
         .gb::after, #task .card:not(.disabled-task)::after { display: none !important; }
@@ -7233,7 +7261,9 @@ function saveVideoLink() {
   function isAdm(){try{return String(currentUserKey)===sanitizeKey(ADMIN_CHAT_ID)}catch(e){return false}}
   function money(n){n=Math.round((+n||0)*100)/100;return n.toLocaleString('en-US',{maximumFractionDigits:2})}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-  function isActive(p){return p&&Date.now()<(+p.end||0)&&(+p.claimed||0)<DAYS}
+  function dnum(ts){var d=new Date(ts);return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/DAY)}
+  function daysLeft(p){return DAYS-(dnum(Date.now())-dnum(+p.start||0))}
+  function isActive(p){return !!p&&daysLeft(p)>0&&(+p.claimed||0)<DAYS}
   function todayInc(){return W.today===getTodayString()?(+W.todayInc||0):0}
   function dt(ts){var d=new Date(ts);return d.getDate()+'/'+(d.getMonth()+1)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
   function openLink(u){try{openTelegramLink(u)}catch(e){window.open(u,'_blank')}}
@@ -7257,8 +7287,8 @@ function saveVideoLink() {
       '<div class="sp-info"><div><span>মূল্য</span><b class="o">৳'+money(p.price)+'</b></div><div><span>দৈনিক আয়</span><b class="g">৳'+money(p.daily)+'</b></div><div><span>মেয়াদ</span><b>'+DAYS+' দিন</b></div><div class="tot"><span>মোট আয়</span><b class="bl">৳'+money(p.daily*DAYS)+'</b></div></div>'+
       '<button class="sp-buy'+(act?' dim':'')+'" onclick="spBuy('+p.n+')">'+(act?'চালু আছে':ic('flame',20)+' Buy Package')+'</button></div>';
     }
-    var left=Math.max(1,Math.ceil((pk.end-Date.now())/DAY)),done=(pk.lastClaim===getTodayString());
-    var pct=Math.min(100,Math.round(((+pk.claimed||0)/DAYS)*100));
+    var left=Math.max(1,daysLeft(pk)),done=(pk.lastClaim===getTodayString());
+    var pct=Math.min(100,Math.round(((DAYS-left+1)/DAYS)*100));
     return '<div class="sp-pk" style="padding:14px"><div class="sp-t">'+logo.replace('sp-lg','sp-lg sm')+'<div style="flex:1;min-width:0"><div class="sp-nm" style="font-size:17px">স্পেশাল প্যাক '+p.n+'</div><div class="sp-lbl" style="margin-top:2px">দৈনিক ৳'+money(p.daily)+' &middot; বাকি '+left+' দিন</div><div class="sp-pb"><i style="width:'+pct+'%"></i></div></div></div>'+
       '<button class="sp-buy'+(done?' dim':'')+'" style="margin-top:12px" onclick="spClaim(\''+id+'\')">'+(done?'আজকের ক্লেম সম্পন্ন':'ক্লেম ৳'+money(p.daily))+'</button></div>';
   }
@@ -7470,8 +7500,14 @@ function saveVideoLink() {
   window.spBg=function(c){S.bg=c;applyBg();var i=$('spBgIn');if(i&&/^#[0-9a-f]{6}$/i.test(c))i.value=c;db.ref('sp_settings/bg').set(c)};
 
   /* ---------- শুরু / বন্ধ ---------- */
+  function midnightTick(){
+    var n=new Date(),ms=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,1)-n;
+    setTimeout(function(){refresh();midnightTick()},Math.max(1000,ms)+300);
+  }
   function start(){
     if(started)return;started=true;adminOn=isAdm();
+    midnightTick();
+    document.addEventListener('visibilitychange',function(){if(!document.hidden)refresh()});
     db.ref('users/'+uid()).once('value').then(function(s){var v=s.val()||{};uname=v.fullName||v.username||''});
     db.ref('sp_settings').on('value',function(s){var v=s.val()||{};S=Object.assign({bkashNo:'',nagadNo:'',bkashOn:true,nagadOn:true,bg:'#eef3fd',l1:'',l2:'',l3:'',l4:'',refPct:0},v);applyBg();refresh()});
     db.ref('sp_users/'+uid()).on('value',function(s){var v=s.val()||{};W={bal:+v.bal||0,income:+v.income||0,today:v.today||'',todayInc:+v.todayInc||0};refresh()});
