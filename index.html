@@ -5612,12 +5612,47 @@
                 return;
             }
 
-            // স্পন্সর বিজ্ঞাপন সম্পূর্ণ না দেখলে সাইন-ইন রিওয়ার্ড পাবেন না
-            startExoAdSession({
-                seconds: getExoAdSeconds(),
-                title: '📅 সাইন-ইন বিজ্ঞাপন',
-                note: 'সাইন-ইন রিওয়ার্ড পেতে বিজ্ঞাপনটি <b style="color:var(--acc);">সম্পূর্ণ</b> দেখুন। সময় শেষ হলে স্বয়ংক্রিয়ভাবে সাইন-ইন সম্পন্ন হবে।',
-                onComplete: completeDailyCheckin
+            // Monetag বিজ্ঞাপন সম্পূর্ণ দেখলে তবেই সাইন-ইন রিওয়ার্ড পাবেন
+            watchMonetagForCheckin();
+        }
+
+        function watchMonetagForCheckin() {
+            if (monetagPending) return;
+            if (typeof show_12093219 !== 'function') {
+                alert("⚠️ বিজ্ঞাপন লোড হয়নি, ইন্টারনেট চেক করে একটু পরে আবার চেষ্টা করুন।");
+                return;
+            }
+            let btn = document.getElementById('btn-do-checkin');
+            let origHtml = btn ? btn.innerHTML : '';
+            let t0 = Date.now(), r = null;
+            try { r = show_12093219(); } catch (e) { r = null; }
+            if (!r || typeof r.then !== 'function') {
+                alert("⚠️ এই মুহূর্তে বিজ্ঞাপন পাওয়া যাচ্ছে না, একটু পরে আবার চেষ্টা করুন।");
+                return;
+            }
+
+            monetagPending = true;
+            if (btn) { btn.disabled = true; btn.innerText = "👀 বিজ্ঞাপন চলছে..."; }
+            let reset = () => {
+                monetagPending = false;
+                if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
+            };
+            // বিজ্ঞাপন আটকে গেলে ৩ মিনিট পর বাটন আবার চালু
+            setTimeout(() => { if (monetagPending) reset(); }, 180000);
+
+            r.then(() => {
+                if (!monetagPending) return;
+                reset();
+                if (Date.now() - t0 < 4000) {
+                    alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখেননি, তাই সাইন-ইন হয়নি। আবার চেষ্টা করুন।");
+                    return;
+                }
+                completeDailyCheckin();
+            }).catch(e => {
+                console.log("Checkin Monetag info:", e);
+                if (!monetagPending) return;
+                reset();
+                alert("⚠️ এই মুহূর্তে বিজ্ঞাপন পাওয়া যাচ্ছে না, একটু পরে আবার চেষ্টা করুন।");
             });
         }
 
@@ -6081,40 +6116,52 @@
             }
         }
 
+        let monetagStartedAt = 0;
         function watchMonetagAdTask() {
-            startAwayTracking('monetag');
-            monetagPending = true;
-
-            let monetagBtn = document.querySelector("#card-monetag-task button");
-            if (monetagBtn) monetagBtn.innerText = "👀 বিজ্ঞাপন সম্পূর্ণ দেখে অ্যাপে ফিরে আসুন";
-
-            try {
-                if (typeof show_12093219 === 'function') {
-                    show_12093219().catch(e => {
-                        console.log("Monetag trigger info:", e);
-                        if (monetagPending) {
-                            monetagPending = false;
-                            clearAwayTracking();
-                            resetMonetagButton();
-                            alert("⚠️ এই মুহূর্তে বিজ্ঞাপন পাওয়া যাচ্ছে না, একটু পরে আবার চেষ্টা করুন।");
-                        }
-                    });
-                }
-            } catch (e) { console.log("Monetag error:", e); }
-        }
-
-        function finishMonetagIfPending() {
-            if (!monetagPending || regTrack.id !== 'monetag') return;
-            monetagPending = false;
-            let awayMs = regTrack.awayMs;
-            clearAwayTracking();
-            resetMonetagButton();
-
-            if (awayMs < MONETAG_MIN_AWAY_SEC * 1000) {
-                alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখেননি, তাই রিওয়ার্ড পাবেন না। আবার চেষ্টা করুন।");
+            if (monetagPending) return;
+            if (typeof show_12093219 !== 'function') {
+                alert("⚠️ বিজ্ঞাপন লোড হয়নি, ইন্টারনেট চেক করে একটু পরে আবার চেষ্টা করুন।");
                 return;
             }
 
+            let monetagBtn = document.querySelector("#card-monetag-task button");
+            let r = null;
+            monetagStartedAt = Date.now();
+            try { r = show_12093219(); } catch (e) { r = null; }
+            if (!r || typeof r.then !== 'function') {
+                alert("⚠️ এই মুহূর্তে বিজ্ঞাপন পাওয়া যাচ্ছে না, একটু পরে আবার চেষ্টা করুন।");
+                return;
+            }
+
+            monetagPending = true;
+            if (monetagBtn) { monetagBtn.disabled = true; monetagBtn.innerText = "👀 বিজ্ঞাপন চলছে..."; }
+
+            // বিজ্ঞাপন আটকে গেলে ৩ মিনিট পর বাটন আবার চালু
+            setTimeout(() => { if (monetagPending) { monetagPending = false; resetMonetagButton(); } }, 180000);
+
+            r.then(() => {
+                if (!monetagPending) return;
+                monetagPending = false;
+                resetMonetagButton();
+                // বিজ্ঞাপন আসলে না দেখে সাথে সাথে শেষ হলে রিওয়ার্ড নয়
+                if (Date.now() - monetagStartedAt < 4000) {
+                    alert("⚠️ বিজ্ঞাপনটি সম্পূর্ণ দেখেননি, তাই রিওয়ার্ড পাবেন না। আবার চেষ্টা করুন।");
+                    return;
+                }
+                giveMonetagReward();
+            }).catch(e => {
+                console.log("Monetag trigger info:", e);
+                if (!monetagPending) return;
+                monetagPending = false;
+                resetMonetagButton();
+                alert("⚠️ এই মুহূর্তে বিজ্ঞাপন পাওয়া যাচ্ছে না, একটু পরে আবার চেষ্টা করুন।");
+            });
+        }
+
+        // পুরোনো "অ্যাপের বাইরে ছিল কিনা" পদ্ধতি আর লাগে না — রিওয়ার্ড এখন সরাসরি বিজ্ঞাপন শেষ হওয়ার সংকেত থেকে আসে
+        function finishMonetagIfPending() { return; }
+
+        function giveMonetagReward() {
             let earned = parseFloat(dynamicTaskRewards.monetagTask || 1.00);
             currentBalance += earned;
             completedTasksCount += 1;
