@@ -1739,7 +1739,7 @@
         <div class="custom-popup-box">
             <button class="custom-popup-close" onclick="closeDynamicNotice()">✕</button>
             <div class="custom-popup-site">Mega Income Pro</div>
-            <div class="custom-popup-logo">🚀</div>
+            <div class="custom-popup-logo"><img src="/icon-192.png" alt="Mega Income"></div>
             <h3 id="popupMainTitle" class="custom-popup-title">সাইন-আপ বোনাস +৫০০ পয়েন্ট</h3>
             <p id="popupSubDesc" class="custom-popup-desc">টাস্ক দাবি করুন · বার্তা পাঠান · পয়েন্ট আয় করুন</p>
             <button id="popupActionButton" class="custom-popup-btn" onclick="handlePopupAction()">এখনই দাবি করুন ›</button>
@@ -1753,7 +1753,7 @@
 
     <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: var(--bg3);">
         <div id="loginBox" class="auth-card">
-            <div class="auth-logo">🚀</div>
+            <div class="auth-logo"><img src="/icon-192.png" alt="Mega Income"></div>
             <div class="auth-title">Mega Income Pro</div>
             <div class="auth-sub">Welcome Back! Log in to your account.</div>
             
@@ -1774,7 +1774,7 @@
         </div>
 
         <div id="signupBox" class="auth-card" style="display: none;">
-            <div class="auth-logo">🚀</div>
+            <div class="auth-logo"><img src="/icon-192.png" alt="Mega Income"></div>
             <div class="auth-title">Mega Income Pro</div>
             <div class="auth-sub">Create a new account to start earning.</div>
             
@@ -1841,7 +1841,7 @@
     </div>
 
     <div class="top-title-bar">
-        <span>🚀 Mega Income Pro</span>
+        <span class="mi-hd"><img src="/icon-192.png" alt="">Mega Income Pro</span>
         <div class="tt-right">
             <button class="logout-btn-top" id="logoutBtn" onclick="handleLogout()">Log Out</button>
             <span class="tt-user" id="ttUser"><i class="tt-dot" id="ttDot" style="background:#7f8c8d"></i><span class="tt-name" id="ttName"></span></span>
@@ -7972,6 +7972,10 @@ function saveVideoLink() {
 
 <style>
 #pwaInstall{margin-bottom:14px}
+.auth-logo,.custom-popup-logo{width:84px !important;height:84px !important;background:none !important;border:none !important;border-radius:22% !important;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.35) !important}
+.auth-logo img,.custom-popup-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.mi-hd{display:inline-flex;align-items:center;gap:9px}
+.mi-hd img{width:34px;height:34px;border-radius:9px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.35)}
 .pwa-card{display:flex;align-items:center;gap:12px;border-radius:18px;padding:11px 12px;background:var(--card);border:1px solid var(--bd);box-shadow:0 4px 14px rgba(0,0,0,.18)}
 .pwa-card img{width:46px;height:46px;border-radius:12px;flex:none}
 .pwa-t{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
@@ -7981,14 +7985,18 @@ function saveVideoLink() {
 </style>
 <script>
 (function(){
-  var dp=null,K='pwaDismissed';
+  var dp=null,K='pwaDismissedAt';
   function standalone(){return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}
-  function dismissed(){try{return !!localStorage.getItem(K)}catch(e){return false}}
-  function show(){var b=document.getElementById('pwaInstall');if(b)b.style.display=(dp&&!standalone()&&!dismissed())?'block':'none'}
+  function dismissed(){try{var t=+localStorage.getItem(K)||0;return t>0&&Date.now()-t<2*86400000}catch(e){return false}}
+  function show(){var b=document.getElementById('pwaInstall');if(b)b.style.display=(!standalone()&&!dismissed())?'block':'none'}
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;show()});
-  window.addEventListener('appinstalled',function(){dp=null;show()});
-  window.pwaInstall=function(){if(!dp)return;dp.prompt();dp.userChoice.then(function(){dp=null;show()},function(){})};
-  window.pwaDismiss=function(){try{localStorage.setItem(K,'1')}catch(e){}show()};
+  window.addEventListener('appinstalled',function(){dp=null;try{localStorage.setItem(K,String(Date.now()+365*86400000))}catch(e){}show()});
+  window.pwaInstall=function(){
+    if(dp){dp.prompt();dp.userChoice.then(function(){dp=null;show()},function(){});return}
+    alert('ব্রাউজারের মেনু (⋮) চাপুন, তারপর "Install app" বা "হোম স্ক্রিনে যোগ করুন" বেছে নিন।');
+  };
+  window.pwaDismiss=function(){try{localStorage.setItem(K,String(Date.now()))}catch(e){}show()};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',show);else show();
   if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});
 })();
 </script>
