@@ -3434,6 +3434,7 @@
                         document.getElementById('authModal').style.display = 'none';
                         document.getElementById('logoutBtn').style.display = 'block';
                         initFirebaseUserSync();
+                        try { acWelcome(uInput, pInput); } catch (e) {}
                     }, 1200);
                 }).catch(() => {
                     hideAuthLoader();
@@ -3478,6 +3479,7 @@
                     document.getElementById('authModal').style.display = 'none';
                     document.getElementById('logoutBtn').style.display = 'block';
                     initFirebaseUserSync();
+                    try { acLoginOk(val.fullName || uInput); } catch (e) {}
                 }, 1200);
             }).catch(() => {
                 hideAuthLoader();
@@ -7515,7 +7517,7 @@ function saveVideoLink() {
     var inp=$('spTrx');if(!inp||busy)return;
     var v=(inp.value||'').replace(/\s+/g,'').toUpperCase(),len=payM==='nagad'?8:10;
     if(!selAmt||!payM){alert('আগে এমাউন্ট ও মেথড সিলেক্ট করুন');return}
-    if(!/^[A-Z0-9]+$/.test(v)||v.length!==len){alert('সঠিক ট্রানজেকশন আইডি দিন ('+len+' অক্ষরের হতে হবে)');return}
+    if(!/^[A-Z0-9]+$/.test(v)||v.length!==len){alert('ট্রানজেকশন টি সঠিক নয়, দয়া করে সঠিক ট্রানজেকশন আইডি দিন');return}
     busy=true;var amt=selAmt,m=payM;
     db.ref('sp_trx_used/'+v).transaction(function(c){return c?undefined:{u:uid(),t:Date.now()}},function(err,ok){
       if(err||!ok){busy=false;alert('এই ট্রানজেকশন আইডি আগেই ব্যবহার করা হয়েছে');return}
@@ -7609,6 +7611,18 @@ function saveVideoLink() {
 .ac-rq{border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:10px;background:rgba(255,255,255,.04);color:#fff;font-size:13.5px;line-height:1.7}
 .ac-rq .ac-bt{display:flex;gap:8px;margin-top:8px}
 .ac-rq .ac-bt button{flex:1;border:0;border-radius:8px;padding:9px;color:#fff;font-weight:700;cursor:pointer;font-family:inherit}
+
+.ac-lk{position:relative;filter:saturate(.6) brightness(.92)}
+.ac-lk::after{content:"🔒";position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:16px;background:linear-gradient(135deg,var(--gift1,#f0d68a),var(--gift2,#b8963e));box-shadow:0 0 12px rgba(var(--accrgb),.5);filter:none}
+#acPopOv .mp-body{white-space:normal}
+.ac-ic{width:86px;height:86px;margin:2px auto 12px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#34d67b,#10964f);box-shadow:0 0 0 6px rgba(52,214,123,.15),0 8px 22px rgba(16,150,79,.45);font-size:44px;color:#fff;position:relative}
+.ac-ic::before{content:"✨";position:absolute;top:-6px;left:-10px;font-size:20px}
+.ac-ic::after{content:"🎉";position:absolute;bottom:-4px;right:-12px;font-size:22px}
+.ac-t1{font-size:17px;font-weight:700;margin-bottom:12px}
+.ac-row{display:flex;justify-content:space-between;gap:10px;text-align:left;padding:10px 4px;border-top:1px dashed rgba(var(--bdrgb),.45);font-size:15px}
+.ac-row span{color:var(--sub)}.ac-row b{word-break:break-all;text-align:right;letter-spacing:.5px}
+.ac-warn{margin-top:10px;font-size:13px;line-height:1.6;color:#ff6b6b}
+.ac-sbtn{width:100%;border:1px solid rgba(var(--accrgb),.55);border-radius:14px;padding:12px;margin-bottom:12px;font:700 15px inherit;font-family:inherit;color:#1a1204;background:linear-gradient(135deg,var(--gift1,#f0d68a),var(--gift2,#b8963e));cursor:pointer}
 </style>
 
 <div id="acPage" aria-hidden="true">
@@ -7621,7 +7635,8 @@ function saveVideoLink() {
             <h3 style="color:var(--acc); font-size:16px;">✅ একাউন্ট এক্টিভ রিকুয়েস্ট</h3>
             <button onclick="acCloseAdmin()" style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:5px; cursor:pointer;">✕ বন্ধ করুন</button>
         </div>
-        <div id="ac-set"></div>
+        <button class="ac-sbtn" id="ac-sbtn" onclick="acToggleSet()">⚙️ সেটিং</button>
+        <div id="ac-set" style="display:none"></div>
         <h4 id="ac-pt" style="color:var(--acc); margin:6px 0 10px; font-size:14px;"></h4>
         <div id="ac-list"></div>
     </div>
@@ -7636,7 +7651,7 @@ function saveVideoLink() {
   function ic(n,z){return window.SP_IC?window.SP_IC(n,z):''}
   function logo(k){return (window.SP_LOGO&&window.SP_LOGO[k])||''}
   function isAdm(){try{return String(currentUserKey)===sanitizeKey(ADMIN_CHAT_ID)}catch(e){return false}}
-  function blocked(){return popup&&!!currentUserKey&&U!==null&&U.a===false&&!isAdm()}
+  function blocked(){return popup&&!!currentUserKey&&U!==null&&U.a!==true&&!isAdm()}
   function amt(){return +AS.amount>0?+AS.amount:20}
   function money(n){return (Math.round((+n||0)*100)/100).toLocaleString('en-US',{maximumFractionDigits:2})}
   function dt(ts){var d=new Date(ts);return d.getDate()+'/'+(d.getMonth()+1)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
@@ -7647,6 +7662,7 @@ function saveVideoLink() {
   (function(){try{[].forEach.call(document.styleSheets,function(ss){var rs;try{rs=ss.cssRules}catch(e){return}var add=[];[].forEach.call(rs,function(r){if(r.type===1&&r.selectorText&&r.selectorText.indexOf('#spPage')>-1)add.push(r.cssText.split('#spPage').join('#acPage'))});add.forEach(function(t){try{ss.insertRule(t,ss.cssRules.length)}catch(e){}})})}catch(e){}})();
 
   function banner(){
+    try{lockCards()}catch(e){}
     var b=$('acBanner');if(!b)return;
     if(!blocked()){b.style.display='none';b.innerHTML='';return}
     var p=pend();
@@ -7701,7 +7717,7 @@ function saveVideoLink() {
   window.acSubmit=function(){
     var inp=$('acTrx');if(!inp||busy||!pm)return;
     var v=(inp.value||'').replace(/\s+/g,'').toUpperCase(),len=pm==='nagad'?8:10;
-    if(!/^[A-Z0-9]+$/.test(v)||v.length!==len){alert('সঠিক ট্রানজেকশন আইডি দিন ('+len+' অক্ষরের হতে হবে)');return}
+    if(!/^[A-Z0-9]+$/.test(v)||v.length!==len){alert('ট্রানজেকশন টি সঠিক নয়, দয়া করে সঠিক ট্রানজেকশন আইডি দিন');return}
     if(pend()){alert('⏳ আপনার রিকোয়েস্ট যাচাই চলছে');return}
     busy=true;var a=amt(),m=pm,key=currentUserKey;
     db.ref('ac_trx_used/'+v).transaction(function(c){return c?undefined:{u:key,t:Date.now()}},function(err,ok){
@@ -7739,7 +7755,8 @@ function saveVideoLink() {
       hs.forEach(function(k){var d=AREQ[k],ok=d.status==='approved';h+='<div style="display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:#fff;border-bottom:1px solid rgba(255,255,255,.1);padding:6px 0"><span>'+esc(d.name||d.uid)+' · '+esc(d.trx)+'</span><b style="color:'+(ok?'#2ecc71':'#e74c3c')+'">'+(ok?'সফল':'বাতিল')+'</b></div>'})}
     l.innerHTML=h;
   }
-  window.acOpenAdmin=function(){adminSet();adminList();$('adminAcctReqModal').style.display='block'};
+  window.acToggleSet=function(){var b=$('ac-set'),o=b.style.display==='none';if(o)adminSet();b.style.display=o?'block':'none';$('ac-sbtn').textContent=o?'⚙️ সেটিং ▴':'⚙️ সেটিং'};
+  window.acOpenAdmin=function(){var b=$('ac-set');if(b){b.style.display='none';b.innerHTML=''}var sb=$('ac-sbtn');if(sb)sb.textContent='⚙️ সেটিং';adminList();$('adminAcctReqModal').style.display='block'};
   window.acCloseAdmin=function(){$('adminAcctReqModal').style.display='none'};
   window.acTog=function(k,v){db.ref('ac_settings/'+k).set(!!v)};
   window.acSaveSet=function(){
@@ -7757,12 +7774,13 @@ function saveVideoLink() {
   };
   window.acRej=function(id){
     var d=AREQ[id];if(!d||d.status!=='pending')return;
-    if(!confirm('এই রিকোয়েস্টটি বাতিল করবেন?'))return;
-    db.ref('ac_requests/'+id+'/status').transaction(function(s){return s==='pending'?'rejected':undefined},function(err,ok){
-      if(err||!ok){alert('এই রিকোয়েস্ট আগেই প্রসেস হয়েছে');return}
-      var up={};up['ac_ureq/'+d.uid+'/'+id+'/status']='rejected';up['ac_requests/'+id+'/doneTs']=Date.now();
-      db.ref().update(up);db.ref('ac_trx_used/'+d.trx).remove();
-    });
+    mpConfirm('এই রিকোয়েস্টটি বাতিল করবেন?',function(yes){if(!yes)return;
+      db.ref('ac_requests/'+id+'/status').transaction(function(s){return s==='pending'?'rejected':undefined},function(err,ok){
+        if(err||!ok){alert('এই রিকোয়েস্ট আগেই প্রসেস হয়েছে');return}
+        var up={};up['ac_ureq/'+d.uid+'/'+id+'/status']='rejected';up['ac_requests/'+id+'/doneTs']=Date.now();
+        db.ref().update(up);db.ref('ac_trx_used/'+d.trx).remove();
+      });
+    },'বাতিল করুন');
   };
 
   /* ---------- গার্ড: এক্টিভ না হলে কাজে ঢুকতে পারবে না ---------- */
@@ -7772,10 +7790,42 @@ function saveVideoLink() {
     window.acOpen();
     return false;
   }
-  ['handleTaskClick','openGiftModal','submitWithdrawal'].forEach(function(n){
-    var f=window[n];if(typeof f!=='function')return;
-    window[n]=function(){if(!guard())return;return f.apply(this,arguments)};
-  });
+  (function(){
+    var h=window.handleTaskClick;if(typeof h==='function')window.handleTaskClick=function(k){if(k!=='spTask'&&!guard())return;return h.apply(this,arguments)};
+    var w=window.submitWithdrawal;if(typeof w==='function')window.submitWithdrawal=function(){if(!guard())return;return w.apply(this,arguments)};
+  })();
+  function lockCards(){
+    var b=blocked();
+    [].forEach.call(document.querySelectorAll('[onclick*="handleTaskClick"]'),function(el){
+      if((el.getAttribute('onclick')||'').indexOf('spTask')>-1)return;
+      var c=el.closest('.card')||el;if(c.classList.contains('ac-lk')!==b)c.classList.toggle('ac-lk',b);
+    });
+  }
+
+  /* ---------- কমন ডিজাইনের পপআপ (সাইটের বাকি পপআপের মতো) ---------- */
+  function popEl(){
+    var o=$('acPopOv');if(o)return o;
+    o=document.createElement('div');o.className='mp-ov';o.id='acPopOv';
+    o.innerHTML='<div class="mp-box" role="dialog" aria-modal="true"><div class="mp-head"><div class="mp-title">Mega Income Pro</div><button class="mp-x" type="button" onclick="acPopClose()" aria-label="বন্ধ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg></button></div><div class="mp-body" id="acPopB"></div><div class="mp-btns" id="acPopBt"></div></div>';
+    document.body.appendChild(o);return o;
+  }
+  var popFns=[];
+  window.acPopClose=function(){var o=$('acPopOv');if(o)o.classList.remove('show')};
+  window.acPopBtn=function(i){var f=popFns[i];if(f&&f.fn)f.fn(f.el);if(!f||!f.keep)acPopClose()};
+  function acPop(html,btns){
+    var o=popEl();$('acPopB').innerHTML=html;popFns=btns;
+    $('acPopBt').innerHTML=btns.map(function(b,i){return '<button class="mp-btn '+b.c+'" type="button" onclick="acPopBtn('+i+')">'+b.t+'</button>'}).join('');
+    [].forEach.call($('acPopBt').children,function(el,i){popFns[i].el=el});
+    void o.offsetWidth;o.classList.add('show');
+  }
+  window.acWelcome=function(user,pass){
+    acPop('<div class="ac-ic">✓</div><div class="ac-t1">আপনার অ্যাকাউন্ট তৈরি হয়েছে</div><div class="ac-row"><span>ব্যবহারকারীর নাম :</span><b>'+esc(user)+'</b></div><div class="ac-row"><span>পাসওয়ার্ড :</span><b>'+esc(pass)+'</b></div><div class="ac-warn">আপনার অ্যাকাউন্টের তথ্য নিরাপদে রাখুন। আয় চুরি হওয়া ঠেকাতে কারও সঙ্গে অ্যাকাউন্টের তথ্য শেয়ার করবেন না, এমনকি সহায়তা কর্মীদের সঙ্গেও নয়।</div>',[
+      {t:'কপি করুন',c:'mp-ok',keep:true,fn:function(el){var txt='ইউজারনেম: '+user+'\nপাসওয়ার্ড: '+pass;var done=function(){el.textContent='কপি হয়েছে ✓';setTimeout(function(){el.textContent='কপি করুন'},1600)};var fb=function(){try{var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();done()}catch(e){}};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done).catch(fb);else fb()}},
+      {t:'বন্ধ',c:'mp-cancel'}]);
+  };
+  window.acLoginOk=function(name){
+    acPop('<div class="ac-ic">✓</div><div class="ac-t1">লগ-ইন সফল হয়েছে</div><div style="color:var(--sub);font-size:14px">স্বাগতম, '+esc(name||'')+'</div>',[{t:'ঠিক আছে',c:'mp-ok'}]);
+  };
 
   /* ---------- লাইভ ডেটা ---------- */
   function listen(){
@@ -7783,7 +7833,7 @@ function saveVideoLink() {
     var k=currentUserKey;curKey=k;U=null;REQ={};wasBlocked=null;
     var on=function(path,fn){var r=db.ref(path);r.on('value',fn);refs.push(r)};
     on('users/'+k+'/acctActive',function(s){
-      U={a:s.val()===false?false:true};
+      U={a:s.val()===true};
       var nb=blocked();
       if(wasBlocked===true&&!nb&&U.a===true){alert('🎉 আপনার একাউন্ট এক্টিভ হয়েছে!');var p=$('acPage');if(p&&p.classList.contains('show'))acClose()}
       wasBlocked=nb;banner();
@@ -7797,7 +7847,7 @@ function saveVideoLink() {
     db.ref('users/'+k+'/fullName').once('value').then(function(s){UN=s.val()||''}).catch(function(){});
     if(isAdm())on('ac_requests',function(s){AREQ=s.val()||{};badge();var m=$('adminAcctReqModal');if(m&&m.style.display==='block')adminList()});
   }
-  setInterval(function(){try{if(typeof db==='undefined'||!currentUserKey){if(curKey){curKey='';U=null;banner()}return}if(currentUserKey!==curKey)listen()}catch(e){}},700);
+  setInterval(function(){try{if(typeof db==='undefined'||!currentUserKey){if(curKey){curKey='';U=null;banner()}return}if(currentUserKey!==curKey)listen();lockCards()}catch(e){}},700);
 })();
 </script>
 
