@@ -7323,11 +7323,12 @@ function saveVideoLink() {
   function buildPK(v){
     PLD=v||{};var out=[];
     BASE.forEach(function(b){var o=PLD['p'+b.n]||{};out.push({n:b.n,free:!!b.free,base:true,on:o.on!==false,price:b.free?0:(o.price!=null?+o.price:b.price),daily:o.daily!=null?+o.daily:b.daily,days:o.days!=null?+o.days:b.days})});
-    Object.keys(PLD).forEach(function(k){var n=+String(k).slice(1),o=PLD[k];if(!(n>=5)||!o||o.del)return;if(+o.price>0&&+o.daily>0&&+o.days>=1)out.push({n:n,base:false,on:o.on!==false,price:+o.price,daily:+o.daily,days:Math.floor(+o.days)})});
-    out.sort(function(a,b){return a.price-b.price||a.n-b.n});PK=out;
+    Object.keys(PLD).forEach(function(k){var n=+String(k).slice(1),o=PLD[k];if(!(n>=5)||!o||o.del)return;if(o.price!=null&&+o.price>=0&&+o.daily>0&&+o.days>=1)out.push({n:n,base:false,on:o.on!==false,price:+o.price,daily:+o.daily,days:Math.floor(+o.days)})});
+    out.forEach(function(p){p.free=(+p.price===0)});out.sort(function(a,b){return a.price-b.price||a.n-b.n});PK=out;
   }
   buildPK(null);
   function dd(p){return (+p.days>0)?Math.floor(+p.days):DAYS}
+  function pname(p){return p.free?(p.n===0?'ফ্রি প্যাক':'ফ্রি প্যাক '+p.n):'স্পেশাল প্যাক '+p.n}
   function r2(n){return Math.round(n*100)/100}
   function pkBy(n){for(var i=0;i<PK.length;i++)if(PK[i].n===n)return PK[i]}
   var DAYS=30,AMTS=[150,200,250,300,500],DAY=86400000;
@@ -7376,14 +7377,14 @@ function saveVideoLink() {
   function pkCard(p,mode,id,pk){
     var logo='<div class="sp-lg">🚀</div>';
     if(mode==='buy'){
-      var act=Object.keys(PACKS).some(function(k){return PACKS[k].idx===p.n&&isActive(PACKS[k])}),used=!!p.free&&Object.keys(PACKS).some(function(k){return PACKS[k].idx===0}),off=p.on===false;
-      return '<div class="sp-pk"><div class="sp-t">'+logo+'<div><div class="sp-nm">'+(p.free?'ফ্রি প্যাক':'স্পেশাল প্যাক '+p.n)+'</div>'+(p.free?'<span class="sp-vb" style="background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff">🎁 FREE</span>':'<span class="sp-vb">'+ic('gem',14)+'প্যাকেজ '+p.n+'</span>')+'</div></div>'+
+      var act=Object.keys(PACKS).some(function(k){return PACKS[k].idx===p.n&&isActive(PACKS[k])}),used=!!p.free&&Object.keys(PACKS).some(function(k){return PACKS[k].idx===p.n}),off=p.on===false;
+      return '<div class="sp-pk"><div class="sp-t">'+logo+'<div><div class="sp-nm">'+pname(p)+'</div>'+(p.free?'<span class="sp-vb" style="background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff">🎁 FREE</span>':'<span class="sp-vb">'+ic('gem',14)+'প্যাকেজ '+p.n+'</span>')+'</div></div>'+
       '<div class="sp-info"><div><span>মূল্য</span><b class="o">'+(p.free?'ফ্রি':'৳'+money(p.price))+'</b></div><div><span>দৈনিক আয়</span><b class="g">৳'+money(p.daily)+'</b></div><div><span>মেয়াদ</span><b>'+dd(p)+' দিন</b></div><div class="tot"><span>মোট আয়</span><b class="bl">৳'+money(p.daily*dd(p))+'</b></div></div>'+
       '<button class="sp-buy'+((act||used||off)?' dim':'')+'" onclick="spBuy('+p.n+')">'+(act?'চালু আছে':off?'এখন বন্ধ আছে':used?'ফ্রি প্যাক নেওয়া হয়েছে':p.free?'🎁 ফ্রি এক্টিভ করুন':ic('flame',20)+' Buy Package')+'</button></div>';
     }
     var left=Math.max(1,daysLeft(pk)),done=(pk.lastClaim===getTodayString());
     var pct=Math.min(100,Math.round(((dd(pk)-left+1)/dd(pk))*100));
-    return '<div class="sp-pk" style="padding:14px"><div class="sp-t">'+logo.replace('sp-lg','sp-lg sm')+'<div style="flex:1;min-width:0"><div class="sp-nm" style="font-size:17px">'+(p.free?'ফ্রি প্যাক':'স্পেশাল প্যাক '+p.n)+'</div><div class="sp-lbl" style="margin-top:2px">দৈনিক ৳'+money(p.daily)+' &middot; বাকি '+left+' দিন</div><div class="sp-pb"><i style="width:'+pct+'%"></i></div></div></div>'+
+    return '<div class="sp-pk" style="padding:14px"><div class="sp-t">'+logo.replace('sp-lg','sp-lg sm')+'<div style="flex:1;min-width:0"><div class="sp-nm" style="font-size:17px">'+pname(p)+'</div><div class="sp-lbl" style="margin-top:2px">দৈনিক ৳'+money(p.daily)+' &middot; বাকি '+left+' দিন</div><div class="sp-pb"><i style="width:'+pct+'%"></i></div></div></div>'+
       '<button class="sp-buy'+(done?' dim':'')+'" style="margin-top:12px" onclick="spClaim(\''+id+'\')">'+(done?'আজকের ক্লেম সম্পন্ন':'ক্লেম ৳'+money(p.daily))+'</button></div>';
   }
   function vHome(){
@@ -7445,16 +7446,16 @@ function saveVideoLink() {
   }
   function vPlans(){
     var inp=function(id,l,ph,v,ex){return '<div><div class="sp-lbl2">'+l+'</div><input class="sp-ip" id="'+id+'" type="number" inputmode="decimal" min="0" placeholder="'+ph+'" value="'+(v==null?'':v)+'" '+(ex||'')+'></div>'};
-    var h='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">➕ নতুন প্যাকেজ যোগ করুন</div><div class="sp-lbl2" style="margin-bottom:10px">দৈনিক আয় ও মেয়াদ দিলেই মোট আয় নিজে থেকে হিসাব হবে</div>'+
+    var h='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">➕ নতুন প্যাকেজ যোগ করুন</div><div class="sp-lbl2" style="margin-bottom:10px">দৈনিক আয় ও মেয়াদ দিলেই মোট আয় নিজে থেকে হিসাব হবে। ফ্রি প্যাকেজ বানাতে দাম ০ দিন।</div>'+
       '<div class="sp-g3">'+inp('spNwD','দৈনিক আয় ৳','10','','oninput="spPlCalc(\'spNw\')"')+inp('spNwN','মেয়াদ (দিন)','30','','oninput="spPlCalc(\'spNw\')"')+inp('spNwP','দাম ৳','150','')+'</div>'+
       '<div class="sp-tt"><span>মোট আয় (অটো)</span><b id="spNwT">৳0</b></div><button class="sp-buy" style="margin-top:12px" onclick="spPlAdd()">➕ প্যাকেজ যোগ করুন</button></div>';
     h+='<div class="sp-sec">সব প্যাকেজ <span class="sp-lbl" style="font-weight:600">(দাম অনুযায়ী সাজানো)</span></div>';
     PK.forEach(function(p){
       var n=p.n,d=dd(p);
-      h+='<div class="sp-c sp-pl'+(p.on?'':' off')+'"><div class="sp-fl"><div><b style="font-size:16px">'+(p.free?'ফ্রি প্যাক':'স্পেশাল প্যাক '+n)+'</b> '+(p.free?'<span class="sp-bd" style="background:#dcfce7;color:#15803d">FREE</span>':(p.base?'':'<span class="sp-bd" style="background:#e0ecff;color:#1a6dff">নতুন</span>'))+'</div><span class="sp-sw'+(p.on?'':' o2')+'" onclick="spPlTog('+n+',this)"></span></div>'+
+      h+='<div class="sp-c sp-pl'+(p.on?'':' off')+'"><div class="sp-fl"><div><b style="font-size:16px">'+pname(p)+'</b> '+(p.free?'<span class="sp-bd" style="background:#dcfce7;color:#15803d">FREE</span>':(p.base?'':'<span class="sp-bd" style="background:#e0ecff;color:#1a6dff">নতুন</span>'))+'</div><span class="sp-sw'+(p.on?'':' o2')+'" onclick="spPlTog('+n+',this)"></span></div>'+
         '<div class="sp-pls"><div><span>দাম</span><b>'+(p.free?'ফ্রি':'৳'+money(p.price))+'</b></div><div><span>দৈনিক</span><b>৳'+money(p.daily)+'</b></div><div><span>মেয়াদ</span><b>'+d+' দিন</b></div><div class="t"><span>মোট আয়</span><b>৳'+money(p.daily*d)+'</b></div></div>'+
         '<div class="sp-sm"><button style="background:#1a6dff" onclick="spPlEd('+n+')">✏️ এডিট</button>'+(p.base?'':'<button style="background:#dc2626" onclick="spPlDel('+n+')">🗑 মুছুন</button>')+'</div>'+
-        '<div id="spEd'+n+'" style="display:none;margin-top:12px"><div class="sp-g3">'+inp('spE'+n+'D','দৈনিক আয় ৳','',p.daily,'oninput="spPlCalc(\'spE'+n+'\')"')+inp('spE'+n+'N','মেয়াদ (দিন)','',d,'oninput="spPlCalc(\'spE'+n+'\')"')+inp('spE'+n+'P','দাম ৳','',p.price,p.free?'disabled':'')+'</div>'+
+        '<div id="spEd'+n+'" style="display:none;margin-top:12px"><div class="sp-g3">'+inp('spE'+n+'D','দৈনিক আয় ৳','',p.daily,'oninput="spPlCalc(\'spE'+n+'\')"')+inp('spE'+n+'N','মেয়াদ (দিন)','',d,'oninput="spPlCalc(\'spE'+n+'\')"')+inp('spE'+n+'P','দাম ৳','',p.price,n===0?'disabled':'')+'</div>'+
         '<div class="sp-tt"><span>মোট আয় (অটো)</span><b id="spE'+n+'T">৳'+money(p.daily*d)+'</b></div><button class="sp-buy" style="margin-top:10px;height:44px;font-size:15px" onclick="spPlSave('+n+')">💾 সেভ করুন</button></div></div>';
     });
     return h;
@@ -7465,7 +7466,7 @@ function saveVideoLink() {
     var h='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">রেফার কমিশন (%)</div><div class="sp-lbl2">এই টাস্কের ক্লেম থেকে রেফারার কত % পাবে</div><input class="sp-ip" id="spRef" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="'+esc(S.refPct||0)+'" placeholder="0"><button class="sp-buy" style="margin-top:4px" onclick="spSaveRef()">কমিশন সেভ করুন</button></div>';
     h+='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">পেমেন্ট সেটিংস</div><div class="sp-lbl2">bKash নম্বর</div><input class="sp-ip" id="spNb" value="'+esc(S.bkashNo)+'" placeholder="01XXXXXXXXX"><div class="sp-lbl2">নগদ নম্বর</div><input class="sp-ip" id="spNn" value="'+esc(S.nagadNo)+'" placeholder="01XXXXXXXXX">'+sw('bkashOn','bKash চালু')+sw('nagadOn','নগদ চালু')+'<button class="sp-buy" style="margin-top:10px" onclick="spSaveNums()">নম্বর সেভ করুন</button></div>';
     h+='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">ক্লেম ভিডিও লিংক</div>';
-    PK.forEach(function(p){h+='<div class="sp-lbl2">'+(p.free?'ফ্রি প্যাক (খালি রাখলে ভিডিও ছাড়াই ক্লেম হবে)':'স্পেশাল প্যাক '+p.n+' (৳'+p.price+')')+'</div><input class="sp-ip" id="spL'+p.n+'" value="'+esc(S['l'+p.n])+'" placeholder="https://...">'});
+    PK.forEach(function(p){h+='<div class="sp-lbl2">'+pname(p)+(p.free?' (খালি রাখলে ভিডিও ছাড়াই ক্লেম হবে)':' (৳'+p.price+')')+'</div><input class="sp-ip" id="spL'+p.n+'" value="'+esc(S['l'+p.n])+'" placeholder="https://...">'});
     h+='<button class="sp-buy" style="margin-top:10px" onclick="spSaveLinks()">লিংক সেভ করুন</button></div>';
     h+='<div class="sp-c"><div class="sp-sec" style="margin-top:0;color:#16223f">পেজের ব্যাকগ্রাউন্ড রং</div><div class="sp-cols">';
     cols.forEach(function(c){h+='<span class="sp-col" style="background:'+c+'" onclick="spBg(\''+c+'\')"></span>'});
@@ -7503,9 +7504,9 @@ function saveVideoLink() {
     var p=pkBy(n);if(!p||busy||confirming)return;
     if(p.on===false){alert('এই প্যাকেজটি এখন বন্ধ আছে');return}
     if(p.free){
-      if(Object.keys(PACKS).some(function(k){return PACKS[k].idx===0})){alert('ফ্রি প্যাকেজ একটি একাউন্টে একবারই নেওয়া যায়।');return}
+      if(Object.keys(PACKS).some(function(k){return PACKS[k].idx===n})){alert('ফ্রি প্যাকেজ একটি একাউন্টে একবারই নেওয়া যায়।');return}
       confirming=true;
-      mpConfirm('ফ্রি প্যাক চালু করতে চান?\n\nদৈনিক আয়: ৳'+money(p.daily)+'\nমেয়াদ: '+dd(p)+' দিন\nমোট আয়: ৳'+money(p.daily*dd(p))+'\n\nএটি সম্পূর্ণ ফ্রি, কোনো টাকা কাটা হবে না।',function(ok){confirming=false;if(ok)doBuy(n)},'কনফার্ম');
+      mpConfirm(pname(p)+' চালু করতে চান?\n\nদৈনিক আয়: ৳'+money(p.daily)+'\nমেয়াদ: '+dd(p)+' দিন\nমোট আয়: ৳'+money(p.daily*dd(p))+'\n\nএটি সম্পূর্ণ ফ্রি, কোনো টাকা কাটা হবে না।',function(ok){confirming=false;if(ok)doBuy(n)},'কনফার্ম');
       return;
     }
     var act=Object.keys(PACKS).some(function(k){return PACKS[k].idx===n&&isActive(PACKS[k])});
@@ -7518,13 +7519,13 @@ function saveVideoLink() {
     var p=pkBy(n);if(!p||busy)return;
     if(p.on===false){alert('এই প্যাকেজটি এখন বন্ধ আছে');return}
     if(p.free){
-      if(Object.keys(PACKS).some(function(k){return PACKS[k].idx===0})){alert('ফ্রি প্যাকেজ একটি একাউন্টে একবারই নেওয়া যায়।');return}
+      if(Object.keys(PACKS).some(function(k){return PACKS[k].idx===n})){alert('ফ্রি প্যাকেজ একটি একাউন্টে একবারই নেওয়া যায়।');return}
       busy=true;var t0=Date.now();
-      db.ref('sp_users/'+uid()+'/freeTaken').transaction(function(c){return c?undefined:t0},function(err,ok){
+      db.ref('sp_users/'+uid()+'/freeTaken'+(n||'')).transaction(function(c){return c?undefined:t0},function(err,ok){
         if(err||!ok){busy=false;alert('ফ্রি প্যাকেজ আগেই নেওয়া হয়েছে');return}
-        db.ref('sp_packs/'+uid()).push({idx:0,price:0,daily:p.daily,days:dd(p),start:t0,end:t0+dd(p)*DAY,lastClaim:'',claimed:0}).then(function(){
-          busy=false;alert('🎉 ফ্রি প্যাক সফলভাবে চালু হয়েছে! এখন প্রতিদিন ৳'+money(p.daily)+' করে ক্লেম করতে পারবেন।');spGo('home');
-        }).catch(function(){db.ref('sp_users/'+uid()+'/freeTaken').remove();busy=false;alert('প্যাকেজ চালু করা যায়নি, আবার চেষ্টা করুন।')});
+        db.ref('sp_packs/'+uid()).push({idx:n,price:0,daily:p.daily,days:dd(p),start:t0,end:t0+dd(p)*DAY,lastClaim:'',claimed:0}).then(function(){
+          busy=false;alert('🎉 '+pname(p)+' সফলভাবে চালু হয়েছে! এখন প্রতিদিন ৳'+money(p.daily)+' করে ক্লেম করতে পারবেন।');spGo('home');
+        }).catch(function(){db.ref('sp_users/'+uid()+'/freeTaken'+(n||'')).remove();busy=false;alert('প্যাকেজ চালু করা যায়নি, আবার চেষ্টা করুন।')});
       });
       return;
     }
@@ -7545,7 +7546,7 @@ function saveVideoLink() {
     var pk=PACKS[id];if(!pk||!isActive(pk)||busy||cdT)return;
     if(pk.lastClaim===getTodayString())return;
     var link=S['l'+pk.idx];
-    if(!link){if(pk.idx===0){doClaim(id);return}alert('ক্লেম ভিডিওর লিংক এখনো সেট করা হয়নি, একটু পরে চেষ্টা করুন।');return}
+    if(!link){if(+pk.price===0){doClaim(id);return}alert('ক্লেম ভিডিওর লিংক এখনো সেট করা হয়নি, একটু পরে চেষ্টা করুন।');return}
     openLink(link);startCd(id,60);
   };
   function startCd(id,sec){
@@ -7634,7 +7635,7 @@ function saveVideoLink() {
   window.spPlTog=function(n,el){var p=pkBy(n);if(!p)return;var nv=!(p.on!==false);el.classList.toggle('o2',!nv);db.ref('sp_plans/p'+n+'/on').set(nv).catch(function(){alert('⚠️ সেভ করা যায়নি, আবার চেষ্টা করুন')})};
   window.spPlAdd=function(){
     var d=parseFloat($('spNwD').value),n=parseFloat($('spNwN').value),pr=parseFloat($('spNwP').value);
-    if(!(d>0)||!(n>=1)||!(pr>0)){alert('দৈনিক আয়, মেয়াদ (দিন) ও দাম সঠিকভাবে দিন');return}
+    if(!(d>0)||!(n>=1)||!(pr>=0)){alert('দৈনিক আয়, মেয়াদ (দিন) ও দাম সঠিকভাবে দিন');return}
     var mx=4;Object.keys(PLD).forEach(function(k){var m=+String(k).slice(1);if(m>mx)mx=m});var id=mx+1;
     db.ref('sp_plans/p'+id).transaction(function(c){return c?undefined:{price:r2(pr),daily:r2(d),days:Math.floor(n),on:true,ts:Date.now()}},function(err,ok){
       if(err||!ok){alert('⚠️ প্যাকেজ যোগ করা যায়নি, আবার চেষ্টা করুন');return}
@@ -7643,9 +7644,9 @@ function saveVideoLink() {
   };
   window.spPlSave=function(n){
     var p=pkBy(n);if(!p)return;
-    var d=parseFloat($('spE'+n+'D').value),dy=parseFloat($('spE'+n+'N').value),pr=p.free?0:parseFloat($('spE'+n+'P').value);
-    if(!(d>0)||!(dy>=1)||(!p.free&&!(pr>0))){alert('দৈনিক আয়, মেয়াদ (দিন) ও দাম সঠিকভাবে দিন');return}
-    var o={daily:r2(d),days:Math.floor(dy)};if(!p.free)o.price=r2(pr);
+    var d=parseFloat($('spE'+n+'D').value),dy=parseFloat($('spE'+n+'N').value),pr=(n===0)?0:parseFloat($('spE'+n+'P').value);
+    if(!(d>0)||!(dy>=1)||(n!==0&&!(pr>=0))){alert('দৈনিক আয়, মেয়াদ (দিন) ও দাম সঠিকভাবে দিন');return}
+    var o={daily:r2(d),days:Math.floor(dy)};if(n!==0)o.price=r2(pr);
     db.ref('sp_plans/p'+n).update(o).then(function(){alert('✅ প্যাকেজ আপডেট হয়েছে\nযারা আগে কিনেছে তাদের প্যাকেজ আগের নিয়মেই চলবে।');render()}).catch(function(){alert('⚠️ সেভ করা যায়নি, আবার চেষ্টা করুন')});
   };
   window.spPlDel=function(n){
