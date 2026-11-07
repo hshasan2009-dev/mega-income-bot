@@ -1851,7 +1851,7 @@
     <div class="container">
 
         <div id="home" class="page active">
-            <div id="pwaInstall" style="display:none"><div class="pwa-card"><img src="/icon-192.png" alt=""><div class="pwa-t"><b>Mega Income অ্যাপ</b><span>ফোনে ইনস্টল করে সহজে খুলুন</span></div><button type="button" onclick="pwaInstall()">ইনস্টল</button><i onclick="pwaDismiss()">✕</i></div></div>
+            <div id="pwaInstall" style="display:none"><div class="pwa-card"><img src="/icon-192.png" alt=""><div class="pwa-t"><b>Mega Income অ্যাপ</b><span>ফোনে ইনস্টল করুন, সহজে খুলুন</span></div><button type="button" onclick="pwaInstall()">ইনস্টল</button><i onclick="pwaDismiss()">✕</i></div></div>
             <div id="acBanner" style="display:none"></div>
             <div class="balance-card">
                 <div class="balance-title">TOTAL BALANCE</div>
@@ -7985,15 +7985,24 @@ function saveVideoLink() {
 </style>
 <script>
 (function(){
-  var dp=null,K='pwaDismissedAt';
+  var dp=null,K='pwaDismissedAt',APK='/Mega%20Income.apk';
   function standalone(){return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}
   function dismissed(){try{var t=+localStorage.getItem(K)||0;return t>0&&Date.now()-t<2*86400000}catch(e){return false}}
+  function isAndroid(){return /android/i.test(navigator.userAgent)}
   function show(){var b=document.getElementById('pwaInstall');if(b)b.style.display=(!standalone()&&!dismissed())?'block':'none'}
-  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;show()});
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e});
   window.addEventListener('appinstalled',function(){dp=null;try{localStorage.setItem(K,String(Date.now()+365*86400000))}catch(e){}show()});
   window.pwaInstall=function(){
-    if(dp){dp.prompt();dp.userChoice.then(function(){dp=null;show()},function(){});return}
-    alert('ব্রাউজারের মেনু (⋮) চাপুন, তারপর "Install app" বা "হোম স্ক্রিনে যোগ করুন" বেছে নিন।');
+    if(!isAndroid()){
+      if(dp){dp.prompt();dp.userChoice.then(function(){dp=null;show()},function(){});return}
+      alert('ব্রাউজারের মেনু থেকে "হোম স্ক্রিনে যোগ করুন" বেছে নিন।');return;
+    }
+    fetch(APK,{method:'HEAD',cache:'no-store'}).then(function(r){
+      var ct=(r.headers.get('content-type')||'').toLowerCase();
+      if(!r.ok||ct.indexOf('text/html')>-1){alert('অ্যাপ ফাইলটি এখনো পাওয়া যাচ্ছে না, একটু পরে চেষ্টা করুন।');return}
+      var a=document.createElement('a');a.href=APK;a.download='Mega-Income.apk';document.body.appendChild(a);a.click();a.remove();
+      alert('ডাউনলোড শুরু হয়েছে। শেষ হলে ফাইলটি খুলে ইনস্টল করুন। "অজানা সোর্স থেকে ইনস্টল" এর অনুমতি চাইলে অনুমতি দিন।');
+    }).catch(function(){alert('ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।')});
   };
   window.pwaDismiss=function(){try{localStorage.setItem(K,String(Date.now()))}catch(e){}show()};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',show);else show();
