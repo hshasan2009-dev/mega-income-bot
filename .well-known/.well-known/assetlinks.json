@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.mega_income_pro1.twa",
+        "sha256_cert_fingerprints": ["68:36:57:CC:8E:99:C4:35:FC:03:D2:B4:DC:08:D6:23:C5:1D:77:C7:97:1C:F7:91:24:02:40:A7:C6:38:73:B8"]
+      }
+    }]
