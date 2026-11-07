@@ -5719,7 +5719,7 @@
         const LB_MIN_REFER = 20;      // লিডারবোর্ডে ঢুকতে সর্বনিম্ন একটিভ রেফার
         const ACTIVE_REF_MIN = 2;     // রেফার করা ইউজার কমপক্ষে এত টাকা আর্নিং করলে একটিভ (ইউজারকে দেখানো হয় না)
         const LB_MAX_SHOW = 10;
-        let rlbRef = null, rlbLast = [], myRefScore = null;
+        let rlbRef = null, rlbLast = [], myRefScore = null, rlbMeIn = false;
 
         function bnDigits(n) {
             const bn = '০১২৩৪৫৬৭৮৯';
@@ -5757,12 +5757,12 @@
         function renderReferLeaderboard(arr) {
             let listEl = document.getElementById('rlb-list');
             if (!listEl) return;
-            let myInList = false;
+            let myInList = false, rlbMyPos = 0;
             let h = '';
             arr.forEach((d, i) => {
                 let r = i + 1;
                 let mine = (String(d.key) === String(currentUserKey));
-                if (mine) myInList = true;
+                if (mine) { myInList = true; rlbMyPos = r; }
                 h += '<div class="rlb-row ' + (r < 4 ? 'r' + r : '') + (mine ? ' mine' : '') + '" style="animation-delay:' + (i * 0.06) + 's">'
                     + (r < 4 ? '<div class="rlb-med">' + rlbMedal(r) + '</div>' : '<div class="rlb-num">' + bnDigits(r) + '</div>')
                     + '<div class="rlb-info"><div class="rlb-nm">' + escHtml(d.name) + (mine ? ' (আপনি)' : '') + '</div>'
@@ -5779,8 +5779,11 @@
             if (!currentUserKey) { if (meWrap) meWrap.style.display = 'none'; return; }
             if (myInList) {
                 if (meWrap) meWrap.style.display = 'none';
-                if (note) note.innerText = 'অভিনন্দন! আপনি টপ রেফারার্সের তালিকায় আছেন 🎉';
+                rlbMeIn = true;
+                myRankCache.rank = bnDigits(rlbMyPos);
+                setMyNote();
             } else {
+                rlbMeIn = false;
                 if (meWrap) meWrap.style.display = 'block';
                 let me = document.getElementById('rlb-me-cnt'); if (me) me.innerText = bnDigits(activeReferCount);
                 let cd = document.getElementById('rlb-me-code'); if (cd) cd.innerHTML = '<i>ID:</i> ' + escHtml(userReferralCode);
@@ -5794,11 +5797,17 @@
         function setMyNote() {
             let note = document.getElementById('rlb-note');
             if (!note) return;
-            let tail = (activeReferCount >= LB_MIN_REFER)
+            let tail = rlbMeIn
+                ? 'লিডারবোর্ডে থাকতে আরও একটিভ রেফার করুন!'
+                : (activeReferCount >= LB_MIN_REFER)
                 ? 'আরও একটিভ রেফার করে টপ ' + bnDigits(LB_MAX_SHOW) + '-এ উঠুন!'
                 : 'লিডারবোর্ডে ঢুকতে আর ' + bnDigits(LB_MIN_REFER - activeReferCount) + 'টি একটিভ রেফার দরকার!';
             let head = (myRankCache.rank !== null) ? 'আপনার অবস্থান ' + myRankCache.rank + (myRankCache.rank.indexOf('+') > -1 ? '' : 'তম') + ' · ' : '';
-            note.innerText = head + tail;
+            if (rlbMeIn && myRankCache.rank !== null) {
+                note.innerText = '🎉 অভিনন্দন! আপনার অবস্থান ' + myRankCache.rank + (myRankCache.rank.indexOf('+') > -1 ? '' : 'তম') + '\n' + tail;
+            } else {
+                note.innerText = head + tail;
+            }
         }
         function updateMyRank() {
             let el = document.getElementById('rlb-me-rank');
@@ -7613,8 +7622,8 @@ function saveVideoLink() {
 .ac-rq .ac-bt button{flex:1;border:0;border-radius:8px;padding:9px;color:#fff;font-weight:700;cursor:pointer;font-family:inherit}
 
 .ac-lk{position:relative}
-.ac-lkb{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;z-index:3;pointer-events:none;border:2px solid rgba(255,255,255,.4);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1204' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2.5' fill='%231a1204'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center/20px 20px no-repeat,linear-gradient(135deg,var(--gift1,#f0d68a),var(--gift2,#b8963e));box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 14px rgba(var(--accrgb),.5);animation:acLkP 2.4s ease-in-out infinite}
-@keyframes acLkP{0%,100%{box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 8px rgba(var(--accrgb),.35)}50%{box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 18px rgba(var(--accrgb),.75)}}
+.ac-lkb{position:absolute;top:5px;right:6px;width:30px;height:30px;border-radius:50%;z-index:5;pointer-events:none;border:2px solid rgba(255,255,255,.6);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2.5' fill='%23ffffff'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center/16px 16px no-repeat,linear-gradient(135deg,#ff6b6b,#d63031);box-shadow:0 3px 8px rgba(0,0,0,.45),0 0 12px rgba(255,70,70,.65);animation:acLkP 1.6s ease-in-out infinite}
+@keyframes acLkP{0%,100%{transform:translateY(2px)}50%{transform:translateY(-3px)}}
 #acPopOv .mp-body{white-space:normal}
 .ac-ic{width:86px;height:86px;margin:2px auto 12px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#34d67b,#10964f);box-shadow:0 0 0 6px rgba(52,214,123,.15),0 8px 22px rgba(16,150,79,.45);font-size:44px;color:#fff;position:relative}
 .ac-ic::before{content:"✨";position:absolute;top:-6px;left:-10px;font-size:20px}
@@ -7853,6 +7862,5 @@ function saveVideoLink() {
   setInterval(function(){try{if(typeof db==='undefined'||!currentUserKey){if(curKey){curKey='';U=null;banner()}return}if(currentUserKey!==curKey)listen();lockCards()}catch(e){}},700);
 })();
 </script>
-
 </body>
-        </html>
+</html>
