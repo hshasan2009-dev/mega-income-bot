@@ -7612,8 +7612,9 @@ function saveVideoLink() {
 .ac-rq .ac-bt{display:flex;gap:8px;margin-top:8px}
 .ac-rq .ac-bt button{flex:1;border:0;border-radius:8px;padding:9px;color:#fff;font-weight:700;cursor:pointer;font-family:inherit}
 
-.ac-lk{position:relative;filter:saturate(.6) brightness(.92)}
-.ac-lk::after{content:"🔒";position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:16px;background:linear-gradient(135deg,var(--gift1,#f0d68a),var(--gift2,#b8963e));box-shadow:0 0 12px rgba(var(--accrgb),.5);filter:none}
+.ac-lk{position:relative}
+.ac-lk::after{content:"";position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;z-index:3;pointer-events:none;border:2px solid rgba(255,255,255,.4);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1204' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2.5' fill='%231a1204'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center/20px 20px no-repeat,linear-gradient(135deg,var(--gift1,#f0d68a),var(--gift2,#b8963e));box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 14px rgba(var(--accrgb),.5);animation:acLkP 2.4s ease-in-out infinite}
+@keyframes acLkP{0%,100%{box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 8px rgba(var(--accrgb),.35)}50%{box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 18px rgba(var(--accrgb),.75)}}
 #acPopOv .mp-body{white-space:normal}
 .ac-ic{width:86px;height:86px;margin:2px auto 12px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#34d67b,#10964f);box-shadow:0 0 0 6px rgba(52,214,123,.15),0 8px 22px rgba(16,150,79,.45);font-size:44px;color:#fff;position:relative}
 .ac-ic::before{content:"✨";position:absolute;top:-6px;left:-10px;font-size:20px}
