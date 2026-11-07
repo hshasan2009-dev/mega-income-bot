@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Mega Income">
+    <link rel="icon" type="image/png" href="/icon-192.png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
     <meta name="6a97888e-site-verification" content="cad8c97911212b690963aa90040d677b">
     <title>Mega Income Pro</title>
     
@@ -1844,6 +1851,7 @@
     <div class="container">
 
         <div id="home" class="page active">
+            <div id="pwaInstall" style="display:none"><div class="pwa-card"><img src="/icon-192.png" alt=""><div class="pwa-t"><b>Mega Income অ্যাপ</b><span>ফোনে ইনস্টল করে সহজে খুলুন</span></div><button type="button" onclick="pwaInstall()">ইনস্টল</button><i onclick="pwaDismiss()">✕</i></div></div>
             <div id="acBanner" style="display:none"></div>
             <div class="balance-card">
                 <div class="balance-title">TOTAL BALANCE</div>
@@ -7962,5 +7970,27 @@ function saveVideoLink() {
 })();
 </script>
 
+<style>
+#pwaInstall{margin-bottom:14px}
+.pwa-card{display:flex;align-items:center;gap:12px;border-radius:18px;padding:11px 12px;background:var(--card);border:1px solid var(--bd);box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.pwa-card img{width:46px;height:46px;border-radius:12px;flex:none}
+.pwa-t{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.pwa-t b{font-size:15px;color:var(--txt)}.pwa-t span{font-size:12px;color:var(--sub)}
+.pwa-card button{flex:none;border:0;border-radius:11px;padding:10px 16px;font:700 14px inherit;font-family:inherit;color:var(--btnTxt,#1a1204);background:linear-gradient(135deg,var(--gift1,#f0d68a),var(--gift2,#b8963e));cursor:pointer}
+.pwa-card i{flex:none;font-style:normal;color:var(--sub);padding:4px 2px;cursor:pointer}
+</style>
+<script>
+(function(){
+  var dp=null,K='pwaDismissed';
+  function standalone(){return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}
+  function dismissed(){try{return !!localStorage.getItem(K)}catch(e){return false}}
+  function show(){var b=document.getElementById('pwaInstall');if(b)b.style.display=(dp&&!standalone()&&!dismissed())?'block':'none'}
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;show()});
+  window.addEventListener('appinstalled',function(){dp=null;show()});
+  window.pwaInstall=function(){if(!dp)return;dp.prompt();dp.userChoice.then(function(){dp=null;show()},function(){})};
+  window.pwaDismiss=function(){try{localStorage.setItem(K,'1')}catch(e){}show()};
+  if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});
+})();
+</script>
 </body>
         </html>
