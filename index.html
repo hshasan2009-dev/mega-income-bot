@@ -49,11 +49,11 @@
         {id:'ocean',name:'ওশান ব্লু',tag:'উজ্জ্বল নীল',o:{bg:'#06142a',bar:'#0c2650',card:'#0a1f40',bd:'#3d9bff',acc:'#9fd0ff',btn:'#6fb7ff',btn2:'#1f6fd6',btnTxt:'#04152e',txt:'#eef6ff',sub:'#a9c3e3'}},
         {id:'lime',name:'নিয়ন লাইম',tag:'ঝলমলে সবুজ',o:{bg:'#0a1a0c',bar:'#12351a',card:'#0f2713',bd:'#5ee07a',acc:'#b4ffc4',btn:'#7ff09a',btn2:'#1fa84a',btnTxt:'#04200b',txt:'#effff2',sub:'#aed6b7'}},
         {id:'cyan',name:'আইস সায়ান',tag:'হালকা নীলচে সবুজ',o:{bg:'#061a20',bar:'#0c3640',card:'#0a2a33',bd:'#36d1e0',acc:'#9ff3ff',btn:'#5eeaf7',btn2:'#0e9bb0',btnTxt:'#03222a',txt:'#eafcff',sub:'#a3d0d6'}},
-        {id:'white',name:'হোয়াইট ক্লিন ব্লু',tag:'সাদা ব্যাকগ্রাউন্ড ও নীল বাটন',vars:{
-          '--bg':'#ffffff','--bg2':'#ffffff','--bg3':'#f4f7fd','--bar':'#ffffff','--card':'#ffffff','--card2':'#f6f9ff',
-          '--bd':'#dfe6f3','--bd2':'#c9d5ea','--bdrgb':'223,230,243','--acc':'#1a5fe0','--accrgb':'26,95,224',
-          '--btn':'#141f3f','--btn2':'#1a68f0','--btnTxt':'#ffffff','--gift1':'#141f3f','--gift2':'#1a68f0','--giftTxt':'#ffffff',
-          '--txt':'#16223f','--txt2':'#2a3860','--sub':'#6b7a99','--sub2':'#8593b0','--navAct':'#1a68f0','--off':'#1a68f0','--sup':'#c0392b'}}
+        {id:'white',name:'এমারেল্ড হোয়াইট',tag:'সাদা ব্যাকগ্রাউন্ড ও গাঢ় সবুজ কার্ড',vars:{
+          '--bg':'#f5f8fc','--bg2':'#f5f8fc','--bg3':'#edf3f8','--bar':'#ffffff','--card':'#ffffff','--card2':'#f1f7f5',
+          '--bd':'#e1e8f0','--bd2':'#c9d6e3','--bdrgb':'225,232,240','--acc':'#0b8a66','--accrgb':'16,157,116',
+          '--btn':'#12b886','--btn2':'#0a6b4f','--btnTxt':'#ffffff','--gift1':'#12b886','--gift2':'#0a6b4f','--giftTxt':'#ffffff',
+          '--txt':'#10213a','--txt2':'#25384f','--sub':'#66758c','--sub2':'#8794a8','--navAct':'#0b8a66','--off':'#0b8a66','--sup':'#c0392b'}}
       ];
       T.forEach(function(x){ if(!x.vars) x.vars=build(x.o); });
       var all=T.reduce(function(a,x){Object.keys(x.vars).forEach(function(k){a[k]=1});return a;},{});
@@ -1348,26 +1348,42 @@
         #task .card.tk-gone { display: none !important; }
 
 
-        /* ===== থিম: হোয়াইট ক্লিন ব্লু (শুধু এই থিম চালু থাকলে কাজ করে) ===== */
-        html[data-site-theme="white"] body { background:#ffffff; }
+        /* ===== থিম: এমারেল্ড হোয়াইট (শুধু এই থিম চালু থাকলে কাজ করে) ===== */
+        html[data-site-theme="white"] body { background:#f5f8fc; }
         html[data-site-theme="white"] body::before { display:none !important; }
         html[data-site-theme="white"] .card,
-        html[data-site-theme="white"] .balance-card,
         html[data-site-theme="white"] .auth-card {
-            background:#ffffff; border:1px solid #e3e9f5; border-radius:18px;
-            box-shadow:0 6px 18px rgba(40,70,130,.08);
+            background:#ffffff; border:1px solid #e1e8f0; border-radius:20px;
+            box-shadow:0 4px 14px rgba(20,60,50,.06);
         }
+        html[data-site-theme="white"] .balance-card {
+            position:relative; overflow:hidden; border:none; border-radius:26px; padding:26px 20px;
+            background:linear-gradient(160deg,#0f7a5b 0%,#075a43 50%,#043c2d 100%);
+            box-shadow:0 14px 30px rgba(4,60,45,.28);
+        }
+        html[data-site-theme="white"] .balance-card::after {
+            content:""; position:absolute; right:-48px; top:-62px; width:170px; height:170px;
+            border-radius:50%; background:rgba(255,255,255,.07); pointer-events:none;
+        }
+        html[data-site-theme="white"] .balance-title { color:rgba(255,255,255,.78); }
+        html[data-site-theme="white"] .balance-amount { color:#ffffff; }
         html[data-site-theme="white"] .btn:not(:disabled):not(.copy-done),
         html[data-site-theme="white"] .auth-btn:not(:disabled) {
-            background:linear-gradient(90deg,#141f3f 0%,#1a68f0 100%) !important;
-            color:#ffffff !important; border:none !important; border-radius:20px !important;
-            box-shadow:0 10px 22px rgba(26,104,240,.25) !important; font-weight:700;
+            background:linear-gradient(135deg,#12b886 0%,#0a6b4f 100%) !important;
+            color:#ffffff !important; border:none !important; border-radius:18px !important;
+            box-shadow:0 10px 22px rgba(16,157,116,.28) !important; font-weight:700;
         }
         html[data-site-theme="white"] .btn:not(:disabled):not(.copy-done) .hb-ic { color:#ffffff; }
-        html[data-site-theme="white"] .navbar { background:#ffffff; border-top:1px solid #e3e9f5; box-shadow:0 -6px 18px rgba(40,70,130,.07); }
-        html[data-site-theme="white"] .nav-item.active { background:rgba(26,104,240,.1); }
-        html[data-site-theme="white"] .th-card.sel { border-color:#1a68f0; box-shadow:0 0 0 2px rgba(26,104,240,.25); }
-        html[data-site-theme="white"] .th-card .ck { background:#1a68f0; color:#ffffff; }
+        html[data-site-theme="white"] .btn.btn-official:not(:disabled):not(.copy-done) {
+            background:#ffffff !important; color:#0b6e51 !important; border:1.5px solid #bfe8d6 !important;
+            box-shadow:0 4px 12px rgba(20,60,50,.07) !important;
+        }
+        html[data-site-theme="white"] .btn.btn-official:not(:disabled):not(.copy-done) .hb-ic { color:#0b8a66; }
+        html[data-site-theme="white"] .navbar { background:#ffffff; border-top:1px solid #e1e8f0; box-shadow:0 -6px 18px rgba(20,60,50,.07); }
+        html[data-site-theme="white"] .nav-item.active { background:rgba(16,157,116,.12); }
+        html[data-site-theme="white"] #task .card { --c:#9af0d0; --c2:#0f9d74; }
+        html[data-site-theme="white"] .th-card.sel { border-color:#0f9d74; box-shadow:0 0 0 2px rgba(16,157,116,.25); }
+        html[data-site-theme="white"] .th-card .ck { background:#0f9d74; color:#ffffff; }
 
         /* lighter glow: drop the heavy blurred second layer, keep the rotating ring */
         .gb::after, #task .card:not(.disabled-task)::after { display: none !important; }
