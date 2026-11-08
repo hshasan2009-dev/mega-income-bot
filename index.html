@@ -1755,6 +1755,18 @@
         </div>
     </div>
 
+    <!-- অ্যাপ ইনস্টল বোনাস পপ-আপ (বাকি পপ-আপের মতোই ডিজাইন) -->
+    <div id="appBonusPopup" class="custom-popup-overlay">
+        <div class="custom-popup-box">
+            <button class="custom-popup-close" onclick="closeAppBonus()">✕</button>
+            <div class="custom-popup-site">Mega Income Pro</div>
+            <div class="custom-popup-logo"><img src="/icon-192.png" alt="Mega Income"></div>
+            <h3 class="custom-popup-title">অ্যাপ ইনস্টল বোনাস</h3>
+            <p class="custom-popup-desc">আপনি অ্যাপ ইনস্টল করার জন্য ৫ টাকা রিওয়ার্ড পেয়েছেন🎉</p>
+            <button class="custom-popup-btn" onclick="closeAppBonus()">ঠিক আছে ›</button>
+        </div>
+    </div>
+
     <div id="authLoadingOverlay">
         <div class="ld-wrap"><div class="spinner-ring"></div><img class="ld-logo" src="/icon-192.png" alt=""></div>
         <div class="loading-title-text">Mega Income</div>
@@ -1860,7 +1872,7 @@
     <div class="container">
 
         <div id="home" class="page active">
-            <div id="pwaInstall" style="display:none"><div class="pwa-card"><img src="/icon-192.png" alt=""><div class="pwa-t"><b>Mega Income অ্যাপ</b><span>ফোনে ইনস্টল করুন, সহজে খুলুন</span></div><button type="button" onclick="pwaInstall()">ইনস্টল</button><i onclick="pwaDismiss()">✕</i></div></div>
+            <div id="pwaInstall" style="display:none"><div class="pwa-card"><img src="/icon-192.png" alt=""><div class="pwa-t"><b>Mega Income অ্যাপ</b><span>ফোনে ইনস্টল করুন, সহজে খুলুন। অ্যাপ ইনস্টল করে বোনাস নিন।</span></div><button type="button" onclick="pwaInstall()">ইনস্টল</button><i onclick="pwaDismiss()">✕</i></div></div>
             <div id="acBanner" style="display:none"></div>
             <div class="balance-card">
                 <div class="balance-title">TOTAL BALANCE</div>
@@ -7996,7 +8008,7 @@ function saveVideoLink() {
 (function(){
   var dp=null,K='pwaDismissedAt',APK='https://github.com/hshasan2009-dev/mega-income-app/releases/latest/download/Mega-Income.apk';
   function standalone(){return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}
-  function dismissed(){try{var t=+localStorage.getItem(K)||0;return t>0&&Date.now()-t<2*86400000}catch(e){return false}}
+  function dismissed(){try{var t=+localStorage.getItem(K)||0;return t>0&&Date.now()-t<30*60000}catch(e){return false}}
   function isAndroid(){return /android/i.test(navigator.userAgent)}
   function inApp(){return /; wv\)/i.test(navigator.userAgent)||/MegaIncomeApp/i.test(navigator.userAgent)}
   function show(){var b=document.getElementById('pwaInstall');if(b)b.style.display=(!standalone()&&!inApp()&&!dismissed())?'block':'none'}
@@ -8020,6 +8032,35 @@ function saveVideoLink() {
       window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});
     }
   }
+})();
+</script>
+<script>
+(function(){
+  var BONUS=5,done={};
+  function inApp(){return /; wv\)/i.test(navigator.userAgent)||/MegaIncomeApp/i.test(navigator.userAgent)}
+  function ready(){try{
+    if(typeof db==='undefined'||typeof currentUserKey==='undefined'||!currentUserKey)return false;
+    var lo=document.getElementById('authLoadingOverlay');
+    return !(lo&&lo.style.display==='flex');
+  }catch(e){return false}}
+  window.closeAppBonus=function(){var p=document.getElementById('appBonusPopup');if(p)p.style.display='none'};
+  function pop(){var p=document.getElementById('appBonusPopup');if(p)p.style.display='flex'}
+  function claim(){
+    try{
+      if(!inApp()||!ready())return;
+      var k=currentUserKey;
+      if(done[k])return;done[k]=1;
+      db.ref('app_bonus/'+k).transaction(function(c){return c===null?{amount:BONUS,at:Date.now()}:undefined},function(err,committed){
+        if(err){done[k]=0;return}
+        if(!committed)return;
+        db.ref('users/'+k+'/balance').transaction(function(b){return (parseFloat(b)||0)+BONUS},function(e2,ok){
+          if(e2||!ok){try{db.ref('app_bonus/'+k).remove()}catch(x){}done[k]=0;return}
+          pop();
+        });
+      });
+    }catch(e){}
+  }
+  setInterval(claim,1500);
 })();
 </script>
 </body>
