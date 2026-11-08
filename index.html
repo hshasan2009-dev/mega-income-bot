@@ -9,6 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Mega Income">
     <link rel="icon" type="image/png" href="/icon-192.png">
+    <link rel="preload" as="image" href="/icon-192.png">
     <link rel="apple-touch-icon" href="/icon-192.png">
     <meta name="6a97888e-site-verification" content="cad8c97911212b690963aa90040d677b">
     <title>Mega Income Pro</title>
@@ -1682,6 +1683,14 @@
 
         /* রেফার লিংক কপি বাটন — কপি হলে বাটনেই ফিডব্যাক */
         .btn.copy-done{background:#2ecc71!important;color:#06210f!important;border-color:#2ecc71!important;transition:background .25s ease,color .25s ease}
+
+        /* logo: head এ রাখা হয়েছে যাতে পেজ পুরো লোড হওয়ার আগেও লোগো ঠিক সাইজে দেখায় */
+        .auth-logo,.custom-popup-logo{width:84px !important;height:84px !important;background:none !important;border:none !important;border-radius:22% !important;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.35) !important}
+        .auth-logo img,.custom-popup-logo img{width:100%;height:100%;object-fit:cover;display:block}
+        .ld-wrap{position:relative;width:132px;height:132px;margin-bottom:22px;display:flex;align-items:center;justify-content:center}
+        .ld-wrap .spinner-ring{position:absolute;top:0;left:0;width:132px;height:132px;margin:0}
+        .ld-logo{width:88px;height:88px;border-radius:22px;object-fit:cover;display:block;animation:ldPulse 1.6s ease-in-out infinite}
+        @keyframes ldPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 </style>
 <style>
 /* ===== রেজিস্ট্রেশন টাস্ক নতুন ডিজাইন ===== */
@@ -1747,7 +1756,7 @@
     </div>
 
     <div id="authLoadingOverlay">
-        <div class="spinner-ring"></div>
+        <div class="ld-wrap"><div class="spinner-ring"></div><img class="ld-logo" src="/icon-192.png" alt=""></div>
         <div class="loading-title-text">Mega Income</div>
     </div>
 
