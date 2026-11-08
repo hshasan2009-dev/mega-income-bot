@@ -8003,7 +8003,14 @@ function saveVideoLink() {
   };
   window.pwaDismiss=function(){try{localStorage.setItem(K,String(Date.now()))}catch(e){}show()};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',show);else show();
-  if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});
+  if('serviceWorker' in navigator){
+    if(inApp()){
+      navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})}).catch(function(){});
+      if(window.caches)caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})}).catch(function(){});
+    }else{
+      window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});
+    }
+  }
 })();
 </script>
 </body>
