@@ -1,0 +1,361 @@
+name: Build Mega Income App
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: অ্যাপের ফাইল তৈরি
+        run: |
+          cat > settings.gradle <<'MIEOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "MegaIncome"
+          include ':app'
+          MIEOF
+          cat > build.gradle <<'MIEOF'
+          plugins {
+              id 'com.android.application' version '8.5.2' apply false
+          }
+          MIEOF
+          mkdir -p app
+          cat > app/build.gradle <<'MIEOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          def vcode = (project.findProperty('vc') ?: '1').toString().toInteger()
+          def vname = (project.findProperty('vn') ?: '1.0').toString()
+
+          android {
+              namespace 'com.megaincome.app'
+              compileSdk 34
+
+              defaultConfig {
+                  applicationId 'com.megaincome.app'
+                  minSdk 23
+                  targetSdk 34
+                  versionCode vcode
+                  versionName vname
+              }
+
+              signingConfigs {
+                  release {
+                      storeFile file('megaincome.p12')
+                      storeType 'pkcs12'
+                      storePassword System.getenv('KS_PASS')
+                      keyAlias 'megaincome'
+                      keyPassword System.getenv('KS_PASS')
+                  }
+              }
+
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                      signingConfig signingConfigs.release
+                  }
+              }
+
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+          MIEOF
+          mkdir -p app/src/main
+          cat > app/src/main/AndroidManifest.xml <<'MIEOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+              <application
+                  android:allowBackup="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:label="Mega Income"
+                  android:theme="@style/AppTheme"
+                  android:usesCleartextTraffic="false">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode"
+                      android:exported="true"
+                      android:screenOrientation="portrait"
+                      android:windowSoftInputMode="adjustResize">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          MIEOF
+          mkdir -p app/src/main/res/values
+          cat > app/src/main/res/values/app.xml <<'MIEOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="bg">#0B1220</color>
+              <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+                  <item name="android:windowBackground">@color/bg</item>
+                  <item name="android:statusBarColor">@color/bg</item>
+                  <item name="android:navigationBarColor">@color/bg</item>
+              </style>
+          </resources>
+          MIEOF
+          mkdir -p app/src/main/java/com/megaincome/app
+          cat > app/src/main/java/com/megaincome/app/MainActivity.java <<'MIEOF'
+          package com.megaincome.app;
+
+          import android.app.Activity;
+          import android.app.AlertDialog;
+          import android.content.Intent;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.webkit.CookieManager;
+          import android.webkit.ValueCallback;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebResourceError;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import android.widget.Toast;
+
+          import org.json.JSONObject;
+
+          import java.io.BufferedReader;
+          import java.io.InputStreamReader;
+          import java.net.HttpURLConnection;
+          import java.net.URL;
+
+          public class MainActivity extends Activity {
+
+              static final String HOST = "mega-income-pro1.vercel.app";
+              static final String SITE = "https://" + HOST + "/";
+              static final int FILE_REQ = 1001;
+
+              WebView web;
+              ValueCallback<Uri[]> fileCb;
+              long lastBack = 0;
+
+              @Override
+              protected void onCreate(Bundle saved) {
+                  super.onCreate(saved);
+                  web = new WebView(this);
+                  setContentView(web);
+
+                  WebSettings s = web.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  s.setDatabaseEnabled(true);
+                  s.setMediaPlaybackRequiresUserGesture(false);
+                  s.setAllowFileAccess(false);
+                  s.setUserAgentString(s.getUserAgentString() + " MegaIncomeApp");
+                  CookieManager.getInstance().setAcceptCookie(true);
+
+                  web.setWebViewClient(new WebViewClient() {
+                      @Override
+                      public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
+                          if (!r.isForMainFrame()) return false;
+                          Uri u = r.getUrl();
+                          String sc = u.getScheme();
+                          if (("http".equals(sc) || "https".equals(sc)) && HOST.equals(u.getHost())) return false;
+                          openExternal(u);
+                          return true;
+                      }
+
+                      @Override
+                      public void onReceivedError(WebView v, WebResourceRequest r, WebResourceError e) {
+                          if (r.isForMainFrame()) showOffline();
+                      }
+                  });
+
+                  web.setWebChromeClient(new WebChromeClient() {
+                      @Override
+                      public boolean onShowFileChooser(WebView v, ValueCallback<Uri[]> cb, FileChooserParams p) {
+                          if (fileCb != null) fileCb.onReceiveValue(null);
+                          fileCb = cb;
+                          try {
+                              startActivityForResult(p.createIntent(), FILE_REQ);
+                          } catch (Exception e) {
+                              fileCb = null;
+                              return false;
+                          }
+                          return true;
+                      }
+                  });
+
+                  web.setDownloadListener((url, ua, cd, mime, len) -> openExternal(Uri.parse(url)));
+
+                  web.loadUrl(SITE);
+                  checkUpdate();
+              }
+
+              void openExternal(Uri u) {
+                  try {
+                      Intent i;
+                      if ("intent".equals(u.getScheme())) {
+                          i = Intent.parseUri(u.toString(), Intent.URI_INTENT_SCHEME);
+                      } else {
+                          i = new Intent(Intent.ACTION_VIEW, u);
+                      }
+                      i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                      startActivity(i);
+                  } catch (Exception e) {
+                      Toast.makeText(this, "এই লিংক খোলা যায়নি", Toast.LENGTH_SHORT).show();
+                  }
+              }
+
+              void showOffline() {
+                  String html = "<html><head><meta name='viewport' content='width=device-width,initial-scale=1'></head>"
+                          + "<body style='margin:0;background:#0b1220;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center'>"
+                          + "<div style='padding:24px'><div style='font-size:46px'>&#128225;</div><h3>ইন্টারনেট সংযোগ নেই</h3>"
+                          + "<p style='color:#b9c0d0'>সংযোগ চেক করে আবার চেষ্টা করুন</p>"
+                          + "<button onclick=\"location.href='" + SITE + "'\" style='background:#e8c872;border:0;border-radius:12px;padding:12px 26px;font-size:16px;font-weight:700'>আবার চেষ্টা করুন</button>"
+                          + "</div></body></html>";
+                  web.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
+              }
+
+              void checkUpdate() {
+                  new Thread(() -> {
+                      try {
+                          HttpURLConnection c = (HttpURLConnection) new URL(SITE + "app-version.json?t=" + System.currentTimeMillis()).openConnection();
+                          c.setConnectTimeout(8000);
+                          c.setReadTimeout(8000);
+                          if (c.getResponseCode() != 200) return;
+                          BufferedReader r = new BufferedReader(new InputStreamReader(c.getInputStream(), "UTF-8"));
+                          StringBuilder sb = new StringBuilder();
+                          String ln;
+                          while ((ln = r.readLine()) != null) sb.append(ln);
+                          r.close();
+                          JSONObject j = new JSONObject(sb.toString());
+                          final int latest = j.optInt("versionCode", 0);
+                          final String url = j.optString("apkUrl", "");
+                          final String msg = j.optString("message", "অ্যাপের নতুন ভার্সন এসেছে।");
+                          final boolean force = j.optBoolean("force", false);
+                          int cur = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+                          if (latest > cur && url.length() > 0) {
+                              runOnUiThread(() -> showUpdate(url, msg, force));
+                          }
+                      } catch (Exception e) {
+                          // আপডেট চেক ব্যর্থ হলে চুপচাপ বাদ
+                      }
+                  }).start();
+              }
+
+              void showUpdate(String url, String msg, boolean force) {
+                  if (isFinishing()) return;
+                  AlertDialog.Builder d = new AlertDialog.Builder(this)
+                          .setTitle("নতুন আপডেট এসেছে")
+                          .setMessage(msg)
+                          .setCancelable(!force)
+                          .setPositiveButton("আপডেট করুন", (x, y) -> {
+                              openExternal(Uri.parse(url));
+                              if (force) finish();
+                          });
+                  if (!force) d.setNegativeButton("পরে", null);
+                  d.show();
+              }
+
+              @Override
+              protected void onActivityResult(int rq, int rs, Intent data) {
+                  if (rq == FILE_REQ && fileCb != null) {
+                      fileCb.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(rs, data));
+                      fileCb = null;
+                  } else {
+                      super.onActivityResult(rq, rs, data);
+                  }
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (web.canGoBack()) {
+                      web.goBack();
+                  } else if (System.currentTimeMillis() - lastBack < 2000) {
+                      super.onBackPressed();
+                  } else {
+                      lastBack = System.currentTimeMillis();
+                      Toast.makeText(this, "বের হতে আবার চাপুন", Toast.LENGTH_SHORT).show();
+                  }
+              }
+
+              @Override
+              protected void onResume() {
+                  super.onResume();
+                  web.onResume();
+              }
+
+              @Override
+              protected void onPause() {
+                  web.onPause();
+                  super.onPause();
+              }
+
+              @Override
+              protected void onDestroy() {
+                  if (web != null) web.destroy();
+                  super.onDestroy();
+              }
+          }
+          MIEOF
+
+      - name: আইকন বানানো (সাইটের লোগো থেকে)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y imagemagick
+          curl -fsSL https://mega-income-pro1.vercel.app/icon-512.png -o icon.png
+          for s in "mdpi 48" "hdpi 72" "xhdpi 96" "xxhdpi 144" "xxxhdpi 192"; do
+            set -- $s
+            mkdir -p app/src/main/res/mipmap-$1
+            convert icon.png -resize $2x$2 app/src/main/res/mipmap-$1/ic_launcher.png
+          done
+
+      - name: সাইনিং কি
+        env:
+          KS_B64: ${{ secrets.KS_B64 }}
+        run: echo "$KS_B64" | base64 -d > app/megaincome.p12
+
+      - name: APK বিল্ড
+        env:
+          KS_PASS: ${{ secrets.KS_PASS }}
+        run: gradle --no-daemon assembleRelease -Pvc=${{ github.run_number }} -Pvn=1.0.${{ github.run_number }}
+
+      - name: নাম ঠিক করা
+        run: cp app/build/outputs/apk/release/app-release.apk Mega-Income.apk
+
+      - name: ডাউনলোড লিংক (Release) তৈরি
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Mega Income v${{ github.run_number }}
+          files: Mega-Income.apk
+          make_latest: true
