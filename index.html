@@ -1838,7 +1838,7 @@
     </div>
 
     <div id="bannedUserOverlay" class="modal-overlay" style="z-index: 999999; background: rgba(10, 5, 5, 0.98); align-items: center; justify-content: center;">
-        <button class="logout-btn-top logout-fixed-top" onclick="handleLogout()">Log Out</button>
+        <div class="top-title-bar ov-bar"><span class="mi-hd"><img src="/icon-192.png" alt="">Mega Income Pro</span><button class="logout-btn-top" style="display:block" onclick="handleLogout()">Log Out</button></div>
         <div style="background: linear-gradient(145deg, #2c0b0e, #1a0507); border: 2px solid #e74c3c; border-radius: 16px; padding: 25px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4); margin: auto;">
             <div style="font-size: 50px; margin-bottom: 10px;">🚫</div>
             <h2 style="color: #ff4d4d; font-size: 20px; margin-bottom: 12px; font-weight: bold;">অ্যাকাউন্ট ব্যান করা হয়েছে!</h2>
@@ -1849,7 +1849,7 @@
 
 
     <div id="maintenanceOverlay">
-        <button class="logout-btn-top logout-fixed-top" onclick="handleLogout()">Log Out</button>
+        <div class="top-title-bar ov-bar"><span class="mi-hd"><img src="/icon-192.png" alt="">Mega Income Pro</span><button class="logout-btn-top" style="display:block" onclick="handleLogout()">Log Out</button></div>
         <div class="mnt-brand">Mega Income Pro</div>
         <div class="mnt-card"><div class="mnt-in">
             <div class="mnt-orb"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -1874,6 +1874,8 @@
             <span class="tt-user" id="ttUser"><i class="tt-dot" id="ttDot" style="background:#7f8c8d"></i><span class="tt-name" id="ttName"></span></span>
         </div>
     </div>
+
+    <div id="ttSpacer"></div>
 
     <div class="container">
 
@@ -2899,7 +2901,7 @@
             
             <div class="input-group">
                 <label style="color:var(--acc); font-weight:bold;">মেসেজ ও লিংক টেক্সট:</label>
-                <textarea id="admin-wa-msg" class="input-control" rows="3" placeholder="Join now: https://t.me/MegaIncomeReal_bot/app?startapp=8049465500"></textarea>
+                <textarea id="admin-wa-msg" class="input-control" rows="3" placeholder="Join now: https://mega-income-pro1.vercel.app/?ref=8049465500"></textarea>
             </div>
             
             <button class="btn btn-whatsapp" onclick="saveWaTaskSettings()" style="margin-bottom:15px;">💾 মেসেজ সেভ করুন</button>
@@ -3349,7 +3351,7 @@
         let searchedTargetUserId = null;
         let searchedEditTargetUserKey = null;
 
-        let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://t.me/MegaIncomeReal_bot/app?startapp=8049465500";
+        let waMessageText = "নতুন ইনকাম সাইট\nসম্পুর্ন ফ্রি পেমেন্ট✅\n১০০% ভেরিফাইড✅\nhttps://mega-income-pro1.vercel.app/?ref=8049465500";
         let waCountrySettings = { BD: true, US: false, MY: false, BR: false, GB: false, SA: false, AE: false, IN: false };
 
         let waTotalIncome = 0.00;
@@ -3847,7 +3849,7 @@
                         userReferralCode = val.refCode;
                     }
 
-                    referLink = `https://t.me/MegaIncomeReal_bot/app?startapp=${userReferralCode}`;
+                    referLink = `https://mega-income-pro1.vercel.app/?ref=${userReferralCode}`;
                     let refInput = document.getElementById("ref-link");
                     if(refInput) refInput.value = referLink;
                     let refCodeInput = document.getElementById("user-ref-code");
@@ -5946,31 +5948,43 @@
         function backfillActiveRefs() {
             if (ausActiveDone || !ausWLoaded || !Object.keys(ausUsers).length) return;
             ausActiveDone = true;
-            let codeToKey = {}, counts = {}, upd = {};
-            Object.keys(ausUsers).forEach((k) => { let c = (ausUsers[k] || {}).refCode; if (c) codeToKey[c] = k; });
-            Object.keys(ausUsers).forEach((k) => {
-                let u = ausUsers[k] || {};
-                if (!u.referrer || !codeToKey[u.referrer]) return;
-                let income = parseFloat(u.balance || 0) + (ausWithdrawn[k] || 0);
-                let active = (u.refActive === true) || income >= ACTIVE_REF_MIN;
-                if (!active) return;
-                if (u.refActive !== true) upd[k + '/refActive'] = true;
-                let rk = codeToKey[u.referrer];
-                counts[rk] = (counts[rk] || 0) + 1;
-            });
-            let base = nowSec(), i = 0;
-            Object.keys(ausUsers).forEach((k) => {
-                let u = ausUsers[k] || {};
-                let want = counts[k] || 0;
-                let have = parseInt(u.activeRefCount || 0);
-                if (want > have || !refScoreMatches(u.activeRefScore, have)) {
-                    let n = Math.max(want, have);
-                    let ts = u.joinedAt ? Math.floor(Number(u.joinedAt) / 1000) : (base + i++);
-                    upd[k + '/activeRefCount'] = n;
-                    upd[k + '/activeRefScore'] = calcRefScore(n, ts);
-                }
-            });
-            if (Object.keys(upd).length) db.ref('users').update(upd).catch(() => {});
+            db.ref('app_bonus').once('value').then((bs) => {
+                let bonus = bs.val() || {};
+                let codeToKey = {}, counts = {}, dec = {}, upd = {};
+                Object.keys(ausUsers).forEach((k) => { let c = (ausUsers[k] || {}).refCode; if (c) codeToKey[c] = k; });
+                Object.keys(ausUsers).forEach((k) => {
+                    let u = ausUsers[k] || {};
+                    if (!u.referrer || !codeToKey[u.referrer]) return;
+                    let rk = codeToKey[u.referrer];
+                    /* শুধু টাস্ক থেকে আয় (refEarned) গণনা হবে। ফ্রি বোনাস/ব্যালেন্স নয় */
+                    let valid = parseFloat(u.refEarned || 0) >= ACTIVE_REF_MIN;
+                    let tasksDone = parseInt(u.completedTasksCount || 0) > 0;
+                    if (u.refActive === true && !valid && !tasksDone && bonus[k]) {
+                        /* অ্যাপের ফ্রি বোনাসের কারণে ভুলে এক্টিভ ধরা হয়েছিল: সরানো হচ্ছে */
+                        upd[k + '/refActive'] = false;
+                        dec[rk] = (dec[rk] || 0) + 1;
+                        return;
+                    }
+                    let active = (u.refActive === true) || valid;
+                    if (!active) return;
+                    if (u.refActive !== true) upd[k + '/refActive'] = true;
+                    counts[rk] = (counts[rk] || 0) + 1;
+                });
+                let base = nowSec(), i = 0;
+                Object.keys(ausUsers).forEach((k) => {
+                    let u = ausUsers[k] || {};
+                    let want = counts[k] || 0;
+                    let dbHave = parseInt(u.activeRefCount || 0);
+                    let have = Math.max(0, dbHave - (dec[k] || 0));
+                    if (want > have || have !== dbHave || !refScoreMatches(u.activeRefScore, dbHave)) {
+                        let n = Math.max(want, have);
+                        let ts = u.joinedAt ? Math.floor(Number(u.joinedAt) / 1000) : (base + i++);
+                        upd[k + '/activeRefCount'] = n;
+                        upd[k + '/activeRefScore'] = calcRefScore(n, ts);
+                    }
+                });
+                if (Object.keys(upd).length) db.ref('users').update(upd).catch(() => {});
+            }).catch(() => { ausActiveDone = false; });
         }
 
         function listenAdminUserStats() {
@@ -8159,6 +8173,22 @@ function saveVideoLink() {
   }
   setInterval(syncToken, 3000);
   syncToken();
+})();
+</script>
+<style>
+.top-title-bar{position:fixed;top:0;left:0;right:0;z-index:1000}
+#ttSpacer{height:var(--tth,64px);flex:none}
+.top-title-bar.ov-bar{position:absolute;z-index:5}
+</style>
+<script>
+(function(){
+  var h=document.querySelector('.top-title-bar:not(.ov-bar)');
+  if(!h)return;
+  function set(){var v=h.offsetHeight;if(v)document.documentElement.style.setProperty('--tth',v+'px')}
+  set();
+  window.addEventListener('resize',set);
+  window.addEventListener('load',set);
+  if(window.ResizeObserver)new ResizeObserver(set).observe(h);else setInterval(set,1000);
 })();
 </script>
 </body>
