@@ -4747,6 +4747,7 @@
         function adminApprovePin(key, targetUserId, reward) {
             let actualReward = parseFloat(reward || 0);
             db.ref('pin_submits/' + key).update({ status: "Success" }).then(() => {
+                window.mpNotify && mpNotify('pin', key);
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + actualReward);
                 db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
                 
@@ -4767,18 +4768,21 @@
 
         function adminRejectPin(key) {
             db.ref('pin_submits/' + key).update({ status: "Rejected" }).then(() => {
+                window.mpNotify && mpNotify('pin', key);
                 alert("❌ পিন সাবমিট প্রুফ রিজেক্ট করা হয়েছে!");
             });
         }
 
         function adminApproveWithdraw(key) {
             db.ref('withdrawals/' + key).update({ status: "Success" }).then(() => {
+                window.mpNotify && mpNotify('wd', key);
                 alert("✅ উইথড্র রিকোয়েস্ট এপ্রুভ করা হয়েছে!");
             });
         }
 
         function adminRejectWithdraw(key, targetUserId, amount) {
             db.ref('withdrawals/' + key).update({ status: "Rejected" }).then(() => {
+                window.mpNotify && mpNotify('wd', key);
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + parseFloat(amount));
                 alert("❌ উইথড্র রিজেক্ট করা হয়েছে!");
             });
@@ -4787,6 +4791,7 @@
         function adminApproveGmail(key, targetUserId) {
             let gmailAmount = parseFloat(dynamicTaskRewards.gmailTask || 15.00);
             db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount }).then(() => {
+                window.mpNotify && mpNotify('gm', key);
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + gmailAmount);
                 db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
                 
@@ -4807,6 +4812,7 @@
 
         function adminRejectGmail(key) {
             db.ref('gmail_submits/' + key).update({ status: "Rejected" }).then(() => {
+                window.mpNotify && mpNotify('gm', key);
                 alert("❌ জিমেইল টাস্ক রিজেক্ট করা হয়েছে!");
             });
         }
@@ -4814,6 +4820,7 @@
         function adminApproveFacebook(key, targetUserId) {
             let fbAmount = parseFloat(dynamicTaskRewards.facebookTask || 5.00);
             db.ref('facebook_submits/' + key).update({ status: "Success", amount: fbAmount }).then(() => {
+                window.mpNotify && mpNotify('fb', key);
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + fbAmount);
                 db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
                 
@@ -4834,6 +4841,7 @@
 
         function adminRejectFacebook(key) {
             db.ref('facebook_submits/' + key).update({ status: "Rejected" }).then(() => {
+                window.mpNotify && mpNotify('fb', key);
                 alert("❌ ফেসবুক সেল রিকোয়েস্ট রিজেক্ট করা হয়েছে!");
             });
         }
@@ -5269,7 +5277,7 @@
                 status: "Pending"
             };
 
-            db.ref('pin_submits/' + pId).set(pinObj);
+            db.ref('pin_submits/' + pId).set(pinObj).then(function(){ window.mpNotify && mpNotify('pin', pId); });
 
             submitBtn.disabled = false;
             submitBtn.innerText = "🚀 প্রুফ জমা দিন";
@@ -6614,7 +6622,7 @@
                         status: "Pending"
                     };
 
-                    db.ref('withdrawals/' + wdId).set(withdrawObj);
+                    db.ref('withdrawals/' + wdId).set(withdrawObj).then(function(){ window.mpNotify && mpNotify('wd', wdId); });
 
                     alert(`✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!`);
 
@@ -6668,7 +6676,7 @@
                     status: "Pending" 
                 };
 
-                db.ref('gmail_submits/' + gId).set(gmailObj);
+                db.ref('gmail_submits/' + gId).set(gmailObj).then(function(){ window.mpNotify && mpNotify('gm', gId); });
                 alert("অনুরোধটি সফলভাবে সাবমিট হয়েছে!"); 
                 if (gmailInput) gmailInput.value = "";
             });
@@ -6724,6 +6732,7 @@
                     };
 
                     db.ref('facebook_submits/' + fbId).set(fbObj).then(() => {
+                        window.mpNotify && mpNotify('fb', fbId);
                         alert("✅ ফেসবুক সেল রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে!");
                         if (uidInput) uidInput.value = "";
                         if (cookiesInput) cookiesInput.value = "";
@@ -7635,7 +7644,7 @@ function saveVideoLink() {
       var id=db.ref('sp_deposits').push().key,ts=Date.now(),up={};
       up['sp_deposits/'+id]={id:id,uid:uid(),name:uname,method:m,amount:amt,trx:v,status:'pending',ts:ts};
       up['sp_udeps/'+uid()+'/'+id]={amount:amt,method:m,trx:v,status:'pending',ts:ts};
-      db.ref().update(up).then(function(){busy=false;selAmt=0;payM='';spGo('add');alert('✅ রিকোয়েস্ট জমা হয়েছে। এডমিন যাচাই করে টাকা যোগ করে দেবেন।')}).catch(function(){db.ref('sp_trx_used/'+v).remove();busy=false;alert('জমা দেওয়া যায়নি, আবার চেষ্টা করুন')});
+      db.ref().update(up).then(function(){window.mpNotify&&mpNotify('dep',id);busy=false;selAmt=0;payM='';spGo('add');alert('✅ রিকোয়েস্ট জমা হয়েছে। এডমিন যাচাই করে টাকা যোগ করে দেবেন।')}).catch(function(){db.ref('sp_trx_used/'+v).remove();busy=false;alert('জমা দেওয়া যায়নি, আবার চেষ্টা করুন')});
     });
   };
   /* ---------- এডমিন ---------- */
@@ -7645,6 +7654,7 @@ function saveVideoLink() {
     var d=ADEPS[id];if(!d||d.status!=='pending')return;
     db.ref('sp_deposits/'+id+'/status').transaction(function(s){return s==='pending'?'approved':undefined},function(err,ok){
       if(err||!ok){alert('এই রিকোয়েস্ট আগেই প্রসেস হয়েছে');return}
+      window.mpNotify&&mpNotify('dep',id);
       db.ref('sp_users/'+d.uid+'/bal').transaction(function(b){return Math.round(((+b||0)+(+d.amount||0))*100)/100});
       var up={};up['sp_udeps/'+d.uid+'/'+id+'/status']='approved';up['sp_deposits/'+id+'/doneTs']=Date.now();db.ref().update(up);
       alert('✅ ৳'+money(d.amount)+' ইউজারের ওয়ালেটে যোগ হয়েছে');
@@ -7655,6 +7665,7 @@ function saveVideoLink() {
     mpConfirm('এই রিকোয়েস্টটি বাতিল করবেন?',function(ok){if(!ok)return;
       db.ref('sp_deposits/'+id+'/status').transaction(function(s){return s==='pending'?'rejected':undefined},function(err,done){
         if(err||!done){alert('এই রিকোয়েস্ট আগেই প্রসেস হয়েছে');return}
+        window.mpNotify&&mpNotify('dep',id);
         var up={};up['sp_udeps/'+d.uid+'/'+id+'/status']='rejected';up['sp_deposits/'+id+'/doneTs']=Date.now();db.ref().update(up);
         db.ref('sp_trx_used/'+d.trx).remove();
       });
@@ -7863,7 +7874,7 @@ function saveVideoLink() {
       var id=db.ref('ac_requests').push().key,ts=Date.now(),up={};
       up['ac_requests/'+id]={id:id,uid:key,name:UN||key,method:m,amount:a,trx:v,status:'pending',ts:ts};
       up['ac_ureq/'+key+'/'+id]={amount:a,method:m,trx:v,status:'pending',ts:ts};
-      db.ref().update(up).then(function(){busy=false;acClose();alert('✅ রিকোয়েস্ট জমা হয়েছে। এডমিন যাচাই করে একাউন্ট এক্টিভ করে দেবেন।')}).catch(function(){db.ref('ac_trx_used/'+v).remove();busy=false;alert('⚠️ জমা দেওয়া যায়নি, আবার চেষ্টা করুন')});
+      db.ref().update(up).then(function(){window.mpNotify&&mpNotify('act',id);busy=false;acClose();alert('✅ রিকোয়েস্ট জমা হয়েছে। এডমিন যাচাই করে একাউন্ট এক্টিভ করে দেবেন।')}).catch(function(){db.ref('ac_trx_used/'+v).remove();busy=false;alert('⚠️ জমা দেওয়া যায়নি, আবার চেষ্টা করুন')});
     });
   };
 
@@ -7907,7 +7918,7 @@ function saveVideoLink() {
     db.ref('ac_requests/'+id+'/status').transaction(function(s){return s==='pending'?'approved':undefined},function(err,ok){
       if(err||!ok){alert('এই রিকোয়েস্ট আগেই প্রসেস হয়েছে');return}
       var up={};up['users/'+d.uid+'/acctActive']=true;up['ac_ureq/'+d.uid+'/'+id+'/status']='approved';up['ac_requests/'+id+'/doneTs']=Date.now();
-      db.ref().update(up).then(function(){alert('✅ ইউজারের একাউন্ট এক্টিভ হয়েছে')});
+      db.ref().update(up).then(function(){window.mpNotify&&mpNotify('act',id);alert('✅ ইউজারের একাউন্ট এক্টিভ হয়েছে')});
     });
   };
   window.acRej=function(id){
@@ -7915,6 +7926,7 @@ function saveVideoLink() {
     mpConfirm('এই রিকোয়েস্টটি বাতিল করবেন?',function(yes){if(!yes)return;
       db.ref('ac_requests/'+id+'/status').transaction(function(s){return s==='pending'?'rejected':undefined},function(err,ok){
         if(err||!ok){alert('এই রিকোয়েস্ট আগেই প্রসেস হয়েছে');return}
+        window.mpNotify&&mpNotify('act',id);
         var up={};up['ac_ureq/'+d.uid+'/'+id+'/status']='rejected';up['ac_requests/'+id+'/doneTs']=Date.now();
         db.ref().update(up);db.ref('ac_trx_used/'+d.trx).remove();
       });
@@ -8061,6 +8073,46 @@ function saveVideoLink() {
     }catch(e){}
   }
   setInterval(claim,1500);
+})();
+</script>
+<script>
+/* ===== পুশ নোটিফিকেশন: ফোনের ঠিকানা (টোকেন) সেভ + সার্ভারকে ইভেন্টের খবর ===== */
+(function(){
+  window.mpNotify = function(type, id){
+    try{
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({type: type, id: String(id)}),
+        keepalive: true
+      }).catch(function(){});
+    }catch(e){}
+  };
+
+  var lastSig = '';
+  function syncToken(){
+    try{
+      if(!window.MegaApp || typeof currentUserKey === 'undefined' || !currentUserKey) return;
+      var t = window.MegaApp.getToken();
+      if(!t) return;
+      var k = String(currentUserKey), sig = k + '|' + t;
+      if(sig === lastSig) return;
+      lastSig = sig;
+      var old = null;
+      try{ old = localStorage.getItem('mpFcmKey'); }catch(e){}
+      db.ref('fcm_tokens/' + k).set({t: t, at: Date.now()}).then(function(){
+        try{ localStorage.setItem('mpFcmKey', k); }catch(e){}
+        if(old && old !== k){
+          db.ref('fcm_tokens/' + old).once('value').then(function(s){
+            var v = s.val();
+            if(v && v.t === t) db.ref('fcm_tokens/' + old).remove();
+          }).catch(function(){});
+        }
+      }).catch(function(){});
+    }catch(e){}
+  }
+  setInterval(syncToken, 3000);
+  syncToken();
 })();
 </script>
 </body>
