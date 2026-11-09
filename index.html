@@ -76,7 +76,6 @@
         return th;
       };
       try{var c=localStorage.getItem('siteThemeId'); if(c) window.applySiteTheme(c);}catch(e){}
-      try{var fc=localStorage.getItem('siteFxCard'),fb=localStorage.getItem('siteFxBg');if(fc&&fc!=='a')document.documentElement.setAttribute('data-card-fx',fc);if(fb!=='0')document.documentElement.setAttribute('data-bg-fx','on');}catch(e){}
     })();
     </script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -1693,32 +1692,6 @@
         .ld-logo{width:88px;height:88px;border-radius:22px;object-fit:cover;display:block;animation:ldPulse 1.6s ease-in-out infinite}
         @keyframes ldPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 
-        /* ===== টাস্ক কার্ডের এনিমেশন বাছাই (অ্যাডমিন থিম পেজ থেকে) — বাটনের এনিমেশনে হাত দেওয়া হয়নি ===== */
-        html[data-card-fx="off"] #task .card::before { display:none !important; }
-        html[data-card-fx="b"] #task .card:not(.disabled-task)::before { inset:-2px; border-radius:14px; background:conic-gradient(from var(--ang), transparent 0deg, transparent 230deg, rgba(232,200,114,.55) 340deg, transparent 360deg); animation:gbSpin 9s linear infinite; animation-delay:0s; }
-        html[data-card-fx="d"] #task .card:not(.disabled-task)::before { display:none !important; }
-        html[data-card-fx="d"] #task .card:not(.disabled-task)::after { display:block !important; content:""; position:absolute; inset:0; border-radius:inherit; z-index:1; pointer-events:none; background:linear-gradient(100deg, transparent 38%, rgba(var(--rgb),.16) 50%, transparent 62%); background-size:260% 100%; background-repeat:no-repeat; background-position:160% 0; animation:fxShine 5s ease-in-out infinite; animation-delay:var(--d); }
-        @keyframes fxShine { 0% { background-position:160% 0; } 55%,100% { background-position:-60% 0; } }
-
-        /* ===== সাইট এনিমেশন: ভাসমান আলোর কণা ===== */
-        #fxP { display:none; position:fixed; top:0; left:0; right:0; bottom:0; overflow:hidden; pointer-events:none; z-index:0; }
-        html[data-bg-fx="on"] #fxP { display:block; }
-        #fxP i { position:absolute; bottom:-12px; width:5px; height:5px; border-radius:50%; background:rgba(var(--accrgb),.7); opacity:0; animation:fxRise 12s linear infinite; }
-        @keyframes fxRise { 0% { transform:translate3d(0,0,0); opacity:0; } 12% { opacity:.75; } 85% { opacity:.5; } 100% { transform:translate3d(var(--dx,0px),-112vh,0); opacity:0; } }
-        @media (prefers-reduced-motion: reduce) { #fxP { display:none !important; } }
-
-        /* ===== থিম পেজে এনিমেশন বাছাইয়ের অংশ ===== */
-        .fxp { position:relative; isolation:isolate; height:62px; border-radius:12px; background:var(--card); border:1px solid var(--bd); margin:12px 4px 14px; display:flex; align-items:center; padding:0 14px; color:var(--txt); font-size:13px; --rgb:var(--accrgb); --c:#fff4b8; --c2:#ff9d00; --d:0s; }
-        .fxp::before { content:""; position:absolute; z-index:-1; pointer-events:none; inset:-3px; border-radius:15px; background:conic-gradient(from var(--ang), transparent 0deg, transparent 170deg, rgba(var(--rgb),.10) 215deg, rgba(var(--rgb),.35) 275deg, rgba(var(--rgb),.85) 330deg, var(--c) 346deg, #ffffff 357deg, transparent 360deg); animation:gbSpin 4.5s linear infinite; }
-        html[data-card-fx="off"] .fxp::before, html[data-card-fx="d"] .fxp::before { display:none; }
-        html[data-card-fx="b"] .fxp::before { inset:-2px; border-radius:14px; background:conic-gradient(from var(--ang), transparent 0deg, transparent 230deg, rgba(232,200,114,.55) 340deg, transparent 360deg); animation-duration:9s; }
-        html[data-card-fx="d"] .fxp::after { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; background:linear-gradient(100deg, transparent 38%, rgba(var(--rgb),.16) 50%, transparent 62%); background-size:260% 100%; background-repeat:no-repeat; background-position:160% 0; animation:fxShine 5s ease-in-out infinite; }
-        .fx-opts { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-        .fx-o { border:2px solid var(--bd); border-radius:12px; padding:10px; cursor:pointer; color:var(--txt); background:var(--card); }
-        .fx-o b { display:block; font-size:13px; }
-        .fx-o span { display:block; font-size:11px; color:var(--sub); margin-top:3px; }
-        .fx-o.sel { border-color:var(--acc); box-shadow:0 0 0 1px var(--acc); }
-
         /* ===== প্যাকেজ কার্ডের ডান কোণে Active ব্যাজ ===== */
         #spPage .sp-pk { position:relative; }
         #spPage .sp-act { position:absolute; top:14px; right:16px; display:inline-flex; align-items:center; gap:6px; background:rgba(34,197,94,.12); color:#16a34a; border:1px solid rgba(34,197,94,.45); border-radius:20px; padding:3px 10px; font-size:12px; font-weight:700; }
@@ -1775,7 +1748,6 @@
 </style>
 </head>
 <body>
-    <div id="fxP" aria-hidden="true"><i style="left:6%;animation-delay:0s;animation-duration:12s;--dx:12px"></i><i style="left:17%;animation-delay:3s;animation-duration:14s;--dx:-10px"></i><i style="left:28%;animation-delay:6s;animation-duration:11s;--dx:16px"></i><i style="left:40%;animation-delay:1.5s;animation-duration:13s;--dx:-14px"></i><i style="left:52%;animation-delay:8s;animation-duration:15s;--dx:10px"></i><i style="left:63%;animation-delay:4.5s;animation-duration:12s;--dx:-12px"></i><i style="left:74%;animation-delay:2s;animation-duration:14s;--dx:14px"></i><i style="left:85%;animation-delay:7s;animation-duration:11s;--dx:-10px"></i><i style="left:94%;animation-delay:10s;animation-duration:13s;--dx:12px"></i></div>
 
     <!-- মিনি অ্যাপের স্টাইলিশ পপ-আপ নোটিশ -->
     <div id="dynamicNoticePopup" class="custom-popup-overlay">
@@ -3023,13 +2995,6 @@
             <div class="th-sec">সব থিম</div>
             <div class="th-grid" id="themeGrid"></div>
             <div class="th-state" id="themeState"></div>
-
-            <div class="th-sec">টাস্ক কার্ডের চারপাশের এনিমেশন</div>
-            <div class="fxp"><span>💬 হোয়াটসঅ্যাপ মেসেজ টাস্ক (নমুনা)</span></div>
-            <div class="fx-opts" id="cardFxOpts"></div>
-
-            <div class="th-sec">পুরো সাইটের এনিমেশন</div>
-            <div class="fx-opts" id="bgFxOpts"></div>
         </div>
         <div class="th-bar">
             <button class="btn cancel" onclick="cancelThemePreview()">↩ বাতিল</button>
@@ -7004,7 +6969,6 @@ db.ref('site_theme').on('value', function(snap){
 function openAdminThemeModal(){
     if (typeof isRegAdmin === 'function' && !isRegAdmin()) return;
     pendingThemeId = savedThemeId;
-    pendingFxCard = savedFxCard; pendingFxBg = savedFxBg; renderFxOpts();
     renderThemeGrid();
     document.getElementById('adminThemeModal').style.display = 'block';
     updateThemeState();
@@ -7039,12 +7003,11 @@ function updateThemeState(){
 function cancelThemePreview(){
     pendingThemeId = savedThemeId;
     window.applySiteTheme(savedThemeId);
-    pendingFxCard = savedFxCard; pendingFxBg = savedFxBg; applyFx(savedFxCard, savedFxBg); renderFxOpts();
     renderThemeGrid();
     updateThemeState();
 }
 function closeAdminThemeModal(revert){
-    if (revert) { window.applySiteTheme(savedThemeId); applyFx(savedFxCard, savedFxBg); }
+    if (revert) window.applySiteTheme(savedThemeId);
     pendingThemeId = null;
     document.getElementById('adminThemeModal').style.display = 'none';
 }
@@ -7054,55 +7017,17 @@ function saveSiteTheme(){
     var id = pendingThemeId;
     var btn = document.getElementById('themeSaveBtn');
     btn.disabled = true;
-    saveSiteFx();
     db.ref('site_theme').set({ id: id, updatedAt: Date.now() }).then(function(){
         savedThemeId = id;
         try{ localStorage.setItem('siteThemeId', id); }catch(e){}
         btn.disabled = false;
         updateThemeState();
-        alert('✅ সেভ হয়েছে! থিম ও এনিমেশন এখন পুরো সাইটে দেখা যাবে।');
+        alert('✅ থিম সেভ হয়েছে! এখন পুরো সাইটে এই রং দেখা যাবে।');
     }).catch(function(){
         btn.disabled = false;
         alert('❌ সেভ হয়নি, আবার চেষ্টা করুন।');
     });
 }
-</script>
-
-<script>
-/* ===== এনিমেশন: টাস্ক কার্ড + আলোর কণা (অ্যাডমিন থিম পেজ থেকে নিয়ন্ত্রণ) ===== */
-var FX_CARDS = [['a','ঘুরন্ত আলো','বর্তমান এনিমেশন'],['b','পাতলা সোনালি রেখা','ধীরে ঘোরে, খুব হালকা'],['d','হালকা ঝিলিক','কার্ডের ওপর নরম আলো'],['off','অফ','কোনো এনিমেশন নেই (সবচেয়ে হালকা)']];
-var FX_BG = [['on','আলোর কণা চালু','ধীরে ওপরে ভাসে'],['off','বন্ধ','কোনো কণা নেই']];
-var savedFxCard = (function(){ try{ return localStorage.getItem('siteFxCard') || 'a'; }catch(e){ return 'a'; } })();
-var savedFxBg = (function(){ try{ return localStorage.getItem('siteFxBg') === '0' ? 'off' : 'on'; }catch(e){ return 'on'; } })();
-var pendingFxCard = savedFxCard, pendingFxBg = savedFxBg;
-
-function applyFx(c, b){
-    var r = document.documentElement;
-    if (c && c !== 'a') r.setAttribute('data-card-fx', c); else r.removeAttribute('data-card-fx');
-    if (b === 'on') r.setAttribute('data-bg-fx', 'on'); else r.removeAttribute('data-bg-fx');
-}
-function renderFxOpts(){
-    var a = document.getElementById('cardFxOpts'), b = document.getElementById('bgFxOpts');
-    if (a) a.innerHTML = FX_CARDS.map(function(o){ return '<div class="fx-o'+(o[0]===pendingFxCard?' sel':'')+'" onclick="pickCardFx(\''+o[0]+'\')"><b>'+o[1]+'</b><span>'+o[2]+'</span></div>'; }).join('');
-    if (b) b.innerHTML = FX_BG.map(function(o){ return '<div class="fx-o'+(o[0]===pendingFxBg?' sel':'')+'" onclick="pickBgFx(\''+o[0]+'\')"><b>'+o[1]+'</b><span>'+o[2]+'</span></div>'; }).join('');
-}
-function pickCardFx(v){ pendingFxCard = v; applyFx(pendingFxCard, pendingFxBg); renderFxOpts(); }
-function pickBgFx(v){ pendingFxBg = v; applyFx(pendingFxCard, pendingFxBg); renderFxOpts(); }
-function saveSiteFx(){
-    var c = pendingFxCard, b = pendingFxBg;
-    db.ref('site_fx').set({ card: c, particles: b === 'on', updatedAt: Date.now() }).then(function(){
-        savedFxCard = c; savedFxBg = b;
-        try{ localStorage.setItem('siteFxCard', c); localStorage.setItem('siteFxBg', b === 'on' ? '1' : '0'); }catch(e){}
-    }).catch(function(){});
-}
-db.ref('site_fx').on('value', function(snap){
-    var v = snap.val() || {};
-    var c = v.card || 'a', b = (v.particles === false) ? 'off' : 'on';
-    savedFxCard = c; savedFxBg = b;
-    try{ localStorage.setItem('siteFxCard', c); localStorage.setItem('siteFxBg', b === 'on' ? '1' : '0'); }catch(e){}
-    var m = document.getElementById('adminThemeModal');
-    if (!(m && m.style.display === 'block')) applyFx(c, b);
-});
 </script>
 
 <script>
@@ -7457,8 +7382,8 @@ function saveVideoLink() {
   var BASE=[{n:0,price:0,daily:1,days:30,free:true},{n:1,price:150,daily:10,days:30},{n:2,price:250,daily:25,days:30},{n:3,price:300,daily:30,days:30},{n:4,price:500,daily:50,days:30}],PK=[],PLD={};
   function buildPK(v){
     PLD=v||{};var out=[];
-    BASE.forEach(function(b){var o=PLD['p'+b.n]||{};out.push({n:b.n,free:!!b.free,base:true,on:o.on!==false,price:b.free?0:(o.price!=null?+o.price:b.price),daily:o.daily!=null?+o.daily:b.daily,days:o.days!=null?+o.days:b.days})});
-    Object.keys(PLD).forEach(function(k){var n=+String(k).slice(1),o=PLD[k];if(!(n>=5)||!o||o.del)return;if(o.price!=null&&+o.price>=0&&+o.daily>0&&+o.days>=1)out.push({n:n,base:false,on:o.on!==false,price:+o.price,daily:+o.daily,days:Math.floor(+o.days)})});
+    BASE.forEach(function(b){var o=PLD['p'+b.n]||{};out.push({n:b.n,free:!!b.free,base:true,on:o.on!==false,offAt:+o.offAt||0,price:b.free?0:(o.price!=null?+o.price:b.price),daily:o.daily!=null?+o.daily:b.daily,days:o.days!=null?+o.days:b.days})});
+    Object.keys(PLD).forEach(function(k){var n=+String(k).slice(1),o=PLD[k];if(!(n>=5)||!o||o.del)return;if(o.price!=null&&+o.price>=0&&+o.daily>0&&+o.days>=1)out.push({n:n,base:false,on:o.on!==false,offAt:+o.offAt||0,price:+o.price,daily:+o.daily,days:Math.floor(+o.days)})});
     out.forEach(function(p){p.free=(+p.price===0)});out.sort(function(a,b){return a.price-b.price||a.n-b.n});PK=out;
   }
   buildPK(null);
@@ -7492,7 +7417,8 @@ function saveVideoLink() {
   function money(n){n=Math.round((+n||0)*100)/100;return n.toLocaleString('en-US',{maximumFractionDigits:2})}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function dnum(ts){var d=new Date(ts);return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/DAY)}
-  function daysLeft(p){return dd(p)-(dnum(Date.now())-dnum(+p.start||0))}
+  function nowFor(p){var pl=pkBy(p.idx);return (pl&&pl.on===false&&+pl.offAt>0)?+pl.offAt:Date.now()}
+  function daysLeft(p){return dd(p)-(dnum(nowFor(p))-dnum(+p.start||0))}
   function isActive(p){return !!p&&daysLeft(p)>0&&(+p.claimed||0)<dd(p)}
   function todayInc(){return W.today===getTodayString()?(+W.todayInc||0):0}
   function dt(ts){var d=new Date(ts);return d.getDate()+'/'+(d.getMonth()+1)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
@@ -7530,10 +7456,10 @@ function saveVideoLink() {
       '<div class="sp-info"><div><span>মূল্য</span><b class="o">'+(p.free?'ফ্রি':'৳'+money(p.price))+'</b></div><div><span>দৈনিক আয়</span><b class="g">৳'+money(p.daily)+'</b></div><div><span>মেয়াদ</span><b>'+dd(p)+' দিন</b></div><div class="tot"><span>মোট আয়</span><b class="bl">৳'+money(p.daily*dd(p))+'</b></div></div>'+
       '<button class="sp-buy'+((act||used||off)?' dim':'')+'" onclick="spBuy('+p.n+')">'+(act?'চালু আছে':off?'এখন বন্ধ আছে':used?'ফ্রি প্যাক নেওয়া হয়েছে':p.free?'🎁 ফ্রি এক্টিভ করুন':ic('flame',20)+' Buy Package')+'</button></div>';
     }
-    var left=Math.max(1,daysLeft(pk)),done=(pk.lastClaim===getTodayString());
+    var left=Math.max(1,daysLeft(pk)),done=(pk.lastClaim===getTodayString()),poff=(p&&p.on===false);
     var pct=Math.min(100,Math.round(((dd(pk)-left+1)/dd(pk))*100));
-    return '<div class="sp-pk" style="padding:14px"><div class="sp-t">'+logo.replace('sp-lg','sp-lg sm')+'<div style="flex:1;min-width:0"><div class="sp-nm" style="font-size:17px">'+pname(p)+'</div><div class="sp-lbl" style="margin-top:2px">দৈনিক ৳'+money(p.daily)+' &middot; বাকি '+left+' দিন</div><div class="sp-pb"><i style="width:'+pct+'%"></i></div></div></div>'+
-      '<button class="sp-buy'+(done?' dim':'')+'" style="margin-top:12px" onclick="spClaim(\''+id+'\')">'+(done?'আজকের ক্লেম সম্পন্ন':'ক্লেম ৳'+money(p.daily))+'</button></div>';
+    return '<div class="sp-pk" style="padding:14px"><div class="sp-t">'+logo.replace('sp-lg','sp-lg sm')+'<div style="flex:1;min-width:0"><div class="sp-nm" style="font-size:17px">'+pname(p)+'</div><div class="sp-lbl" style="margin-top:2px">দৈনিক ৳'+money(p.daily)+' &middot; বাকি '+left+' দিন'+(poff?' &middot; থেমে আছে':'')+'</div><div class="sp-pb"><i style="width:'+pct+'%"></i></div>'+(poff?'<div class="sp-lbl" style="margin-top:8px;color:#d98a00">⏸ প্যাকেজ সাময়িক বন্ধ আছে। চালু হলে যেখানে থেমেছিল সেখান থেকেই আবার চলবে, আপনার মেয়াদ কমবে না।</div>':'')+'</div></div>'+
+      '<button class="sp-buy'+((done||poff)?' dim':'')+'" style="margin-top:12px" onclick="spClaim(\''+id+'\')">'+(poff?'প্যাকেজ সাময়িক বন্ধ আছে':done?'আজকের ক্লেম সম্পন্ন':'ক্লেম ৳'+money(p.daily))+'</button></div>';
   }
   function vHome(){
     var h='<div class="sp-top"><div class="sp-h">স্পেশাল প্ল্যান প্যাক</div><span class="sp-ib" onclick="spClose()">'+ic('x',22)+'</span></div>';
@@ -7692,6 +7618,7 @@ function saveVideoLink() {
   }
   window.spClaim=function(id){
     var pk=PACKS[id];if(!pk||!isActive(pk)||busy||cdT)return;
+    var pl0=pkBy(pk.idx);if(pl0&&pl0.on===false){alert('এই প্যাকেজটি এখন সাময়িক বন্ধ আছে। চালু হলে যেখানে থেমেছিল সেখান থেকেই আবার চলবে, আপনার মেয়াদ কমবে না।');return}
     if(pk.lastClaim===getTodayString())return;
     var link=S['l'+pk.idx];
     if(!link){if(+pk.price===0){doClaim(id);return}alert('ক্লেম ভিডিওর লিংক এখনো সেট করা হয়নি, একটু পরে চেষ্টা করুন।');return}
@@ -7706,6 +7633,7 @@ function saveVideoLink() {
   window.spCdCancel=function(){if(cdT){clearInterval(cdT);cdT=null}var w=$('spCd');w.classList.remove('on');w.innerHTML=''};
   function doClaim(id){
     var pk=PACKS[id];if(!pk)return;
+    var pl1=pkBy(pk.idx);if(pl1&&pl1.on===false){alert('এই প্যাকেজটি এখন সাময়িক বন্ধ আছে। চালু হলে যেখানে থেমেছিল সেখান থেকেই আবার চলবে, আপনার মেয়াদ কমবে না।');return}
     var today=getTodayString(),amt=+pk.daily||0,u=uid(),pref='sp_packs/'+u+'/'+id,sameDay=(W.today===today);
     var rd=function(n){return Math.round(n*100)/100};
     var add=function(path,fn){return new Promise(function(res,rej){db.ref(path).transaction(fn,function(e,ok){if(e)rej(e);else res(ok)})})};
@@ -7782,7 +7710,29 @@ function saveVideoLink() {
 
   window.spPlCalc=function(pre){var d=parseFloat($(pre+'D').value),n=parseFloat($(pre+'N').value),t=$(pre+'T');if(t)t.textContent='৳'+money((d>0&&n>=1)?d*Math.floor(n):0)};
   window.spPlEd=function(n){var e=$('spEd'+n);if(e)e.style.display=e.style.display==='none'?'block':'none'};
-  window.spPlTog=function(n,el){var p=pkBy(n);if(!p)return;var nv=!(p.on!==false);el.classList.toggle('o2',!nv);db.ref('sp_plans/p'+n+'/on').set(nv).catch(function(){alert('⚠️ সেভ করা যায়নি, আবার চেষ্টা করুন')})};
+  function resumePlan(n,fields){
+    var raw=PLD['p'+n]||{},offAt=+raw.offAt||0,up={};
+    Object.keys(fields).forEach(function(k){up['sp_plans/p'+n+'/'+k]=fields[k]});
+    var pd=offAt?dnum(Date.now())-dnum(offAt):0;
+    if(pd<=0)return db.ref().update(up);
+    return db.ref('sp_packs').once('value').then(function(all){
+      all.forEach(function(u){u.forEach(function(p){
+        var v=p.val()||{};if(+v.idx!==n)return;
+        var left=dd(v)-(dnum(offAt)-dnum(+v.start||0));
+        if(left>0&&(+v.claimed||0)<dd(v)){
+          up['sp_packs/'+u.key+'/'+p.key+'/start']=(+v.start||0)+pd*DAY;
+          if(+v.end)up['sp_packs/'+u.key+'/'+p.key+'/end']=(+v.end)+pd*DAY;
+        }
+      })});
+      return db.ref().update(up);
+    });
+  }
+  window.spPlTog=function(n,el){
+    var p=pkBy(n);if(!p)return;var nv=!(p.on!==false);el.classList.toggle('o2',!nv);
+    var bad=function(){el.classList.toggle('o2',nv);alert('⚠️ সেভ করা যায়নি, আবার চেষ্টা করুন')};
+    if(!nv){db.ref('sp_plans/p'+n).update({on:false,offAt:Date.now()}).catch(bad)}
+    else{resumePlan(n,{on:true,offAt:null}).catch(bad)}
+  };
   window.spPlAdd=function(){
     var d=parseFloat($('spNwD').value),n=parseFloat($('spNwN').value),pr=parseFloat($('spNwP').value);
     if(!(d>0)||!(n>=1)||!(pr>=0)){alert('দৈনিক আয়, মেয়াদ (দিন) ও দাম সঠিকভাবে দিন');return}
@@ -7801,7 +7751,7 @@ function saveVideoLink() {
   };
   window.spPlDel=function(n){
     mpConfirm('এই প্যাকেজটি মুছে ফেলবেন?\n\nযারা আগে কিনেছে তাদের চালু প্যাকেজ আগের মতোই চলবে, শুধু নতুন কেউ কিনতে পারবে না।',function(ok){
-      if(!ok)return;db.ref('sp_plans/p'+n).update({del:true,on:false}).then(function(){render()}).catch(function(){alert('⚠️ মুছা যায়নি, আবার চেষ্টা করুন')});
+      if(!ok)return;resumePlan(n,{del:true,on:false,offAt:null}).then(function(){render()}).catch(function(){alert('⚠️ মুছা যায়নি, আবার চেষ্টা করুন')});
     },'মুছে ফেলুন');
   };
 
@@ -7816,7 +7766,7 @@ function saveVideoLink() {
     document.addEventListener('visibilitychange',function(){if(!document.hidden)refresh()});
     db.ref('users/'+uid()).once('value').then(function(s){var v=s.val()||{};uname=v.fullName||v.username||''});
     db.ref('sp_settings').on('value',function(s){var v=s.val()||{};S=Object.assign({bkashNo:'',nagadNo:'',bkashOn:true,nagadOn:true,bg:'#eef3fd',l1:'',l2:'',l3:'',l4:'',refPct:0},v);applyBg();refresh()});
-    db.ref('sp_plans').on('value',function(s){buildPK(s.val());refresh()});
+    db.ref('sp_plans').on('value',function(s){buildPK(s.val());if(isAdm()){Object.keys(PLD).forEach(function(k){var o=PLD[k];if(o&&o.on===false&&!o.del&&!(+o.offAt>0))db.ref('sp_plans/'+k+'/offAt').transaction(function(c){return c?undefined:Date.now()})})}refresh()});
     db.ref('sp_users/'+uid()).on('value',function(s){var v=s.val()||{};W={bal:+v.bal||0,income:+v.income||0,today:v.today||'',todayInc:+v.todayInc||0};refresh()});
     db.ref('sp_packs/'+uid()).on('value',function(s){PACKS=s.val()||{};refresh()});
     db.ref('sp_stats').on('value',function(s){ST=s.val()||{};refresh()});
