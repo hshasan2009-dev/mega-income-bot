@@ -1860,6 +1860,18 @@
             <div style="font-size: 50px; margin-bottom: 10px;">🚫</div>
             <h2 style="color: #ff4d4d; font-size: 20px; margin-bottom: 12px; font-weight: bold;">অ্যাকাউন্ট ব্যান করা হয়েছে!</h2>
             <p style="color: #e0e0e0; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">আপনার অ্যাকাউন্টটি সাময়িকভাবে ব্যান করা হয়েছে। আপনি আর কোনো ফিচার ব্যবহার করতে পারবেন না।</p>
+            <div style="position:relative;background:#c2262e;clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);display:flex;text-align:left;height:104px;margin-bottom:18px;">
+                <div style="width:88px;background:#ffc400;display:flex;align-items:center;justify-content:center;flex-shrink:0;clip-path:polygon(0 0,100% 0,82% 100%,0 100%);">
+                    <div style="width:52px;height:52px;background:#1b1b1d;border:2px solid #fff;display:flex;align-items:center;justify-content:center;margin-right:8px;overflow:hidden;"><img src="/icon-192.png" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+                </div>
+                <div style="position:absolute;left:72px;top:0;bottom:0;right:0;background:#f4f4f4;clip-path:polygon(16px 0,100% 0,100% 100%,0 100%);"></div>
+                <div style="position:relative;flex:1;padding:10px 12px 10px 20px;display:flex;flex-direction:column;justify-content:center;gap:8px;min-width:0;">
+                    <div style="font-size:14px;color:#1b1b1d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><span style="color:#6b6b6f;">Name: </span><span id="banInfoName" style="font-weight:bold;">—</span></div>
+                    <div style="font-size:14px;color:#1b1b1d;"><span style="color:#6b6b6f;">UID: </span><span id="banInfoUid" style="font-weight:bold;letter-spacing:0.5px;">—</span></div>
+                    <div style="font-size:14px;color:#1b1b1d;"><span style="color:#6b6b6f;">Date: </span><span id="banInfoDate" style="font-weight:bold;">—</span></div>
+                </div>
+                <div style="position:absolute;left:0;bottom:0;background:#ffc400;color:#1b1b1d;font-size:11px;font-weight:bold;padding:2px 14px 2px 8px;clip-path:polygon(0 0,86% 0,100% 100%,0 100%);">MEGA INCOME</div>
+            </div>
             <button class="btn btn-support" onclick="openTelegramLink('https://t.me/hshasan2009')" style="margin-bottom:0;">🛠 সাপোর্টে যোগাযোগ করুন</button>
         </div>
     </div>
@@ -3611,6 +3623,20 @@
                 if (snapshot.val() === true) {
                     let overlay = document.getElementById('bannedUserOverlay');
                     if (overlay) overlay.style.display = 'flex';
+                    db.ref('users/' + currentUserKey).once('value').then((us) => {
+                        try {
+                            let uv = us.val() || {};
+                            let nEl = document.getElementById('banInfoName');
+                            let iEl = document.getElementById('banInfoUid');
+                            let dEl = document.getElementById('banInfoDate');
+                            if (nEl) nEl.textContent = uv.fullName || uv.username || currentUserKey;
+                            if (iEl) iEl.textContent = uv.refCode || currentUserKey;
+                            if (dEl) {
+                                let bt = Number(uv.bannedAt);
+                                dEl.textContent = bt ? new Date(bt).toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
+                            }
+                        } catch (e) {}
+                    });
                 } else {
                     let overlay = document.getElementById('bannedUserOverlay');
                     if (overlay) overlay.style.display = 'none';
@@ -4425,7 +4451,7 @@
 
         function executeBanUser() {
             if (!searchedTargetUserId) return;
-            db.ref('users/' + searchedTargetUserId + '/isBanned').set(true).then(() => {
+            db.ref('users/' + searchedTargetUserId + '/bannedAt').set(Date.now()).then(() => db.ref('users/' + searchedTargetUserId + '/isBanned').set(true)).then(() => {
                 alert("🚫 ইউজার একাউন্ট সফলভাবে ব্যান করা হয়েছে!");
                 searchUserForBan();
             });
@@ -4433,14 +4459,14 @@
 
         function executeUnbanUser() {
             if (!searchedTargetUserId) return;
-            db.ref('users/' + searchedTargetUserId + '/isBanned').set(false).then(() => {
+            db.ref('users/' + searchedTargetUserId + '/isBanned').set(false).then(() => db.ref('users/' + searchedTargetUserId + '/bannedAt').remove()).then(() => {
                 alert("✅ ইউজার একাউন্ট Unban করা হয়েছে!");
                 searchUserForBan();
             });
         }
 
         function unbanSpecificUser(targetId) {
-            db.ref('users/' + targetId + '/isBanned').set(false).then(() => {
+            db.ref('users/' + targetId + '/isBanned').set(false).then(() => db.ref('users/' + targetId + '/bannedAt').remove()).then(() => {
                 alert("✅ ইউজার একাউন্ট Unban করা হয়েছে!");
             });
         }
