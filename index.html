@@ -3289,7 +3289,7 @@
         let detectedStartParam = null;
 
         let urlParams = new URLSearchParams(window.location.search);
-        detectedStartParam = tg?.initDataUnsafe?.start_param || urlParams.get('startapp') || urlParams.get('start') || urlParams.get('ref');
+        detectedStartParam = tg?.initDataUnsafe?.start_param || urlParams.get('startapp') || urlParams.get('start') || urlParams.get('invite') || urlParams.get('ref');
 
         let popupRedirectUrl = "";
 
@@ -3866,7 +3866,7 @@
                         userReferralCode = val.refCode;
                     }
 
-                    referLink = `https://mega-income-pro1.vercel.app/?ref=${userReferralCode}`;
+                    referLink = `https://mega-income-pro1.vercel.app/?invite=${userReferralCode}`;
                     let refInput = document.getElementById("ref-link");
                     if(refInput) refInput.value = referLink;
                     let refCodeInput = document.getElementById("user-ref-code");
