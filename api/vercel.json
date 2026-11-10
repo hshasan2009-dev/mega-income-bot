@@ -1,9 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/",
-      "has": [{ "type": "header", "key": "user-agent", "value": ".*TelegramBot.*" }],
-      "destination": "/api/og"
-    }
-  ]
-}
