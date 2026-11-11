@@ -1238,25 +1238,26 @@
         /* ===== লগইন পেজের নিচের কালো অংশে: সাপোর্ট (বামে) + অফিসিয়াল চ্যানেল (ডানে) ===== */
         .al-bottom {
             position: absolute; left: 0; right: 0;
-            bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+            bottom: calc(36px + env(safe-area-inset-bottom, 0px));
             display: flex; justify-content: center; padding: 0 15px; pointer-events: none;
         }
         .al-grid { display: flex; justify-content: center; gap: 8px; pointer-events: auto; }
         .al-btn {
             display: flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap;
-            padding: 4px 10px 4px 5px; border: none; border-radius: 9px; cursor: pointer;
-            color: #fff; font-size: 10.5px; font-weight: 800; font-family: inherit; line-height: 1.1;
+            padding: 2px 9px 2px 4px; border: none; border-radius: 8px; cursor: pointer;
+            color: #fff; font-size: 10px; font-weight: 800; font-family: inherit; line-height: 1.1;
             box-shadow: 0 3px 8px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.22);
             -webkit-tap-highlight-color: transparent;
         }
         .al-btn:active { transform: scale(.96); }
+        html.al-kb .al-bottom { display: none; }
         .al-ch { background: linear-gradient(135deg, #2aabee, #1b78b0); }
         .al-sp { background: linear-gradient(135deg, #d64533, #a42a1d); }
         .al-ic {
-            width: 18px; height: 18px; border-radius: 50%; flex: none; display: grid; place-items: center;
+            width: 16px; height: 16px; border-radius: 50%; flex: none; display: grid; place-items: center;
             box-shadow: 0 0 0 1.5px rgba(255,255,255,.3), 0 1px 3px rgba(0,0,0,.35);
         }
-        .al-ic svg { width: 11px; height: 11px; display: block; }
+        .al-ic svg { width: 10px; height: 10px; display: block; }
         .al-tg { background: linear-gradient(160deg, #37aee2, #1e96c8); color: #fff; }
         .al-hs { background: #fff; color: #c0392b; }
 
@@ -7814,6 +7815,23 @@ function saveVideoLink() {
   window.addEventListener('resize',set);
   window.addEventListener('load',set);
   if(window.ResizeObserver)new ResizeObserver(set).observe(h);else setInterval(set,1000);
+})();
+</script>
+<script>
+/* লগইন পেজ: কিবোর্ড খোলা থাকলে নিচের বাটন লুকানো থাকবে, বন্ধ হলে আবার আসবে */
+(function(){
+  var d = document.documentElement, maxH = window.innerHeight, typing = false;
+  function upd(){
+    var h = window.innerHeight;
+    if(h > maxH) maxH = h;
+    d.classList.toggle('al-kb', typing || h < maxH * 0.8);
+  }
+  document.addEventListener('focusin', function(e){
+    var t = e.target;
+    if(t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) && t.closest && t.closest('#authModal')){ typing = true; upd(); }
+  });
+  document.addEventListener('focusout', function(){ typing = false; setTimeout(upd, 200); });
+  window.addEventListener('resize', upd);
 })();
 </script>
 </body>
