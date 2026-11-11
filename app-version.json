@@ -1,11 +1,6 @@
 {
-  "versionCode": 8,
+  "versionCode": 7,
   "apkUrl": "https://github.com/hshasan2009-dev/mega-income-app/releases/latest/download/Mega-Income.apk",
   "message": "অ্যাপের নতুন ভার্সন এসেছে। আপডেট করে নিন।",
-  "force": false
-}{
-  "versionCode": 1,
-  "apkUrl": "https://github.com/hshasan2009-dev/mega-income-app/releases/latest/download/Mega-Income.apk",
-  "message": "অ্যাপের নতুন ভার্সন এসেছে। আপডেট করে নিন।",
-  "force": false
+  "force": true
 }
