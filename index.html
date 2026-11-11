@@ -873,88 +873,90 @@
             box-shadow: 0 4px 10px rgba(var(--accrgb), 0.4);
         }
 
-        /* ===== WhatsApp টাস্ক - নতুন হালকা সবুজ মাল্টি-স্ক্রিন ডিজাইন ===== */
-        .wa2-wrap{max-width:420px;margin:15px auto;background:#f3fbf6;border-radius:22px;overflow:hidden;box-shadow:0 20px 45px rgba(0,0,0,0.55);border:1px solid rgba(37,211,102,0.25);}
-        .wa2-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(120deg,#1f8a52,#17c768);}
+        /* ===== WhatsApp টাস্ক - ফুল-পেজ ডিজাইন (সাইটের থিম ফলো করে) ===== */
+        #waTaskModal{background:var(--bg);padding:0;}
+        .wa2-wrap{width:100%;min-height:100%;background:var(--bg);border-radius:0;box-shadow:none;border:none;margin:0;}
+        .wa2-head{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(120deg,#1f8a52,#17c768);}
+        .wa2-back{background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;flex-shrink:0;}
+        .wa2-back:hover{background:rgba(255,255,255,0.32);}
         .wa2-head-title{display:flex;align-items:center;gap:9px;}
-        .wa2-head-title img{width:24px;height:24px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.25));}
-        .wa2-head-title h3{color:#fff;font-size:16px;font-weight:800;letter-spacing:.2px;}
-        .wa2-close{background:rgba(255,255,255,0.22);color:#fff;border:none;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;}
-        .wa2-close:hover{background:#e74c3c;}
-        .wa2-body{padding:18px;}
+        .wa2-head-title img{width:23px;height:23px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.25));}
+        .wa2-head-title h3{color:#fff;font-size:15.5px;font-weight:800;letter-spacing:.2px;}
+        .wa2-head-spacer{width:32px;flex-shrink:0;}
+        .wa2-body{padding:18px;max-width:480px;margin:0 auto;}
         .wa2-screen{display:none;}
         .wa2-screen.active{display:block;animation:wa2fade .25s ease;}
         @keyframes wa2fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
-        .wa2-balance{background:linear-gradient(135deg,#1fae63,#0d7a44);border-radius:16px;padding:16px;color:#fff;position:relative;overflow:hidden;margin-bottom:14px;}
-        .wa2-balance::after{content:'';position:absolute;top:-30px;right:-30px;width:110px;height:110px;background:rgba(255,255,255,0.12);border-radius:50%;}
-        .wa2-balance-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;opacity:.9;font-weight:700;}
-        .wa2-balance-val{font-size:26px;font-weight:800;margin-top:4px;text-shadow:0 2px 4px rgba(0,0,0,0.25);}
+        .wa2-balance{background:linear-gradient(135deg,rgba(37,211,102,0.22),rgba(37,211,102,0.06)),var(--card);border:1px solid rgba(37,211,102,0.35);border-radius:16px;padding:16px;color:var(--txt);position:relative;overflow:hidden;margin-bottom:14px;}
+        .wa2-balance::after{content:'';position:absolute;top:-30px;right:-30px;width:110px;height:110px;background:rgba(37,211,102,0.12);border-radius:50%;}
+        .wa2-balance-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#25d366;font-weight:800;}
+        .wa2-balance-val{font-size:26px;font-weight:800;margin-top:4px;color:var(--txt);}
 
         .wa2-perks{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
-        .wa2-perk{flex:1;min-width:30%;background:#fff;border:1px solid #d4f3e2;border-radius:10px;padding:8px 6px;text-align:center;font-size:10.5px;font-weight:700;color:#1b6b42;}
+        .wa2-perk{flex:1;min-width:30%;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 6px;text-align:center;font-size:10.5px;font-weight:700;color:var(--sub);}
 
-        .wa2-icon-circle{width:70px;height:70px;border-radius:50%;background:#e4f8ec;display:flex;align-items:center;justify-content:center;margin:0 auto 14px auto;font-size:30px;}
-        .wa2-title{font-size:16px;font-weight:800;color:#0f3d24;text-align:center;margin-bottom:6px;}
-        .wa2-sub{font-size:12px;color:#5a7a68;text-align:center;line-height:1.5;margin-bottom:16px;}
+        .wa2-icon-circle{width:70px;height:70px;border-radius:50%;background:rgba(37,211,102,0.14);border:1px solid rgba(37,211,102,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 14px auto;font-size:30px;}
+        .wa2-title{font-size:16px;font-weight:800;color:var(--txt);text-align:center;margin-bottom:6px;}
+        .wa2-sub{font-size:12px;color:var(--sub);text-align:center;line-height:1.5;margin-bottom:16px;}
 
-        .wa2-btn{width:100%;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;color:#fff;background:linear-gradient(135deg,#25d366,#128c4a);box-shadow:0 8px 18px rgba(18,140,74,0.35);}
+        .wa2-btn{width:100%;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;color:#fff;background:linear-gradient(135deg,#25d366,#128c4a);box-shadow:0 8px 18px rgba(18,140,74,0.3);}
         .wa2-btn:active{transform:scale(.98);}
-        .wa2-btn.ghost{background:#fff;color:#128c4a;border:1.5px solid #25d366;box-shadow:none;}
+        .wa2-btn.ghost{background:var(--card);color:var(--acc);border:1.5px solid var(--bd);box-shadow:none;}
         .wa2-btn:disabled{opacity:.6;cursor:not-allowed;}
 
-        .wa2-field-label{font-size:12px;color:#365c47;font-weight:700;margin-bottom:8px;}
+        .wa2-field-label{font-size:12px;color:var(--sub);font-weight:700;margin-bottom:8px;}
         .wa2-input-row{display:flex;gap:8px;margin-bottom:10px;}
-        .wa2-country-badge{background:#e4f8ec;border:1px solid #bfe8cf;padding:0 12px;border-radius:10px;font-size:13px;color:#166534;display:flex;align-items:center;font-weight:700;}
-        .wa2-input{flex:1;padding:12px;border-radius:10px;font-weight:600;border:1px solid #bfe8cf;background:#fff;color:#0f3d24;}
-        .wa2-hint{font-size:11px;color:#6b8c7a;text-align:center;margin-top:4px;}
+        .wa2-country-badge{background:var(--card);border:1px solid var(--bd);padding:0 12px;border-radius:10px;font-size:13px;color:var(--txt);display:flex;align-items:center;font-weight:700;}
+        .wa2-input{flex:1;padding:12px;border-radius:10px;font-weight:600;border:1px solid var(--bd);background:var(--card);color:var(--txt);}
+        .wa2-hint{font-size:11px;color:var(--sub);text-align:center;margin-top:4px;}
 
         .wa2-loader-wrap{display:flex;flex-direction:column;align-items:center;padding:30px 10px 10px 10px;}
-        .wa2-spinner{width:56px;height:56px;border-radius:50%;border:5px solid #d4f3e2;border-top-color:#25d366;animation:wa2spin 0.9s linear infinite;margin-bottom:18px;}
+        .wa2-spinner{width:56px;height:56px;border-radius:50%;border:5px solid var(--bd);border-top-color:#25d366;animation:wa2spin 0.9s linear infinite;margin-bottom:18px;}
         @keyframes wa2spin{to{transform:rotate(360deg);}}
-        .wa2-loader-text{font-size:13px;font-weight:700;color:#1b6b42;}
-        .wa2-loader-sub{font-size:11px;color:#7c9a8a;margin-top:4px;}
+        .wa2-loader-text{font-size:13px;font-weight:700;color:var(--txt);}
+        .wa2-loader-sub{font-size:11px;color:var(--sub);margin-top:4px;}
 
-        .wa2-lock-circle{width:60px;height:60px;border-radius:50%;background:#e4f8ec;display:flex;align-items:center;justify-content:center;margin:0 auto 12px auto;font-size:26px;}
+        .wa2-lock-circle{width:60px;height:60px;border-radius:50%;background:rgba(37,211,102,0.14);border:1px solid rgba(37,211,102,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 12px auto;font-size:26px;}
         .wa2-code-row{display:flex;gap:6px;justify-content:center;margin:16px 0 14px 0;flex-wrap:wrap;}
-        .wa2-code-box{background:#0d2b1b;border:1px solid #25d366;color:#7CFCB0;font-weight:800;font-size:17px;width:32px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.4);}
+        .wa2-code-box{background:rgba(0,0,0,0.25);border:1px solid #25d366;color:#7CFCB0;font-weight:800;font-size:17px;width:32px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.3);}
 
-        .wa2-steps{background:#eefcf3;border-radius:12px;padding:12px 14px;margin:14px 0;}
-        .wa2-step{display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#2c4d3a;margin-bottom:10px;line-height:1.4;}
+        .wa2-steps{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin:14px 0;}
+        .wa2-step{display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--txt2);margin-bottom:10px;line-height:1.4;}
         .wa2-step:last-child{margin-bottom:0;}
         .wa2-step-num{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:#25d366;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;}
 
-        .wa2-status-pill{display:flex;align-items:center;justify-content:center;gap:7px;background:#eefcf3;border:1px dashed #9fe3bb;border-radius:30px;padding:9px;font-size:11.5px;font-weight:700;color:#1b6b42;}
+        .wa2-status-pill{display:flex;align-items:center;justify-content:center;gap:7px;background:rgba(37,211,102,0.1);border:1px dashed rgba(37,211,102,0.45);border-radius:30px;padding:9px;font-size:11.5px;font-weight:700;color:var(--txt);}
         .wa2-pulse-dot{width:8px;height:8px;border-radius:50%;background:#25d366;box-shadow:0 0 0 rgba(37,211,102,0.5);animation:wa2pulse 1.4s infinite;}
         @keyframes wa2pulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,0.5);}70%{box-shadow:0 0 0 9px rgba(37,211,102,0);}100%{box-shadow:0 0 0 0 rgba(37,211,102,0);}}
 
-        .wa2-tip{font-size:10.5px;color:#7c9a8a;margin-top:12px;display:flex;gap:6px;align-items:flex-start;line-height:1.4;}
+        .wa2-tip{font-size:10.5px;color:var(--sub);margin-top:12px;display:flex;gap:6px;align-items:flex-start;line-height:1.4;}
 
         .wa2-check-circle{width:72px;height:72px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;margin:10px auto 16px auto;font-size:34px;color:#fff;animation:wa2pop .4s ease;box-shadow:0 10px 22px rgba(37,211,102,0.4);}
         @keyframes wa2pop{0%{transform:scale(.4);opacity:0;}70%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
 
-        .wa2-progress-track{background:#dff3e6;border-radius:30px;height:14px;overflow:hidden;margin:14px 0 6px 0;}
+        .wa2-progress-track{background:var(--card);border:1px solid var(--bd);border-radius:30px;height:14px;overflow:hidden;margin:14px 0 6px 0;}
         .wa2-progress-fill{height:100%;background:linear-gradient(90deg,#25d366,#128c4a);border-radius:30px;transition:width .5s ease;width:0%;}
-        .wa2-progress-label{text-align:center;font-size:11px;color:#426b55;font-weight:700;margin-bottom:14px;}
-        .wa2-live-status{background:#eefcf3;border-radius:10px;padding:10px 12px;font-size:12px;color:#1b6b42;font-weight:700;text-align:center;margin-bottom:12px;}
+        .wa2-progress-label{text-align:center;font-size:11px;color:var(--sub);font-weight:700;margin-bottom:14px;}
+        .wa2-live-status{background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--txt);font-weight:700;text-align:center;margin-bottom:12px;}
         .wa2-stat-grid{display:flex;gap:8px;margin-top:6px;}
-        .wa2-stat-box{flex:1;background:#fff;border:1px solid #d4f3e2;border-radius:12px;padding:10px 6px;text-align:center;}
+        .wa2-stat-box{flex:1;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 6px;text-align:center;}
         .wa2-stat-box .n{font-size:18px;font-weight:800;}
-        .wa2-stat-box .l{font-size:10px;color:#6b8c7a;font-weight:700;margin-top:2px;}
+        .wa2-stat-box .l{font-size:10px;color:var(--sub);font-weight:700;margin-top:2px;}
 
-        .wa2-result-profit{background:linear-gradient(135deg,#1fae63,#0d7a44);border-radius:16px;padding:18px;text-align:center;color:#fff;margin:14px 0;}
-        .wa2-result-profit .n{font-size:28px;font-weight:800;}
-        .wa2-result-profit .l{font-size:11px;opacity:.9;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+        .wa2-result-profit{background:linear-gradient(135deg,rgba(37,211,102,0.24),rgba(37,211,102,0.06)),var(--card);border:1px solid rgba(37,211,102,0.35);border-radius:16px;padding:18px;text-align:center;color:var(--txt);margin:14px 0;}
+        .wa2-result-profit .n{font-size:28px;font-weight:800;color:#25d366;}
+        .wa2-result-profit .l{font-size:11px;opacity:.85;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--sub);}
 
-        .wa2-err-circle{width:64px;height:64px;border-radius:50%;background:#fde2e2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px auto;font-size:28px;color:#e74c3c;}
-        .wa2-err-reason{background:#fdecec;color:#c0392b;font-weight:700;font-size:12px;padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+        .wa2-err-circle{width:64px;height:64px;border-radius:50%;background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.4);display:flex;align-items:center;justify-content:center;margin:0 auto 14px auto;font-size:28px;color:#e74c3c;}
+        .wa2-err-reason{background:rgba(231,76,60,0.12);color:#ff8a7a;font-weight:700;font-size:12px;padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:8px;margin-bottom:16px;border:1px solid rgba(231,76,60,0.3);}
 
-        .wa2-section-title{display:flex;align-items:center;gap:8px;color:#0f3d24;font-weight:800;font-size:13px;margin:16px 0 10px 0;}
-        .wa2-number-item{background:#fff;border:1px solid #d4f3e2;padding:10px 12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+        .wa2-section-title{display:flex;align-items:center;gap:8px;color:var(--txt);font-weight:800;font-size:13px;margin:16px 0 10px 0;}
+        .wa2-number-item{background:var(--card);border:1px solid var(--bd);padding:10px 12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
         .wa2-status-dot{display:inline-block;width:8px;height:8px;background:#25d366;border-radius:50%;box-shadow:0 0 6px #25d366;margin-right:7px;}
         .wa2-mini-btn{background:linear-gradient(135deg,#25d366,#128c4a);color:#fff;border:none;padding:7px 13px;border-radius:8px;font-weight:700;cursor:pointer;font-size:11.5px;}
-        .wa2-mini-btn.off{background:#f0f0f0;color:#999;}
-        .wa2-empty{color:#7c9a8a;font-size:11.5px;text-align:center;padding:12px 0;}
+        .wa2-mini-btn.off{background:var(--bd);color:var(--sub);}
+        .wa2-empty{color:var(--sub);font-size:11.5px;text-align:center;padding:12px 0;}
 
         .checkin-grid {
             display: grid;
@@ -1974,11 +1976,12 @@
         <div id="waTaskModal" class="modal-overlay">
             <div class="wa2-wrap">
                 <div class="wa2-head">
+                    <button class="wa2-back" onclick="closeWhatsAppTaskModal()">←</button>
                     <div class="wa2-head-title">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA">
                         <h3>WhatsApp টাস্ক</h3>
                     </div>
-                    <button class="wa2-close" onclick="closeWhatsAppTaskModal()">✕</button>
+                    <span class="wa2-head-spacer"></span>
                 </div>
 
                 <div class="wa2-body">
