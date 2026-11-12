@@ -4847,8 +4847,10 @@
 
         function waAdminDeleteOffer(id) {
             if (!(typeof isRegAdmin === 'function' && isRegAdmin())) return;
-            if (!confirm('এই অফারটি ডিলিট করবেন?')) return;
-            db.ref('wa_offers/' + id).remove().catch(() => alert('❌ ডিলিট করা যায়নি!'));
+            window.mpConfirm('এই অফারটি ডিলিট করবেন?', function(ok) {
+                if (!ok) return;
+                db.ref('wa_offers/' + id).remove().catch(() => alert('❌ ডিলিট করা যায়নি!'));
+            }, 'ডিলিট করুন');
         }
 
         function waSelectOffer(id) {
