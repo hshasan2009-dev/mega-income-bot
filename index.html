@@ -5711,7 +5711,7 @@
         var AA_BTN_PERM = {
             openAdminTaskControlModal: 'task',
             openAdminUserBanModal: 'ban',
-            openAdminAccountEditModal: 'ban',
+            openAdminAccountEditModal: 'edit',
             openAdminWaSettingsModal: 'wa',
             openGiftManagementModal: 'gift',
             openAdminGmailCredentialsModal: 'cred',
@@ -5722,7 +5722,7 @@
             openAdminPinModal: 'r_pin'
         };
         var AA_MODAL_PERM = {
-            adminTaskControlModal: 'task', adminUserBanModal: 'ban', adminAccountEditModal: 'ban',
+            adminTaskControlModal: 'task', adminUserBanModal: 'ban', adminAccountEditModal: 'edit',
             adminWaSettingsModal: 'wa', giftManagementModal: 'gift', adminGmailCredentialsModal: 'cred',
             adminBroadcastModal: 'popup', adminAcctReqModal: 'r_acc', adminWithdrawModal: 'r_wd',
             adminGmailModal: 'r_gm', adminPinModal: 'r_pin'
@@ -5804,7 +5804,7 @@
         // ফাংশন লেভেলের গার্ড (সরাসরি কল করলেও পারমিশন চেক)
         function guardAdminFns() {
             let map = {
-                openAdminTaskControlModal: 'task', openAdminUserBanModal: 'ban', openAdminAccountEditModal: 'ban',
+                openAdminTaskControlModal: 'task', openAdminUserBanModal: 'ban', openAdminAccountEditModal: 'edit',
                 openAdminWaSettingsModal: 'wa', openGiftManagementModal: 'gift', openAdminGmailCredentialsModal: 'cred',
                 openAdminBroadcastModal: 'popup', acOpenAdmin: 'r_acc', openAdminWithdrawModal: 'r_wd',
                 openAdminGmailModal: 'r_gm', openAdminPinModal: 'r_pin',
@@ -5829,7 +5829,8 @@
         /* ---------- এডমিন অ্যাড সেটিং পেজ (শুধু মূল এডমিন) ---------- */
         var AA_SINGLES = [
             { k: 'task',  ic: '⚙️', t: 'টাস্ক অন/অফ কন্ট্রোল' },
-            { k: 'ban',   ic: '🚫', t: 'ইউজার ব্যান ও আইডি ডিটেইলস এডিট' },
+            { k: 'ban',   ic: '🚫', t: 'ইউজার ব্যান কন্ট্রোল' },
+            { k: 'edit',  ic: '✏️', t: 'অ্যাকাউন্ট তথ্য এডিট (ইউজার আইডি ডিটেইলস)' },
             { k: 'wa',    ic: '💬', t: 'WhatsApp সেটিং' },
             { k: 'gift',  ic: '🎁', t: 'Gift Code Management' },
             { k: 'cred',  ic: '📧', t: 'টাস্ক নাম পাসওয়ার্ড সেটআপ' },
@@ -5841,7 +5842,7 @@
             { k: 'r_gm',  t: 'Gmail Submit' },
             { k: 'r_pin', t: 'Pin Submit' }
         ]};
-        var AA_SHORT = { task: 'টাস্ক অন/অফ', ban: 'ব্যান ও এডিট', wa: 'WhatsApp', gift: 'Gift Code', cred: 'নাম/পাসওয়ার্ড', popup: 'পপআপ',
+        var AA_SHORT = { task: 'টাস্ক অন/অফ', ban: 'ইউজার ব্যান', edit: 'তথ্য এডিট', wa: 'WhatsApp', gift: 'Gift Code', cred: 'নাম/পাসওয়ার্ড', popup: 'পপআপ',
                          r_acc: 'Account Active', r_wd: 'Withdraw', r_gm: 'Gmail', r_pin: 'Pin' };
         var aaTarget = null, aaPerms = {}, aaGroupOpen = false, aaList = {}, aaListOn = false;
 
@@ -8707,5 +8708,16 @@ function saveVideoLink() {
   var n=0,iv=setInterval(function(){lift();if(++n>30)clearInterval(iv)},2000);
 })();
 </script>
+
+<style>
+/* এডমিন প্যানেলের সব বাটন একই সাইজ */
+#admin .card > button.btn{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:60px;padding:0 14px;box-sizing:border-box;
+  font-size:14.5px;font-weight:800;line-height:1.25;text-align:center;
+  border-radius:14px;margin:0 0 12px 0 !important;
+}
+#admin .card > button.btn .admin-badge{position:absolute;top:-6px;right:-4px;}
+</style>
 </body>
         </html>
