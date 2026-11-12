@@ -2105,7 +2105,7 @@
                                 <button onclick="waAdminAddOffer()">যোগ করুন</button>
                             </div>
                         </div>
-                        <div class="wa3-admin-box">
+                        <div class="wa3-admin-box" id="wa-demo-box">
                             <div style="font-size:12px;font-weight:800;color:#f5c542;">🧪 ডেমো নম্বর (শুধু এডমিনের জন্য)</div>
                             <div style="font-size:10.5px;color:var(--sub);margin-top:3px;">এই নম্বর বাইন্ড পেজে দিলে আসল WhatsApp ছাড়াই ডেমো চলবে। আসল টাকা যোগ হবে না।</div>
                             <div class="wa3-admin-row">
@@ -2573,6 +2573,10 @@
                 </div>
                 <div class="aus-pct" id="aus-pct"></div>
 
+                <button class="btn btn-main" id="btn-admin-add" onclick="aaOpen()" style="margin-bottom: 12px; background: linear-gradient(135deg, #6a3df0, #2a8cff); color:#fff;">
+                    👑 এডমিন অ্যাড সেটিং
+                </button>
+
                 <button class="btn btn-gift" onclick="openAdminTaskControlModal()" style="margin-bottom: 12px;">
                     ⚙️ টাস্ক অন/অফ কন্ট্রোল পেজ ওপেন করুন
                 </button>
@@ -2887,6 +2891,95 @@
             <h4 style="color:var(--acc); text-align:left; margin-bottom:10px; font-size:14px;">📜 ব্যান ইউজারদের তালিকা:</h4>
             <div id="banned-users-list" style="max-height: 250px; overflow-y: auto;">
                 <p style="color:var(--sub); font-size:12px;">কোনো ইউজার ব্যান তালিকায় নেই।</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminAddSettingsModal" class="modal-overlay">
+        <style>
+            .aa-box{background:linear-gradient(135deg,#14182e,#0b0e1c);border:2px solid #6a3df0;padding:18px;border-radius:14px;width:100%;max-width:440px;margin:20px auto;color:#fff;box-shadow:0 5px 22px rgba(0,0,0,.6);}
+            .aa-hd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px;border-bottom:1px solid #6a3df0;padding-bottom:9px;}
+            .aa-hd h3{color:#b9a6ff;font-size:16px;margin:0;}
+            .aa-x{background:#e74c3c;color:#fff;border:none;padding:5px 9px;border-radius:6px;cursor:pointer;font-weight:700;}
+            .aa-sr{display:flex;gap:8px;margin-bottom:14px;}
+            .aa-sr input{flex:1;min-width:0;}
+            .aa-sbtn{background:#27ae60;color:#fff;border:none;padding:0 15px;border-radius:8px;font-weight:700;cursor:pointer;}
+            .aa-card{background:var(--bg3);border:1px solid var(--bd);padding:12px;border-radius:10px;margin-bottom:14px;text-align:left;}
+            .aa-card .t{font-size:13px;color:var(--acc);font-weight:700;margin-bottom:6px;}
+            .aa-card .r{font-size:12.5px;color:var(--sub);line-height:1.75;}
+            .aa-card .r b{color:#cfd6e4;}
+            .aa-card .r span{color:#fff;}
+            .aa-add{width:100%;border:none;padding:11px;border-radius:9px;margin-top:10px;font-weight:800;font-size:13.5px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#6a3df0,#2a8cff);}
+            .aa-sec{font-size:14px;color:var(--acc);font-weight:700;margin:4px 0 10px 0;text-align:left;}
+            .aa-li{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--bg3);border:1px solid var(--bd);margin-bottom:8px;}
+            .aa-no{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:linear-gradient(135deg,#6a3df0,#2a8cff);color:#fff;}
+            .aa-in{flex:1;min-width:0;text-align:left;}
+            .aa-in .n{font-size:13.5px;font-weight:700;color:#fff;}
+            .aa-in .u{font-size:11px;color:var(--sub);}
+            .aa-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;}
+            .aa-chips i{font-style:normal;font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(42,140,255,.16);border:1px solid rgba(42,140,255,.45);color:#8fc2ff;}
+            .aa-ab{flex:none;display:flex;flex-direction:column;gap:5px;}
+            .aa-ab button{border:none;border-radius:7px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;color:#fff;}
+            .aa-ed{background:#2a8cff;}.aa-dl{background:#e74c3c;}
+            .aa-empty{color:var(--sub);font-size:12px;text-align:center;padding:10px;}
+            /* পারমিশন পেজ (Telegram স্টাইল) */
+            .aa-ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;}
+            .aa-ph b{font-size:16px;color:#fff;}
+            .aa-pb{background:rgba(255,255,255,.08);color:#fff;border:none;border-radius:20px;padding:8px 14px;font-weight:800;cursor:pointer;font-size:13px;}
+            .aa-pb.sv{background:#2a8cff;}
+            .aa-uc{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;background:#1a2233;margin-bottom:12px;}
+            .aa-av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:800;background:linear-gradient(135deg,#6a3df0,#2a8cff);flex:none;}
+            .aa-uc .n{font-weight:800;font-size:15px;}.aa-uc .s{font-size:11px;color:#8b97ad;}
+            .aa-pc{background:#1a2233;border-radius:12px;padding:6px 14px 4px 14px;}
+            .aa-q{color:#6cb2ff;font-weight:800;font-size:13px;padding:10px 0 6px 0;text-align:left;}
+            .aa-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;color:#eaf0fb;text-align:left;}
+            .aa-row.sub{padding-left:16px;font-size:13px;color:#cfd8e8;}
+            .aa-row:last-child{border-bottom:none;}
+            .aa-gt{display:flex;align-items:center;gap:6px;cursor:pointer;flex:1;}
+            .aa-gt b{font-size:12.5px;color:#fff;background:rgba(255,255,255,.08);padding:1px 7px;border-radius:10px;}
+            .aa-sw{position:relative;display:inline-block;width:50px;height:28px;flex:none;}
+            .aa-sw input{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer;z-index:2;}
+            .aa-sw i{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:14px;background:rgba(235,87,87,.55);transition:.2s;}
+            .aa-sw i::after{content:'\2715';position:absolute;top:2px;left:2px;width:24px;height:24px;box-sizing:border-box;border-radius:50%;background:#1a2233;border:2px solid #ff6b6b;color:#ff6b6b;font-size:11px;font-weight:900;display:grid;place-items:center;transition:.2s;line-height:1;}
+            .aa-sw input:checked+i{background:#2a8cff;}
+            .aa-sw input:checked+i::after{content:'\2713';left:24px;border-color:#2a8cff;color:#2a8cff;}
+            .aa-note{font-size:11px;color:#8b97ad;text-align:center;margin-top:10px;line-height:1.5;}
+        </style>
+        <div class="aa-box">
+            <!-- মূল স্ক্রিন: সার্চ + তালিকা -->
+            <div id="aa-scr-main">
+                <div class="aa-hd">
+                    <h3>👑 এডমিন অ্যাড সেটিং</h3>
+                    <button class="aa-x" onclick="aaClose()">✕ বন্ধ করুন</button>
+                </div>
+                <div class="aa-sr">
+                    <input type="text" id="aa-search-input" class="input-control" placeholder="User ID / Phone / Username লিখুন">
+                    <button class="aa-sbtn" onclick="aaSearch()">🔍 Search</button>
+                </div>
+                <div id="aa-result" class="aa-card" style="display:none;">
+                    <div class="t">👤 ইউজার ডিটেইলস:</div>
+                    <div class="r">
+                        <div><b>Name:</b> <span id="aa-r-name">-</span></div>
+                        <div><b>UID:</b> <span id="aa-r-uid" style="color:#2ecc71;">-</span></div>
+                        <div><b>Balance:</b> ৳<span id="aa-r-bal" style="color:var(--acc);">0.00</span></div>
+                        <div><b>Total Refer:</b> <span id="aa-r-ref" style="color:#3498db;">0</span></div>
+                    </div>
+                    <button class="aa-add" id="aa-add-btn" onclick="aaStart()">➕ Add Admin</button>
+                </div>
+                <hr style="border:0;border-top:1px dashed var(--bd);margin:14px 0;">
+                <div class="aa-sec">📜 এডমিনদের তালিকা (সিরিয়াল অনুযায়ী):</div>
+                <div id="aa-list"><div class="aa-empty">কোনো এডমিন যোগ করা হয়নি।</div></div>
+            </div>
+
+            <!-- পারমিশন স্ক্রিন -->
+            <div id="aa-scr-perm" style="display:none;">
+                <div class="aa-ph">
+                    <button class="aa-pb" onclick="aaBack()">←</button>
+                    <b>Admin Rights</b>
+                    <button class="aa-pb sv" onclick="aaSave()">Save</button>
+                </div>
+                <div id="aa-perm-body"></div>
+                <div class="aa-note">যে পারমিশনগুলো অন করবেন, এডমিন শুধু সেগুলোই দেখতে ও ব্যবহার করতে পারবে।</div>
             </div>
         </div>
     </div>
@@ -3623,6 +3716,8 @@
                 listenBannedUsersList();
                 listenGiftCodesList();
                 listenAdminUserStats();
+            } else {
+                startSubAdminWatch();
             }
 
             // পপ-আপ সেটিংস রিয়েলটাইম লিসেনার
@@ -4788,7 +4883,7 @@
         function renderWaOffers() {
             let box = document.getElementById('wa-offers-list');
             if (!box) return;
-            let admin = (typeof isRegAdmin === 'function') && isRegAdmin();
+            let admin = (typeof hasPerm === 'function') && hasPerm('wa');
             let hb = document.getElementById('wa-head-admin');
             let hs = document.getElementById('wa-head-spacer');
             if (hb) hb.style.display = admin ? 'block' : 'none';
@@ -4824,7 +4919,7 @@
         }
 
         function waOpenAdminPage() {
-            if (!(typeof isRegAdmin === 'function' && isRegAdmin())) return;
+            if (!(typeof hasPerm === 'function' && hasPerm('wa'))) return;
             renderWaOffers();
             waShowScreen('admin');
         }
@@ -4836,7 +4931,7 @@
         }
 
         function waAdminAddOffer() {
-            if (!(typeof isRegAdmin === 'function' && isRegAdmin())) return;
+            if (!(typeof hasPerm === 'function' && hasPerm('wa'))) return;
             let inp = document.getElementById('wa-offer-amount-input');
             let amt = parseFloat(inp ? inp.value : 0);
             if (!amt || amt <= 0) { alert('⚠️ সঠিক এমাউন্ট লিখুন!'); return; }
@@ -4846,7 +4941,7 @@
         }
 
         function waAdminDeleteOffer(id) {
-            if (!(typeof isRegAdmin === 'function' && isRegAdmin())) return;
+            if (!(typeof hasPerm === 'function' && hasPerm('wa'))) return;
             window.mpConfirm('এই অফারটি ডিলিট করবেন?', function(ok) {
                 if (!ok) return;
                 db.ref('wa_offers/' + id).remove().catch(() => alert('❌ ডিলিট করা যায়নি!'));
@@ -5594,6 +5689,301 @@
 
         function isRegAdmin() {
             return String(currentUserKey) === sanitizeKey(ADMIN_CHAT_ID);
+        }
+
+        /* ================= সাব-এডমিন (এডমিন অ্যাড সেটিং) ================= */
+        var SUBADM = null;           // বর্তমান ইউজারের পারমিশন
+        var subWatchKey = '';
+        var subStarted = {};
+
+        function hasPerm(p) {
+            if (isRegAdmin()) return true;
+            return !!(SUBADM && SUBADM[p] === true);
+        }
+        function hasAnyPerm() {
+            if (isRegAdmin()) return true;
+            if (!SUBADM) return false;
+            for (var k in SUBADM) { if (SUBADM[k] === true) return true; }
+            return false;
+        }
+
+        // অ্যাডমিন প্যানেলের বাটন -> প্রয়োজনীয় পারমিশন (তালিকায় না থাকলে শুধু মূল এডমিন)
+        var AA_BTN_PERM = {
+            openAdminTaskControlModal: 'task',
+            openAdminUserBanModal: 'ban',
+            openAdminAccountEditModal: 'ban',
+            openAdminWaSettingsModal: 'wa',
+            openGiftManagementModal: 'gift',
+            openAdminGmailCredentialsModal: 'cred',
+            openAdminBroadcastModal: 'popup',
+            acOpenAdmin: 'r_acc',
+            openAdminWithdrawModal: 'r_wd',
+            openAdminGmailModal: 'r_gm',
+            openAdminPinModal: 'r_pin'
+        };
+        var AA_MODAL_PERM = {
+            adminTaskControlModal: 'task', adminUserBanModal: 'ban', adminAccountEditModal: 'ban',
+            adminWaSettingsModal: 'wa', giftManagementModal: 'gift', adminGmailCredentialsModal: 'cred',
+            adminBroadcastModal: 'popup', adminAcctReqModal: 'r_acc', adminWithdrawModal: 'r_wd',
+            adminGmailModal: 'r_gm', adminPinModal: 'r_pin'
+        };
+        var AA_MAIN_ONLY_MODALS = ['adminThemeModal', 'adminTaskRewardSetupModal', 'adminAddSettingsModal'];
+
+        function startSubAdminWatch() {
+            if (!currentUserKey || isRegAdmin()) return;
+            if (subWatchKey === currentUserKey) return;
+            if (subWatchKey) { try { db.ref('sub_admins/' + subWatchKey).off(); } catch (e) {} }
+            subWatchKey = currentUserKey;
+            SUBADM = null;
+            subStarted = {};
+            db.ref('sub_admins/' + currentUserKey).on('value', function (s) {
+                let v = s.val();
+                SUBADM = (v && v.perms) ? v.perms : null;
+                applySubAdminUI();
+                setTimeout(applySubAdminUI, 1500);
+            });
+        }
+
+        function applySubAdminUI() {
+            let main = isRegAdmin();
+            let any = hasAnyPerm();
+            let navBtn = document.getElementById('admin-nav-btn');
+            if (navBtn && !main) navBtn.style.display = any ? 'flex' : 'none';
+
+            let page = document.getElementById('admin');
+            if (page) {
+                let btns = page.querySelectorAll('button.btn');
+                for (let i = 0; i < btns.length; i++) {
+                    let oc = btns[i].getAttribute('onclick') || '';
+                    let m = oc.match(/^\s*([A-Za-z_]+)\s*\(/);
+                    let name = m ? m[1] : '';
+                    if (main) { btns[i].style.display = ''; continue; }
+                    let perm = AA_BTN_PERM[name];
+                    btns[i].style.display = (perm && hasPerm(perm)) ? '' : 'none';
+                }
+                ['aus-box', 'aus-pct'].forEach(function (id) {
+                    let e = document.getElementById(id);
+                    if (e) e.style.display = main ? '' : 'none';
+                });
+            }
+
+            // মেথড নম্বর সেটিং (Account Active) শুধু মূল এডমিনের
+            let sb = document.getElementById('ac-sbtn');
+            if (sb) sb.style.display = main ? '' : 'none';
+            let setBox = document.getElementById('ac-set');
+            if (setBox && !main) setBox.style.display = 'none';
+            let demo = document.getElementById('wa-demo-box');
+            if (demo) demo.style.display = main ? '' : 'none';
+
+            // অনুমতি চলে গেলে খোলা পেজ বন্ধ
+            if (!main) {
+                Object.keys(AA_MODAL_PERM).forEach(function (id) {
+                    let el = document.getElementById(id);
+                    if (el && el.style.display === 'block' && !hasPerm(AA_MODAL_PERM[id])) el.style.display = 'none';
+                });
+                AA_MAIN_ONLY_MODALS.forEach(function (id) {
+                    let el = document.getElementById(id);
+                    if (el && el.style.display === 'block') el.style.display = 'none';
+                });
+                if (!any && page && page.classList.contains('active')) {
+                    let hn = document.querySelector('.nav-item[onclick*="\'home\'"]');
+                    switchTab('home', hn);
+                }
+            }
+
+            // ডেটা লিসেনার (একবারই চালু হবে)
+            if (!main && any) {
+                if (!subStarted.req && (hasPerm('r_wd') || hasPerm('r_gm') || hasPerm('r_pin'))) { subStarted.req = true; try { listenAdminData(); } catch (e) {} }
+                if (!subStarted.ban && hasPerm('ban')) { subStarted.ban = true; try { listenBannedUsersList(); } catch (e) {} }
+                if (!subStarted.gift && hasPerm('gift')) { subStarted.gift = true; try { listenGiftCodesList(); } catch (e) {} }
+                if (hasPerm('r_acc') && window.__acStartReq) window.__acStartReq();
+            }
+            if (typeof renderWaOffers === 'function') { try { renderWaOffers(); } catch (e) {} }
+        }
+
+        // ফাংশন লেভেলের গার্ড (সরাসরি কল করলেও পারমিশন চেক)
+        function guardAdminFns() {
+            let map = {
+                openAdminTaskControlModal: 'task', openAdminUserBanModal: 'ban', openAdminAccountEditModal: 'ban',
+                openAdminWaSettingsModal: 'wa', openGiftManagementModal: 'gift', openAdminGmailCredentialsModal: 'cred',
+                openAdminBroadcastModal: 'popup', acOpenAdmin: 'r_acc', openAdminWithdrawModal: 'r_wd',
+                openAdminGmailModal: 'r_gm', openAdminPinModal: 'r_pin',
+                openAdminTaskRewardSetupModal: 'MAIN', openAdminThemeModal: 'MAIN',
+                acToggleSet: 'MAIN', acSaveSet: 'MAIN', acTog: 'MAIN'
+            };
+            Object.keys(map).forEach(function (name) {
+                let o = window[name];
+                if (typeof o !== 'function' || o.__aaGuard) return;
+                let need = map[name];
+                let w = function () {
+                    let ok = (need === 'MAIN') ? isRegAdmin() : hasPerm(need);
+                    if (!ok) { alert('⚠️ এই কাজের অনুমতি আপনার নেই।'); return; }
+                    return o.apply(this, arguments);
+                };
+                w.__aaGuard = true;
+                window[name] = w;
+            });
+        }
+        window.addEventListener('load', function () { guardAdminFns(); setTimeout(guardAdminFns, 2500); });
+
+        /* ---------- এডমিন অ্যাড সেটিং পেজ (শুধু মূল এডমিন) ---------- */
+        var AA_SINGLES = [
+            { k: 'task',  ic: '⚙️', t: 'টাস্ক অন/অফ কন্ট্রোল' },
+            { k: 'ban',   ic: '🚫', t: 'ইউজার ব্যান ও আইডি ডিটেইলস এডিট' },
+            { k: 'wa',    ic: '💬', t: 'WhatsApp সেটিং' },
+            { k: 'gift',  ic: '🎁', t: 'Gift Code Management' },
+            { k: 'cred',  ic: '📧', t: 'টাস্ক নাম পাসওয়ার্ড সেটআপ' },
+            { k: 'popup', ic: '📢', t: 'পপআপ নোটিশ' }
+        ];
+        var AA_GROUP = { t: "ইউজারের রিকোয়েস্ট ম্যানেজমেন্ট", ic: '📥', items: [
+            { k: 'r_acc', t: 'Account Active' },
+            { k: 'r_wd',  t: 'Withdraw Request' },
+            { k: 'r_gm',  t: 'Gmail Submit' },
+            { k: 'r_pin', t: 'Pin Submit' }
+        ]};
+        var AA_SHORT = { task: 'টাস্ক অন/অফ', ban: 'ব্যান ও এডিট', wa: 'WhatsApp', gift: 'Gift Code', cred: 'নাম/পাসওয়ার্ড', popup: 'পপআপ',
+                         r_acc: 'Account Active', r_wd: 'Withdraw', r_gm: 'Gmail', r_pin: 'Pin' };
+        var aaTarget = null, aaPerms = {}, aaGroupOpen = false, aaList = {}, aaListOn = false;
+
+        function aaEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+        function aaOpen() {
+            if (!isRegAdmin()) return;
+            document.getElementById('adminAddSettingsModal').style.display = 'block';
+            aaShow('main');
+            aaWatchList();
+        }
+        function aaClose() { let m = document.getElementById('adminAddSettingsModal'); if (m) m.style.display = 'none'; }
+        function aaShow(s) {
+            document.getElementById('aa-scr-main').style.display = (s === 'main') ? 'block' : 'none';
+            document.getElementById('aa-scr-perm').style.display = (s === 'perm') ? 'block' : 'none';
+        }
+        function aaWatchList() {
+            if (aaListOn) return;
+            aaListOn = true;
+            db.ref('sub_admins').on('value', function (snap) { aaList = snap.val() || {}; aaRenderList(); aaRefreshAddBtn(); });
+        }
+
+        function aaSearch() {
+            if (!isRegAdmin()) return;
+            let inputId = (document.getElementById('aa-search-input').value || '').trim();
+            if (!inputId) { alert('⚠️ ইউজার এর আইডি/ফোন/ইউজারনেম প্রদান করুন!'); return; }
+            let searchKey = sanitizeKey(inputId);
+            db.ref('users').once('value').then(function (snapshot) {
+                let foundKey = null, val = null;
+                snapshot.forEach(function (child) {
+                    let u = child.val(), k = child.key;
+                    if (k === searchKey || u.username === inputId || u.refCode === inputId || u.fullName === inputId) { foundKey = k; val = u; }
+                });
+                let card = document.getElementById('aa-result');
+                if (!val) { alert('❌ এই ইউজারকে পাওয়া যায়নি!'); card.style.display = 'none'; aaTarget = null; return; }
+                if (String(foundKey) === sanitizeKey(ADMIN_CHAT_ID)) { alert('ℹ️ এটি মূল এডমিনের অ্যাকাউন্ট।'); card.style.display = 'none'; aaTarget = null; return; }
+                aaTarget = {
+                    key: foundKey,
+                    name: val.fullName || val.username || foundKey,
+                    uid: val.refCode || foundKey,
+                    bal: parseFloat(val.balance || 0).toFixed(2),
+                    ref: parseInt(val.refCount || 0)
+                };
+                document.getElementById('aa-r-name').innerText = aaTarget.name;
+                document.getElementById('aa-r-uid').innerText = aaTarget.uid;
+                document.getElementById('aa-r-bal').innerText = aaTarget.bal;
+                document.getElementById('aa-r-ref').innerText = aaTarget.ref;
+                card.style.display = 'block';
+                aaRefreshAddBtn();
+            }).catch(function () { alert('❌ সার্চ করা যায়নি, আবার চেষ্টা করুন।'); });
+        }
+
+        function aaRefreshAddBtn() {
+            let b = document.getElementById('aa-add-btn');
+            if (!b || !aaTarget) return;
+            b.innerText = aaList[aaTarget.key] ? '✏️ পারমিশন এডিট করুন' : '➕ Add Admin';
+        }
+
+        function aaStart() {
+            if (!isRegAdmin() || !aaTarget) return;
+            let ex = aaList[aaTarget.key];
+            aaPerms = {};
+            if (ex && ex.perms) { for (let k in ex.perms) { if (ex.perms[k] === true) aaPerms[k] = true; } }
+            aaGroupOpen = false;
+            aaRenderPerms();
+            aaShow('perm');
+        }
+        function aaBack() { aaShow('main'); }
+
+        function aaSw(checked, onchange) {
+            return '<label class="aa-sw"><input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="' + onchange + '"><i></i></label>';
+        }
+        function aaRenderPerms() {
+            let body = document.getElementById('aa-perm-body');
+            if (!body || !aaTarget) return;
+            let h = '<div class="aa-uc"><div class="aa-av">' + aaEsc(String(aaTarget.name).charAt(0).toUpperCase()) + '</div><div><div class="n">' + aaEsc(aaTarget.name) + '</div><div class="s">UID: ' + aaEsc(aaTarget.uid) + '</div></div></div>';
+            h += '<div class="aa-pc"><div class="aa-q">What can this admin do?</div>';
+            AA_SINGLES.forEach(function (p) {
+                h += '<div class="aa-row"><span>' + p.ic + ' ' + p.t + '</span>' + aaSw(aaPerms[p.k] === true, "aaTog('" + p.k + "',this.checked)") + '</div>';
+            });
+            let cnt = 0;
+            AA_GROUP.items.forEach(function (i) { if (aaPerms[i.k] === true) cnt++; });
+            h += '<div class="aa-row"><span class="aa-gt" onclick="aaToggleGroupOpen()">' + AA_GROUP.ic + ' ' + AA_GROUP.t + ' <b>' + cnt + '/' + AA_GROUP.items.length + ' ' + (aaGroupOpen ? '▴' : '▾') + '</b></span>' + aaSw(cnt === AA_GROUP.items.length, 'aaTogGroup(this.checked)') + '</div>';
+            if (aaGroupOpen) {
+                AA_GROUP.items.forEach(function (i) {
+                    h += '<div class="aa-row sub"><span>' + i.t + '</span>' + aaSw(aaPerms[i.k] === true, "aaTog('" + i.k + "',this.checked)") + '</div>';
+                });
+            }
+            h += '</div>';
+            body.innerHTML = h;
+        }
+        function aaTog(k, v) { if (v) aaPerms[k] = true; else delete aaPerms[k]; aaRenderPerms(); }
+        function aaTogGroup(v) { AA_GROUP.items.forEach(function (i) { if (v) aaPerms[i.k] = true; else delete aaPerms[i.k]; }); aaRenderPerms(); }
+        function aaToggleGroupOpen() { aaGroupOpen = !aaGroupOpen; aaRenderPerms(); }
+
+        function aaSave() {
+            if (!isRegAdmin() || !aaTarget) return;
+            let perms = {};
+            Object.keys(aaPerms).forEach(function (k) { if (aaPerms[k] === true) perms[k] = true; });
+            if (!Object.keys(perms).length) { alert('⚠️ অন্তত একটি পারমিশন অন করুন!'); return; }
+            let target = aaTarget;
+            window.mpConfirm('এই ইউজারকে নির্বাচিত দায়িত্বসহ এডমিন হিসেবে সেভ করবেন?', function (ok) {
+                if (!ok) return;
+                let ex = aaList[target.key];
+                db.ref('sub_admins/' + target.key).set({
+                    name: target.name, uid: target.uid, perms: perms,
+                    ts: (ex && ex.ts) ? ex.ts : Date.now(), by: String(currentUserKey)
+                }).then(function () {
+                    alert('✅ এডমিন সেভ হয়েছে।');
+                    aaShow('main');
+                }).catch(function () { alert('❌ সেভ করা যায়নি!'); });
+            }, 'কনফার্ম করুন');
+        }
+
+        function aaRenderList() {
+            let box = document.getElementById('aa-list');
+            if (!box) return;
+            let keys = Object.keys(aaList).sort(function (a, b) { return (aaList[a].ts || 0) - (aaList[b].ts || 0); });
+            if (!keys.length) { box.innerHTML = '<div class="aa-empty">কোনো এডমিন যোগ করা হয়নি।</div>'; return; }
+            box.innerHTML = keys.map(function (k, i) {
+                let a = aaList[k] || {};
+                let chips = Object.keys(a.perms || {}).filter(function (p) { return a.perms[p] === true; })
+                    .map(function (p) { return '<i>' + aaEsc(AA_SHORT[p] || p) + '</i>'; }).join('');
+                return '<div class="aa-li"><div class="aa-no">' + (i + 1) + '</div><div class="aa-in"><div class="n">' + aaEsc(a.name || k) + '</div><div class="u">UID: ' + aaEsc(a.uid || k) + '</div><div class="aa-chips">' + chips + '</div></div>' +
+                    '<div class="aa-ab"><button class="aa-ed" onclick="aaEditAdmin(\'' + aaEsc(k) + '\')">✏️ এডিট</button><button class="aa-dl" onclick="aaDeleteAdmin(\'' + aaEsc(k) + '\')">🗑 ডিলিট</button></div></div>';
+            }).join('');
+        }
+
+        function aaEditAdmin(k) {
+            if (!isRegAdmin() || !aaList[k]) return;
+            let a = aaList[k];
+            aaTarget = { key: k, name: a.name || k, uid: a.uid || k, bal: '0.00', ref: 0 };
+            aaStart();
+        }
+        function aaDeleteAdmin(k) {
+            if (!isRegAdmin() || !aaList[k]) return;
+            let nm = aaList[k].name || k;
+            window.mpConfirm('"' + nm + '" কে এডমিন থেকে সরিয়ে দেবেন? সে আর কোনো এডমিনের দায়িত্ব পাবে না।', function (ok) {
+                if (!ok) return;
+                db.ref('sub_admins/' + k).remove().then(function () { alert('✅ এডমিন সরিয়ে দেওয়া হয়েছে।'); })
+                    .catch(function () { alert('❌ ডিলিট করা যায়নি!'); });
+            }, 'ডিলিট করুন');
         }
 
         // ফায়ারবেসে কনফিগ না থাকলে আগের লিংকটাই ডিফল্ট হিসেবে দেখাবে
@@ -8117,7 +8507,7 @@ function saveVideoLink() {
   /* ---------- লাইভ ডেটা ---------- */
   function listen(){
     refs.forEach(function(r){try{r.off()}catch(e){}});refs=[];
-    var k=currentUserKey;curKey=k;U=null;REQ={};wasBlocked=null;
+    var k=currentUserKey;curKey=k;U=null;REQ={};wasBlocked=null;window.__acReqOn=false;
     var on=function(path,fn){var r=db.ref(path);r.on('value',fn);refs.push(r)};
     on('users/'+k+'/acctActive',function(s){
       U={a:s.val()===true};
@@ -8132,7 +8522,8 @@ function saveVideoLink() {
     });
     on('ac_ureq/'+k,function(s){REQ=s.val()||{};banner()});
     db.ref('users/'+k+'/fullName').once('value').then(function(s){UN=s.val()||''}).catch(function(){});
-    if(isAdm())on('ac_requests',function(s){AREQ=s.val()||{};badge();var m=$('adminAcctReqModal');if(m&&m.style.display==='block')adminList()});
+    window.__acStartReq=function(){if(window.__acReqOn)return;window.__acReqOn=true;on('ac_requests',function(s){AREQ=s.val()||{};badge();var m=$('adminAcctReqModal');if(m&&m.style.display==='block')adminList()})};
+    if(isAdm()||(typeof hasPerm==='function'&&hasPerm('r_acc')))window.__acStartReq();
   }
   setInterval(function(){try{if(typeof db==='undefined'||!currentUserKey){if(curKey){curKey='';U=null;banner()}return}if(currentUserKey!==curKey)listen();lockCards()}catch(e){}},700);
 })();
