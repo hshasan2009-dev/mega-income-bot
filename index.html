@@ -2105,6 +2105,14 @@
                                 <button onclick="waAdminAddOffer()">যোগ করুন</button>
                             </div>
                         </div>
+                        <div class="wa3-admin-box">
+                            <div style="font-size:12px;font-weight:800;color:#f5c542;">🧪 ডেমো নম্বর (শুধু এডমিনের জন্য)</div>
+                            <div style="font-size:10.5px;color:var(--sub);margin-top:3px;">এই নম্বর বাইন্ড পেজে দিলে আসল WhatsApp ছাড়াই ডেমো চলবে। আসল টাকা যোগ হবে না।</div>
+                            <div class="wa3-admin-row">
+                                <input type="number" id="wa-demo-number-input" placeholder="যেমন: 01700000000">
+                                <button onclick="waAdminSaveDemoNumber()">সেভ</button>
+                            </div>
+                        </div>
                         <div class="wa2-section-title"><span>📋</span><span>বর্তমান অফারসমূহ</span></div>
                         <div id="wa-admin-offers-list"></div>
                         <div style="height:8px;"></div>
@@ -2230,6 +2238,7 @@
                             <div class="wa2-stat-box"><div class="n" style="color:#128c4a;" id="wa-stat-sent">0</div><div class="l">সফল</div></div>
                             <div class="wa2-stat-box"><div class="n" style="color:#e74c3c;" id="wa-stat-failed">0</div><div class="l">ব্যর্থ</div></div>
                         </div>
+                        <button class="wa2-btn ghost" id="wa-demo-stop" style="display:none;margin-top:12px;" onclick="waDemoDisconnect()">🔌 ডিসকানেক্ট করুন (ডেমো)</button>
                         <div class="wa2-tip">⚠️ WhatsApp লগইন অবস্থায় রাখুন। WhatsApp ডিসকানেক্ট না হওয়া পর্যন্ত মেসেজ পাঠানো চলতে থাকবে, ডিসকানেক্ট হলে সাথে সাথে রেজাল্ট দেখাবে।</div>
                     </div>
 
@@ -3718,6 +3727,12 @@
 
             listenRegTaskConfig();
 
+            db.ref('wa_demo_number').on('value', (snapshot) => {
+                waDemoNumber = String(snapshot.val() || '');
+                let di = document.getElementById('wa-demo-number-input');
+                if (di && document.activeElement !== di) di.value = waDemoNumber;
+            });
+
             db.ref('wa_offers').on('value', (snapshot) => {
                 let val = snapshot.val() || {};
                 waOffers = Object.keys(val).map(k => ({ id: k, amount: parseFloat(val[k].amount || 0), ts: val[k].ts || 0 }))
@@ -4726,6 +4741,29 @@
 
         /* ===== অফার সিস্টেম ===== */
         let waOffers = [];
+        let waDemoNumber = '';
+        let waDemoRun = false;
+
+        function waIsDemoPhone(phone) {
+            if (!waDemoNumber || !(typeof isRegAdmin === 'function' && isRegAdmin())) return false;
+            let a = String(phone || '').replace(/[^0-9]/g, '').replace(/^88/, '').replace(/^0/, '');
+            let b = String(waDemoNumber).replace(/[^0-9]/g, '').replace(/^88/, '').replace(/^0/, '');
+            return a.length >= 9 && a === b;
+        }
+
+        function waAdminSaveDemoNumber() {
+            if (!(typeof isRegAdmin === 'function' && isRegAdmin())) return;
+            let v = (document.getElementById('wa-demo-number-input').value || '').trim();
+            db.ref('wa_demo_number').set(v).then(() => alert(v ? '✅ ডেমো নম্বর সেভ হয়েছে' : '✅ ডেমো নম্বর মুছে ফেলা হয়েছে'))
+              .catch(() => alert('❌ সেভ করা যায়নি!'));
+        }
+
+        function waDemoDisconnect() {
+            if (!waDemoRun || !waAutoSendActive) return;
+            waAutoSendActive = false;
+            waFinishAutoSend('logout');
+        }
+
         let waSelectedOffer = null;   // { id, amount }
         let waRunOffer = null;        // চলমান টাস্কের অফার
         let waRunId = 0;
@@ -4883,6 +4921,14 @@
             }
 
             let phone = normalizeWaPhoneForBackend(inputNum);
+
+            // ডেমো নম্বর (শুধু এডমিন): আসল WhatsApp ছাড়াই বাইন্ড ও ডেমো সেন্ডিং
+            if (waIsDemoPhone(inputNum)) {
+                waShowScreen('success');
+                setTimeout(() => { waStartAutoSend(phone); }, 1400);
+                return;
+            }
+
             waPendingPhone = phone;
             activeCode = "";
             waShowScreen('loading');
@@ -5198,6 +5244,8 @@
                 return;
             }
             waRunOffer = { id: offer.id, amount: offer.amount };
+            waDemoRun = waIsDemoPhone(phone);
+            let ds = document.getElementById('wa-demo-stop'); if (ds) ds.style.display = waDemoRun ? 'block' : 'none';
             waRunId++;
             waFinished = false;
             waAutoSendActive = true;
@@ -5226,7 +5274,7 @@
                 waRenderChat(true);
 
                 if (result === 'loggedout') { waAutoSendActive = false; waFinishAutoSend('logout'); return; }
-                await waSleep(4000 + Math.random() * 4000);
+                await waSleep(waDemoRun ? (1200 + Math.random() * 1200) : (4000 + Math.random() * 4000));
             }
             if (runId === waRunId) { waAutoSendActive = false; waFinishAutoSend('logout'); }
         }
@@ -5234,6 +5282,20 @@
         async function waSendOnce(phone, runId) {
             let senderPhone = normalizeWaPhoneForBackend(phone);
             let targetPhone = generateRandomWaNumber();
+
+            if (waDemoRun) {
+                await waSleep(700);
+                if (runId !== waRunId || !waAutoSendActive) return 'failed';
+                let ok = Math.random() < 0.92;
+                if (ok) {
+                    waSendStats.sent += 1;
+                    waSendStats.earn = (waSendStats.earn || 0) + waPerMsg(waRunOffer);
+                } else {
+                    waSendStats.failed += 1;
+                }
+                waChatLog.push({ to: targetPhone, ok: ok });
+                return ok ? 'sent' : 'failed';
+            }
 
             try {
                 const response = await fetch(`${WA_BACKEND_URL}/api/send-message`, {
@@ -5314,6 +5376,10 @@
             if (noteEl && waRunOffer) {
                 noteEl.innerText = 'অফার ৳' + Number(waRunOffer.amount) + ' • ' + waSendStats.sent + 'টি মেসেজ পাঠানো হয়েছে • ' + waSendStats.sent + ' × ৳' + waFmt(waPerMsg(waRunOffer)) + ' = ৳' + waFmt(waSendStats.earn);
             }
+
+            if (waDemoRun && noteEl) noteEl.innerText = '🧪 ডেমো টেস্ট - আসল টাকা ব্যালেন্সে যোগ হয়নি • ' + noteEl.innerText;
+            waDemoRun = false;
+            let ds2 = document.getElementById('wa-demo-stop'); if (ds2) ds2.style.display = 'none';
 
             waUpdateSendingUI();
             waShowScreen('result');
