@@ -970,6 +970,12 @@
         .wa3-chip{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:20px;background:rgba(37,211,102,.16);border:1px solid rgba(37,211,102,.4);font-size:10.5px;font-weight:800;color:#25d366;}
         .wa3-go{flex:none;position:relative;z-index:1;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(37,211,102,.18);color:#25d366;font-weight:900;}
         .wa3-offer-del{flex:none;position:relative;z-index:2;background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.5);color:#ff7a6a;border-radius:10px;padding:6px 9px;font-size:12px;font-weight:800;cursor:pointer;}
+        .wa3-head-admin{flex:none;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:20px;padding:6px 11px;font-size:11.5px;font-weight:800;cursor:pointer;}
+        .wa3-offer-card{cursor:default !important;}
+        .wa3-offer-ico{background:transparent !important;box-shadow:none !important;width:50px !important;height:50px !important;}
+        .wa3-offer-ico img{width:50px;height:50px;filter:drop-shadow(0 4px 8px rgba(18,140,74,.45));}
+        .wa3-start{flex:none;position:relative;z-index:1;border:none;padding:10px 14px;border-radius:12px;font-size:12.5px;font-weight:900;color:#fff;cursor:pointer;background:linear-gradient(135deg,#25d366,#0e9f55);box-shadow:0 6px 14px rgba(18,140,74,.4);white-space:nowrap;}
+        .wa3-start:active{transform:scale(.96);}
         .wa3-no-offer{text-align:center;padding:26px 14px;border-radius:16px;background:var(--card);border:1px dashed var(--bd);color:var(--sub);font-size:12.5px;line-height:1.6;}
         .wa3-no-offer .e{font-size:34px;display:block;margin-bottom:8px;}
         .wa3-admin-box{margin:0 0 14px 0;padding:12px;border-radius:14px;background:rgba(243,156,18,.08);border:1px dashed rgba(243,156,18,.55);}
@@ -2067,7 +2073,7 @@
                         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA">
                         <h3>WhatsApp টাস্ক</h3>
                     </div>
-                    <span class="wa2-head-spacer"></span>
+                    <button class="wa3-head-admin" id="wa-head-admin" style="display:none;" onclick="waOpenAdminPage()">🛡️ এডমিন</button><span class="wa2-head-spacer" id="wa-head-spacer"></span>
                 </div>
 
                 <div class="wa2-body">
@@ -2084,24 +2090,31 @@
                             <div class="wa2-perk">💰 তাৎক্ষণিক আয়</div>
                         </div>
 
-                        <button class="wa3-admin-toggle" id="wa-admin-toggle" style="display:none;" onclick="waToggleOfferAdmin()">⚙️ অফার ম্যানেজ করুন (এডমিন)</button>
-                        <div class="wa3-admin-box" id="wa-admin-box" style="display:none;">
+                        <div class="wa2-section-title"><span>🎁</span><span>চলমান অফার</span></div>
+                        <div id="wa-offers-list"></div>
+                    </div>
+
+                    <!-- এডমিন পেজ -->
+                    <div class="wa2-screen" id="wa-screen-admin">
+                        <div class="wa2-title">🛡️ এডমিন - অফার ম্যানেজ</div>
+                        <div class="wa2-sub">যে এমাউন্ট দিবেন, প্রতি ৫০টি মেসেজে ততো টাকা পাওয়া যাবে (প্রতি মেসেজে এমাউন্ট ÷ ৫০)।</div>
+                        <div class="wa3-admin-box">
                             <div style="font-size:12px;font-weight:800;color:#f5c542;">➕ নতুন অফার যোগ করুন</div>
-                            <div style="font-size:10.5px;color:var(--sub);margin-top:3px;">যে এমাউন্ট দিবেন, একটি অ্যাকাউন্ট ৫০টি মেসেজে সর্বোচ্চ ততো টাকাই পাবে।</div>
                             <div class="wa3-admin-row">
                                 <input type="number" id="wa-offer-amount-input" placeholder="যেমন: 300" min="1">
                                 <button onclick="waAdminAddOffer()">যোগ করুন</button>
                             </div>
                         </div>
-
-                        <div class="wa2-section-title"><span>🎁</span><span>চলমান অফার</span></div>
-                        <div id="wa-offers-list"></div>
+                        <div class="wa2-section-title"><span>📋</span><span>বর্তমান অফারসমূহ</span></div>
+                        <div id="wa-admin-offers-list"></div>
+                        <div style="height:8px;"></div>
+                        <button class="wa2-btn ghost" onclick="waShowScreen('intro')">← ফিরে যান</button>
                     </div>
 
                     <!-- স্ক্রিন ১.৫: অফার নির্বাচিত - নম্বর যুক্ত ও শুরু -->
                     <div class="wa2-screen" id="wa-screen-offer">
                         <div class="wa3-offer-hero">
-                            <div class="l">নির্বাচিত অফার - ৫০টি মেসেজে সর্বোচ্চ</div>
+                            <div class="l">নির্বাচিত অফার - প্রতি ৫০টি মেসেজে</div>
                             <div class="big">৳ <span id="wa-offer-hero-amt">0</span></div>
                             <div class="rate">প্রতি মেসেজে ৳<span id="wa-offer-hero-rate">0.00</span></div>
                         </div>
@@ -2198,10 +2211,10 @@
                                     <circle class="bg" cx="66" cy="66" r="56" fill="none" stroke-width="10"></circle>
                                     <circle class="fg" id="wa-ring-fg" cx="66" cy="66" r="56" fill="none" stroke-width="10" stroke-dasharray="351.86" stroke-dashoffset="351.86"></circle>
                                 </svg>
-                                <div class="wa3-ring-c"><div class="n" id="wa-ring-num">0</div><div class="l">/ ৫০ মেসেজ</div></div>
+                                <div class="wa3-ring-c"><div class="n" id="wa-ring-num">0</div><div class="l">মেসেজ</div></div>
                             </div>
                             <div class="wa3-earn" id="wa-stat-earn">৳0.00</div>
-                            <div class="wa3-earn-l">এই রাউন্ডের আয় (সর্বোচ্চ ৳<span id="wa-run-max">0</span>)</div>
+                            <div class="wa3-earn-l">এই রাউন্ডের আয় <span id="wa-run-max" style="display:none">0</span></div>
                         </div>
 
                         <div class="wa2-live-status" id="wa-live-status">টাস্ক খোঁজা হচ্ছে...</div>
@@ -2217,7 +2230,7 @@
                             <div class="wa2-stat-box"><div class="n" style="color:#128c4a;" id="wa-stat-sent">0</div><div class="l">সফল</div></div>
                             <div class="wa2-stat-box"><div class="n" style="color:#e74c3c;" id="wa-stat-failed">0</div><div class="l">ব্যর্থ</div></div>
                         </div>
-                        <div class="wa2-tip">⚠️ WhatsApp লগইন অবস্থায় রাখুন। WhatsApp ডিসকানেক্ট হলে বা ৫০টি সম্পন্ন হলে সাথে সাথে রেজাল্ট দেখাবে।</div>
+                        <div class="wa2-tip">⚠️ WhatsApp লগইন অবস্থায় রাখুন। WhatsApp ডিসকানেক্ট না হওয়া পর্যন্ত মেসেজ পাঠানো চলতে থাকবে, ডিসকানেক্ট হলে সাথে সাথে রেজাল্ট দেখাবে।</div>
                     </div>
 
                     <!-- স্ক্রিন ৭: ফলাফল -->
@@ -4738,24 +4751,44 @@
             let box = document.getElementById('wa-offers-list');
             if (!box) return;
             let admin = (typeof isRegAdmin === 'function') && isRegAdmin();
-            let tgl = document.getElementById('wa-admin-toggle');
-            if (tgl) tgl.style.display = admin ? 'block' : 'none';
-            if (!admin) { let ab = document.getElementById('wa-admin-box'); if (ab) ab.style.display = 'none'; }
+            let hb = document.getElementById('wa-head-admin');
+            let hs = document.getElementById('wa-head-spacer');
+            if (hb) hb.style.display = admin ? 'block' : 'none';
+            if (hs) hs.style.display = admin ? 'none' : 'block';
 
             if (!waOffers.length) {
                 box.innerHTML = `<div class="wa3-no-offer"><span class="e">🎁</span>এখন কোনো অফার নেই।<br>অফার না থাকলে কাজ করা যাবে না। নতুন অফার এলে এখানে দেখতে পাবেন।</div>`;
-                return;
-            }
-            box.innerHTML = waOffers.map(o => `
-                <div class="wa3-offer-card" onclick="waSelectOffer('${o.id}')">
-                    <div class="wa3-offer-ico">💬</div>
+            } else {
+                box.innerHTML = waOffers.map(o => `
+                <div class="wa3-offer-card">
+                    <div class="wa3-offer-ico"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp"></div>
                     <div class="wa3-offer-info">
-                        <div class="wa3-offer-amt">৳${Number(o.amount)}<small>সর্বোচ্চ</small></div>
-                        <div class="wa3-offer-sub">৫০টি মেসেজ পাঠালে এই এমাউন্ট পাবেন</div>
+                        <div class="wa3-offer-amt">৳${Number(o.amount)}</div>
+                        <div class="wa3-offer-sub">প্রতি ৫০টি মেসেজে এই এমাউন্ট পাবেন</div>
                         <span class="wa3-chip">প্রতি মেসেজে ৳${waFmt(waPerMsg(o))}</span>
                     </div>
-                    ${admin ? `<button class="wa3-offer-del" onclick="event.stopPropagation(); waAdminDeleteOffer('${o.id}')">🗑 ডিলিট</button>` : `<div class="wa3-go">›</div>`}
+                    <button class="wa3-start" onclick="waSelectOffer('${o.id}')">Get Start</button>
                 </div>`).join('');
+            }
+
+            let ab = document.getElementById('wa-admin-offers-list');
+            if (ab) {
+                ab.innerHTML = !admin ? '' : (waOffers.length ? waOffers.map(o => `
+                <div class="wa3-offer-card">
+                    <div class="wa3-offer-ico"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp"></div>
+                    <div class="wa3-offer-info">
+                        <div class="wa3-offer-amt">৳${Number(o.amount)}</div>
+                        <span class="wa3-chip">প্রতি মেসেজে ৳${waFmt(waPerMsg(o))}</span>
+                    </div>
+                    <button class="wa3-offer-del" onclick="waAdminDeleteOffer('${o.id}')">🗑 ডিলিট</button>
+                </div>`).join('') : '<div class="wa3-no-offer">কোনো অফার নেই। উপরে থেকে যোগ করুন।</div>');
+            }
+        }
+
+        function waOpenAdminPage() {
+            if (!(typeof isRegAdmin === 'function' && isRegAdmin())) return;
+            renderWaOffers();
+            waShowScreen('admin');
         }
 
         function waToggleOfferAdmin() {
@@ -5145,9 +5178,9 @@
 
         function waUpdateSendingUI() {
             let total = waSendStats.sent + waSendStats.failed;
-            let pct = Math.min(100, (total / 50) * 100);
+            let pct = ((total % 50) / 50) * 100;
             let fill = document.getElementById('wa-progress-fill'); if (fill) fill.style.width = pct + '%';
-            let label = document.getElementById('wa-progress-label'); if (label) label.innerText = total + ' / ৫০ সম্পন্ন';
+            let label = document.getElementById('wa-progress-label'); if (label) label.innerText = total + 'টি মেসেজ সম্পন্ন';
             let s = document.getElementById('wa-stat-sent'); if (s) s.innerText = waSendStats.sent;
             let f = document.getElementById('wa-stat-failed'); if (f) f.innerText = waSendStats.failed;
             let e = document.getElementById('wa-stat-earn'); if (e) e.innerText = '৳' + waFmt(waSendStats.earn || 0);
@@ -5181,7 +5214,7 @@
         async function waAutoSendLoop(phone, runId) {
             const statusMsgs = ['টাস্ক খোঁজা হচ্ছে...', 'মেসেজ পাঠানো হচ্ছে...', 'ডেটা যাচাই করা হচ্ছে...'];
             let msgIdx = 0;
-            while (waAutoSendActive && runId === waRunId && (waSendStats.sent + waSendStats.failed) < 50) {
+            while (waAutoSendActive && runId === waRunId) {
                 let liveEl = document.getElementById('wa-live-status');
                 if (liveEl) liveEl.innerText = statusMsgs[msgIdx % statusMsgs.length];
                 msgIdx++;
@@ -5195,7 +5228,7 @@
                 if (result === 'loggedout') { waAutoSendActive = false; waFinishAutoSend('logout'); return; }
                 await waSleep(4000 + Math.random() * 4000);
             }
-            if (runId === waRunId) { waAutoSendActive = false; waFinishAutoSend('done'); }
+            if (runId === waRunId) { waAutoSendActive = false; waFinishAutoSend('logout'); }
         }
 
         async function waSendOnce(phone, runId) {
@@ -5272,14 +5305,14 @@
             let failEl = document.getElementById('wa-result-failed'); if (failEl) failEl.innerText = waSendStats.failed;
             let profitEl = document.getElementById('wa-result-profit'); if (profitEl) profitEl.innerText = '৳' + waFmt(waSendStats.earn);
 
-            let completed = (waSendStats.sent + waSendStats.failed) >= 50 && reason !== 'logout';
+            let completed = false;
             let titleEl = document.getElementById('wa-result-title');
             if (titleEl) titleEl.innerText = completed ? '৫০টি টাস্ক সম্পন্ন হয়েছে!' : 'WhatsApp ডিসকানেক্ট হয়েছে';
             let icoEl = document.getElementById('wa-result-ico');
             if (icoEl) { icoEl.innerText = completed ? '🎉' : '🔌'; icoEl.classList.toggle('warn', !completed); }
             let noteEl = document.getElementById('wa-result-note');
             if (noteEl && waRunOffer) {
-                noteEl.innerText = 'অফার ৳' + Number(waRunOffer.amount) + ' • ' + waSendStats.sent + '/৫০ মেসেজ পাঠানো হয়েছে • ' + waSendStats.sent + ' × ৳' + waFmt(waPerMsg(waRunOffer)) + ' = ৳' + waFmt(waSendStats.earn);
+                noteEl.innerText = 'অফার ৳' + Number(waRunOffer.amount) + ' • ' + waSendStats.sent + 'টি মেসেজ পাঠানো হয়েছে • ' + waSendStats.sent + ' × ৳' + waFmt(waPerMsg(waRunOffer)) + ' = ৳' + waFmt(waSendStats.earn);
             }
 
             waUpdateSendingUI();
