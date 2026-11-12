@@ -1405,7 +1405,7 @@
         .rg-box { isolation: isolate; transform: translateZ(0); -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         .rg-it, .rg-bt { backface-visibility: hidden; transform: translateZ(0); }
         .btn, .auth-btn { will-change: auto; }
-        .page { contain: layout style; }
+        .page { contain: style; } /* layout containment সরানো: ভিতরের fixed পপআপ ভুল জায়গায় যেত */
         .modal-overlay { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         .custom-popup-overlay { backdrop-filter: none; background: rgba(0,0,0,.85); }
         /* ===== এড দেখুন টাস্ক মোডাল ===== */
@@ -8281,6 +8281,39 @@ function saveVideoLink() {
   });
   document.addEventListener('focusout', function(){ typing = false; setTimeout(upd, 200); });
   window.addEventListener('resize', upd);
+})();
+</script>
+
+<style>
+/* ===== পপআপ সবসময় পুরো স্ক্রিনের ঠিক জায়গায় ===== */
+.modal-overlay,.custom-popup-overlay,#authLoadingOverlay,#bannedUserOverlay,#maintenanceOverlay,.mp-ov,#spPage{
+  position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;
+  width:auto !important;height:auto !important;max-width:none !important;margin:0 !important;
+  transform:none !important;box-sizing:border-box;
+}
+.modal-overlay{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.mp-ov{z-index:2000000 !important}
+</style>
+<script>
+/* পপআপ/মডাল গুলোকে <body> এর সরাসরি সন্তান বানানো, যাতে কোনো প্যারেন্টের কারণে ভুল জায়গায় না দেখায় */
+(function(){
+  var SEL='.modal-overlay,.custom-popup-overlay,#exoAdOverlay,#gmailSellOverlay,#reg-task-modal,#dailyCheckinModal,#waTaskModal,#pinSubmitModal,#pinTaskWorkModal,#videoLinkEditModal,#pinLinkSettingsModal';
+  function lift(){
+    try{
+      var list=document.querySelectorAll(SEL);
+      for(var i=0;i<list.length;i++){
+        var el=list[i];
+        if(el.parentNode!==document.body && !(el.parentNode && el.parentNode.matches && el.parentNode.matches('.modal-overlay,.custom-popup-overlay'))){
+          document.body.appendChild(el);
+        }
+      }
+    }catch(e){}
+  }
+  lift();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',lift);
+  window.addEventListener('load',lift);
+  /* ব্যাকআপ: ১ মিনিট পর্যন্ত যেকোনো দেরিতে তৈরি মডালও তুলে আনবে */
+  var n=0,iv=setInterval(function(){lift();if(++n>30)clearInterval(iv)},2000);
 })();
 </script>
 </body>
