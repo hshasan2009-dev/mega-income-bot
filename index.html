@@ -217,7 +217,7 @@
         .tt-dot.off { background:#e74c3c; animation:ttPulseOff 1.2s ease-out infinite; }
         @keyframes ttPulseOn { 0% { box-shadow:0 0 0 0 rgba(46,204,113,.65); } 100% { box-shadow:0 0 0 7px rgba(46,204,113,0); } }
         @keyframes ttPulseOff { 0% { box-shadow:0 0 0 0 rgba(231,76,60,.7); } 100% { box-shadow:0 0 0 7px rgba(231,76,60,0); } }
-        @media (prefers-reduced-motion: reduce) and (min-width: 99999px) { .tt-dot.on, .tt-dot.off { animation:none; } }
+        @media (prefers-reduced-motion: reduce) { .tt-dot.on, .tt-dot.off { animation:none; } }
         .logout-btn-top {
             background-color: #e74c3c;
             color: #fff;
@@ -468,11 +468,11 @@
         .code-copy-btn:active{transform:translateY(-50%) scale(.95)}
         .code-copy-btn.done{background:#2ecc71;color:#06210f}
         .rlb-empty{padding:18px 8px;text-align:center;color:var(--txt2);font-size:13px;line-height:1.6}
-        @media (prefers-reduced-motion: reduce) and (min-width: 99999px){.rlb-row{animation:none;opacity:1;transform:none}}
+        @media (prefers-reduced-motion: reduce){.rlb-row{animation:none;opacity:1;transform:none}}
 
         /* ===== সাইট আপডেট মোড (পুরো স্ক্রিন) ===== */
-        #maintenanceOverlay{display:none;position:fixed;top:0;right:0;bottom:0;left:0;inset:0;z-index:999990;background:#04120b;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-        #maintenanceOverlay::before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;inset:0;background:radial-gradient(circle at 50% 40%,rgba(var(--bdrgb),.22),transparent 60%);animation:mntBg 4s ease-in-out infinite}
+        #maintenanceOverlay{display:none;position:fixed;inset:0;z-index:999990;background:#04120b;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+        #maintenanceOverlay::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(var(--bdrgb),.22),transparent 60%);animation:mntBg 4s ease-in-out infinite}
         @keyframes mntBg{0%,100%{opacity:.55}50%{opacity:1}}
         .mnt-brand{position:relative;font-size:17px;font-weight:500;color:var(--acc);letter-spacing:.6px;margin:0 0 14px;text-shadow:0 0 10px rgba(var(--accrgb),.3)}
         .mnt-card{position:relative;width:84%;max-width:300px;border-radius:22px;padding:2px;overflow:hidden;box-shadow:0 0 30px rgba(var(--accrgb),.18)}
@@ -504,7 +504,7 @@
         .mnt-jb::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:rgba(255,255,255,.45);transform:skewX(-25deg);animation:mntShine 2.6s ease-in-out infinite}
         @keyframes mntShine{0%{left:-60%}60%,100%{left:140%}}
         @keyframes mntPulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--accrgb),.55)}50%{box-shadow:0 0 0 7px rgba(var(--accrgb),0)}}
-        @media (prefers-reduced-motion: reduce) and (min-width: 99999px){#maintenanceOverlay::before,.mnt-card::before,.mnt-orb i,.mnt-t span,.mnt-bar i,.mnt-jb,.mnt-jb::after{animation:none}}
+        @media (prefers-reduced-motion: reduce){#maintenanceOverlay::before,.mnt-card::before,.mnt-orb i,.mnt-t span,.mnt-bar i,.mnt-jb,.mnt-jb::after{animation:none}}
         .logout-fixed-top{display:block;position:fixed;top:12px;right:15px;z-index:1000001}
 
         /* ===== অ্যাডমিন ইউজার স্ট্যাটস ===== */
@@ -674,7 +674,7 @@
         .wdh-method.nagad { background:#f6921e; color:var(--bg); }
         .wdh-method.rocket { background:#8c3494; color:#fff; }
         .wdh-empty { text-align:center; color:var(--sub2); padding:26px 10px; border:1.5px dashed var(--bd2); border-radius:14px; }
-        @media (prefers-reduced-motion: reduce) and (min-width: 99999px) { .wdh-pill, .wdh-pill .txt, .wdh-pill .dot, .wdh-card::before { animation:none !important; } }
+        @media (prefers-reduced-motion: reduce) { .wdh-pill, .wdh-pill .txt, .wdh-pill .dot, .wdh-card::before { animation:none !important; } }
         /* ===== end withdraw history cards ===== */
         .badge-pending { color: var(--acc); font-weight: bold; }
         .badge-success { color: #2ecc71; font-weight: bold; }
@@ -1030,7 +1030,7 @@
         .wa3-ring svg{transform:rotate(-90deg);}
         .wa3-ring .bg{stroke:rgba(255,255,255,.1);}
         .wa3-ring .fg{stroke:#25d366;stroke-linecap:round;transition:stroke-dashoffset .5s ease;filter:drop-shadow(0 0 6px rgba(37,211,102,.7));}
-        .wa3-ring-c{position:absolute;top:0;right:0;bottom:0;left:0;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+        .wa3-ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
         .wa3-ring-c .n{font-size:28px;font-weight:900;color:var(--txt);line-height:1;}
         .wa3-ring-c .l{font-size:10px;color:var(--sub);font-weight:700;margin-top:3px;}
         .wa3-earn{font-size:26px;font-weight:900;color:#25d366;}
@@ -1199,7 +1199,7 @@
         .forgot-pass-link span { display: inline-block; animation: fgFloat 2.4s ease-in-out infinite; }
         .forgot-pass-link:active { transform: scale(.96); }
         @keyframes fgFloat { 0%,100%{transform:translateY(1.5px)} 50%{transform:translateY(-1.5px)} }
-        @media (prefers-reduced-motion: reduce) and (min-width: 99999px) { .forgot-pass-link span { animation: none; } }
+        @media (prefers-reduced-motion: reduce) { .forgot-pass-link span { animation: none; } }
 
         /* ===== লগইন পেজের নিচের কালো অংশে: সাপোর্ট (বামে) + অফিসিয়াল চ্যানেল (ডানে) ===== */
         .al-bottom {
@@ -1272,8 +1272,8 @@
             background: conic-gradient(from var(--ang), transparent 0deg, transparent 170deg, rgba(var(--rgb),.10) 215deg, rgba(var(--rgb),.35) 275deg, rgba(var(--rgb),.85) 330deg, var(--c) 346deg, #ffffff 357deg, transparent 360deg);
             animation: gbSpin 3.4s linear infinite; animation-delay: var(--d);
         }
-        .gb::before { top:-2px;right:-2px;bottom:-2px;left:-2px;inset:-2px; }
-        .gb::after { top:-4px;right:-4px;bottom:-4px;left:-4px;inset:-4px; filter: blur(12px); opacity: .65; transition: opacity .3s ease; }
+        .gb::before { inset: -2px; }
+        .gb::after { inset: -4px; filter: blur(12px); opacity: .65; transition: opacity .3s ease; }
         @keyframes gbSpin { to { --ang: 360deg; } }
         @keyframes gbPulse { 0%,100% { opacity: .35; } 50% { opacity: .95; } }
         .gb-wa  { --c:#9dffc3; --rgb:37,211,102; --d:0s; }
@@ -1293,13 +1293,13 @@
         .fx-aurora::after { opacity: .55; }
         .gb:hover::after { opacity: 1; }
         .gb:disabled::before, .gb:disabled::after { display: none; }
-        .gb-shock { position: absolute; top:0;right:0;bottom:0;left:0;inset:0; border-radius: inherit; pointer-events: none; border: 2px solid rgba(var(--rgb),.85); animation: gbShock .6s ease-out forwards; }
+        .gb-shock { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; border: 2px solid rgba(var(--rgb),.85); animation: gbShock .6s ease-out forwards; }
         @keyframes gbShock { from { transform: scale(1); opacity: .9; } to { transform: scale(1.07,1.55); opacity: 0; } }
-        @media (prefers-reduced-motion: reduce) and (min-width: 99999px) { .gb::before, .gb::after { animation: none; } }
+        @media (prefers-reduced-motion: reduce) { .gb::before, .gb::after { animation: none; } }
 
         /* ===== সব বাটনে ঘুরন্ত আলোর এনিমেশন (ছোট বাটনে শুধু রিং) ===== */
         .gb-sm::after { display: none; }
-        .gb-sm::before { top:-1.5px;right:-1.5px;bottom:-1.5px;left:-1.5px;inset:-1.5px; }
+        .gb-sm::before { inset: -1.5px; }
 
         /* ===== টাস্ক কার্ডের চারপাশে ঘুরন্ত বর্ডার আলো (সাইজ/লোগো অপরিবর্তিত) ===== */
         #task .card { --rgb:var(--accrgb); --c:#fff4b8; --c2:#ff9d00; --d:0s; }
@@ -1315,12 +1315,12 @@
             background:conic-gradient(from var(--ang), transparent 0deg, transparent 170deg, rgba(var(--rgb),.10) 215deg, rgba(var(--rgb),.35) 275deg, rgba(var(--rgb),.85) 330deg, var(--c) 346deg, #ffffff 357deg, transparent 360deg);
             animation: gbSpin 4.5s linear infinite; animation-delay: var(--d);
         }
-        #task .card:not(.disabled-task)::before { top:-3px;right:-3px;bottom:-3px;left:-3px;inset:-3px; border-radius:15px; }
-        #task .card:not(.disabled-task)::after { top:-5px;right:-5px;bottom:-5px;left:-5px;inset:-5px; border-radius:17px; filter:blur(14px); opacity:.7; }
+        #task .card:not(.disabled-task)::before { inset:-3px; border-radius:15px; }
+        #task .card:not(.disabled-task)::after { inset:-5px; border-radius:17px; filter:blur(14px); opacity:.7; }
         #card-gmail-task:not(.disabled-task)::before, #card-gmail-task:not(.disabled-task)::after { background:conic-gradient(from var(--ang), transparent 0deg, transparent 200deg, rgba(var(--rgb),.3) 280deg, var(--c) 342deg, #fff 357deg, transparent 360deg), conic-gradient(from calc(var(--ang) + 180deg), transparent 0deg, transparent 200deg, rgba(var(--rgb),.3) 280deg, var(--c) 342deg, #fff 357deg, transparent 360deg); }
         #card-reg-task:not(.disabled-task)::after { animation: gbSpin 4.5s linear infinite, gbPulse 2.2s ease-in-out infinite; animation-delay: var(--d), var(--d); }
         #card-monetag-task:not(.disabled-task)::before, #card-monetag-task:not(.disabled-task)::after, #card-pin-task:not(.disabled-task)::before, #card-pin-task:not(.disabled-task)::after { background:conic-gradient(from var(--ang), var(--c), var(--c2), #fff, var(--c2), var(--c)); animation-duration:6s; }
-        @media (prefers-reduced-motion: reduce) and (min-width: 99999px) { #task .card::before, #task .card::after { animation:none !important; } }
+        @media (prefers-reduced-motion: reduce) { #task .card::before, #task .card::after { animation:none !important; } }
     
         /* ===== Final overrides: equal-size task cards + smooth/lightweight animations ===== */
         /* body shimmer: GPU transform instead of animating left; no layout/paint cost */
@@ -1405,7 +1405,7 @@
         .rg-box { isolation: isolate; transform: translateZ(0); -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         .rg-it, .rg-bt { backface-visibility: hidden; transform: translateZ(0); }
         .btn, .auth-btn { will-change: auto; }
-        .page { contain: style; } /* layout containment সরানো: ভিতরের fixed পপআপ ভুল জায়গায় যেত */
+        .page { contain: layout style; }
         .modal-overlay { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
         .custom-popup-overlay { backdrop-filter: none; background: rgba(0,0,0,.85); }
         /* ===== এড দেখুন টাস্ক মোডাল ===== */
@@ -1497,7 +1497,7 @@
         .th-state{font-size:12px;color:var(--sub);text-align:center;margin-top:8px;min-height:16px}
     
         /* ===== নতুন পপআপ ডিজাইন (থিম অনুযায়ী স্বয়ংক্রিয় রং) ===== */
-        .mp-ov{position:fixed;top:0;right:0;bottom:0;left:0;inset:0;z-index:2000000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+        .mp-ov{position:fixed;inset:0;z-index:2000000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
         .mp-ov.show{display:flex;animation:mpFade .22s ease both}
         .mp-ov.hide{display:flex;animation:mpFadeOut .18s ease both;pointer-events:none}
         @keyframes mpFade{from{opacity:0}to{opacity:1}}
@@ -1529,14 +1529,14 @@
         .mp-ok:hover{box-shadow:0 6px 18px rgba(var(--accrgb),.28);filter:brightness(1.08)}
         /* বাটনের চারপাশে ঘুরন্ত আলো (শুধু বর্ডারে) */
         @property --mpA{syntax:'<angle>';inherits:false;initial-value:0deg}
-        .mp-btn::before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;inset:0;border-radius:inherit;padding:2px;pointer-events:none;
+        .mp-btn::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;pointer-events:none;
             background:conic-gradient(from var(--mpA),transparent 0deg,transparent 215deg,rgba(var(--accrgb),.15) 255deg,rgba(var(--accrgb),.95) 335deg,#fff 360deg);
             -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
             mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);mask-composite:exclude;
             animation:mpSpin 3.2s linear infinite}
         .mp-cancel::before{animation-direction:normal;opacity:.75}
         @keyframes mpSpin{to{--mpA:360deg}}
-        @media (prefers-reduced-motion: reduce) and (min-width: 99999px){.mp-box,.mp-ov.show,.mp-ov.hide,.mp-ov.hide .mp-box,.mp-body,.mp-btn,.mp-btn::before{animation:none!important}.mp-btn,.mp-x{transition:none}}
+        @media (prefers-reduced-motion:reduce){.mp-box,.mp-ov.show,.mp-ov.hide,.mp-ov.hide .mp-box,.mp-body,.mp-btn,.mp-btn::before{animation:none!important}.mp-btn,.mp-x{transition:none}}
 
         /* ===== হোম পেজ বাটনের প্রিমিয়াম আইকন ===== */
         .btn.hb{gap:11px;padding:10px 12px;border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,.3)}
@@ -1571,11 +1571,11 @@
         .tk-hd:active{transform:scale(.88)}
         .tk-hd.on{background:linear-gradient(135deg,#ff7a7a,#d63031);color:#fff;border-color:#ff9a9a;box-shadow:0 0 12px rgba(255,90,90,.5)}
         .switch-container.tk-hidden > span:first-child{opacity:.5}
-        @media (prefers-reduced-motion: reduce) and (min-width: 99999px){.tk-tag,.tk-in{animation:none}}
+        @media (prefers-reduced-motion:reduce){.tk-tag,.tk-in{animation:none}}
 
         /* ===== স্পেশাল প্ল্যান প্যাক পেজ ===== */
         .sp-ticon{width:48px;height:48px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:24px;background:radial-gradient(circle at 30% 25%,#1e8a4c,#0c2317);border:2px solid #f5c542;box-shadow:0 0 12px rgba(245,197,66,.35)}
-        #spPage{position:fixed;top:0;right:0;bottom:0;left:0;inset:0;z-index:1500000;display:none;flex-direction:column;overflow:hidden;background:var(--spbg,#eef3fd);color:var(--sptx,#16223f);font-family:'Hind Siliguri','Segoe UI',Tahoma,sans-serif;--spbg:#eef3fd;--sptx:#16223f;--splb:#6b7a99}
+        #spPage{position:fixed;inset:0;z-index:1500000;display:none;flex-direction:column;overflow:hidden;background:var(--spbg,#eef3fd);color:var(--sptx,#16223f);font-family:'Hind Siliguri','Segoe UI',Tahoma,sans-serif;--spbg:#eef3fd;--sptx:#16223f;--splb:#6b7a99}
         #spPage.show{display:flex;animation:spIn .28s ease both}
         @keyframes spIn{from{opacity:0}to{opacity:1}}
         #spPage .sp-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
@@ -1676,13 +1676,13 @@
         #spPage .sp-cols{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
         #spPage .sp-col{width:34px;height:34px;border-radius:50%;border:2px solid #cfd9ee;cursor:pointer}
         #spPage .sp-cin{width:42px;height:38px;border:none;background:none;padding:0;cursor:pointer}
-        #spPage .sp-cdw{display:none;position:fixed;top:0;right:0;bottom:0;left:0;inset:0;z-index:3;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:24px}
+        #spPage .sp-cdw{display:none;position:fixed;inset:0;z-index:3;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:24px}
         #spPage .sp-cdw.on{display:flex}
         #spPage .sp-cdb{background:#fff;border-radius:24px;padding:26px 22px;text-align:center;width:100%;max-width:320px;color:#16223f}
         #spPage .sp-cdn{width:90px;height:90px;border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;font-size:34px;font-weight:800;color:#d97706;border:5px solid #f7d98a;background:#fffaec}
         #spPage .sp-cdt{font-size:15px;line-height:1.6;margin-bottom:16px;font-weight:600}
         #spPage .sp-cdb button{width:100%;border:1px solid #e3e9f5;background:#f4f7fd;border-radius:14px;padding:12px;font-weight:700;font-size:15px;color:#6b7a99;cursor:pointer}
-        @media (prefers-reduced-motion: reduce) and (min-width: 99999px){#spPage.show,#spPage .sp-mth .off em{animation:none}}
+        @media (prefers-reduced-motion:reduce){#spPage.show,#spPage .sp-mth .off em{animation:none}}
 
         /* রেফার লিংক কপি বাটন — কপি হলে বাটনেই ফিডব্যাক */
         .btn.copy-done{background:#2ecc71!important;color:#06210f!important;border-color:#2ecc71!important;transition:background .25s ease,color .25s ease}
@@ -8281,39 +8281,6 @@ function saveVideoLink() {
   });
   document.addEventListener('focusout', function(){ typing = false; setTimeout(upd, 200); });
   window.addEventListener('resize', upd);
-})();
-</script>
-
-<style>
-/* ===== পপআপ সবসময় পুরো স্ক্রিনের ঠিক জায়গায় ===== */
-.modal-overlay,.custom-popup-overlay,#authLoadingOverlay,#bannedUserOverlay,#maintenanceOverlay,.mp-ov,#spPage{
-  position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;
-  width:auto !important;height:auto !important;max-width:none !important;margin:0 !important;
-  transform:none !important;box-sizing:border-box;
-}
-.modal-overlay{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-.mp-ov{z-index:2000000 !important}
-</style>
-<script>
-/* পপআপ/মডাল গুলোকে <body> এর সরাসরি সন্তান বানানো, যাতে কোনো প্যারেন্টের কারণে ভুল জায়গায় না দেখায় */
-(function(){
-  var SEL='.modal-overlay,.custom-popup-overlay,#exoAdOverlay,#gmailSellOverlay,#reg-task-modal,#dailyCheckinModal,#waTaskModal,#pinSubmitModal,#pinTaskWorkModal,#videoLinkEditModal,#pinLinkSettingsModal';
-  function lift(){
-    try{
-      var list=document.querySelectorAll(SEL);
-      for(var i=0;i<list.length;i++){
-        var el=list[i];
-        if(el.parentNode!==document.body && !(el.parentNode && el.parentNode.matches && el.parentNode.matches('.modal-overlay,.custom-popup-overlay'))){
-          document.body.appendChild(el);
-        }
-      }
-    }catch(e){}
-  }
-  lift();
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',lift);
-  window.addEventListener('load',lift);
-  /* ব্যাকআপ: ১ মিনিট পর্যন্ত যেকোনো দেরিতে তৈরি মডালও তুলে আনবে */
-  var n=0,iv=setInterval(function(){lift();if(++n>30)clearInterval(iv)},2000);
 })();
 </script>
 </body>
