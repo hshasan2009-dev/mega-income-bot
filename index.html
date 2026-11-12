@@ -5212,11 +5212,10 @@
         function waRenderChat(typing) {
             let box = document.getElementById('wa-chat-log');
             if (!box) return;
-            let preview = String(waMessageText || '').replace(/\s+/g, ' ').trim();
-            if (preview.length > 70) preview = preview.substring(0, 70) + '…';
             let html = waChatLog.slice(-3).map(l => `
-                <div class="wa3-bub ${l.ok ? '' : 'fail'}">${rgEsc(preview)}
-                    <div class="m"><span>${waMaskNumber(l.to)}</span><span>${l.ok ? '✓✓ পাঠানো হয়েছে' : '✕ ব্যর্থ'}</span></div>
+                <div class="wa3-bub ${l.ok ? '' : 'fail'}">
+                    <b>${l.ok ? '📤 মেসেজ পাঠানো হয়েছে' : '⚠️ মেসেজ পাঠানো যায়নি'}</b>
+                    <div class="m"><span>${waMaskNumber(l.to)}</span><span>${l.ok ? '✓✓' : '✕ ব্যর্থ'}</span></div>
                 </div>`).join('');
             if (typing) html += '<div class="wa3-typing"><span></span><span></span><span></span></div>';
             box.innerHTML = html;
