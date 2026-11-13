@@ -4361,13 +4361,13 @@
 
         function copyDynamicName() {
             navigator.clipboard.writeText(dynamicGmailName).then(() => {
-                alert("📋 First Name কপি করা হয়েছে: " + dynamicGmailName);
+                copyToast("নাম কপি হয়েছে");
             });
         }
 
         function copyDynamicPassword() {
             navigator.clipboard.writeText(dynamicGmailPass).then(() => {
-                alert("📋 পাসওয়ার্ড কপি করা হয়েছে: " + dynamicGmailPass);
+                copyToast("পাসওয়ার্ড কপি হয়েছে");
             });
         }
 
@@ -4748,7 +4748,7 @@
 
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                alert("📋 কপি করা হয়েছে!");
+                copyToast("কপি হয়েছে");
             });
         }
 
@@ -5081,12 +5081,7 @@
             }
 
             const done = () => {
-                let btn = document.getElementById('wa-copy-btn');
-                if (btn) {
-                    btn.classList.add('ok');
-                    btn.innerText = '✅ কোড কপি হয়েছে';
-                    setTimeout(() => { btn.classList.remove('ok'); btn.innerText = '📋 কোড কপি করুন'; }, 2200);
-                }
+                copyToast('কোড কপি হয়েছে');
                 let pill = document.getElementById('wa-wait-pill');
                 if (pill) pill.innerHTML = '<span class="wa2-pulse-dot"></span><span>কোড কপি হয়েছে, এখন বসিয়ে অনুমোদন করুন</span>';
             };
@@ -7081,13 +7076,7 @@
         function copyReferCode() {
             let btn = document.getElementById("code-copy-btn");
             if (!userReferralCode) return;
-            let done = () => {
-                if (!btn) return;
-                btn.classList.add('done');
-                btn.innerText = '✅ কপি হয়েছে';
-                clearTimeout(btn._t);
-                btn._t = setTimeout(() => { btn.classList.remove('done'); btn.innerText = '📋 কপি'; }, 1600);
-            };
+            let done = () => { copyToast('কোড কপি হয়েছে'); };
             copyTextHidden(String(userReferralCode), done);
         }
 
@@ -7096,15 +7085,32 @@
             let btn = document.getElementById("link-copy-btn");
             let txt = (typeof referLink !== 'undefined' && referLink) ? String(referLink) : (linkInput ? linkInput.value : '');
             if (!txt) return;
-            let done = () => {
-                if (!btn) return;
-                btn.classList.add('done');
-                btn.innerText = '✅ কপি হয়েছে';
-                clearTimeout(btn._t);
-                btn._t = setTimeout(() => { btn.classList.remove('done'); btn.innerText = '📋 কপি'; }, 1600);
-            };
+            let done = () => { copyToast('লিংক কপি হয়েছে'); };
             copyTextHidden(txt, done);
         }
+
+        // কপি করলে ছোট লেখা ভেসে উঠে নিজে নিজে মিলিয়ে যায় (পপআপ ছাড়া)
+        function copyToast(msg) {
+            try {
+                let el = document.getElementById('copyToastEl');
+                if (!el) {
+                    el = document.createElement('div');
+                    el.id = 'copyToastEl';
+                    el.style.cssText = 'position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 88px);z-index:2000002;transform:translate(-50%,14px);opacity:0;pointer-events:none;white-space:nowrap;max-width:90%;padding:8px 16px;border-radius:22px;background:#16233b;border:1px solid #c9a24a;color:#f3e3b0;font-size:13px;font-weight:700;transition:opacity .25s ease, transform .25s ease;box-sizing:border-box;';
+                    document.body.appendChild(el);
+                }
+                el.textContent = '✓ ' + msg;
+                void el.offsetWidth;
+                el.style.opacity = '1';
+                el.style.transform = 'translate(-50%,0)';
+                clearTimeout(el._t);
+                el._t = setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translate(-50%,-6px)';
+                }, 1700);
+            } catch (e) {}
+        }
+        window.copyToast = copyToast;
 
         // দৃশ্যমান ঘর সিলেক্ট না করে কপি (লুকানো textarea দিয়ে)
         function copyTextHidden(txt, done) {
@@ -8048,7 +8054,7 @@ function saveVideoLink() {
   window.spCopy=function(){
     var num=payM==='nagad'?S.nagadNo:S.bkashNo;if(!num)return;
     var el=$('spCp');
-    var done=function(){if(!el)return;el.innerHTML=ic('check',15)+' কপি হয়েছে';clearTimeout(el._t);el._t=setTimeout(function(){el.innerHTML=ic('copy',15)+' কপি'},1500)};
+    var done=function(){window.copyToast&&window.copyToast('নম্বর কপি হয়েছে')};
     var fb=function(){try{var i=document.createElement('input');i.value=num;document.body.appendChild(i);i.select();document.execCommand('copy');i.remove();done()}catch(e){}};
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(num).then(done).catch(fb);else fb();
   };
@@ -8383,7 +8389,7 @@ function saveVideoLink() {
   window.acMeth=function(m){if(AS[m+'On']===false)return;pm=m;scr='pay';render()};
   window.acCopy=function(){
     var num=pm==='nagad'?AS.nagadNo:AS.bkashNo;if(!num)return;var el=$('acCp');
-    var done=function(){if(!el)return;el.innerHTML=ic('check',15)+' কপি হয়েছে';clearTimeout(el._t);el._t=setTimeout(function(){el.innerHTML=ic('copy',15)+' কপি'},1500)};
+    var done=function(){window.copyToast&&window.copyToast('নম্বর কপি হয়েছে')};
     var fb=function(){try{var i=document.createElement('input');i.value=num;document.body.appendChild(i);i.select();document.execCommand('copy');i.remove();done()}catch(e){}};
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(num).then(done).catch(fb);else fb();
   };
@@ -8496,7 +8502,7 @@ function saveVideoLink() {
   }
   window.acWelcome=function(user,pass){
     acPop('<div class="ac-ic">✓</div><div class="ac-t1">আপনার অ্যাকাউন্ট তৈরি হয়েছে</div><div class="ac-row"><span>ব্যবহারকারীর নাম :</span><b>'+esc(user)+'</b></div><div class="ac-row"><span>পাসওয়ার্ড :</span><b>'+esc(pass)+'</b></div><div class="ac-warn">আপনার অ্যাকাউন্টের তথ্য নিরাপদে রাখুন। আয় চুরি হওয়া ঠেকাতে কারও সঙ্গে অ্যাকাউন্টের তথ্য শেয়ার করবেন না, এমনকি সহায়তা কর্মীদের সঙ্গেও নয়।</div>',[
-      {t:'কপি করুন',c:'mp-ok',keep:true,fn:function(el){var txt='ইউজারনেম: '+user+'\nপাসওয়ার্ড: '+pass;var done=function(){el.textContent='কপি হয়েছে ✓';setTimeout(function(){el.textContent='কপি করুন'},1600)};var fb=function(){try{var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();done()}catch(e){}};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done).catch(fb);else fb()}},
+      {t:'কপি করুন',c:'mp-ok',keep:true,fn:function(el){var txt='ইউজারনেম: '+user+'\nপাসওয়ার্ড: '+pass;var done=function(){window.copyToast&&window.copyToast('কপি হয়েছে')};var fb=function(){try{var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();done()}catch(e){}};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done).catch(fb);else fb()}},
       {t:'বন্ধ',c:'mp-cancel'}]);
   };
   window.acLoginOk=function(name){
