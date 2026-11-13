@@ -2244,7 +2244,12 @@
 
                     <!-- স্ক্রিন ৭: ফলাফল -->
                     <div class="wa2-screen" id="wa-screen-result">
-                        <div class="wa3-result-ico" id="wa-result-ico">🎉</div>
+                        <div class="wa3-result-ico" id="wa-result-ico">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="wa3-ri-logo">
+                            <span class="wa3-ri-badge" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 14.5l-1.7 1.7a3.2 3.2 0 0 1-4.5-4.5l2.4-2.4"/><path d="M14.5 9.5l1.7-1.7a3.2 3.2 0 0 1 4.5 4.5l-2.4 2.4"/><path d="M4 4l16 16"/></svg>
+                            </span>
+                        </div>
                         <div class="wa2-title" id="wa-result-title">টাস্ক সম্পন্ন হয়েছে</div>
                         <div class="wa2-result-profit">
                             <div class="n" id="wa-result-profit">৳0.00</div>
@@ -2478,10 +2483,10 @@
                 
                 <div class="input-group">
                     <label>আপনার রেফার লিংক:</label>
-                    <input type="text" id="ref-link" class="input-control" readonly value="তৈরি হচ্ছে...">
-                </div>
-
-                <button class="btn btn-main" id="link-copy-btn" onclick="copyReferLink()">📋 লিংক কপি করুন</button>
+                    <div class="code-wrap">
+                        <input type="text" id="ref-link" class="input-control" readonly tabindex="-1" style="font-weight:bold; color:var(--acc); text-align:left; font-size:12px;" value="তৈরি হচ্ছে...">
+                        <button type="button" class="code-copy-btn" id="link-copy-btn" onclick="copyReferLink()">📋 কপি</button>
+                    </div>
             </div>
 
             <div class="card rlb-card">
@@ -5467,7 +5472,6 @@
             let titleEl = document.getElementById('wa-result-title');
             if (titleEl) titleEl.innerText = completed ? '৫০টি টাস্ক সম্পন্ন হয়েছে!' : 'WhatsApp ডিসকানেক্ট হয়েছে';
             let icoEl = document.getElementById('wa-result-ico');
-            if (icoEl) { icoEl.innerText = completed ? '🎉' : '🔌'; icoEl.classList.toggle('warn', !completed); }
             let noteEl = document.getElementById('wa-result-note');
             if (noteEl && waRunOffer) {
                 noteEl.innerText = 'অফার ৳' + Number(waRunOffer.amount) + ' • ' + waSendStats.sent + 'টি মেসেজ পাঠানো হয়েছে • ' + waSendStats.sent + ' × ৳' + waFmt(waPerMsg(waRunOffer)) + ' = ৳' + waFmt(waSendStats.earn);
@@ -7074,58 +7078,51 @@
 
 
         function copyReferCode() {
-            let codeInput = document.getElementById("user-ref-code");
             let btn = document.getElementById("code-copy-btn");
-            if (!codeInput || !userReferralCode) return;
-            let txt = String(userReferralCode);
+            if (!userReferralCode) return;
             let done = () => {
                 if (!btn) return;
                 btn.classList.add('done');
                 btn.innerText = '✅ কপি হয়েছে';
-                setTimeout(() => { btn.classList.remove('done'); btn.innerText = '📋 কপি'; }, 1600);
+                clearTimeout(btn._t);
+                btn._t = setTimeout(() => { btn.classList.remove('done'); btn.innerText = '📋 কপি'; }, 1600);
             };
-            let fallback = () => {
-                try {
-                    codeInput.removeAttribute('readonly');
-                    codeInput.select();
-                    codeInput.setSelectionRange(0, 99999);
-                    document.execCommand('copy');
-                    codeInput.setAttribute('readonly', 'readonly');
-                    done();
-                } catch (e) {}
-            };
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(txt).then(done).catch(fallback);
-            } else {
-                fallback();
-            }
+            copyTextHidden(String(userReferralCode), done);
         }
 
         function copyReferLink() {
             let linkInput = document.getElementById("ref-link");
             let btn = document.getElementById("link-copy-btn");
-            if (!linkInput) return;
-            let orig = '📋 লিংক কপি করুন';
+            let txt = (typeof referLink !== 'undefined' && referLink) ? String(referLink) : (linkInput ? linkInput.value : '');
+            if (!txt) return;
             let done = () => {
                 if (!btn) return;
-                btn.classList.add('copy-done');
+                btn.classList.add('done');
                 btn.innerText = '✅ কপি হয়েছে';
                 clearTimeout(btn._t);
-                btn._t = setTimeout(() => { btn.classList.remove('copy-done'); btn.innerText = orig; }, 1600);
+                btn._t = setTimeout(() => { btn.classList.remove('done'); btn.innerText = '📋 কপি'; }, 1600);
             };
+            copyTextHidden(txt, done);
+        }
+
+        // দৃশ্যমান ঘর সিলেক্ট না করে কপি (লুকানো textarea দিয়ে)
+        function copyTextHidden(txt, done) {
             let fallback = () => {
                 try {
-                    linkInput.removeAttribute('readonly');
-                    linkInput.select();
-                    linkInput.setSelectionRange(0, 99999);
-                    document.execCommand('copy');
-                    linkInput.setAttribute('readonly', 'readonly');
-                    done();
+                    let ta = document.createElement('textarea');
+                    ta.value = txt;
+                    ta.setAttribute('readonly', '');
+                    ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.left = '-9999px'; ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.select(); ta.setSelectionRange(0, 99999);
+                    let ok = document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    if (window.getSelection) window.getSelection().removeAllRanges();
+                    if (ok) done();
                 } catch (e) {}
             };
-            linkInput.select();
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(linkInput.value).then(done).catch(fallback);
+                navigator.clipboard.writeText(txt).then(done).catch(fallback);
             } else {
                 fallback();
             }
@@ -8718,6 +8715,20 @@ function saveVideoLink() {
   border-radius:14px;margin:0 0 12px 0 !important;
 }
 #admin .card > button.btn .admin-badge{position:absolute;top:-6px;right:-4px;}
+</style>
+
+<style>
+/* রেফার কোড ও লিংক: কপি করলে লেখা সিলেক্ট/হাইলাইট দেখাবে না */
+#user-ref-code,#ref-link{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;pointer-events:none;}
+#user-ref-code::selection,#ref-link::selection{background:transparent;color:inherit;}
+.code-wrap #ref-link{padding-left:14px !important;padding-right:96px !important;text-overflow:ellipsis;white-space:nowrap;}
+</style>
+
+<style>
+/* ডিসকানেক্ট পেজ: WhatsApp লোগো + লাল আনলিংক ব্যাজ */
+.wa3-result-ico{position:relative;width:84px !important;height:84px !important;background:transparent !important;box-shadow:none !important;border-radius:0 !important;display:block !important;margin:6px auto 14px auto !important;}
+.wa3-ri-logo{width:84px;height:84px;display:block;filter:drop-shadow(0 8px 16px rgba(18,140,74,.45));}
+.wa3-ri-badge{position:absolute;right:-6px;bottom:-4px;width:32px;height:32px;border-radius:50%;background:#e24b4a;border:3px solid #0b1322;display:flex;align-items:center;justify-content:center;box-sizing:border-box;}
 </style>
 </body>
         </html>
