@@ -2483,10 +2483,11 @@
                 
                 <div class="input-group">
                     <label>আপনার রেফার লিংক:</label>
-                    <input type="text" id="ref-link" class="input-control" readonly value="তৈরি হচ্ছে...">
+                    <div class="code-wrap">
+                        <input type="text" id="ref-link" class="input-control" readonly style="font-weight:bold; color:var(--acc); text-align:left;" value="তৈরি হচ্ছে...">
+                        <button type="button" class="code-copy-btn" id="link-copy-btn" onclick="copyReferLink()">📋 কপি</button>
+                    </div>
                 </div>
-
-                <button class="btn btn-main" id="link-copy-btn" onclick="copyReferLink()">📋 লিংক কপি করুন</button>
             </div>
 
             <div class="card rlb-card">
@@ -7095,13 +7096,12 @@
             let btn = document.getElementById("link-copy-btn");
             let txt = (typeof referLink !== 'undefined' && referLink) ? String(referLink) : (linkInput ? linkInput.value : '');
             if (!txt) return;
-            let orig = '📋 লিংক কপি করুন';
             let done = () => {
                 if (!btn) return;
-                btn.classList.add('copy-done');
+                btn.classList.add('done');
                 btn.innerText = '✅ কপি হয়েছে';
                 clearTimeout(btn._t);
-                btn._t = setTimeout(() => { btn.classList.remove('copy-done'); btn.innerText = orig; }, 1600);
+                btn._t = setTimeout(() => { btn.classList.remove('done'); btn.innerText = '📋 কপি'; }, 1600);
             };
             copyTextHidden(txt, done);
         }
@@ -8720,8 +8720,10 @@ function saveVideoLink() {
 
 <style>
 /* রেফার কোড ও লিংক: কপি করলে লেখা সিলেক্ট/হাইলাইট দেখাবে না */
-#user-ref-code,#ref-link{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;pointer-events:none;}
+#user-ref-code{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;pointer-events:none;}
 #user-ref-code::selection,#ref-link::selection{background:transparent;color:inherit;}
+/* লিংক: ডানে-বামে টেনে পুরোটা দেখা যাবে */
+.code-wrap #ref-link{padding-left:14px !important;padding-right:96px !important;text-overflow:clip;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
 </style>
 
 <style>
