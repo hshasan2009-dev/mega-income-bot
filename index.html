@@ -4903,7 +4903,6 @@
                     <div class="wa3-offer-ico"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp"></div>
                     <div class="wa3-offer-info">
                         <div class="wa3-offer-amt">৳${Number(o.amount)}</div>
-                        <div class="wa3-offer-sub">প্রতি ৫০টি মেসেজে এই এমাউন্ট পাবেন</div>
                         <span class="wa3-chip">প্রতি মেসেজে ৳${waFmt(waPerMsg(o))}</span>
                     </div>
                     <button class="wa3-start" onclick="waSelectOffer('${o.id}')">Get Start</button>
@@ -8737,6 +8736,12 @@ function saveVideoLink() {
 .wa3-result-ico{position:relative;width:84px !important;height:84px !important;background:transparent !important;box-shadow:none !important;border-radius:0 !important;display:block !important;margin:6px auto 14px auto !important;}
 .wa3-ri-logo{width:84px;height:84px;display:block;filter:drop-shadow(0 8px 16px rgba(18,140,74,.45));}
 .wa3-ri-badge{position:absolute;right:-6px;bottom:-4px;width:32px;height:32px;border-radius:50%;background:#e24b4a;border:3px solid #0b1322;display:flex;align-items:center;justify-content:center;box-sizing:border-box;}
+</style>
+
+<style>
+/* অফার কার্ড: বড় ও সুন্দর এমাউন্ট */
+.wa3-offer-amt{font-size:34px !important;font-weight:900 !important;line-height:1.05 !important;color:#25d366 !important;letter-spacing:.3px;text-shadow:0 2px 14px rgba(37,211,102,.35);}
+.wa3-offer-info .wa3-chip{margin-top:8px;}
 </style>
 </body>
         </html>
