@@ -6467,9 +6467,10 @@
                 if (mine) { myInList = true; rlbMyPos = r; }
                 h += '<div class="rlb-row ' + (r < 4 ? 'r' + r : '') + (mine ? ' mine' : '') + '" style="animation-delay:' + (i * 0.06) + 's">'
                     + (r < 4 ? '<div class="rlb-med">' + rlbMedal(r) + '</div>' : '<div class="rlb-num">' + bnDigits(r) + '</div>')
-                    + '<div class="rlb-info"><div class="rlb-nm"><span class="rlb-nm-t">' + escHtml(d.name) + '</span>' + (mine ? '<span class="rlb-you">আপনি</span>' : '') + '</div>'
+                    + '<div class="rlb-info"><div class="rlb-nm"><span class="rlb-nm-t">' + escHtml(d.name) + '</span></div>'
                     + '<span class="rlb-code"><i>ID:</i> ' + escHtml(d.code) + '</span></div>'
-                    + '<div class="rlb-cnt"><b>' + bnDigits(d.cnt) + '</b><small>একটিভ রেফার</small></div></div>';
+                    + '<div class="rlb-cnt"><b>' + bnDigits(d.cnt) + '</b><small>একটিভ রেফার</small></div>'
+                    + (mine ? '<span class="rlb-you">আপনি</span>' : '') + '</div>';
             });
             if (!arr.length) {
                 h = '<div class="rlb-empty">🏁 এখনো কেউ লিডারবোর্ডে জায়গা পাননি।<br>সর্বনিম্ন <b>' + bnDigits(LB_MIN_REFER) + 'টি</b> একটিভ রেফার করে প্রথম হয়ে যান!</div>';
@@ -8778,11 +8779,19 @@ function saveVideoLink() {
 </style>
 
 <style>
-/* লিডারবোর্ড: নাম বড় হলে কাটা যাবে, কিন্তু "আপনি" ব্যাজ সবসময় দেখা যাবে */
-.rlb-nm{display:flex;align-items:center;gap:6px;}
-.rlb-nm-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.rlb-you{flex:none;font-size:10.5px;font-weight:700;line-height:1.5;padding:0 8px;border-radius:10px;border:1px solid #2ecc71;color:#2ecc71;background:rgba(46,204,113,.14);}
-.rlb-row.r1 .rlb-you{font-size:11px;}
+/* লিডারবোর্ড: নাম বড় হলেও পুরো জায়গা পাবে; "আপনি" ট্যাগ সারির উপরের বর্ডারে বসে, জায়গা নেয় না */
+.rlb-nm{display:block;}
+.rlb-nm-t{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rlb-row.mine{position:relative;}
+.rlb-you{position:absolute;top:-10px;left:50%;transform:translateX(-50%);z-index:2;font-size:10.5px;font-weight:700;line-height:1.6;padding:0 12px;border-radius:10px;border:1.5px solid #2ecc71;color:#2ecc71;background:var(--card,#0e1830);white-space:nowrap;box-shadow:0 0 8px rgba(46,204,113,.35);}
+</style>
+
+<style>
+/* টপ ৩ কার্ড: সবগুলো একই সাইজ, পাতলা */
+.rlb-row.r1,.rlb-row.r2,.rlb-row.r3{padding:5px 10px !important;}
+.rlb-row.r1 .rlb-med,.rlb-row.r2 .rlb-med,.rlb-row.r3 .rlb-med,.rlb-med{width:46px !important;height:52px !important;}
+.rlb-row.r1 .rlb-nm,.rlb-row.r2 .rlb-nm,.rlb-row.r3 .rlb-nm{font-size:15px !important;}
+.rlb-row.r1 .rlb-cnt b,.rlb-row.r2 .rlb-cnt b,.rlb-row.r3 .rlb-cnt b{font-size:18px !important;}
 </style>
 </body>
         </html>
