@@ -3312,7 +3312,7 @@
         </button>
         <button class="nav-item nav-offer" id="offer-nav-btn" onclick="switchTab('offers', this); ofRender();">
             <span class="of-ndot" id="of-ndot"></span>
-            <span class="ob"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8M7.5 8a2.5 2.5 0 1 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg></span>
+            <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4.5" y="12.5" width="15" height="8.5" rx="1.6" fill="#ff4d4d"/><rect x="3" y="8.5" width="18" height="4.6" rx="1.4" fill="#ff7675"/><rect x="10.8" y="8.5" width="2.4" height="12.5" fill="#f1c40f"/><path d="M12 8.5C12 8.5 8.6 8.4 7.8 6.5C7.1 4.9 8.7 3.6 10.1 4.4C11.4 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/><path d="M12 8.5C12 8.5 15.4 8.4 16.2 6.5C16.9 4.9 15.3 3.6 13.9 4.4C12.6 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/></svg></span>
             <span>অফার</span>
         </button>
         <button class="nav-item" onclick="switchTab('refer', this)">
@@ -9166,5 +9166,13 @@ function ofRenderAdminIfOpen() { var m = document.getElementById('offerAdminModa
 setInterval(function () { try { ofRender(); ofRefreshDetail(); ofRenderAdminIfOpen(); } catch (e) {} }, 60000);
 window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNavBg, 1500); });
 </script>
+
+<style>
+/* অফার আইকন: অন্য সব নেভ আইটেমের মতো সমান সাইজ ও সমান লাইনে */
+.nav-offer .ob{display:none !important;}
+.nav-offer.active{background:rgba(var(--bdrgb),0.15) !important;border-radius:8px;}
+.nav-offer.active span:last-child{color:var(--navAct) !important;font-weight:inherit !important;}
+.of-ndot{top:1px !important;right:calc(50% - 20px) !important;width:10px !important;height:10px !important;border:1.5px solid var(--bg) !important;}
+</style>
 </body>
         </html>
