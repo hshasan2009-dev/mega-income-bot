@@ -6467,7 +6467,7 @@
                 if (mine) { myInList = true; rlbMyPos = r; }
                 h += '<div class="rlb-row ' + (r < 4 ? 'r' + r : '') + (mine ? ' mine' : '') + '" style="animation-delay:' + (i * 0.06) + 's">'
                     + (r < 4 ? '<div class="rlb-med">' + rlbMedal(r) + '</div>' : '<div class="rlb-num">' + bnDigits(r) + '</div>')
-                    + '<div class="rlb-info"><div class="rlb-nm">' + escHtml(d.name) + (mine ? ' (আপনি)' : '') + '</div>'
+                    + '<div class="rlb-info"><div class="rlb-nm"><span class="rlb-nm-t">' + escHtml(d.name) + '</span>' + (mine ? '<span class="rlb-you">আপনি</span>' : '') + '</div>'
                     + '<span class="rlb-code"><i>ID:</i> ' + escHtml(d.code) + '</span></div>'
                     + '<div class="rlb-cnt"><b>' + bnDigits(d.cnt) + '</b><small>একটিভ রেফার</small></div></div>';
             });
@@ -8775,6 +8775,14 @@ function saveVideoLink() {
 /* অফার কার্ড: বড় ও সুন্দর এমাউন্ট */
 .wa3-offer-amt{font-size:34px !important;font-weight:900 !important;line-height:1.05 !important;color:#25d366 !important;letter-spacing:.3px;text-shadow:0 2px 14px rgba(37,211,102,.35);}
 .wa3-offer-info .wa3-chip{margin-top:8px;}
+</style>
+
+<style>
+/* লিডারবোর্ড: নাম বড় হলে কাটা যাবে, কিন্তু "আপনি" ব্যাজ সবসময় দেখা যাবে */
+.rlb-nm{display:flex;align-items:center;gap:6px;}
+.rlb-nm-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rlb-you{flex:none;font-size:10.5px;font-weight:700;line-height:1.5;padding:0 8px;border-radius:10px;border:1px solid #2ecc71;color:#2ecc71;background:rgba(46,204,113,.14);}
+.rlb-row.r1 .rlb-you{font-size:11px;}
 </style>
 </body>
         </html>
