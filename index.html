@@ -2505,6 +2505,14 @@
             </div>
         </div>
 
+        <div id="offers" class="page">
+            <div class="of-top">
+                <div><div class="of-h">🎁 অফার</div><div class="of-s">চলমান স্পেশাল অফারগুলো এখানে দেখুন</div></div>
+                <button class="of-adm" id="of-admin-btn" style="display:none;" onclick="ofOpenAdmin()">🛡️ এডমিন</button>
+            </div>
+            <div id="of-list"></div>
+        </div>
+
         <div id="withdraw" class="page">
             <div class="card">
                 <h3>💳 টাকা তুলুন</h3>
@@ -3302,6 +3310,11 @@
             </span>
             <span>টাস্ক</span>
         </button>
+        <button class="nav-item nav-offer" id="offer-nav-btn" onclick="switchTab('offers', this); ofRender();">
+            <span class="of-ndot" id="of-ndot"></span>
+            <span class="ob"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8M7.5 8a2.5 2.5 0 1 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg></span>
+            <span>অফার</span>
+        </button>
         <button class="nav-item" onclick="switchTab('refer', this)">
             <span class="icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -3725,6 +3738,7 @@
             } else {
                 startSubAdminWatch();
             }
+            try { startOfferWatch(); } catch (e) {}
 
             // পপ-আপ সেটিংস রিয়েলটাইম লিসেনার
             db.ref('popup_notice_settings').on('value', (snapshot) => {
@@ -8832,5 +8846,325 @@ function saveVideoLink() {
 @keyframes ttbDraw{to{stroke-dashoffset:0}}
 @keyframes ttbShine{0%,55%,100%{opacity:.18}70%{opacity:.7}}
 </style>
+
+<style>
+/* ===== অফার ট্যাব ===== */
+.nav-offer{position:relative;}
+.nav-offer.active{background:none !important;}
+.nav-offer .ob{width:44px;height:44px;margin-top:-24px;margin-bottom:1px;border-radius:50%;background:linear-gradient(135deg,var(--btn),#e6a911);display:flex;align-items:center;justify-content:center;border:4px solid var(--of-navbg,var(--bg));box-shadow:0 4px 12px rgba(241,196,15,.45);box-sizing:content-box;}
+.nav-offer.active span:last-child{color:var(--acc);font-weight:700;}
+.of-ndot{position:absolute;top:-22px;right:calc(50% - 30px);width:12px;height:12px;border-radius:50%;background:#ff4d4d;border:2px solid var(--of-navbg,var(--bg));display:none;z-index:2;}
+.of-ndot.show{display:block;}
+.of-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 2px 12px;}
+.of-h{font-size:19px;font-weight:800;color:var(--txt);}
+.of-s{font-size:12px;color:var(--sub);margin-top:2px;}
+.of-adm{background:var(--card);color:var(--acc);border:1.5px solid var(--acc);border-radius:20px;padding:7px 13px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;}
+.oc{position:relative;border-radius:16px;padding:14px;margin-bottom:12px;overflow:hidden;border:1px solid rgba(255,255,255,.12);box-shadow:0 6px 18px rgba(0,0,0,.35);text-align:left;}
+.oc.g{background:linear-gradient(135deg,#0e5a3a,#168a55 70%,#1fae6a);color:#fff;}
+.oc:after{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none;}
+.oc .tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.5px;color:#ffcc00;background:rgba(0,0,0,.28);border:1px solid rgba(255,204,0,.45);padding:2px 9px;border-radius:12px;position:relative;}
+.oc h3{font-size:16px;margin:8px 0 4px;position:relative;color:#fff;}
+.oc p{font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.9);position:relative;}
+.oc .meta{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0;position:relative;}
+.oc .meta span{font-size:11px;background:rgba(0,0,0,.25);padding:3px 9px;border-radius:10px;color:#fff;}
+.oc .foot{display:flex;align-items:center;justify-content:space-between;position:relative;gap:8px;}
+.oc .time{font-size:11.5px;color:rgba(255,255,255,.92);font-weight:700;}
+.oc .join{background:#fff;color:#0b4a2e;border:none;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
+.oc .join.done{background:rgba(255,255,255,.22);color:#fff;}
+.of-empty{text-align:center;padding:50px 20px;border:1.5px dashed var(--bd);border-radius:18px;background:var(--bg2);margin-top:6px;}
+.of-empty .big{font-size:46px;margin-bottom:8px;}
+.of-empty b{display:block;font-size:15px;margin-bottom:5px;color:var(--txt);}
+.of-empty span{font-size:12px;color:var(--sub);line-height:1.6;}
+/* পূর্ণ পেজ (ডিটেইলস ও এডমিন) */
+.of-sheet{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:100050;background:var(--bg3);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.of-hd{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;background:linear-gradient(135deg,#0e5a3a,#1fae6a);color:#fff;}
+.of-hd .t{font-size:16px;font-weight:800;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.of-back{width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:18px;cursor:pointer;flex:none;}
+.of-body{padding:14px 14px 40px;max-width:480px;margin:0 auto;}
+.of-prog{background:var(--card);border:1.5px solid var(--bd);border-radius:18px;padding:16px;margin-bottom:12px;text-align:center;}
+.of-prog .lbl{font-size:12.5px;color:var(--sub);font-weight:700;}
+.of-prog .cnt{font-size:34px;font-weight:900;color:var(--acc);margin:4px 0 10px;line-height:1.1;}
+.of-prog .cnt small{font-size:15px;color:var(--sub);font-weight:700;}
+.of-bar{height:14px;border-radius:10px;background:rgba(255,255,255,.1);overflow:hidden;position:relative;}
+.of-bar i{display:block;height:100%;width:0;border-radius:10px;background:linear-gradient(90deg,#1fae6a,#7dff6a,#ffcc00);transition:width .7s ease;box-shadow:0 0 10px rgba(125,255,106,.5);}
+.of-dots{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:14px 0 4px;}
+.of-dots i{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:12px;font-weight:800;border:2px solid rgba(255,255,255,.2);color:var(--sub);background:rgba(0,0,0,.2);}
+.of-dots i.on{background:linear-gradient(135deg,#25d366,#128c4a);border-color:#7dff6a;color:#fff;box-shadow:0 0 10px rgba(37,211,102,.45);}
+.of-hint{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.5;}
+.of-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px;}
+.of-tile{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:11px 6px;text-align:center;}
+.of-tile .v{font-size:15px;font-weight:900;color:var(--txt);}
+.of-tile .l{font-size:10.5px;color:var(--sub);margin-top:3px;font-weight:700;}
+.of-rules{background:var(--bg2);border:1px dashed var(--bd);border-radius:14px;padding:13px 14px;margin-bottom:14px;text-align:left;}
+.of-rules b{font-size:13px;color:var(--acc);display:block;margin-bottom:6px;}
+.of-rules div{font-size:12px;color:var(--sub);line-height:1.7;}
+.of-claim{width:100%;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:900;cursor:pointer;color:#000;background:linear-gradient(135deg,var(--btn),#e6a911);box-shadow:0 8px 20px rgba(241,196,15,.3);}
+.of-claim.lock{background:rgba(255,255,255,.1);color:var(--sub);box-shadow:none;cursor:not-allowed;}
+.of-claim.ok{background:rgba(37,211,102,.18);color:#2ecc71;box-shadow:none;border:1.5px solid #2ecc71;cursor:default;}
+.of-claim.exp{background:rgba(231,76,60,.15);color:#ff7a6a;box-shadow:none;border:1.5px solid #e74c3c;cursor:default;}
+/* এডমিন */
+.of-form{background:var(--card);border:1.5px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:14px;text-align:left;}
+.of-form label{display:block;font-size:12px;color:var(--sub);font-weight:700;margin:10px 0 5px;}
+.of-form label:first-child{margin-top:0;}
+.of-form input,.of-form textarea{width:100%;padding:11px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:#fff;font-size:14px;outline:none;font-family:inherit;}
+.of-form textarea{min-height:64px;resize:vertical;}
+.of-row2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.of-save{width:100%;margin-top:14px;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:900;color:#fff;cursor:pointer;background:linear-gradient(135deg,#25d366,#128c4a);}
+.of-ali{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:11px 12px;margin-bottom:8px;text-align:left;}
+.of-ali .i{flex:1;min-width:0;}
+.of-ali .n{font-size:14px;font-weight:800;color:var(--txt);}
+.of-ali .m{font-size:11.5px;color:var(--sub);margin-top:3px;line-height:1.5;}
+.of-del{border:none;border-radius:9px;padding:8px 11px;font-size:12px;font-weight:800;color:#fff;background:#e74c3c;cursor:pointer;flex:none;}
+</style>
+
+<div id="offerDetailModal" class="of-sheet">
+    <div class="of-hd"><button class="of-back" onclick="ofCloseDetail()">←</button><div class="t" id="ofd-title">অফার</div><span style="width:36px;flex:none;"></span></div>
+    <div class="of-body">
+        <div class="oc g" id="ofd-hero"></div>
+        <div class="of-prog">
+            <div class="lbl">🎯 আপনার প্রগ্রেস</div>
+            <div class="cnt" id="ofd-count">০ <small>/ ৫</small></div>
+            <div class="of-bar"><i id="ofd-fill"></i></div>
+            <div class="of-dots" id="ofd-dots"></div>
+            <div class="of-hint" id="ofd-hint"></div>
+        </div>
+        <div class="of-tiles" id="ofd-tiles"></div>
+        <div class="of-rules">
+            <b>📜 অফারের নিয়ম</b>
+            <div>• অফারে জয়েন করার পর থেকে আপনার একটিভ রেফার যতটি বাড়বে, তা গণনা হবে।</div>
+            <div>• নির্ধারিত সময়ের মধ্যে টার্গেট পূর্ণ না করলে বোনাস পাবেন না।</div>
+            <div>• টার্গেট পূর্ণ হলে নিচের ক্লেইম বাটন চালু হবে, বোনাস সরাসরি ব্যালেন্সে যোগ হবে।</div>
+        </div>
+        <button class="of-claim lock" id="ofd-claim" onclick="ofClaim()">টার্গেট পূর্ণ হলে ক্লেইম করুন</button>
+    </div>
+</div>
+
+<div id="offerAdminModal" class="of-sheet">
+    <div class="of-hd"><button class="of-back" onclick="ofCloseAdmin()">←</button><div class="t">🛡️ অফার ম্যানেজ (এডমিন)</div><span style="width:36px;flex:none;"></span></div>
+    <div class="of-body">
+        <div class="of-form">
+            <label>অফারের নাম</label>
+            <input type="text" id="ofa-title" value="রেফার বোনাস অফার">
+            <label>সংক্ষিপ্ত বিবরণ (খালি রাখলে নিজে লেখা হবে)</label>
+            <textarea id="ofa-desc" placeholder="যেমন: আজ ৫ জনকে রেফার করুন এবং বোনাস আনলক করুন।"></textarea>
+            <div class="of-row2">
+                <div><label>একটিভ রেফার টার্গেট</label><input type="number" id="ofa-target" min="1" value="5"></div>
+                <div><label>বোনাস (৳)</label><input type="number" id="ofa-bonus" min="1" placeholder="যেমন 50"></div>
+                <div><label>সময় (দিন)</label><input type="number" id="ofa-days" min="1" value="10"></div>
+            </div>
+            <button class="of-save" onclick="ofAdminAdd()">➕ অফার যোগ করুন</button>
+        </div>
+        <div style="font-size:14px;font-weight:800;color:var(--acc);margin:0 0 8px;text-align:left;">📋 সব অফার</div>
+        <div id="ofa-list"></div>
+    </div>
+</div>
+
+<script>
+/* ================= অফার সিস্টেম (রেফার বোনাস অফার) ================= */
+var ofOffers = {};       // সব অফার
+var ofJoins = {};        // আমার জয়েন করা অফার: {id: {joinedAt, baseline, claimed}}
+var ofCurrent = '';
+var ofWatchKey = '';
+var ofClaimBusy = false;
+
+function ofBn(n) { return (typeof bnDigits === 'function') ? bnDigits(n) : String(n); }
+function ofEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+// সময় বাকি: দিন কমতে থাকবে (১০ দিন বাকি → ৯ দিন বাকি ...)
+function ofLeft(endsAt) {
+    var ms = Number(endsAt) - Date.now();
+    if (ms <= 0) return null;
+    if (ms > 86400000) return ofBn(Math.ceil(ms / 86400000)) + ' দিন বাকি';
+    if (ms > 3600000) return ofBn(Math.ceil(ms / 3600000)) + ' ঘণ্টা বাকি';
+    return ofBn(Math.max(1, Math.ceil(ms / 60000))) + ' মিনিট বাকি';
+}
+function ofList() {
+    return Object.keys(ofOffers).map(function (k) { var o = ofOffers[k] || {}; o.id = k; return o; })
+        .sort(function (a, b) { return (a.createdAt || 0) - (b.createdAt || 0); });
+}
+function ofActive() {
+    var now = Date.now();
+    return ofList().filter(function (o) { return o.on !== false && Number(o.endsAt) > now; });
+}
+function ofDesc(o) {
+    if (o.desc && String(o.desc).trim()) return ofEsc(o.desc);
+    return ofBn(o.target) + ' জন একটিভ রেফার করুন এবং ৳' + ofBn(o.bonus) + ' বোনাস আনলক করুন।';
+}
+function ofProgress(o) {
+    var j = ofJoins[o.id];
+    if (!j) return 0;
+    var cur = (typeof activeReferCount !== 'undefined') ? Number(activeReferCount) : 0;
+    return Math.max(0, Math.min(Number(o.target), cur - Number(j.baseline || 0)));
+}
+function ofSyncNavBg() {
+    try {
+        var nb = document.getElementById('app-navbar');
+        if (nb) document.documentElement.style.setProperty('--of-navbg', getComputedStyle(nb).backgroundColor);
+    } catch (e) {}
+}
+
+function ofRender() {
+    ofSyncNavBg();
+    var list = document.getElementById('of-list');
+    var act = ofActive();
+    var admBtn = document.getElementById('of-admin-btn');
+    if (admBtn) admBtn.style.display = (typeof isRegAdmin === 'function' && isRegAdmin()) ? 'block' : 'none';
+    var dot = document.getElementById('of-ndot');
+    if (dot) dot.classList.toggle('show', act.some(function (o) { return !ofJoins[o.id]; }));
+    if (!list) return;
+    if (!act.length) {
+        list.innerHTML = '<div class="of-empty"><div class="big">🎁</div><b>এখন কোনো অফার নেই</b><span>নতুন অফার এলে এখানে দেখতে পাবেন।<br>একটু পরপর আবার দেখুন!</span></div>';
+        return;
+    }
+    list.innerHTML = act.map(function (o) {
+        var j = ofJoins[o.id];
+        var btn = !j ? 'জয়েন করুন ›' : (j.claimed ? 'ক্লেইম হয়েছে ✓' : 'প্রগ্রেস দেখুন ›');
+        return '<div class="oc g"><span class="tag">🔥 LIMITED</span><h3>' + ofEsc(o.title || 'রেফার বোনাস অফার') + '</h3><p>' + ofDesc(o) + '</p>'
+            + '<div class="meta"><span>🎁 ৳' + ofBn(o.bonus) + ' বোনাস</span><span>👥 ' + ofBn(o.target) + ' জন একটিভ রেফার</span></div>'
+            + '<div class="foot"><span class="time">⏳ ' + ofLeft(o.endsAt) + '</span><button class="join' + (j ? ' done' : '') + '" onclick="ofJoin(\'' + o.id + '\')">' + btn + '</button></div></div>';
+    }).join('');
+}
+
+function ofJoin(id) {
+    var o = ofOffers[id];
+    if (!o || o.on === false || Number(o.endsAt) <= Date.now()) { alert('⚠️ এই অফারের সময় শেষ হয়ে গেছে।'); ofRender(); return; }
+    if (ofJoins[id]) { ofOpenDetail(id); return; }
+    if (!currentUserKey) return;
+    if (typeof balanceLoaded !== 'undefined' && !balanceLoaded) { alert('⏳ একটু অপেক্ষা করে আবার চেষ্টা করুন।'); return; }
+    var base = (typeof activeReferCount !== 'undefined') ? Number(activeReferCount) : 0;
+    db.ref('offer_joins/' + currentUserKey + '/' + id).transaction(function (cur) {
+        return cur ? undefined : { joinedAt: Date.now(), baseline: base, claimed: false };
+    }, function (err) {
+        if (err) { alert('❌ জয়েন করা যায়নি, আবার চেষ্টা করুন।'); return; }
+        ofOpenDetail(id);
+    });
+}
+
+function ofOpenDetail(id) {
+    ofCurrent = id;
+    document.getElementById('offerDetailModal').style.display = 'block';
+    ofRefreshDetail();
+}
+function ofCloseDetail() { ofCurrent = ''; document.getElementById('offerDetailModal').style.display = 'none'; }
+
+function ofRefreshDetail() {
+    var m = document.getElementById('offerDetailModal');
+    if (!m || m.style.display !== 'block' || !ofCurrent) return;
+    var o = ofOffers[ofCurrent];
+    if (!o) { ofCloseDetail(); return; }
+    var j = ofJoins[o.id] || {};
+    var target = Number(o.target), prog = ofProgress(o);
+    var left = ofLeft(o.endsAt);
+    var expired = !left || o.on === false;
+    document.getElementById('ofd-title').innerText = o.title || 'রেফার বোনাস অফার';
+    document.getElementById('ofd-hero').innerHTML = '<span class="tag">🔥 LIMITED</span><h3>' + ofEsc(o.title || 'রেফার বোনাস অফার') + '</h3><p>' + ofDesc(o) + '</p>';
+    document.getElementById('ofd-count').innerHTML = ofBn(prog) + ' <small>/ ' + ofBn(target) + ' একটিভ রেফার</small>';
+    document.getElementById('ofd-fill').style.width = Math.round(prog / target * 100) + '%';
+    var dots = '';
+    if (target <= 12) { for (var i = 1; i <= target; i++) dots += '<i class="' + (i <= prog ? 'on' : '') + '">' + (i <= prog ? '✓' : ofBn(i)) + '</i>'; }
+    document.getElementById('ofd-dots').innerHTML = dots;
+    var done = prog >= target;
+    var hint = j.claimed ? '🎉 বোনাস আপনার ব্যালেন্সে যোগ হয়ে গেছে!'
+        : expired ? '⏰ অফারের সময় শেষ হয়ে গেছে।'
+        : done ? '✅ অভিনন্দন! টার্গেট পূর্ণ হয়েছে, এখনই বোনাস ক্লেইম করুন।'
+        : 'আর ' + ofBn(target - prog) + ' জন একটিভ রেফার করলেই বোনাস আনলক হবে।';
+    document.getElementById('ofd-hint').innerText = hint;
+    document.getElementById('ofd-tiles').innerHTML =
+        '<div class="of-tile"><div class="v">৳' + ofBn(o.bonus) + '</div><div class="l">🎁 বোনাস</div></div>'
+        + '<div class="of-tile"><div class="v">' + ofBn(target) + ' জন</div><div class="l">👥 টার্গেট</div></div>'
+        + '<div class="of-tile"><div class="v" style="font-size:13px;">' + (left ? left.replace(' বাকি', '') : 'শেষ') + '</div><div class="l">⏳ সময় বাকি</div></div>';
+    var b = document.getElementById('ofd-claim');
+    if (j.claimed) { b.className = 'of-claim ok'; b.innerText = '✅ ক্লেইম হয়েছে'; }
+    else if (expired) { b.className = 'of-claim exp'; b.innerText = '⏰ সময় শেষ'; }
+    else if (done) { b.className = 'of-claim'; b.innerText = '🎁 ৳' + ofBn(o.bonus) + ' ক্লেইম করুন'; }
+    else { b.className = 'of-claim lock'; b.innerText = 'টার্গেট পূর্ণ হলে ক্লেইম করুন'; }
+}
+
+function ofClaim() {
+    if (ofClaimBusy) return;
+    var o = ofOffers[ofCurrent], j = ofJoins[ofCurrent];
+    if (!o || !j || j.claimed) return;
+    if (o.on === false || Number(o.endsAt) <= Date.now()) { alert('⏰ অফারের সময় শেষ।'); return; }
+    if (ofProgress(o) < Number(o.target)) return;
+    ofClaimBusy = true;
+    var id = o.id, bonus = Number(o.bonus);
+    db.ref('offer_joins/' + currentUserKey + '/' + id + '/claimed').transaction(function (c) { return c ? undefined : true; }, function (err, done) {
+        if (err || !done) { ofClaimBusy = false; alert('⚠️ বোনাস আগেই ক্লেইম করা হয়েছে।'); return; }
+        db.ref('users/' + currentUserKey + '/balance').transaction(function (b) { return Math.round(((b || 0) + bonus) * 100) / 100; }, function () {
+            db.ref('offer_joins/' + currentUserKey + '/' + id + '/claimedAt').set(Date.now());
+            ofClaimBusy = false;
+            alert('🎉 ৳' + bonus + ' বোনাস আপনার ব্যালেন্সে যোগ হয়েছে!');
+        });
+    });
+}
+
+/* ---- এডমিন ---- */
+function ofOpenAdmin() {
+    if (!(typeof isRegAdmin === 'function' && isRegAdmin())) return;
+    document.getElementById('offerAdminModal').style.display = 'block';
+    ofRenderAdmin();
+}
+function ofCloseAdmin() { document.getElementById('offerAdminModal').style.display = 'none'; }
+function ofRenderAdmin() {
+    var box = document.getElementById('ofa-list');
+    if (!box) return;
+    var list = ofList();
+    if (!list.length) { box.innerHTML = '<div class="of-empty" style="padding:24px 14px;"><span>কোনো অফার নেই। উপরে থেকে যোগ করুন।</span></div>'; return; }
+    box.innerHTML = list.slice().reverse().map(function (o) {
+        var left = ofLeft(o.endsAt);
+        return '<div class="of-ali"><div class="i"><div class="n">' + ofEsc(o.title || 'রেফার বোনাস অফার') + '</div><div class="m">👥 ' + ofBn(o.target) + ' জন • 🎁 ৳' + ofBn(o.bonus) + ' • ' + (left ? '⏳ ' + left : '⏰ মেয়াদ শেষ') + '</div></div><button class="of-del" onclick="ofAdminDelete(\'' + o.id + '\')">🗑 ডিলিট</button></div>';
+    }).join('');
+}
+function ofAdminAdd() {
+    if (!(typeof isRegAdmin === 'function' && isRegAdmin())) return;
+    var title = (document.getElementById('ofa-title').value || '').trim() || 'রেফার বোনাস অফার';
+    var desc = (document.getElementById('ofa-desc').value || '').trim();
+    var target = parseInt(document.getElementById('ofa-target').value, 10);
+    var bonus = parseFloat(document.getElementById('ofa-bonus').value);
+    var days = parseFloat(document.getElementById('ofa-days').value);
+    if (!(target >= 1)) { alert('⚠️ সঠিক টার্গেট লিখুন!'); return; }
+    if (!(bonus > 0)) { alert('⚠️ সঠিক বোনাসের এমাউন্ট লিখুন!'); return; }
+    if (!(days > 0)) { alert('⚠️ সঠিক সময় (দিন) লিখুন!'); return; }
+    var now = Date.now();
+    db.ref('offers').push({ type: 'refer', title: title, desc: desc, target: target, bonus: bonus, days: days, createdAt: now, endsAt: now + Math.round(days * 86400000), on: true })
+        .then(function () {
+            document.getElementById('ofa-desc').value = '';
+            document.getElementById('ofa-bonus').value = '';
+            alert('✅ অফার যোগ হয়েছে।');
+        }).catch(function () { alert('❌ অফার যোগ করা যায়নি!'); });
+}
+function ofAdminDelete(id) {
+    if (!(typeof isRegAdmin === 'function' && isRegAdmin())) return;
+    window.mpConfirm('এই অফারটি ডিলিট করবেন?', function (ok) {
+        if (!ok) return;
+        db.ref('offers/' + id).remove().catch(function () { alert('❌ ডিলিট করা যায়নি!'); });
+    }, 'ডিলিট করুন');
+}
+
+/* ---- লিসেনার ---- */
+var ofOffersOn = false;
+function startOfferWatch() {
+    if (!currentUserKey || ofWatchKey === currentUserKey) return;
+    if (ofWatchKey) { try { db.ref('offer_joins/' + ofWatchKey).off(); } catch (e) {} }
+    ofWatchKey = currentUserKey;
+    ofJoins = {};
+    if (!ofOffersOn) {
+        ofOffersOn = true;
+        db.ref('offers').on('value', function (s) { ofOffers = s.val() || {}; ofRender(); ofRefreshDetail(); ofRenderAdminIfOpen(); });
+    }
+    db.ref('offer_joins/' + currentUserKey).on('value', function (s) { ofJoins = s.val() || {}; ofRender(); ofRefreshDetail(); });
+}
+function ofRenderAdminIfOpen() { var m = document.getElementById('offerAdminModal'); if (m && m.style.display === 'block') ofRenderAdmin(); }
+
+// রেফার সংখ্যা বদলালে প্রগ্রেস লাইভ আপডেট
+(function () {
+    var _u = window.updateUI || (typeof updateUI === 'function' ? updateUI : null);
+    if (_u) {
+        updateUI = function () { var r = _u.apply(this, arguments); try { ofRefreshDetail(); } catch (e) {} return r; };
+    }
+})();
+setInterval(function () { try { ofRender(); ofRefreshDetail(); ofRenderAdminIfOpen(); } catch (e) {} }, 60000);
+window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNavBg, 1500); });
+</script>
 </body>
         </html>
