@@ -1898,7 +1898,7 @@
         <span class="mi-hd"><img src="/icon-192.png" alt="">Mega Income Pro</span>
         <div class="tt-right">
             <button class="logout-btn-top" id="logoutBtn" onclick="handleLogout()">Log Out</button>
-            <span class="tt-user" id="ttUser"><i class="tt-dot" id="ttDot" style="background:#7f8c8d"></i><span class="tt-name" id="ttName"></span></span>
+            <span class="tt-user" id="ttUser"><i class="tt-dot" id="ttDot"><svg class="ttb" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><defs><linearGradient id="ttbG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" class="ttb-s1"/><stop offset="1" class="ttb-s2"/></linearGradient></defs><polygon class="ttb-seal" points="12.00,1.00 15.52,3.50 19.78,4.22 20.50,8.48 23.00,12.00 20.50,15.52 19.78,19.78 15.52,20.50 12.00,23.00 8.48,20.50 4.22,19.78 3.50,15.52 1.00,12.00 3.50,8.48 4.22,4.22 8.48,3.50" fill="url(#ttbG)" stroke="url(#ttbG)" stroke-width="1.6" stroke-linejoin="round"/><path class="ttb-ok" d="M7.2 12.4l3.1 3.1 6.4-6.9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path class="ttb-no" d="M8.6 8.6l6.8 6.8M15.4 8.6l-6.8 6.8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><ellipse class="ttb-shine" cx="9" cy="7.5" rx="4.2" ry="2" transform="rotate(-35 9 7.5)" fill="#fff" opacity=".35"/></svg></i><span class="tt-name" id="ttName"></span></span>
         </div>
     </div>
 
@@ -8812,6 +8812,25 @@ function saveVideoLink() {
 .rlb-row.r1 .rlb-med,.rlb-row.r2 .rlb-med,.rlb-row.r3 .rlb-med,.rlb-med{width:46px !important;height:52px !important;}
 .rlb-row.r1 .rlb-nm,.rlb-row.r2 .rlb-nm,.rlb-row.r3 .rlb-nm{font-size:15px !important;}
 .rlb-row.r1 .rlb-cnt b,.rlb-row.r2 .rlb-cnt b,.rlb-row.r3 .rlb-cnt b{font-size:18px !important;}
+</style>
+
+<style>
+/* হেডারের একটিভ/নন-একটিভ চিহ্ন: ভেরিফাইড ব্যাজ স্টাইল (টেলিগ্রামের মতো সিল) */
+.tt-dot{width:18px !important;height:18px !important;border-radius:0 !important;background:none !important;box-shadow:none !important;animation:none !important;display:inline-flex;align-items:center;justify-content:center;flex:none;position:relative;}
+.tt-dot .ttb{display:block;width:18px;height:18px;overflow:visible;}
+.tt-dot .ttb-s1{stop-color:#7dff6a;}.tt-dot .ttb-s2{stop-color:#1fb35a;}
+.tt-dot.off .ttb-s1{stop-color:#ff7a6e;}.tt-dot.off .ttb-s2{stop-color:#d62b2b;}
+.tt-dot:not(.on):not(.off) .ttb-s1{stop-color:#aab4b8;}.tt-dot:not(.on):not(.off) .ttb-s2{stop-color:#6f7b80;}
+.tt-dot .ttb-no{display:none;}
+.tt-dot.off .ttb-ok{display:none;}.tt-dot.off .ttb-no{display:block;}
+.tt-dot:not(.on):not(.off) .ttb-ok,.tt-dot:not(.on):not(.off) .ttb-no{display:none;}
+.tt-dot.on .ttb{filter:drop-shadow(0 0 3px rgba(61,255,0,.55));animation:ttbBreath 2.6s ease-in-out infinite;}
+.tt-dot.off .ttb{filter:drop-shadow(0 0 3px rgba(255,70,70,.5));animation:ttbBreath 1.8s ease-in-out infinite;}
+.tt-dot.on .ttb-ok{stroke-dasharray:20;stroke-dashoffset:20;animation:ttbDraw .55s .1s ease-out forwards;}
+.tt-dot .ttb-shine{animation:ttbShine 3.2s ease-in-out infinite;}
+@keyframes ttbBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@keyframes ttbDraw{to{stroke-dashoffset:0}}
+@keyframes ttbShine{0%,55%,100%{opacity:.18}70%{opacity:.7}}
 </style>
 </body>
         </html>
