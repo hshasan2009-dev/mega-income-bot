@@ -6551,7 +6551,7 @@
                 total++;
                 // মোট ইনকাম = বর্তমান ব্যালেন্স + তোলা টাকা (Reject বাদে)
                 let income = parseFloat(ausUsers[k].balance || 0) + (ausWithdrawn[k] || 0);
-                if (income >= ACTIVE_MIN_INCOME) active++;
+                if (income >= ACTIVE_MIN_INCOME || ausUsers[k].acctActive === true) active++;
             });
             ausCount(document.getElementById('aus-total'), ausPrevT, total);
             ausCount(document.getElementById('aus-active'), ausPrevA, active);
@@ -6560,7 +6560,7 @@
             let box = document.getElementById('aus-box');
             if (box) box.style.setProperty('--p', pc + '%');
             let pt = document.getElementById('aus-pct');
-            if (pt) pt.textContent = 'মোট ইউজারের ' + bnDigits(pc) + '% একটিভ (৳' + bnDigits(ACTIVE_MIN_INCOME) + '+ ইনকাম)';
+            if (pt) pt.textContent = 'মোট ইউজারের ' + bnDigits(pc) + '% একটিভ (৳' + bnDigits(ACTIVE_MIN_INCOME) + '+ ইনকাম বা একাউন্ট একটিভ)';
         }
         /* পুরোনো ইউজারদের সিরিয়াল স্কোর একবার বসিয়ে দেয় (প্রত্যেকের আলাদা সময় দিয়ে, যাতে সিরিয়াল একই না হয়) */
         function backfillRefScores(users) {
@@ -6589,7 +6589,7 @@
                     if (!u.referrer || !codeToKey[u.referrer]) return;
                     let rk = codeToKey[u.referrer];
                     /* শুধু টাস্ক থেকে আয় (refEarned) গণনা হবে। ফ্রি বোনাস/ব্যালেন্স নয় */
-                    let valid = parseFloat(u.refEarned || 0) >= ACTIVE_REF_MIN;
+                    let valid = (parseFloat(u.refEarned || 0) >= ACTIVE_REF_MIN) || (u.acctActive === true); // ২০ টাকা দিয়ে একাউন্ট একটিভ করলে ইনকামের শর্ত লাগে না
                     let tasksDone = parseInt(u.completedTasksCount || 0) > 0;
                     if (u.refActive === true && !valid && !tasksDone && bonus[k]) {
                         /* অ্যাপের ফ্রি বোনাসের কারণে ভুলে এক্টিভ ধরা হয়েছিল: সরানো হচ্ছে */
@@ -6753,6 +6753,26 @@
                 });
             });
         }
+
+        /* ২০ টাকা দিয়ে একাউন্ট একটিভ হলে সাথে সাথে রেফারারের একটিভ রেফার +১ (ইনকামের শর্ত ছাড়া, একবারই) */
+        function markReferralActiveByPayment(refereeKey) {
+            if (!refereeKey) return;
+            db.ref('users/' + refereeKey + '/refActive').transaction((a) => a ? undefined : true, (e, done) => {
+                if (e || !done) return;
+                db.ref('users/' + refereeKey + '/referrer').once('value').then((s) => {
+                    let code = s.val();
+                    if (!code) return;
+                    db.ref('users').orderByChild('refCode').equalTo(code).once('value', (refSnap) => {
+                        refSnap.forEach(cSnap => {
+                            db.ref('users/' + cSnap.key + '/activeRefCount').transaction((n) => (n || 0) + 1, (e3, ok3, s3) => {
+                                if (ok3 && s3) db.ref('users/' + cSnap.key + '/activeRefScore').set(calcRefScore(s3.val(), nowSec()));
+                            });
+                        });
+                    });
+                });
+            });
+        }
+        window.markReferralActiveByPayment = markReferralActiveByPayment;
 
         function giveReferralCommissionForUser(userIdKey, earnedAmount, rate) {
             db.ref('users/' + userIdKey + '/referrer').once('value').then((snapshot) => {
@@ -7669,7 +7689,7 @@ function fillRqNames(){
         if (!dot) return;
         if (!balanceLoaded || !wdLoaded) { dot.className = 'tt-dot'; dot.style.background = '#7f8c8d'; return; }
         dot.style.background = '';
-        var active = totalIncome() >= ACTIVE_MIN_INCOME;
+        var active = (totalIncome() >= ACTIVE_MIN_INCOME) || window.__acctPaid === true;
         dot.className = 'tt-dot ' + (active ? 'on' : 'off');
         dot.title = active ? 'একটিভ' : 'নন-একটিভ';
     };
@@ -8481,7 +8501,7 @@ function saveVideoLink() {
     db.ref('ac_requests/'+id+'/status').transaction(function(s){return s==='pending'?'approved':undefined},function(err,ok){
       if(err||!ok){alert('এই রিকোয়েস্ট আগেই প্রসেস হয়েছে');return}
       var up={};up['users/'+d.uid+'/acctActive']=true;up['ac_ureq/'+d.uid+'/'+id+'/status']='approved';up['ac_requests/'+id+'/doneTs']=Date.now();
-      db.ref().update(up).then(function(){window.mpNotify&&mpNotify('act',id);alert('✅ ইউজারের একাউন্ট এক্টিভ হয়েছে')});
+      db.ref().update(up).then(function(){window.markReferralActiveByPayment&&window.markReferralActiveByPayment(d.uid);window.mpNotify&&mpNotify('act',id);alert('✅ ইউজারের একাউন্ট এক্টিভ হয়েছে')});
     });
   };
   window.acRej=function(id){
@@ -8548,7 +8568,7 @@ function saveVideoLink() {
     var k=currentUserKey;curKey=k;U=null;REQ={};wasBlocked=null;window.__acReqOn=false;
     var on=function(path,fn){var r=db.ref(path);r.on('value',fn);refs.push(r)};
     on('users/'+k+'/acctActive',function(s){
-      U={a:s.val()===true};
+      U={a:s.val()===true};window.__acctPaid=(s.val()===true);if(window.refreshActiveDot)window.refreshActiveDot();
       var nb=blocked();
       if(wasBlocked===true&&!nb&&U.a===true){alert('🎉 আপনার একাউন্ট এক্টিভ হয়েছে!');var p=$('acPage');if(p&&p.classList.contains('show'))acClose()}
       wasBlocked=nb;banner();
