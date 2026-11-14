@@ -438,8 +438,8 @@
         .rlb-row.r1{padding:10px 12px;background:linear-gradient(90deg,rgba(var(--accrgb),.26),var(--bg2) 75%);border:1.5px solid var(--acc);box-shadow:0 0 14px rgba(var(--accrgb),.22)}
         .rlb-row.r2{background:linear-gradient(90deg,rgba(207,216,220,.2),var(--bg2) 75%);border:1.5px solid #b0bec5}
         .rlb-row.r3{background:linear-gradient(90deg,rgba(205,127,50,.24),var(--bg2) 75%);border:1.5px solid #cd7f32}
-        .rlb-med{width:44px;height:48px;flex:none;display:grid;place-items:center}
-        .rlb-row.r1 .rlb-med{width:50px;height:54px}
+        .rlb-med{width:52px;height:58px;flex:none;display:grid;place-items:center}
+        .rlb-row.r1 .rlb-med{width:60px;height:66px}
         .rlb-num{width:28px;height:28px;margin:0 8px;flex:none;border-radius:50%;background:var(--bar);border:1px solid var(--bd);color:var(--txt2);font-weight:bold;font-size:12px;display:grid;place-items:center}
         .rlb-info{flex:1;min-width:0;line-height:1.25}
         .rlb-nm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -6432,8 +6432,9 @@
                 + '<circle cx="48" cy="66" r="34" fill="none" stroke="' + c[3] + '" stroke-width="1"/>'
                 + '<circle cx="48" cy="66" r="26.5" fill="url(#' + u + 'n)" stroke="' + c[3] + '" stroke-width="1"/>'
                 + '<circle cx="48" cy="66" r="23.5" fill="url(#' + u + 'd)" stroke="' + c[2] + '" stroke-width=".8"/>'
-                + laurel + star
-                + '<text x="48" y="79" text-anchor="middle" font-size="22" font-weight="700" fill="' + c[3] + '" stroke="' + c[0] + '" stroke-width=".5">' + bnDigits(r) + '</text>'
+                + laurel
+                + '<circle cx="48" cy="66" r="15.5" fill="' + c[0] + '" opacity=".55"/>'
+                + '<text x="48" y="76.5" text-anchor="middle" font-size="30" font-weight="900" fill="' + c[3] + '" stroke="' + c[0] + '" stroke-width="1.2" paint-order="stroke">' + bnDigits(r) + '</text>'
                 + '<ellipse cx="37" cy="49" rx="13" ry="5.5" transform="rotate(-32 37 49)" fill="#fff" opacity=".28"/>'
                 + '</svg>';
         }
