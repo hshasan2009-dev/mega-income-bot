@@ -9195,20 +9195,21 @@ window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNa
 .of-ndot{top:1px !important;right:calc(50% - 20px) !important;width:10px !important;height:10px !important;border:1.5px solid var(--bg) !important;}
 </style>
 
-<!-- ভাসমান মেনু (বাম) + অফার বাটন (ডান কোণা) -->
+<!-- ভাসমান মেনু: টেনে যেখানে খুশি রাখা যায়; ভিতরে পেমেন্ট হিসাব ও অফার -->
 <div class="fb-wrap" id="fbWrap">
-    <div class="fb fb-main" onclick="fbToggle()">
+    <div class="fb fb-main" id="fbMain">
+        <span class="fb-hot" id="fbHot"></span>
         <svg class="ic-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
         <svg class="ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </div>
-    <div class="fb fb-item bulb" onclick="payOpen()">
+    <div class="fb fb-item i1 bulb" onclick="payOpen()">
         <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>
     </div>
+    <div class="fb fb-item i2 offer" id="of-fab" onclick="switchTab('offers', null); ofRender(); fbClose();">
+        <span class="of-ndot" id="of-ndot"></span>
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><rect x="4.5" y="12.5" width="15" height="8.5" rx="1.6" fill="#ff4d4d"/><rect x="3" y="8.5" width="18" height="4.6" rx="1.4" fill="#ff7675"/><rect x="10.8" y="8.5" width="2.4" height="12.5" fill="#f1c40f"/><path d="M12 8.5C12 8.5 8.6 8.4 7.8 6.5C7.1 4.9 8.7 3.6 10.1 4.4C11.4 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/><path d="M12 8.5C12 8.5 15.4 8.4 16.2 6.5C16.9 4.9 15.3 3.6 13.9 4.4C12.6 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/></svg>
+    </div>
 </div>
-<button class="fb fb-offer" id="of-fab" onclick="switchTab('offers', null); ofRender(); fbClose();" aria-label="অফার">
-    <span class="of-ndot" id="of-ndot"></span>
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><rect x="4.5" y="12.5" width="15" height="8.5" rx="1.6" fill="#ff4d4d"/><rect x="3" y="8.5" width="18" height="4.6" rx="1.4" fill="#ff7675"/><rect x="10.8" y="8.5" width="2.4" height="12.5" fill="#f1c40f"/><path d="M12 8.5C12 8.5 8.6 8.4 7.8 6.5C7.1 4.9 8.7 3.6 10.1 4.4C11.4 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/><path d="M12 8.5C12 8.5 15.4 8.4 16.2 6.5C16.9 4.9 15.3 3.6 13.9 4.4C12.6 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/></svg>
-</button>
 
 <!-- আমার সব পেমেন্ট হিসাব পেজ -->
 <div class="pay-page" id="payPage">
@@ -9231,20 +9232,25 @@ window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNa
 </div>
 
 <style>
-.fb-wrap{position:fixed;left:max(10px,calc(50% - 230px));bottom:calc(env(safe-area-inset-bottom,0px) + 150px);z-index:990;display:flex;flex-direction:column-reverse;align-items:center;gap:10px;}
+.fb-wrap{position:fixed;left:max(10px,calc(50% - 230px));bottom:calc(env(safe-area-inset-bottom,0px) + 150px);width:46px;height:46px;z-index:990;}
 .fb{width:46px;height:46px;border-radius:50%;background:rgba(20,30,26,.92);border:1px solid rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5);transition:transform .25s,opacity .25s;padding:0;position:relative;-webkit-tap-highlight-color:transparent;}
 .fb svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.fb:active{transform:scale(.9);}
-.fb-item{opacity:0;transform:translateY(14px) scale(.6);pointer-events:none;position:absolute;bottom:0;}
-.fb-wrap.open .fb-item{opacity:1;pointer-events:auto;transform:none;position:static;}
+.fb-main{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;}
+.fb-main:active{transform:scale(.94);}
+.fb-item{position:absolute;left:0;opacity:0;transform:scale(.6);pointer-events:none;}
+.fb-item.i1{bottom:56px;}.fb-item.i2{bottom:112px;}
+.fb-wrap.down .fb-item.i1{bottom:auto;top:56px;}.fb-wrap.down .fb-item.i2{bottom:auto;top:112px;}
+.fb-wrap.open .fb-item{opacity:1;transform:none;pointer-events:auto;}
 .fb-wrap.open .fb-main .ic-grid{display:none;}
 .fb-main .ic-x{display:none;}
 .fb-wrap.open .fb-main .ic-x{display:block;}
 .fb-item.bulb svg{stroke:var(--acc);}
-.fb-offer{position:fixed;right:max(10px,calc(50% - 230px));bottom:calc(env(safe-area-inset-bottom,0px) + 150px);z-index:990;}
-.fb-offer svg{stroke:none;fill:none;stroke-width:0;}
-.fb-offer .of-ndot{top:-3px !important;right:-2px !important;width:12px !important;height:12px !important;border:2px solid #14201a !important;}
-body[data-tab="offers"] .fb-offer{display:none;}
+.fb-item.offer svg{stroke:none;}
+.fb-item:active{transform:scale(.92);}
+.fb .of-ndot{top:-3px !important;right:-2px !important;width:12px !important;height:12px !important;border:2px solid #14201a !important;}
+.fb-hot{position:absolute;top:-3px;right:-2px;width:12px;height:12px;border-radius:50%;background:#ff4d4d;border:2px solid #14201a;display:none;z-index:2;}
+.fb-wrap.hasnew:not(.open) .fb-hot{display:block;}
+.fb-wrap.dragging .fb-main{cursor:grabbing;transform:scale(1.08);}
 .pay-page{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:100060;background:var(--bg3);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:30px;}
 .pay-page.show{display:block;}
 .pay-ph{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--bd);padding:14px;display:flex;align-items:center;gap:12px;z-index:2;}
@@ -9280,8 +9286,54 @@ body[data-tab="offers"] .fb-offer{display:none;}
 var payTx = [];
 var payFilter = 'all';
 var payWatchKey = '';
-function fbToggle() { document.getElementById('fbWrap').classList.toggle('open'); }
+function fbToggle() {
+    var w = document.getElementById('fbWrap');
+    if (!w.classList.contains('open')) {
+        var r = w.getBoundingClientRect();
+        w.classList.toggle('down', r.top < 130);   // উপরের দিকে কম জায়গা থাকলে নিচের দিকে খুলবে
+    }
+    w.classList.toggle('open');
+}
 function fbClose() { var w = document.getElementById('fbWrap'); if (w) w.classList.remove('open'); }
+(function () {
+    var w = document.getElementById('fbWrap'), main = document.getElementById('fbMain');
+    var sx = 0, sy = 0, ox = 0, oy = 0, down = false, moved = false;
+    function clamp(x, y) {
+        var W = window.innerWidth, H = window.innerHeight;
+        return [Math.max(4, Math.min(W - 50, x)), Math.max(4, Math.min(H - 130, y))];
+    }
+    function setPos(x, y) { var c = clamp(x, y); w.style.left = c[0] + 'px'; w.style.top = c[1] + 'px'; w.style.bottom = 'auto'; return c; }
+    function load() { try { var s = JSON.parse(localStorage.getItem('fbPos') || 'null'); if (s && typeof s.x === 'number') setPos(s.x, s.y); } catch (e) {} }
+    main.addEventListener('pointerdown', function (e) {
+        down = true; moved = false;
+        var r = w.getBoundingClientRect(); ox = r.left; oy = r.top; sx = e.clientX; sy = e.clientY;
+        try { main.setPointerCapture(e.pointerId); } catch (x) {}
+    });
+    main.addEventListener('pointermove', function (e) {
+        if (!down) return;
+        var dx = e.clientX - sx, dy = e.clientY - sy;
+        if (!moved && Math.hypot(dx, dy) > 7) { moved = true; fbClose(); w.classList.add('dragging'); }
+        if (moved) { setPos(ox + dx, oy + dy); e.preventDefault(); }
+    });
+    function end() {
+        if (!down) return; down = false;
+        w.classList.remove('dragging');
+        if (moved) {
+            var r = w.getBoundingClientRect();
+            try { localStorage.setItem('fbPos', JSON.stringify({ x: Math.round(r.left), y: Math.round(r.top) })); } catch (e) {}
+        } else { fbToggle(); }
+    }
+    main.addEventListener('pointerup', end);
+    main.addEventListener('pointercancel', function () { down = false; w.classList.remove('dragging'); });
+    window.addEventListener('resize', function () { if (w.style.top) { var r = w.getBoundingClientRect(); setPos(r.left, r.top); } });
+    load();
+    // অফারের লাল ডট মূল বাটনেও দেখাবে (মেনু বন্ধ থাকলে)
+    var nd = document.getElementById('of-ndot');
+    if (nd && window.MutationObserver) {
+        var sync = function () { w.classList.toggle('hasnew', nd.classList.contains('show')); };
+        new MutationObserver(sync).observe(nd, { attributes: true, attributeFilter: ['class'] }); sync();
+    }
+})();
 function payBn(n) { return (typeof bnDigits === 'function') ? bnDigits(n) : String(n); }
 function payMoney(n) { return '৳' + (Math.round(Number(n) * 100) / 100).toFixed(2).replace(/\.00$/, ''); }
 function payTsFromId(id) { var m = String(id || '').match(/\d{10,}/); return m ? Number(m[0]) : 0; }
