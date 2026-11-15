@@ -3310,11 +3310,6 @@
             </span>
             <span>টাস্ক</span>
         </button>
-        <button class="nav-item nav-offer" id="offer-nav-btn" onclick="switchTab('offers', this); ofRender();">
-            <span class="of-ndot" id="of-ndot"></span>
-            <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4.5" y="12.5" width="15" height="8.5" rx="1.6" fill="#ff4d4d"/><rect x="3" y="8.5" width="18" height="4.6" rx="1.4" fill="#ff7675"/><rect x="10.8" y="8.5" width="2.4" height="12.5" fill="#f1c40f"/><path d="M12 8.5C12 8.5 8.6 8.4 7.8 6.5C7.1 4.9 8.7 3.6 10.1 4.4C11.4 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/><path d="M12 8.5C12 8.5 15.4 8.4 16.2 6.5C16.9 4.9 15.3 3.6 13.9 4.4C12.6 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/></svg></span>
-            <span>অফার</span>
-        </button>
         <button class="nav-item" onclick="switchTab('refer', this)">
             <span class="icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -4615,6 +4610,17 @@
         }
         /* ===== end withdraw method control ===== */
 
+        /* আয়ের তালিকা (পেমেন্ট হিসাব পেজের জন্য): tx/{uid}/{id} = {t:'task|ref|bonus', n:নাম, a:টাকা, ts} */
+        window.logTx = function(){ return logTx.apply(null, arguments); };
+        function logTx(type, name, amount, uid) {
+            try {
+                let k = uid || currentUserKey;
+                let a = Math.round(Number(amount) * 100) / 100;
+                if (!k || !a || isNaN(a)) return;
+                db.ref('tx/' + k).push({ t: type, n: name, a: a, ts: Date.now() });
+            } catch (e) {}
+        }
+
         function updateFirebaseProfile() {
             if(!currentUserKey) return;
             ensureTodayIncome();
@@ -5486,6 +5492,7 @@
                 noteEl.innerText = 'অফার ৳' + Number(waRunOffer.amount) + ' • ' + waSendStats.sent + 'টি মেসেজ পাঠানো হয়েছে • ' + waSendStats.sent + ' × ৳' + waFmt(waPerMsg(waRunOffer)) + ' = ৳' + waFmt(waSendStats.earn);
             }
 
+            if (!waDemoRun && waSendStats.earn > 0) logTx('task', 'WhatsApp টাস্ক · ' + waSendStats.sent + 'টি মেসেজ', waSendStats.earn);
             if (waDemoRun && noteEl) noteEl.innerText = '🧪 ডেমো টেস্ট - আসল টাকা ব্যালেন্সে যোগ হয়নি • ' + noteEl.innerText;
             waDemoRun = false;
             let ds2 = document.getElementById('wa-demo-stop'); if (ds2) ds2.style.display = 'none';
@@ -6138,6 +6145,7 @@
 
             let rewardInBDT = parseFloat(link.reward || 0);
             currentBalance += rewardInBDT;
+            logTx('task', 'রেজিস্ট্রেশন টাস্ক', rewardInBDT);
             completedTasksCount += 1;
             regDone[id] = true;
 
@@ -6370,6 +6378,7 @@
             let rewardAmt = dailyRewards[Math.min(nextStreak - 1, dailyRewards.length - 1)];
 
             currentBalance += rewardAmt;
+            logTx('bonus', 'দৈনিক চেক-ইন বোনাস', rewardAmt);
             checkinStreak = nextStreak;
             checkinTotalIncome += rewardAmt;
             lastCheckinDate = today;
@@ -6717,6 +6726,7 @@
         }
 
         function switchTab(pageId, element) {
+            document.body.setAttribute('data-tab', pageId);
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
@@ -6797,6 +6807,7 @@
                     db.ref('users').orderByChild('refCode').equalTo(myReferrerCode).once('value', (refSnap) => {
                         refSnap.forEach(cSnap => {
                             db.ref('users/' + cSnap.key + '/balance').transaction((bal) => (bal || 0) + commission);
+                            logTx('ref', 'রেফার কমিশন', commission, cSnap.key);
                             db.ref('users/' + cSnap.key + '/refBonus').transaction((bonus) => (bonus || 0) + commission);
                         });
                         trackActiveReferral(userIdKey, earnedAmount, refSnap);
@@ -6870,6 +6881,7 @@
                         db.ref('gift_codes/' + codeKey + '/usedCount').transaction((count) => (count || 0) + 1);
 
                         currentBalance += parseFloat(giftObj.amount || 0);
+                        logTx('bonus', 'গিফট কোড বোনাস', parseFloat(giftObj.amount || 0));
                         updateFirebaseProfile();
                         updateUI();
                         closeGiftModal();
@@ -6939,6 +6951,7 @@
         function giveMonetagReward() {
             let earned = parseFloat(dynamicTaskRewards.monetagTask || 1.00);
             currentBalance += earned;
+            logTx('task', 'বিজ্ঞাপন টাস্ক', earned);
             completedTasksCount += 1;
 
             let today = getTodayString();
@@ -7111,6 +7124,7 @@
         function grantExoAdTaskReward() {
             let earned = parseFloat(dynamicTaskRewards.exoAdTask || 1.00);
             currentBalance += earned;
+            logTx('task', 'স্পন্সর বিজ্ঞাপন টাস্ক', earned);
             completedTasksCount += 1;
 
             let today = getTodayString();
@@ -8664,6 +8678,7 @@ function saveVideoLink() {
         if(err){done[k]=0;return}
         if(!committed)return;
         db.ref('users/'+k+'/balance').transaction(function(b){return (parseFloat(b)||0)+BONUS},function(e2,ok){
+          if(!e2&&ok&&window.logTx)window.logTx('bonus','অ্যাপ বোনাস',BONUS,k);
           if(e2||!ok){try{db.ref('app_bonus/'+k).remove()}catch(x){}done[k]=0;return}
           pop();
         });
@@ -9097,6 +9112,7 @@ function ofClaim() {
         db.ref('users/' + currentUserKey + '/balance').transaction(function (b) { return Math.round(((b || 0) + bonus) * 100) / 100; }, function () {
             db.ref('offer_joins/' + currentUserKey + '/' + id + '/claimedAt').set(Date.now());
             ofClaimBusy = false;
+            logTx('bonus', 'অফার বোনাস', bonus);
             alert('🎉 ৳' + bonus + ' বোনাস আপনার ব্যালেন্সে যোগ হয়েছে!');
         });
     });
@@ -9178,5 +9194,161 @@ window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNa
 .nav-offer.active span:last-child{color:var(--navAct) !important;font-weight:inherit !important;}
 .of-ndot{top:1px !important;right:calc(50% - 20px) !important;width:10px !important;height:10px !important;border:1.5px solid var(--bg) !important;}
 </style>
+
+<!-- ভাসমান মেনু (বাম) + অফার বাটন (ডান কোণা) -->
+<div class="fb-wrap" id="fbWrap">
+    <div class="fb fb-main" onclick="fbToggle()">
+        <svg class="ic-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+        <svg class="ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </div>
+    <div class="fb fb-item bulb" onclick="payOpen()">
+        <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>
+    </div>
+</div>
+<button class="fb fb-offer" id="of-fab" onclick="switchTab('offers', null); ofRender(); fbClose();" aria-label="অফার">
+    <span class="of-ndot" id="of-ndot"></span>
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><rect x="4.5" y="12.5" width="15" height="8.5" rx="1.6" fill="#ff4d4d"/><rect x="3" y="8.5" width="18" height="4.6" rx="1.4" fill="#ff7675"/><rect x="10.8" y="8.5" width="2.4" height="12.5" fill="#f1c40f"/><path d="M12 8.5C12 8.5 8.6 8.4 7.8 6.5C7.1 4.9 8.7 3.6 10.1 4.4C11.4 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/><path d="M12 8.5C12 8.5 15.4 8.4 16.2 6.5C16.9 4.9 15.3 3.6 13.9 4.4C12.6 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/></svg>
+</button>
+
+<!-- আমার সব পেমেন্ট হিসাব পেজ -->
+<div class="pay-page" id="payPage">
+    <div class="pay-ph"><button onclick="payClose()">←</button><h2>💰 আমার সব পেমেন্ট হিসাব</h2></div>
+    <div class="pay-sum">
+        <div class="pay-sc main"><small>মোট আয় (সব উৎস থেকে)</small><div id="pay-total">৳ 0.00</div></div>
+        <div class="pay-sc g"><small>বর্তমান ব্যালেন্স</small><div id="pay-bal">৳ 0.00</div></div>
+        <div class="pay-sc y"><small>রেফার থেকে</small><div id="pay-ref">৳ 0.00</div></div>
+        <div class="pay-sc r" style="grid-column:1/3;"><small>মোট উইথড্র</small><div id="pay-wd">৳ 0.00</div><em id="pay-wd-pend"></em></div>
+    </div>
+    <div class="pay-tabs" id="payTabs">
+        <div class="pay-tab on" data-f="all">সব</div>
+        <div class="pay-tab" data-f="task">টাস্ক</div>
+        <div class="pay-tab" data-f="ref">রেফার</div>
+        <div class="pay-tab" data-f="bonus">বোনাস</div>
+        <div class="pay-tab" data-f="wd">উইথড্র</div>
+    </div>
+    <div class="pay-list" id="payList"></div>
+    <div class="pay-note">ℹ️ নতুন আয়ের বিস্তারিত তালিকা এখন থেকে এখানে জমা হবে। আগের আয়ের মোট হিসাব উপরের কার্ডগুলোতে ধরা আছে।</div>
+</div>
+
+<style>
+.fb-wrap{position:fixed;left:max(10px,calc(50% - 230px));bottom:calc(env(safe-area-inset-bottom,0px) + 150px);z-index:990;display:flex;flex-direction:column-reverse;align-items:center;gap:10px;}
+.fb{width:46px;height:46px;border-radius:50%;background:rgba(20,30,26,.92);border:1px solid rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5);transition:transform .25s,opacity .25s;padding:0;position:relative;-webkit-tap-highlight-color:transparent;}
+.fb svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.fb:active{transform:scale(.9);}
+.fb-item{opacity:0;transform:translateY(14px) scale(.6);pointer-events:none;position:absolute;bottom:0;}
+.fb-wrap.open .fb-item{opacity:1;pointer-events:auto;transform:none;position:static;}
+.fb-wrap.open .fb-main .ic-grid{display:none;}
+.fb-main .ic-x{display:none;}
+.fb-wrap.open .fb-main .ic-x{display:block;}
+.fb-item.bulb svg{stroke:var(--acc);}
+.fb-offer{position:fixed;right:max(10px,calc(50% - 230px));bottom:calc(env(safe-area-inset-bottom,0px) + 150px);z-index:990;}
+.fb-offer svg{stroke:none;fill:none;stroke-width:0;}
+.fb-offer .of-ndot{top:-3px !important;right:-2px !important;width:12px !important;height:12px !important;border:2px solid #14201a !important;}
+body[data-tab="offers"] .fb-offer{display:none;}
+.pay-page{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:100060;background:var(--bg3);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:30px;}
+.pay-page.show{display:block;}
+.pay-ph{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--bd);padding:14px;display:flex;align-items:center;gap:12px;z-index:2;}
+.pay-ph button{background:none;border:1px solid var(--bd);color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;flex:none;}
+.pay-ph h2{font-size:17px;color:var(--txt);}
+.pay-sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;max-width:480px;margin:0 auto;}
+.pay-sc{background:var(--card);border:1.5px solid var(--bd);border-radius:14px;padding:12px;text-align:left;}
+.pay-sc small{color:var(--sub);font-size:12px;}
+.pay-sc div{font-size:19px;font-weight:800;margin-top:4px;color:var(--txt);}
+.pay-sc em{display:block;font-style:normal;font-size:11px;color:var(--sub);margin-top:2px;}
+.pay-sc.g div{color:#2ecc71;}.pay-sc.y div{color:var(--acc);}.pay-sc.r div{color:#ff6b6b;}
+.pay-sc.main{grid-column:1/3;border-color:var(--acc);}
+.pay-sc.main div{color:var(--acc);font-size:25px;}
+.pay-tabs{display:flex;gap:8px;padding:0 14px 10px;overflow-x:auto;max-width:480px;margin:0 auto;}
+.pay-tab{flex:none;padding:7px 14px;border-radius:20px;border:1px solid var(--bd);background:var(--card);color:var(--sub);font-size:13px;font-weight:700;cursor:pointer;}
+.pay-tab.on{background:linear-gradient(135deg,var(--btn),#e6a911);color:#000;border-color:var(--acc);}
+.pay-list{padding:0 14px;max-width:480px;margin:0 auto;}
+.pay-it{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:11px 12px;margin-bottom:9px;text-align:left;}
+.pay-ico{flex:none;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--card);}
+.pay-mid{flex:1;min-width:0;}
+.pay-mid b{display:block;font-size:14px;color:var(--txt);}
+.pay-mid span{font-size:11px;color:var(--sub);}
+.pay-amt{font-weight:800;font-size:15px;white-space:nowrap;text-align:right;}
+.pay-amt.in{color:#2ecc71;}.pay-amt.out{color:#ff6b6b;}
+.pay-amt small{display:block;font-size:10px;font-weight:700;margin-top:2px;}
+.pay-amt small.ok{color:#2ecc71;}.pay-amt small.wt{color:var(--acc);}.pay-amt small.no{color:#ff7a6a;}
+.pay-empty{text-align:center;color:var(--sub);font-size:13px;padding:26px 8px;}
+.pay-note{max-width:480px;margin:6px auto 0;padding:10px 16px;font-size:11.5px;color:var(--sub);text-align:center;line-height:1.6;}
+</style>
+
+<script>
+/* ===== ভাসমান মেনু + আমার সব পেমেন্ট হিসাব ===== */
+var payTx = [];
+var payFilter = 'all';
+var payWatchKey = '';
+function fbToggle() { document.getElementById('fbWrap').classList.toggle('open'); }
+function fbClose() { var w = document.getElementById('fbWrap'); if (w) w.classList.remove('open'); }
+function payBn(n) { return (typeof bnDigits === 'function') ? bnDigits(n) : String(n); }
+function payMoney(n) { return '৳' + (Math.round(Number(n) * 100) / 100).toFixed(2).replace(/\.00$/, ''); }
+function payTsFromId(id) { var m = String(id || '').match(/\d{10,}/); return m ? Number(m[0]) : 0; }
+function payDate(ts) {
+    if (!ts) return '';
+    var d = new Date(ts), mn = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+    var h = d.getHours(), ap = h >= 12 ? 'PM' : 'AM'; h = h % 12; if (h === 0) h = 12;
+    return payBn(d.getDate()) + ' ' + mn[d.getMonth()] + ', ' + payBn(String(h).padStart(2, '0')) + ':' + payBn(String(d.getMinutes()).padStart(2, '0')) + ' ' + ap;
+}
+function payWatch() {
+    if (!currentUserKey || payWatchKey === currentUserKey) return;
+    if (payWatchKey) { try { db.ref('tx/' + payWatchKey).off(); } catch (e) {} }
+    payWatchKey = currentUserKey;
+    db.ref('tx/' + currentUserKey).limitToLast(200).on('value', function (s) {
+        var v = s.val() || {}; payTx = Object.keys(v).map(function (k) { return v[k]; }); payRender();
+    });
+}
+function payItems() {
+    var items = [];
+    payTx.forEach(function (x) {
+        var ico = x.t === 'ref' ? '👥' : (x.t === 'bonus' ? '🎁' : '📋');
+        items.push({ t: x.t, i: ico, n: x.n, ts: x.ts, a: Number(x.a), st: 'ok' });
+    });
+    (historyData || []).forEach(function (w) {
+        var st = (w.status === 'Approved' || w.status === 'Success') ? 'ok' : (w.status === 'Rejected' ? 'no' : 'wt');
+        items.push({ t: 'wd', i: '🏧', n: 'উইথড্র · ' + (w.method || ''), ts: payTsFromId(w.wd_id), a: -Number(w.requestedAmount || 0), st: st });
+    });
+    (gmailHistoryData || []).forEach(function (g) {
+        if (g.status === 'Success' || g.status === 'Approved') items.push({ t: 'task', i: '📋', n: 'জিমেইল টাস্ক', ts: payTsFromId(g.g_id), a: Number(g.amount || 0), st: 'ok' });
+    });
+    (pinHistoryData || []).forEach(function (p) {
+        if (p.status === 'Success' || p.status === 'Approved') items.push({ t: 'task', i: '📋', n: 'পিন সাবমিট' + (p.operatorTitle ? ' · ' + p.operatorTitle : ''), ts: payTsFromId(p.p_id), a: Number(p.reward || 0), st: 'ok' });
+    });
+    return items.filter(function (x) { return x.a !== 0; }).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+}
+function payRender() {
+    var pg = document.getElementById('payPage');
+    if (!pg || !pg.classList.contains('show')) return;
+    var wdOk = 0, wdPend = 0;
+    (historyData || []).forEach(function (w) {
+        var amt = Number(w.requestedAmount || 0);
+        if (w.status === 'Approved' || w.status === 'Success') wdOk += amt;
+        else if (w.status !== 'Rejected') wdPend += amt;
+    });
+    document.getElementById('pay-total').innerText = payMoney(Number(currentBalance) + wdOk + wdPend);
+    document.getElementById('pay-bal').innerText = payMoney(currentBalance);
+    document.getElementById('pay-ref').innerText = payMoney(referBonus);
+    document.getElementById('pay-wd').innerText = payMoney(wdOk);
+    document.getElementById('pay-wd-pend').innerText = wdPend > 0 ? ('অপেক্ষমাণ ' + payMoney(wdPend)) : '';
+    var list = payItems().filter(function (x) { return payFilter === 'all' || x.t === payFilter; });
+    var box = document.getElementById('payList');
+    if (!list.length) { box.innerHTML = '<div class="pay-empty">এখানে এখনো কিছু নেই</div>'; return; }
+    box.innerHTML = list.map(function (x) {
+        var inn = x.a > 0, sm = x.st === 'ok' ? '<small class="ok">সফল</small>' : (x.st === 'wt' ? '<small class="wt">অপেক্ষমাণ</small>' : '<small class="no">বাতিল</small>');
+        return '<div class="pay-it"><div class="pay-ico">' + x.i + '</div><div class="pay-mid"><b>' + String(x.n).replace(/[&<>]/g, '') + '</b><span>' + payDate(x.ts) + '</span></div><div class="pay-amt ' + (inn ? 'in' : 'out') + '">' + (inn ? '+' : '−') + payMoney(Math.abs(x.a)) + sm + '</div></div>';
+    }).join('');
+}
+function payOpen() { fbClose(); payWatch(); document.getElementById('payPage').classList.add('show'); payRender(); }
+function payClose() { document.getElementById('payPage').classList.remove('show'); }
+document.getElementById('payTabs').addEventListener('click', function (e) {
+    var tb = e.target.closest('.pay-tab'); if (!tb) return;
+    document.querySelectorAll('.pay-tab').forEach(function (x) { x.classList.remove('on'); });
+    tb.classList.add('on'); payFilter = tb.dataset.f; payRender();
+});
+setInterval(function () { try { payRender(); } catch (e) {} }, 5000);
+document.addEventListener('click', function (e) { if (!e.target.closest('#fbWrap')) fbClose(); });
+document.body.setAttribute('data-tab', 'home');
+</script>
 </body>
         </html>
