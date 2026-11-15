@@ -3701,6 +3701,13 @@
             listenMaintenance();
 
             db.ref('users/' + currentUserKey + '/isBanned').on('value', (snapshot) => {
+                if (snapshot.val() === true && String(currentUserKey) === sanitizeKey(ADMIN_CHAT_ID)) {
+                    // মূল এডমিন কখনোই ব্যান হবে না: ব্যান ফ্ল্যাগ থাকলে স্বয়ংক্রিয়ভাবে মুছে ফেলা হবে
+                    let ovAdm = document.getElementById('bannedUserOverlay');
+                    if (ovAdm) ovAdm.style.display = 'none';
+                    db.ref('users/' + currentUserKey + '/isBanned').set(false).then(() => db.ref('users/' + currentUserKey + '/bannedAt').remove());
+                    return;
+                }
                 if (snapshot.val() === true) {
                     let overlay = document.getElementById('bannedUserOverlay');
                     if (overlay) overlay.style.display = 'flex';
@@ -4457,6 +4464,10 @@
 
         function executeBanUser() {
             if (!searchedTargetUserId) return;
+            if (String(searchedTargetUserId) === sanitizeKey(ADMIN_CHAT_ID)) {
+                alert("⛔ মূল এডমিন একাউন্ট কখনোই ব্যান করা যাবে না!");
+                return;
+            }
             db.ref('users/' + searchedTargetUserId + '/bannedAt').set(Date.now()).then(() => db.ref('users/' + searchedTargetUserId + '/isBanned').set(true)).then(() => {
                 alert("🚫 ইউজার একাউন্ট সফলভাবে ব্যান করা হয়েছে!");
                 searchUserForBan();
