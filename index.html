@@ -8972,9 +8972,13 @@ function ofEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, functi
 
 // সময় বাকি: দিন কমতে থাকবে (১০ দিন বাকি → ৯ দিন বাকি ...)
 function ofLeft(endsAt) {
+    // ক্যালেন্ডারের দিন ধরে হিসাব: প্রতিদিন রাত ১২টায় ১ দিন কমে
     var ms = Number(endsAt) - Date.now();
     if (ms <= 0) return null;
-    if (ms > 86400000) return ofBn(Math.ceil(ms / 86400000)) + ' দিন বাকি';
+    var today0 = new Date(Date.now()); today0.setHours(0, 0, 0, 0);
+    var end0 = new Date(Number(endsAt)); end0.setHours(0, 0, 0, 0);
+    var days = Math.round((end0.getTime() - today0.getTime()) / 86400000);
+    if (days >= 1) return ofBn(days) + ' দিন বাকি';
     if (ms > 3600000) return ofBn(Math.ceil(ms / 3600000)) + ' ঘণ্টা বাকি';
     return ofBn(Math.max(1, Math.ceil(ms / 60000))) + ' মিনিট বাকি';
 }
