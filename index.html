@@ -9215,9 +9215,8 @@ window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNa
     <div class="pay-ph"><button onclick="payClose()">←</button><h2>💰 আমার সব পেমেন্ট হিসাব</h2></div>
     <div class="pay-sum">
         <div class="pay-sc main"><small>মোট আয় (সব উৎস থেকে)</small><div id="pay-total">৳ 0.00</div></div>
-        <div class="pay-sc g"><small>বর্তমান ব্যালেন্স</small><div id="pay-bal">৳ 0.00</div></div>
+        <div class="pay-sc r"><small>মোট উইথড্র</small><div id="pay-wd">৳ 0.00</div><em id="pay-wd-pend"></em></div>
         <div class="pay-sc y"><small>রেফার থেকে</small><div id="pay-ref">৳ 0.00</div></div>
-        <div class="pay-sc r" style="grid-column:1/3;"><small>মোট উইথড্র</small><div id="pay-wd">৳ 0.00</div><em id="pay-wd-pend"></em></div>
     </div>
     <div class="pay-tabs" id="payTabs">
         <div class="pay-tab on" data-f="all">সব</div>
@@ -9268,7 +9267,12 @@ window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNa
 .pay-tab.on{background:linear-gradient(135deg,var(--btn),#e6a911);color:#000;border-color:var(--acc);}
 .pay-list{padding:0 14px;max-width:480px;margin:0 auto;}
 .pay-it{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:11px 12px;margin-bottom:9px;text-align:left;}
-.pay-ico{flex:none;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--card);}
+.pay-ico{flex:none;width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--acc);background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.02)),var(--card);border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 3px 10px rgba(0,0,0,.35);}
+.pay-ico svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block;}
+.pay-ico svg.brand{width:30px;height:30px;stroke:none;}
+.pay-ico.c-g{color:#2ecc71;}.pay-ico.c-r{color:#ff6b6b;}.pay-ico.c-b{color:#5aa9ff;}
+.pay-ico.lg{background:#fff;padding:0;overflow:hidden;border-color:rgba(255,255,255,.4);}
+.pay-ico.lg img,.pay-ico.lg svg{width:100%;height:100%;object-fit:contain;display:block;}
 .pay-mid{flex:1;min-width:0;}
 .pay-mid b{display:block;font-size:14px;color:var(--txt);}
 .pay-mid span{font-size:11px;color:var(--sub);}
@@ -9350,6 +9354,51 @@ function payWatch() {
         var v = s.val() || {}; payTx = Object.keys(v).map(function (k) { return v[k]; }); payRender();
     });
 }
+var PAY_SVG = {
+    bank: '<svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10M2.5 10 12 3l9.5 7z"/></svg>',
+    gift: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>',
+    cal: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>',
+    users: '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    userplus: '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>',
+    play: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4z"/></svg>',
+    star: '<svg viewBox="0 0 24 24"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>',
+    app: '<svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7.5v6M9.5 11.5 12 14l2.5-2.5M10.5 18.5h3"/></svg>',
+    sim: '<svg viewBox="0 0 24 24"><path d="M6 2h8l4 4v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="8" y="11" width="8" height="7" rx="1"/><path d="M8 14.5h8M12 11v7"/></svg>',
+    task: '<svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 14l2 2 4-4"/></svg>',
+    gmail: '<svg class="brand" viewBox="0 0 48 48"><path fill="#fff" d="M13 20.2 24 28.5l11-8.3V38H13z"/><path fill="#4285F4" d="M6 15l7 5.2V38H8.5A2.5 2.5 0 0 1 6 35.5z"/><path fill="#34A853" d="M42 15l-7 5.2V38h4.5a2.5 2.5 0 0 0 2.5-2.5z"/><path fill="#FBBC04" d="M35 10.7l4.6-.1A2.5 2.5 0 0 1 42 12.6V15l-7 5.2z"/><path fill="#EA4335" d="M6 15v-2.4a2.5 2.5 0 0 1 4.1-1.9L24 21.2l13.9-10.5L35 10.7v9.5L24 28.5 13 20.2v-9.5l-2.9.1A2.5 2.5 0 0 0 6 12.6z"/></svg>',
+    wa: '<svg class="brand" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="#25D366"/><path fill="#fff" d="M24 9.5a14.4 14.4 0 0 0-12.4 21.7L9.5 38.5l7.5-2a14.4 14.4 0 1 0 7-27zm0 2.6a11.8 11.8 0 1 1-6.1 21.9l-.5-.3-4.4 1.2 1.2-4.3-.3-.5A11.8 11.8 0 0 1 24 12.1zm-4.6 5.6c-.3 0-.8.1-1.2.6-.4.5-1.6 1.6-1.6 3.8s1.6 4.4 1.9 4.7c.2.3 3.2 5.1 7.9 6.9 3.9 1.5 4.7 1.2 5.5 1.1.8-.1 2.7-1.1 3.1-2.2.4-1.1.4-2 .3-2.2-.1-.2-.4-.3-.9-.6-.5-.2-2.7-1.3-3.1-1.5-.4-.2-.7-.2-1 .2-.3.4-1.2 1.5-1.5 1.8-.3.3-.5.3-1 .1-.5-.2-1.9-.7-3.6-2.2-1.3-1.2-2.2-2.600-2.5-3.100-.3-.5 0-.7.2-1 .2-.2.5-.5.7-.8.2-.3.3-.5.5-.8.2-.3.1-.6 0-.8-.1-.2-1-2.500-1.400-3.400-.4-.9-.7-.8-1-.8z"/></svg>'
+};
+function payIconHtml(x) {
+    var n = String(x.n || ''), t = x.t;
+    function logo(src) { return '<div class="pay-ico lg"><img src="' + src + '" alt=""></div>'; }
+    function ic(svg, cls) { return '<div class="pay-ico' + (cls ? ' ' + cls : '') + '">' + svg + '</div>'; }
+    if (t === 'wd') {
+        var id = n.indexOf('বিকাশ') > -1 ? 'bkash' : (n.indexOf('নগদ') > -1 ? 'nagad' : (n.indexOf('রকেট') > -1 ? 'rocket' : ''));
+        var im = id ? document.querySelector('#wd-m-' + id + ' .wd-logo') : null;
+        var src = im ? im.getAttribute('src') : '';
+        return src ? logo(src) : ic(PAY_SVG.bank, 'c-r');
+    }
+    if (n.indexOf('জিমেইল') > -1) return ic(PAY_SVG.gmail, 'lg');
+    if (n.indexOf('WhatsApp') > -1) return ic(PAY_SVG.wa, 'lg');
+    if (n.indexOf('পিন সাবমিট') > -1) {
+        var op = String(x.op || ''), key = '';
+        try {
+            (PIN_OPS || []).forEach(function (o) { if (!key && op && (op.toLowerCase() === o[0].toLowerCase() || op.toLowerCase() === o[1].toLowerCase())) key = o[0]; });
+            var url = key && PIN_LOGO_DEFAULT[key];
+            if (url) return logo(url);
+        } catch (e) {}
+        return ic(PAY_SVG.sim);
+    }
+    if (n.indexOf('রেজিস্ট্রেশন') > -1) return ic(PAY_SVG.userplus);
+    if (n.indexOf('চেক-ইন') > -1) return ic(PAY_SVG.cal);
+    if (n.indexOf('গিফট') > -1) return ic(PAY_SVG.gift);
+    if (n.indexOf('অফার') > -1) return ic(PAY_SVG.star);
+    if (n.indexOf('অ্যাপ') > -1) return ic(PAY_SVG.app);
+    if (n.indexOf('বিজ্ঞাপন') > -1) return ic(PAY_SVG.play);
+    if (n.indexOf('রেফার') > -1 || t === 'ref') return ic(PAY_SVG.users, 'c-g');
+    if (t === 'bonus') return ic(PAY_SVG.gift);
+    return ic(PAY_SVG.task);
+}
 function payItems() {
     var items = [];
     payTx.forEach(function (x) {
@@ -9364,7 +9413,7 @@ function payItems() {
         if (g.status === 'Success' || g.status === 'Approved') items.push({ t: 'task', i: '📋', n: 'জিমেইল টাস্ক', ts: payTsFromId(g.g_id), a: Number(g.amount || 0), st: 'ok' });
     });
     (pinHistoryData || []).forEach(function (p) {
-        if (p.status === 'Success' || p.status === 'Approved') items.push({ t: 'task', i: '📋', n: 'পিন সাবমিট' + (p.operatorTitle ? ' · ' + p.operatorTitle : ''), ts: payTsFromId(p.p_id), a: Number(p.reward || 0), st: 'ok' });
+        if (p.status === 'Success' || p.status === 'Approved') items.push({ t: 'task', i: '📋', n: 'পিন সাবমিট' + (p.operatorTitle ? ' · ' + p.operatorTitle : ''), op: p.operatorTitle || '', ts: payTsFromId(p.p_id), a: Number(p.reward || 0), st: 'ok' });
     });
     return items.filter(function (x) { return x.a !== 0; }).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
 }
@@ -9378,7 +9427,6 @@ function payRender() {
         else if (w.status !== 'Rejected') wdPend += amt;
     });
     document.getElementById('pay-total').innerText = payMoney(Number(currentBalance) + wdOk + wdPend);
-    document.getElementById('pay-bal').innerText = payMoney(currentBalance);
     document.getElementById('pay-ref').innerText = payMoney(referBonus);
     document.getElementById('pay-wd').innerText = payMoney(wdOk);
     document.getElementById('pay-wd-pend').innerText = wdPend > 0 ? ('অপেক্ষমাণ ' + payMoney(wdPend)) : '';
@@ -9387,7 +9435,7 @@ function payRender() {
     if (!list.length) { box.innerHTML = '<div class="pay-empty">এখানে এখনো কিছু নেই</div>'; return; }
     box.innerHTML = list.map(function (x) {
         var inn = x.a > 0, sm = x.st === 'ok' ? '<small class="ok">সফল</small>' : (x.st === 'wt' ? '<small class="wt">অপেক্ষমাণ</small>' : '<small class="no">বাতিল</small>');
-        return '<div class="pay-it"><div class="pay-ico">' + x.i + '</div><div class="pay-mid"><b>' + String(x.n).replace(/[&<>]/g, '') + '</b><span>' + payDate(x.ts) + '</span></div><div class="pay-amt ' + (inn ? 'in' : 'out') + '">' + (inn ? '+' : '−') + payMoney(Math.abs(x.a)) + sm + '</div></div>';
+        return '<div class="pay-it">' + payIconHtml(x) + '<div class="pay-mid"><b>' + String(x.n).replace(/[&<>]/g, '') + '</b><span>' + payDate(x.ts) + '</span></div><div class="pay-amt ' + (inn ? 'in' : 'out') + '">' + (inn ? '+' : '−') + payMoney(Math.abs(x.a)) + sm + '</div></div>';
     }).join('');
 }
 function payOpen() { fbClose(); payWatch(); document.getElementById('payPage').classList.add('show'); payRender(); }
