@@ -6833,64 +6833,94 @@
             let redeemBtn = document.getElementById("redeem-gift-btn");
             if (!codeInput) return;
             let code = codeInput.value.trim().toUpperCase();
-            
+
             if (!code) { alert("⚠️ দয়া করে একটি গিফট কোড লিখুন!"); return; }
+            if (!currentUserKey) { alert("⚠️ আগে লগইন করুন!"); return; }
 
             let codeKey = sanitizeKey(code);
+            let finished = false;
+            let timer = null;
+
+            function resetBtn() {
+                finished = true;
+                if (timer) clearTimeout(timer);
+                if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
+            }
+            function fail(msg, err) {
+                if (err) console.error("Gift redeem error:", err);
+                resetBtn();
+                alert(msg);
+            }
+            function errMsg(e) {
+                let c = (e && (e.code || e.message)) ? (e.code || e.message) : "";
+                if (String(c).toLowerCase().indexOf("permission") !== -1) {
+                    return "❌ Firebase Rules এ অনুমতি নেই (permission_denied)! অ্যাডমিনকে জানান।";
+                }
+                return "❌ সমস্যা হয়েছে, আবার চেষ্টা করুন! " + (c ? "(" + c + ")" : "");
+            }
 
             if (redeemBtn) {
                 redeemBtn.disabled = true;
                 redeemBtn.innerText = "প্রসেসিং হচ্ছে...";
             }
+            // ১৫ সেকেন্ডে সাড়া না এলে বাটন আটকে থাকবে না
+            timer = setTimeout(() => {
+                if (!finished) fail("⚠️ সার্ভার সাড়া দিচ্ছে না। ইন্টারনেট চেক করে আবার চেষ্টা করুন।");
+            }, 15000);
 
             db.ref('gift_codes/' + codeKey).once('value').then((snapshot) => {
-                if (!snapshot.exists()) {
-                    alert("❌ ভুল বা Invalid গিফট কোড!");
-                    if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
-                    return;
-                }
+                if (finished) return;
+                if (!snapshot.exists()) { fail("❌ ভুল বা Invalid গিফট কোড!"); return; }
 
                 let giftObj = snapshot.val();
+                let amount = parseFloat(giftObj.amount);
+                if (isNaN(amount) || amount <= 0) { fail("❌ এই গিফট কোডের এমাউন্ট সঠিক নয়!"); return; }
+                if (giftObj.expire && Date.now() > Number(giftObj.expire)) { fail("❌ এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!"); return; }
+                let limit = parseInt(giftObj.limit);
+                if (!isNaN(limit) && (parseInt(giftObj.usedCount) || 0) >= limit) { fail("❌ লিমিট শেষ হয়ে গেছে!"); return; }
 
-                if (Date.now() > giftObj.expire) {
-                    alert("❌ এই গিফট কোডের মেয়াদ শেষ হয়ে গেছে!");
-                    if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
-                    return;
-                }
+                // ধাপ ১: এই ইউজার আগে নিয়েছে কি না
+                db.ref('used_gifts/' + currentUserKey + '/' + codeKey).transaction((cur) => {
+                    return cur === null ? true : undefined;
+                }, (error, committed) => {
+                    if (finished) return;
+                    if (error) { fail(errMsg(error), error); return; }
+                    if (!committed) { fail("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!"); return; }
 
-                if ((giftObj.usedCount || 0) >= giftObj.limit) {
-                    alert("❌ লিমিট শেষ হয়ে গেছে!");
-                    if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
-                    return;
-                }
+                    // ধাপ ২: লিমিটসহ usedCount বাড়ানো
+                    db.ref('gift_codes/' + codeKey + '/usedCount').transaction((c) => {
+                        c = c || 0;
+                        if (!isNaN(limit) && c >= limit) return undefined;
+                        return c + 1;
+                    }, (e2, ok2) => {
+                        if (finished) return;
+                        if (e2 || !ok2) {
+                            // রোলব্যাক: ইউজারের ব্যবহার মার্ক তুলে নাও
+                            db.ref('used_gifts/' + currentUserKey + '/' + codeKey).remove().catch(() => {});
+                            if (e2) fail(errMsg(e2), e2); else fail("❌ লিমিট শেষ হয়ে গেছে!");
+                            return;
+                        }
 
-                db.ref(`used_gifts/${currentUserKey}/${codeKey}`).transaction((currentVal) => {
-                    if (currentVal === null) {
-                        return true; 
-                    } else {
-                        return; 
-                    }
-                }, (error, committed, snapshot) => {
-                    if (error) {
-                        alert("❌ সমস্যা হয়েছে, আবার চেষ্টা করুন!");
-                        if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
-                    } else if (!committed) {
-                        alert("⚠️ আপনি ইতিমধ্যে এই গিফট কোডটি ব্যবহার করেছেন!");
-                        if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
-                    } else {
-                        db.ref('gift_codes/' + codeKey + '/usedCount').transaction((count) => (count || 0) + 1);
-
-                        currentBalance += parseFloat(giftObj.amount || 0);
-                        logTx('bonus', 'গিফট কোড বোনাস', parseFloat(giftObj.amount || 0));
-                        updateFirebaseProfile();
-                        updateUI();
-                        closeGiftModal();
-                        alert(`🎉 অভিনন্দন! ৳${parseFloat(giftObj.amount).toFixed(2)} যোগ হয়েছে!`);
-                        if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
-                    }
+                        // ধাপ ৩: ব্যালেন্সে সরাসরি টাকা যোগ (সার্ভারে atomic)
+                        db.ref('users/' + currentUserKey + '/balance').transaction((bal) => {
+                            return Math.round(((parseFloat(bal) || 0) + amount) * 100) / 100;
+                        }, (e3, ok3) => {
+                            if (finished) return;
+                            if (e3 || !ok3) {
+                                db.ref('used_gifts/' + currentUserKey + '/' + codeKey).remove().catch(() => {});
+                                db.ref('gift_codes/' + codeKey + '/usedCount').transaction((c) => Math.max((c || 0) - 1, 0));
+                                fail(errMsg(e3), e3);
+                                return;
+                            }
+                            logTx('bonus', 'গিফট কোড বোনাস', amount);
+                            closeGiftModal();
+                            resetBtn();
+                            alert("🎉 অভিনন্দন! ৳" + amount.toFixed(2) + " যোগ হয়েছে!");
+                        });
+                    });
                 });
-            }).catch(() => {
-                if (redeemBtn) { redeemBtn.disabled = false; redeemBtn.innerText = "সাবমিট করুন"; }
+            }).catch((e) => {
+                if (!finished) fail(errMsg(e), e);
             });
         }
 
