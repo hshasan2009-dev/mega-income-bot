@@ -1574,6 +1574,33 @@
         .switch-container.tk-hidden > span:first-child{opacity:.5}
         @media (prefers-reduced-motion:reduce){.tk-tag,.tk-in{animation:none}}
 
+        /* ===== চ্যানেল জয়েন ভেরিফাই গেট ===== */
+        #tgGate{position:fixed;inset:0;z-index:2147483000;display:none;flex-direction:column;align-items:center;overflow-y:auto;padding:60px 22px 28px;background:radial-gradient(circle at 50% 0,#17452f,#0c2317 60%);color:#fff;font-family:'Hind Siliguri','Noto Sans Bengali',Roboto,sans-serif}
+        #tgGate.show{display:flex}
+        #tgGate *{box-sizing:border-box}
+        #tgGate .tg-ic{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;font-size:44px;flex:none;background:radial-gradient(circle at 30% 25%,#1e8a4c,#0c2317);border:3px solid #ffcc00;box-shadow:0 0 0 8px rgba(255,204,0,.12),0 10px 30px rgba(0,0,0,.4)}
+        #tgGate h1{font-size:22px;margin:22px 0 8px;text-align:center;font-weight:700}
+        #tgGate .tg-s{font-size:14px;color:#b9d6c5;text-align:center;margin:0 0 22px;line-height:1.55;max-width:380px}
+        #tgGate .tg-w{width:100%;max-width:420px;display:flex;flex-direction:column}
+        #tgGate .tg-ch{background:#113626;border:1px solid #27ae60;border-radius:18px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
+        #tgGate .tg-lg{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#2aabee,#229ed9);display:grid;place-items:center;font-size:22px;flex:none}
+        #tgGate .tg-ch b{display:block;font-size:15px}
+        #tgGate .tg-ch span{font-size:12.5px;color:#9fc4ae}
+        #tgGate .tg-msg{display:none;border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.5;margin-bottom:14px;text-align:center;background:rgba(231,76,60,.15);border:1px solid #e74c3c;color:#ffb3aa}
+        #tgGate .tg-msg.show{display:block}
+        #tgGate .tg-st{margin-bottom:18px}
+        #tgGate .tg-st div{display:flex;gap:10px;align-items:center;font-size:14px;margin-bottom:10px;color:#e4f3ea}
+        #tgGate .tg-st i{width:24px;height:24px;border-radius:50%;background:#ffcc00;color:#0c2317;font-style:normal;font-weight:800;display:grid;place-items:center;font-size:13px;flex:none}
+        #tgGate .tg-b{width:100%;border:none;border-radius:16px;height:52px;font-size:16px;font-weight:800;font-family:inherit;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+        #tgGate .tg-b:active{transform:scale(.98)}
+        #tgGate .tg-b1{background:linear-gradient(135deg,#34b6f0,#1d7fc4);color:#fff;box-shadow:0 8px 20px rgba(41,128,185,.4)}
+        #tgGate .tg-b3{background:linear-gradient(135deg,#2ecc71,#1e8449);color:#fff;box-shadow:0 8px 20px rgba(46,204,113,.3)}
+        #tgGate .tg-b2{background:linear-gradient(135deg,#f5c518,#e0a800);color:#1a1a1a;box-shadow:0 8px 20px rgba(241,196,15,.3)}
+        #tgGate .tg-b2.dim{opacity:.6;pointer-events:none}
+        #tgGate .tg-note{font-size:12px;color:#7fa890;text-align:center;margin-top:auto;padding-top:14px}
+        #tgGate .tg-sp{width:20px;height:20px;border:3px solid rgba(0,0,0,.25);border-top-color:#1a1a1a;border-radius:50%;animation:tgSpin 1s linear infinite}
+        @keyframes tgSpin{to{transform:rotate(360deg)}}
+
         /* ===== স্পেশাল প্ল্যান প্যাক পেজ ===== */
         .sp-ticon{width:48px;height:48px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:24px;background:radial-gradient(circle at 30% 25%,#1e8a4c,#0c2317);border:2px solid #f5c542;box-shadow:0 0 12px rgba(245,197,66,.35)}
         #spPage{position:fixed;inset:0;z-index:1500000;display:none;flex-direction:column;overflow:hidden;background:var(--spbg,#eef3fd);color:var(--sptx,#16223f);font-family:'Hind Siliguri','Segoe UI',Tahoma,sans-serif;--spbg:#eef3fd;--sptx:#16223f;--splb:#6b7a99}
@@ -3689,12 +3716,85 @@
             }
         }
 
+        /* ===== চ্যানেল জয়েন ভেরিফাই গেট ===== */
+        const TG_CHANNEL_URL = "https://t.me/megaincome_0";
+        const TG_BOT_USERNAME = "megaincome_verify_bot";
+        var tgGateKey = null, tgGateCode = null;
+
+        function tgGateBuild() {
+            if (document.getElementById('tgGate')) return;
+            var d = document.createElement('div');
+            d.id = 'tgGate';
+            d.innerHTML =
+              '<div class="tg-ic">📢</div><h1>চ্যানেলে জয়েন ও ভেরিফাই</h1>' +
+              '<p class="tg-s">সাইট ব্যবহার করতে আমাদের অফিসিয়াল টেলিগ্রাম চ্যানেলে জয়েন করে ভেরিফাই করা বাধ্যতামূলক।</p>' +
+              '<div class="tg-w">' +
+              '<div class="tg-ch"><div class="tg-lg">✈️</div><div><b>Mega Income Official</b><span>@megaincome_0 · অফিসিয়াল চ্যানেল</span></div></div>' +
+              '<div class="tg-msg" id="tgGateMsg">❌ এখনো ভেরিফাই হয়নি।<br>চ্যানেলে জয়েন করে বটে Start চাপুন, তারপর আবার চেক করুন।</div>' +
+              '<div class="tg-st"><div><i>1</i>চ্যানেলে জয়েন করুন</div><div><i>2</i>ভেরিফাই বটে গিয়ে Start চাপুন</div><div><i>3</i>ফিরে এসে চেক বাটন চাপুন</div></div>' +
+              '<button class="tg-b tg-b1" onclick="tgGateJoin()">✈️ চ্যানেলে জয়েন করুন</button>' +
+              '<button class="tg-b tg-b3" onclick="tgGateBot()">🤖 বটে ভেরিফাই করুন</button>' +
+              '<button class="tg-b tg-b2" id="tgGateChk" onclick="tgGateCheckBtn()">✅ ভেরিফাই চেক করুন</button>' +
+              '<div class="tg-note">ভেরিফাই ছাড়া সাইটে ঢোকা যাবে না</div></div>';
+            document.body.appendChild(d);
+        }
+
+        function tgGateCheck() {
+            if (!currentUserKey) return;
+            if (currentUserKey === sanitizeKey(ADMIN_CHAT_ID)) return;
+            if (tgGateKey === currentUserKey) return;
+            tgGateKey = currentUserKey;
+            tgGateBuild();
+            db.ref('tg_verified/' + currentUserKey).on('value', function(snap) {
+                var v = snap.val();
+                var g = document.getElementById('tgGate');
+                if (!g) return;
+                if (v && v.ok) { g.classList.remove('show'); document.body.style.overflow = ''; }
+                else { g.classList.add('show'); document.body.style.overflow = 'hidden'; }
+            });
+        }
+
+        function tgGateJoin() { openTelegramLink(TG_CHANNEL_URL); }
+
+        function tgGateBot() {
+            if (!currentUserKey) return;
+            var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            var c = '';
+            for (var i = 0; i < 8; i++) c += chars.charAt(Math.floor(Math.random() * chars.length));
+            tgGateCode = c;
+            db.ref('tg_codes/' + c).set({ u: currentUserKey, t: Date.now() }).then(function() {
+                openTelegramLink('https://t.me/' + TG_BOT_USERNAME + '?start=' + c);
+            }).catch(function() { alert('⚠️ কিছুক্ষণ পরে আবার চেষ্টা করুন'); });
+        }
+
+        function tgGateCheckBtn() {
+            var b = document.getElementById('tgGateChk');
+            var m = document.getElementById('tgGateMsg');
+            b.classList.add('dim');
+            b.innerHTML = '<span class="tg-sp"></span>যাচাই করা হচ্ছে...';
+            db.ref('tg_verified/' + currentUserKey).once('value').then(function(snap) {
+                var v = snap.val();
+                b.classList.remove('dim');
+                b.innerHTML = '✅ ভেরিফাই চেক করুন';
+                if (v && v.ok) {
+                    var g = document.getElementById('tgGate');
+                    if (g) g.classList.remove('show');
+                    document.body.style.overflow = '';
+                } else { m.classList.add('show'); }
+            }).catch(function() {
+                b.classList.remove('dim');
+                b.innerHTML = '✅ ভেরিফাই চেক করুন';
+                m.classList.add('show');
+            });
+        }
+
         function initFirebaseUserSync() {
             saveTelegramChatIdAuto();
             if (!currentUserKey) {
                 document.getElementById('authModal').style.display = 'flex';
                 return;
             }
+            try { tgGateCheck(); } catch (e) {}
 
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
                 let telegramChatId = window.Telegram.WebApp.initDataUnsafe.user.id;
