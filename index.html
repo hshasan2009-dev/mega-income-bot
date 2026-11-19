@@ -1586,6 +1586,11 @@
         #pwFg .pf-in{width:100%;height:50px;border-radius:14px;border:1px solid #2f7a52;background:#0c2317;color:#fff;padding:0 14px;font-size:15px;font-family:inherit;margin-bottom:12px;outline:none}
         #pwFg .pf-b{width:100%;height:52px;border:none;border-radius:16px;background:linear-gradient(135deg,#2ecc71,#1e8449);color:#fff;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 8px 20px rgba(46,204,113,.3)}
         #pwFg .pf-b:active{transform:scale(.98)}
+        #pwFg .pf-otp{display:none;margin-bottom:12px;border-radius:16px;padding:12px;text-align:center;background:#0c2317;border:1px dashed #ffcc00}
+        #pwFg .pf-otp.show{display:block}
+        #pwFg .pf-otp small{display:block;font-size:12.5px;color:#b9d6c5}
+        #pwFg .pf-otp b{display:block;font-size:34px;letter-spacing:8px;color:#ffcc00;margin:4px 0;font-family:monospace}
+        #pwFg .pf-otp em{font-style:normal;font-size:12.5px;color:#9fc4ae}
         #pwFg .pf-st{display:none;margin-top:14px;border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.55;text-align:center}
         #pwFg .pf-st.show{display:block}
         #pwFg .pf-st.w{background:rgba(241,196,15,.14);border:1px solid #f1c40f;color:#ffe58a}
@@ -1834,9 +1839,10 @@
 
     <div id="pwFg"><div class="pf-box"><button class="pf-x" onclick="pwFgClose()">✕</button>
         <div class="pf-ic">🔑</div><h3>পাসওয়ার্ড রিসেট</h3>
-        <p class="pf-d">আপনার ইউজারনেম/ফোন দিন, তারপর বটে গিয়ে নতুন পাসওয়ার্ড জমা দিন। এডমিন যাচাই করে কনফার্ম করলে পাসওয়ার্ড বদলে যাবে।</p>
+        <p class="pf-d">আপনার ইউজারনেম/ফোন দিয়ে ওটিপি নিন, বটে ওটিপি দিন, তারপর নতুন পাসওয়ার্ড জমা দিন। এডমিন যাচাই করে কনফার্ম করলে পাসওয়ার্ড বদলে যাবে।</p>
         <input class="pf-in" id="pwFgUser" placeholder="ইউজারনেম / ফোন নম্বর" autocomplete="off">
-        <button class="pf-b" id="pwFgBtn" onclick="pwFgStart()">🤖 বটে গিয়ে অনুরোধ করুন</button>
+        <div class="pf-otp" id="pwFgOtp"><small>আপনার ওয়ান-টাইম ওটিপি</small><b id="pwFgOtpNum">------</b><em id="pwFgOtpTm"></em></div>
+        <button class="pf-b" id="pwFgBtn" onclick="pwFgStart()">🔐 ওটিপি নিন</button>
         <div class="pf-st" id="pwFgSt"></div>
     </div></div>
     <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: var(--bg3);">
@@ -3813,16 +3819,24 @@
         }
 
         /* ===== পাসওয়ার্ড ফরগেট ===== */
-        var pwFgRef = null;
+        var pwFgRef = null, pwFgTimer = null, pwFgKey = null, pwFgOtpVal = null;
         function pwFgOpen() { document.getElementById('pwFg').classList.add('show'); }
         function pwFgClose() {
             document.getElementById('pwFg').classList.remove('show');
             if (pwFgRef) { pwFgRef.off(); pwFgRef = null; }
+            if (pwFgTimer) { clearInterval(pwFgTimer); pwFgTimer = null; }
         }
         function pwFgMsg(cls, txt) {
             var e = document.getElementById('pwFgSt');
             e.className = 'pf-st show ' + cls;
             e.innerHTML = txt;
+        }
+        function pwFgReset() {
+            var btn = document.getElementById('pwFgBtn');
+            btn.disabled = false;
+            btn.innerHTML = '🔐 ওটিপি নিন';
+            btn.onclick = pwFgStart;
+            document.getElementById('pwFgOtp').classList.remove('show');
         }
         function pwFgStart() {
             var u = document.getElementById('pwFgUser').value.trim();
@@ -3836,21 +3850,44 @@
                     pwFgMsg('r', '❌ এই নামে কোনো একাউন্ট পাওয়া যায়নি।');
                     return;
                 }
-                var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', c = '';
-                for (var i = 0; i < 8; i++) c += chars.charAt(Math.floor(Math.random() * chars.length));
-                return db.ref('pw_codes/' + c).set({ u: key, t: Date.now() }).then(function() {
-                    btn.disabled = false;
-                    pwFgMsg('w', '⏳ বটে গিয়ে Start চাপুন ও নতুন পাসওয়ার্ড লিখুন।<br>এডমিন যাচাই করলে এখানে ও বটে জানানো হবে।');
-                    if (pwFgRef) pwFgRef.off();
-                    pwFgRef = db.ref('pw_status/' + key);
-                    pwFgRef.on('value', function(sn) {
-                        var v = sn.val();
-                        if (!v || !v.s) return;
-                        if (v.s === 'pending') pwFgMsg('w', '⏳ অনুরোধ জমা হয়েছে। এডমিনের যাচাইয়ের অপেক্ষায় আছে।');
-                        else if (v.s === 'done') pwFgMsg('g', '✅ পাসওয়ার্ড পরিবর্তন হয়েছে। এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।');
-                        else if (v.s === 'rejected') pwFgMsg('r', '❌ অনুরোধ বাতিল হয়েছে। সাপোর্টে যোগাযোগ করুন।');
+                var arr = new Uint32Array(1);
+                (window.crypto || window.msCrypto).getRandomValues(arr);
+                var otp = String(100000 + (arr[0] % 900000));
+                return db.ref('pw_otp/' + otp).once('value').then(function(ex) {
+                    if (ex.exists()) { btn.disabled = false; pwFgMsg('r', '⚠️ আবার চেষ্টা করুন।'); return; }
+                    return db.ref('pw_otp/' + otp).set({ u: key, t: Date.now() }).then(function() {
+                        pwFgKey = key; pwFgOtpVal = otp;
+                        document.getElementById('pwFgOtpNum').textContent = otp;
+                        document.getElementById('pwFgOtp').classList.add('show');
+                        btn.disabled = false;
+                        btn.innerHTML = '🤖 বটে গিয়ে ওটিপি দিন';
+                        btn.onclick = function() { openTelegramLink('https://t.me/' + TG_BOT_USERNAME + '?start=pwreset'); };
+                        pwFgMsg('w', '⏳ বটে Start চেপে এই ওটিপি লিখুন। ওটিপি একবারই কাজ করবে।');
+                        var end = Date.now() + 5 * 60 * 1000;
+                        if (pwFgTimer) clearInterval(pwFgTimer);
+                        var tick = function() {
+                            var left = Math.max(0, Math.round((end - Date.now()) / 1000));
+                            var m = Math.floor(left / 60), sx = left % 60;
+                            document.getElementById('pwFgOtpTm').textContent = '⏱ মেয়াদ বাকি ' + m + ':' + (sx < 10 ? '0' : '') + sx;
+                            if (left <= 0) {
+                                clearInterval(pwFgTimer); pwFgTimer = null;
+                                db.ref('pw_otp/' + otp).remove();
+                                pwFgReset();
+                                pwFgMsg('r', '⌛ ওটিপির মেয়াদ শেষ। নতুন ওটিপি নিন।');
+                            }
+                        };
+                        tick(); pwFgTimer = setInterval(tick, 1000);
+                        if (pwFgRef) pwFgRef.off();
+                        pwFgRef = db.ref('pw_status/' + key);
+                        pwFgRef.on('value', function(sn) {
+                            var v = sn.val();
+                            if (!v || !v.s) return;
+                            if (v.s === 'pending') pwFgMsg('w', '⏳ অনুরোধ জমা হয়েছে। এডমিনের যাচাইয়ের অপেক্ষায় আছে।');
+                            else if (v.s === 'done') { pwFgReset(); pwFgMsg('g', '✅ পাসওয়ার্ড পরিবর্তন হয়েছে। এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।'); }
+                            else if (v.s === 'rejected') { pwFgReset(); pwFgMsg('r', '❌ অনুরোধ বাতিল হয়েছে। সাপোর্টে যোগাযোগ করুন।'); }
+                        });
+                        openTelegramLink('https://t.me/' + TG_BOT_USERNAME + '?start=pwreset');
                     });
-                    openTelegramLink('https://t.me/' + TG_BOT_USERNAME + '?start=pw_' + c);
                 });
             }).catch(function() {
                 btn.disabled = false;
