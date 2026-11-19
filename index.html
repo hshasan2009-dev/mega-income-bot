@@ -3829,6 +3829,7 @@
             tgGateKey = currentUserKey;
             tgGateBuild();
             tgSessionGuard(currentUserKey);
+            tgApi('/api/chk', { u: currentUserKey });
             db.ref('tg_verified/' + currentUserKey).on('value', function(snap) {
                 var v = snap.val();
                 var g = document.getElementById('tgGate');
