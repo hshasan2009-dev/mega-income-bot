@@ -1574,28 +1574,30 @@
         .switch-container.tk-hidden > span:first-child{opacity:.5}
         @media (prefers-reduced-motion:reduce){.tk-tag,.tk-in{animation:none}}
 
-        /* ===== পাসওয়ার্ড ফরগেট ===== */
+        /* ===== পাসওয়ার্ড ফরগেট (টেলিগ্রাম ওটিপি) ===== */
         #pwFg{position:fixed;inset:0;z-index:2147482000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(5,15,10,.82);font-family:'Hind Siliguri','Noto Sans Bengali',Roboto,sans-serif}
         #pwFg.show{display:flex}
         #pwFg *{box-sizing:border-box}
-        #pwFg .pf-box{width:100%;max-width:400px;background:#113626;border:1px solid #27ae60;border-radius:22px;padding:24px 20px 20px;color:#fff;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+        #pwFg .pf-box{width:100%;max-width:400px;max-height:92vh;overflow-y:auto;background:#113626;border:1px solid #27ae60;border-radius:22px;padding:24px 20px 20px;color:#fff;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.5)}
         #pwFg .pf-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;font-size:16px;cursor:pointer}
         #pwFg .pf-ic{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font-size:30px;background:radial-gradient(circle at 30% 25%,#1e8a4c,#0c2317);border:3px solid #ffcc00}
         #pwFg h3{margin:0 0 6px;text-align:center;font-size:19px}
         #pwFg .pf-d{font-size:13px;color:#b9d6c5;text-align:center;line-height:1.55;margin:0 0 16px}
         #pwFg .pf-in{width:100%;height:50px;border-radius:14px;border:1px solid #2f7a52;background:#0c2317;color:#fff;padding:0 14px;font-size:15px;font-family:inherit;margin-bottom:12px;outline:none}
-        #pwFg .pf-b{width:100%;height:52px;border:none;border-radius:16px;background:linear-gradient(135deg,#2ecc71,#1e8449);color:#fff;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 8px 20px rgba(46,204,113,.3)}
+        #pwFg .pf-in.otp{text-align:center;font-size:24px;letter-spacing:8px;font-family:monospace}
+        #pwFg .pf-b{width:100%;height:52px;border:none;border-radius:16px;background:linear-gradient(135deg,#2ecc71,#1e8449);color:#fff;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 8px 20px rgba(46,204,113,.3);margin-bottom:10px}
+        #pwFg .pf-b.blue{background:linear-gradient(135deg,#34b6f0,#1d7fc4);box-shadow:0 8px 20px rgba(41,128,185,.35)}
+        #pwFg .pf-b:disabled{opacity:.55}
         #pwFg .pf-b:active{transform:scale(.98)}
-        #pwFg .pf-otp{display:none;margin-bottom:12px;border-radius:16px;padding:12px;text-align:center;background:#0c2317;border:1px dashed #ffcc00}
-        #pwFg .pf-otp.show{display:block}
-        #pwFg .pf-otp small{display:block;font-size:12.5px;color:#b9d6c5}
-        #pwFg .pf-otp b{display:block;font-size:34px;letter-spacing:8px;color:#ffcc00;margin:4px 0;font-family:monospace}
-        #pwFg .pf-otp em{font-style:normal;font-size:12.5px;color:#9fc4ae}
-        #pwFg .pf-st{display:none;margin-top:14px;border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.55;text-align:center}
+        #pwFg .pf-tm{text-align:center;font-size:13px;color:#ffe58a;margin-bottom:10px}
+        #pwFg .pf-ok{text-align:center;font-size:14px;font-weight:700;color:#b8f5d0;margin-bottom:14px}
+        #pwFg .pf-big{text-align:center;font-size:52px;margin:4px 0 8px}
+        #pwFg .pf-st{display:none;margin-top:6px;border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.55;text-align:center}
         #pwFg .pf-st.show{display:block}
         #pwFg .pf-st.w{background:rgba(241,196,15,.14);border:1px solid #f1c40f;color:#ffe58a}
         #pwFg .pf-st.g{background:rgba(46,204,113,.15);border:1px solid #2ecc71;color:#b8f5d0}
         #pwFg .pf-st.r{background:rgba(231,76,60,.15);border:1px solid #e74c3c;color:#ffb3aa}
+        #pwFg .pf-st a{display:inline-block;margin-top:8px;padding:8px 16px;border-radius:12px;background:#2980b9;color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
         /* ===== চ্যানেল জয়েন ভেরিফাই গেট ===== */
         #tgGate{position:fixed;inset:0;z-index:2147483000;display:none;flex-direction:column;align-items:center;overflow-y:auto;padding:60px 22px 28px;background:radial-gradient(circle at 50% 0,#17452f,#0c2317 60%);color:#fff;font-family:'Hind Siliguri','Noto Sans Bengali',Roboto,sans-serif}
         #tgGate.show{display:flex}
@@ -1839,10 +1841,20 @@
 
     <div id="pwFg"><div class="pf-box"><button class="pf-x" onclick="pwFgClose()">✕</button>
         <div class="pf-ic">🔑</div><h3>পাসওয়ার্ড রিসেট</h3>
-        <p class="pf-d">আপনার ইউজারনেম/ফোন দিয়ে ওটিপি নিন, বটে ওটিপি দিন, তারপর নতুন পাসওয়ার্ড জমা দিন। এডমিন যাচাই করে কনফার্ম করলে পাসওয়ার্ড বদলে যাবে।</p>
-        <input class="pf-in" id="pwFgUser" placeholder="ইউজারনেম / ফোন নম্বর" autocomplete="off">
-        <div class="pf-otp" id="pwFgOtp"><small>আপনার ওয়ান-টাইম ওটিপি</small><b id="pwFgOtpNum">------</b><em id="pwFgOtpTm"></em></div>
-        <button class="pf-b" id="pwFgBtn" onclick="pwFgStart()">🔐 ওটিপি নিন</button>
+        <div id="pf1"><p class="pf-d">আপনার ইউজারনেম/ফোন দিন। যে টেলিগ্রাম একাউন্ট দিয়ে এটি ভেরিফাই করা আছে, শুধু সেখানেই ওটিপি যাবে।</p>
+            <input class="pf-in" id="pwFgUser" placeholder="ইউজারনেম / ফোন নম্বর" autocomplete="off">
+            <button class="pf-b" id="pwFgSendBtn" onclick="pwFgSend()">📨 টেলিগ্রামে ওটিপি পাঠান</button></div>
+        <div id="pf2" style="display:none"><p class="pf-d">আপনার ভেরিফাই করা টেলিগ্রামে বটের চ্যাটে ৬ ডিজিটের ওটিপি পাঠানো হয়েছে।</p>
+            <div class="pf-tm" id="pwFgTm"></div>
+            <input class="pf-in otp" id="pwFgOtp" inputmode="numeric" maxlength="6" placeholder="------" autocomplete="off">
+            <button class="pf-b" id="pwFgVerBtn" onclick="pwFgVerify()">✅ ওটিপি কনফার্ম করুন</button>
+            <button class="pf-b blue" onclick="openTelegramLink('https://t.me/' + TG_BOT_USERNAME)">🤖 বট খুলুন</button></div>
+        <div id="pf3" style="display:none"><div class="pf-ok">✅ ওটিপি সঠিক! নতুন পাসওয়ার্ড দিন</div>
+            <input class="pf-in" id="pwFgNew" type="password" placeholder="নতুন পাসওয়ার্ড" autocomplete="new-password">
+            <input class="pf-in" id="pwFgNew2" type="password" placeholder="নতুন পাসওয়ার্ড আবার লিখুন" autocomplete="new-password">
+            <button class="pf-b" id="pwFgSetBtn" onclick="pwFgSet()">🔒 পাসওয়ার্ড পরিবর্তন করুন</button></div>
+        <div id="pf4" style="display:none"><div class="pf-big">✅</div><p class="pf-d" style="color:#b8f5d0;font-size:15px">পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।<br>এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।</p>
+            <button class="pf-b" onclick="pwFgClose()">🔑 লগইন করুন</button></div>
         <div class="pf-st" id="pwFgSt"></div>
     </div></div>
     <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: var(--bg3);">
@@ -3671,6 +3683,7 @@
                         document.getElementById('logoutBtn').style.display = 'block';
                         initFirebaseUserSync();
                         try { acWelcome(uInput, pInput); } catch (e) {}
+                        try { tgAfterLogin(true); tgApi('/api/ref', { u: uKey }); } catch (e) {}
                     }, 1200);
                 }).catch(() => {
                     hideAuthLoader();
@@ -3708,15 +3721,24 @@
                     return;
                 }
 
-                setTimeout(() => {
-                    localStorage.setItem("loggedInUserKey", uKey);
-                    currentUserKey = uKey;
-                    hideAuthLoader();
-                    document.getElementById('authModal').style.display = 'none';
-                    document.getElementById('logoutBtn').style.display = 'block';
-                    initFirebaseUserSync();
-                    try { acLoginOk(val.fullName || uInput); } catch (e) {}
-                }, 1200);
+                Promise.all([db.ref('tg_lock/' + uKey).once('value'), db.ref('tg_logout/' + uKey).once('value')]).then(function(chk) {
+                    if (chk[0].exists()) {
+                        hideAuthLoader();
+                        alert("🔒 নিরাপত্তার জন্য এই একাউন্ট লক করা আছে। Forgot Password দিয়ে টেলিগ্রামের ওটিপিতে আনলক করুন।");
+                        return;
+                    }
+                    try { localStorage.setItem('mpOutBase_' + uKey, String(chk[1].val() || '')); } catch (e) {}
+                    setTimeout(() => {
+                        localStorage.setItem("loggedInUserKey", uKey);
+                        currentUserKey = uKey;
+                        hideAuthLoader();
+                        document.getElementById('authModal').style.display = 'none';
+                        document.getElementById('logoutBtn').style.display = 'block';
+                        initFirebaseUserSync();
+                        try { acLoginOk(val.fullName || uInput); } catch (e) {}
+                        try { tgAfterLogin(false); } catch (e) {}
+                    }, 1200);
+                });
             }).catch(() => {
                 hideAuthLoader();
             });
@@ -3749,7 +3771,7 @@
         /* ===== চ্যানেল জয়েন ভেরিফাই গেট ===== */
         const TG_CHANNEL_URL = "https://t.me/megaincome_0";
         const TG_BOT_USERNAME = "megaincome_verify_bot";
-        var tgGateKey = null, tgGateCode = null;
+        var tgGateKey = null;
 
         function tgGateBuild() {
             if (document.getElementById('tgGate')) return;
@@ -3760,7 +3782,7 @@
               '<p class="tg-s">সাইট ব্যবহার করতে আমাদের অফিসিয়াল টেলিগ্রাম চ্যানেলে জয়েন করে ভেরিফাই করা বাধ্যতামূলক।</p>' +
               '<div class="tg-w">' +
               '<div class="tg-ch"><div class="tg-lg">✈️</div><div><b>Mega Income Official</b><span>@megaincome_0 · অফিসিয়াল চ্যানেল</span></div></div>' +
-              '<div class="tg-msg" id="tgGateMsg">❌ এখনো ভেরিফাই হয়নি।<br>চ্যানেলে জয়েন করে বটে Start চাপুন, তারপর আবার চেক করুন।</div>' +
+              '<div class="tg-msg" id="tgGateMsg"></div>' +
               '<div class="tg-st"><div><i>1</i>চ্যানেলে জয়েন করুন</div><div><i>2</i>ভেরিফাই বটে গিয়ে Start চাপুন</div><div><i>3</i>ফিরে এসে চেক বাটন চাপুন</div></div>' +
               '<button class="tg-b tg-b1" onclick="tgGateJoin()">✈️ চ্যানেলে জয়েন করুন</button>' +
               '<button class="tg-b tg-b3" onclick="tgGateBot()">🤖 বটে ভেরিফাই করুন</button>' +
@@ -3769,12 +3791,44 @@
             document.body.appendChild(d);
         }
 
+        function tgForceLogout(msg) {
+            try { localStorage.removeItem('loggedInUserKey'); } catch (e) {}
+            alert(msg);
+            location.reload();
+        }
+        function tgSessionGuard(key) {
+            db.ref('tg_lock/' + key).on('value', function(sn) {
+                if (sn.exists()) tgForceLogout('🔒 নিরাপত্তার জন্য এই একাউন্ট লক করা হয়েছে। Forgot Password দিয়ে আনলক করুন।');
+            });
+            db.ref('tg_logout/' + key).on('value', function(sn) {
+                var v = String(sn.val() || ''), k = 'mpOutBase_' + key, base = null;
+                try { base = localStorage.getItem(k); } catch (e) {}
+                if (base === null) { try { localStorage.setItem(k, v); } catch (e) {} return; }
+                if (v !== base) { try { localStorage.setItem(k, v); } catch (e) {} tgForceLogout('🔐 নিরাপত্তার কারণে সব ডিভাইস থেকে লগআউট করা হয়েছে। আবার লগইন করুন।'); }
+            });
+        }
+        function tgDevId() {
+            var d = null;
+            try { d = localStorage.getItem('mpDevId'); } catch (e) {}
+            if (!d) {
+                var a = new Uint8Array(12); (window.crypto || window.msCrypto).getRandomValues(a);
+                d = Array.prototype.map.call(a, function(x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+                try { localStorage.setItem('mpDevId', d); } catch (e) {}
+            }
+            return d;
+        }
+        function tgAfterLogin(signup) {
+            if (!currentUserKey) return;
+            tgApi('/api/login', { u: currentUserKey, did: tgDevId(), signup: !!signup, ua: navigator.userAgent });
+        }
+
         function tgGateCheck() {
             if (!currentUserKey) return;
             if (currentUserKey === sanitizeKey(ADMIN_CHAT_ID)) return;
             if (tgGateKey === currentUserKey) return;
             tgGateKey = currentUserKey;
             tgGateBuild();
+            tgSessionGuard(currentUserKey);
             db.ref('tg_verified/' + currentUserKey).on('value', function(snap) {
                 var v = snap.val();
                 var g = document.getElementById('tgGate');
@@ -3786,15 +3840,26 @@
 
         function tgGateJoin() { openTelegramLink(TG_CHANNEL_URL); }
 
+        const TG_API = "https://megaincome-verify.hshasan2009.workers.dev";
+        function tgApi(path, body) {
+            return fetch(TG_API + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive: true })
+                .then(function(r) { return r.json(); }).catch(function() { return { ok: false, e: 'net' }; });
+        }
+        function tgGateSay(t) {
+            var m = document.getElementById('tgGateMsg');
+            if (!m) return;
+            m.innerHTML = t; m.classList.add('show');
+        }
         function tgGateBot() {
             if (!currentUserKey) return;
             var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             var c = '';
             for (var i = 0; i < 8; i++) c += chars.charAt(Math.floor(Math.random() * chars.length));
-            tgGateCode = c;
             db.ref('tg_codes/' + c).set({ u: currentUserKey, t: Date.now() }).then(function() {
+                var m = document.getElementById('tgGateMsg');
+                if (m) m.classList.remove('show');
                 openTelegramLink('https://t.me/' + TG_BOT_USERNAME + '?start=' + c);
-            }).catch(function() { alert('⚠️ কিছুক্ষণ পরে আবার চেষ্টা করুন'); });
+            }).catch(function() { tgGateSay('⚠️ কিছুক্ষণ পরে আবার চেষ্টা করুন।'); });
         }
 
         function tgGateCheckBtn() {
@@ -3810,88 +3875,80 @@
                     var g = document.getElementById('tgGate');
                     if (g) g.classList.remove('show');
                     document.body.style.overflow = '';
-                } else { m.classList.add('show'); }
+                } else { tgGateSay('❌ এখনো ভেরিফাই হয়নি।<br>চ্যানেলে জয়েন করে বটে Start চাপুন, তারপর আবার চেক করুন।'); }
             }).catch(function() {
                 b.classList.remove('dim');
                 b.innerHTML = '✅ ভেরিফাই চেক করুন';
-                m.classList.add('show');
+                tgGateSay('⚠️ কিছুক্ষণ পরে আবার চেষ্টা করুন।');
             });
         }
 
-        /* ===== পাসওয়ার্ড ফরগেট ===== */
-        var pwFgRef = null, pwFgTimer = null, pwFgKey = null, pwFgOtpVal = null;
-        function pwFgOpen() { document.getElementById('pwFg').classList.add('show'); }
+        /* ===== পাসওয়ার্ড ফরগেট (টেলিগ্রাম ওটিপি) ===== */
+        var pwFgU = null, pwFgTok = null, pwFgTimer = null;
+        function pwFgShow(n) {
+            for (var i = 1; i <= 4; i++) document.getElementById('pf' + i).style.display = (i === n ? 'block' : 'none');
+            document.getElementById('pwFgSt').className = 'pf-st';
+        }
+        function pwFgOpen() { pwFgShow(1); document.getElementById('pwFg').classList.add('show'); }
         function pwFgClose() {
             document.getElementById('pwFg').classList.remove('show');
-            if (pwFgRef) { pwFgRef.off(); pwFgRef = null; }
             if (pwFgTimer) { clearInterval(pwFgTimer); pwFgTimer = null; }
+            pwFgTok = null;
         }
         function pwFgMsg(cls, txt) {
             var e = document.getElementById('pwFgSt');
-            e.className = 'pf-st show ' + cls;
-            e.innerHTML = txt;
+            e.className = 'pf-st show ' + cls; e.innerHTML = txt;
         }
-        function pwFgReset() {
-            var btn = document.getElementById('pwFgBtn');
-            btn.disabled = false;
-            btn.innerHTML = '🔐 ওটিপি নিন';
-            btn.onclick = pwFgStart;
-            document.getElementById('pwFgOtp').classList.remove('show');
-        }
-        function pwFgStart() {
+        function pwFgSend() {
             var u = document.getElementById('pwFgUser').value.trim();
             if (!u) { alert('⚠️ ইউজারনেম/ফোন দিন!'); return; }
-            var key = sanitizeKey(u);
-            var btn = document.getElementById('pwFgBtn');
-            btn.disabled = true;
-            db.ref('users/' + key).once('value').then(function(snap) {
-                if (!snap.exists()) {
-                    btn.disabled = false;
-                    pwFgMsg('r', '❌ এই নামে কোনো একাউন্ট পাওয়া যায়নি।');
-                    return;
-                }
-                var arr = new Uint32Array(1);
-                (window.crypto || window.msCrypto).getRandomValues(arr);
-                var otp = String(100000 + (arr[0] % 900000));
-                return db.ref('pw_otp/' + otp).once('value').then(function(ex) {
-                    if (ex.exists()) { btn.disabled = false; pwFgMsg('r', '⚠️ আবার চেষ্টা করুন।'); return; }
-                    return db.ref('pw_otp/' + otp).set({ u: key, t: Date.now() }).then(function() {
-                        pwFgKey = key; pwFgOtpVal = otp;
-                        document.getElementById('pwFgOtpNum').textContent = otp;
-                        document.getElementById('pwFgOtp').classList.add('show');
-                        btn.disabled = false;
-                        btn.innerHTML = '🤖 বটে গিয়ে ওটিপি দিন';
-                        btn.onclick = function() { openTelegramLink('https://t.me/' + TG_BOT_USERNAME + '?start=pwreset'); };
-                        pwFgMsg('w', '⏳ বটে Start চেপে এই ওটিপি লিখুন। ওটিপি একবারই কাজ করবে।');
-                        var end = Date.now() + 5 * 60 * 1000;
-                        if (pwFgTimer) clearInterval(pwFgTimer);
-                        var tick = function() {
-                            var left = Math.max(0, Math.round((end - Date.now()) / 1000));
-                            var m = Math.floor(left / 60), sx = left % 60;
-                            document.getElementById('pwFgOtpTm').textContent = '⏱ মেয়াদ বাকি ' + m + ':' + (sx < 10 ? '0' : '') + sx;
-                            if (left <= 0) {
-                                clearInterval(pwFgTimer); pwFgTimer = null;
-                                db.ref('pw_otp/' + otp).remove();
-                                pwFgReset();
-                                pwFgMsg('r', '⌛ ওটিপির মেয়াদ শেষ। নতুন ওটিপি নিন।');
-                            }
-                        };
-                        tick(); pwFgTimer = setInterval(tick, 1000);
-                        if (pwFgRef) pwFgRef.off();
-                        pwFgRef = db.ref('pw_status/' + key);
-                        pwFgRef.on('value', function(sn) {
-                            var v = sn.val();
-                            if (!v || !v.s) return;
-                            if (v.s === 'pending') pwFgMsg('w', '⏳ অনুরোধ জমা হয়েছে। এডমিনের যাচাইয়ের অপেক্ষায় আছে।');
-                            else if (v.s === 'done') { pwFgReset(); pwFgMsg('g', '✅ পাসওয়ার্ড পরিবর্তন হয়েছে। এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।'); }
-                            else if (v.s === 'rejected') { pwFgReset(); pwFgMsg('r', '❌ অনুরোধ বাতিল হয়েছে। সাপোর্টে যোগাযোগ করুন।'); }
-                        });
-                        openTelegramLink('https://t.me/' + TG_BOT_USERNAME + '?start=pwreset');
-                    });
-                });
-            }).catch(function() {
-                btn.disabled = false;
-                pwFgMsg('r', '⚠️ কিছুক্ষণ পরে আবার চেষ্টা করুন।');
+            var b = document.getElementById('pwFgSendBtn'); b.disabled = true;
+            pwFgU = sanitizeKey(u);
+            tgApi('/api/pwreq', { u: pwFgU }).then(function(r) {
+                b.disabled = false;
+                if (r.ok) {
+                    pwFgShow(2);
+                    document.getElementById('pwFgOtp').value = '';
+                    var end = Date.now() + 5 * 60 * 1000;
+                    if (pwFgTimer) clearInterval(pwFgTimer);
+                    var tick = function() {
+                        var left = Math.max(0, Math.round((end - Date.now()) / 1000)), m = Math.floor(left / 60), sx = left % 60;
+                        document.getElementById('pwFgTm').textContent = '⏱ ওটিপির মেয়াদ বাকি ' + m + ':' + (sx < 10 ? '0' : '') + sx;
+                        if (left <= 0) { clearInterval(pwFgTimer); pwFgTimer = null; pwFgShow(1); pwFgMsg('r', '⌛ ওটিপির মেয়াদ শেষ। আবার ওটিপি পাঠান।'); }
+                    };
+                    tick(); pwFgTimer = setInterval(tick, 1000);
+                } else if (r.e === 'nouser') pwFgMsg('r', '❌ এই নামে কোনো একাউন্ট পাওয়া যায়নি।');
+                else if (r.e === 'unverified') pwFgMsg('r', '⚠️ এই একাউন্ট কোনো টেলিগ্রামে ভেরিফাই করা নেই, তাই ওটিপি পাঠানো যাবে না।<br>সাপোর্টে যোগাযোগ করুন।<br><a onclick="openTelegramLink(\'https://t.me/megaincome_0/118\')">🛟 সাপোর্টে যোগাযোগ</a>');
+                else if (r.e === 'limit') pwFgMsg('r', '⛔ অনেকবার অনুরোধ করা হয়েছে। ৩০ মিনিট পরে আবার চেষ্টা করুন।');
+                else if (r.e === 'tgfail') pwFgMsg('r', '⚠️ টেলিগ্রামে ওটিপি পাঠানো যায়নি। বটটি ব্লক করা থাকলে আনব্লক করে আবার চেষ্টা করুন।');
+                else pwFgMsg('r', '⚠️ কিছুক্ষণ পরে আবার চেষ্টা করুন।');
+            });
+        }
+        function pwFgVerify() {
+            var o = document.getElementById('pwFgOtp').value.trim();
+            if (!/^\d{6}$/.test(o)) { pwFgMsg('r', '⚠️ ৬ ডিজিটের ওটিপি লিখুন।'); return; }
+            var b = document.getElementById('pwFgVerBtn'); b.disabled = true;
+            tgApi('/api/pwverify', { u: pwFgU, otp: o }).then(function(r) {
+                b.disabled = false;
+                if (r.ok && r.token) {
+                    pwFgTok = r.token;
+                    if (pwFgTimer) { clearInterval(pwFgTimer); pwFgTimer = null; }
+                    pwFgShow(3);
+                } else if (r.e === 'wrong') pwFgMsg('r', '❌ ভুল ওটিপি। আর ' + r.left + ' বার চেষ্টা করা যাবে।');
+                else if (r.e === 'locked') { pwFgShow(1); pwFgMsg('r', '⛔ অনেকবার ভুল ওটিপি। নতুন ওটিপি নিন।'); }
+                else { pwFgShow(1); pwFgMsg('r', '⌛ ওটিপির মেয়াদ শেষ। আবার ওটিপি পাঠান।'); }
+            });
+        }
+        function pwFgSet() {
+            var p1 = document.getElementById('pwFgNew').value.trim(), p2 = document.getElementById('pwFgNew2').value.trim();
+            if (p1.length < 4) { pwFgMsg('r', '⚠️ পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের দিন।'); return; }
+            if (p1 !== p2) { pwFgMsg('r', '❌ দুই ঘরের পাসওয়ার্ড মিলছে না।'); return; }
+            var b = document.getElementById('pwFgSetBtn'); b.disabled = true;
+            tgApi('/api/pwset', { u: pwFgU, token: pwFgTok, pw: p1 }).then(function(r) {
+                b.disabled = false;
+                if (r.ok) { pwFgTok = null; pwFgShow(4); }
+                else if (r.e === 'token') { pwFgShow(1); pwFgMsg('r', '⌛ সময় শেষ। আবার ওটিপি নিয়ে শুরু করুন।'); }
+                else pwFgMsg('r', '⚠️ কিছুক্ষণ পরে আবার চেষ্টা করুন।');
             });
         }
 
@@ -4842,7 +4899,8 @@
                 let k = uid || currentUserKey;
                 let a = Math.round(Number(amount) * 100) / 100;
                 if (!k || !a || isNaN(a)) return;
-                db.ref('tx/' + k).push({ t: type, n: name, a: a, ts: Date.now() });
+                var txRef = db.ref('tx/' + k).push({ t: type, n: name, a: a, ts: Date.now() });
+                if (type === 'bonus') { txRef.then(function() { tgApi('/api/tx', { u: k, id: txRef.key }); }); }
             } catch (e) {}
         }
 
