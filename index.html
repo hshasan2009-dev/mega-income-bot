@@ -1839,22 +1839,22 @@
         <div class="loading-title-text">Mega Income</div>
     </div>
 
-    <div id="pwFg"><div class="pf-box"><button class="pf-x" onclick="pwFgClose()">✕</button>
-        <div class="pf-ic">🔑</div><h3>পাসওয়ার্ড রিসেট</h3>
+    <div id="pwFg"><div class="pf-box"><button class="pf-x" onclick="pwFgClose()" aria-label="বন্ধ করুন"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <div class="pf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3L21 2M16 7l3 3M14 9l2 2"/></svg></div><h3>পাসওয়ার্ড রিসেট</h3>
         <div id="pf1"><p class="pf-d">আপনার ইউজারনেম/ফোন দিন। যে টেলিগ্রাম একাউন্ট দিয়ে এটি ভেরিফাই করা আছে, শুধু সেখানেই ওটিপি যাবে।</p>
-            <input class="pf-in" id="pwFgUser" placeholder="ইউজারনেম / ফোন নম্বর" autocomplete="off">
-            <button class="pf-b" id="pwFgSendBtn" onclick="pwFgSend()">📨 টেলিগ্রামে ওটিপি পাঠান</button></div>
+            <div class="pf-fw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><input class="pf-in" id="pwFgUser" placeholder="ইউজারনেম / ফোন নম্বর" autocomplete="off"></div>
+            <button class="pf-b" id="pwFgSendBtn" onclick="pwFgSend()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 3L10.5 14"/><path d="M21.5 3l-7 18-4-7-7-4 18-7z"/></svg><span>টেলিগ্রামে ওটিপি পাঠান</span></button></div>
         <div id="pf2" style="display:none"><p class="pf-d">আপনার ভেরিফাই করা টেলিগ্রামে বটের চ্যাটে ৬ ডিজিটের ওটিপি পাঠানো হয়েছে।</p>
             <div class="pf-tm" id="pwFgTm"></div>
             <input class="pf-in otp" id="pwFgOtp" inputmode="numeric" maxlength="6" placeholder="------" autocomplete="off">
-            <button class="pf-b" id="pwFgVerBtn" onclick="pwFgVerify()">✅ ওটিপি কনফার্ম করুন</button>
-            <button class="pf-b blue" onclick="openTelegramLink('https://t.me/' + TG_BOT_USERNAME)">🤖 বট খুলুন</button></div>
-        <div id="pf3" style="display:none"><div class="pf-ok">✅ ওটিপি সঠিক! নতুন পাসওয়ার্ড দিন</div>
-            <input class="pf-in" id="pwFgNew" type="password" placeholder="নতুন পাসওয়ার্ড" autocomplete="new-password">
-            <input class="pf-in" id="pwFgNew2" type="password" placeholder="নতুন পাসওয়ার্ড আবার লিখুন" autocomplete="new-password">
-            <button class="pf-b" id="pwFgSetBtn" onclick="pwFgSet()">🔒 পাসওয়ার্ড পরিবর্তন করুন</button></div>
-        <div id="pf4" style="display:none"><div class="pf-big">✅</div><p class="pf-d" style="color:#b8f5d0;font-size:15px">পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।<br>এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।</p>
-            <button class="pf-b" onclick="pwFgClose()">🔑 লগইন করুন</button></div>
+            <button class="pf-b" id="pwFgVerBtn" onclick="pwFgVerify()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8l7.5 3v5.7c0 4.8-3.2 8.2-7.5 9.7-4.3-1.5-7.5-4.9-7.5-9.7V5.8L12 2.8z"/><path d="M8.6 12l2.5 2.5 4.3-4.8"/></svg><span>ওটিপি কনফার্ম করুন</span></button>
+            <button class="pf-b blue" onclick="openTelegramLink('https://t.me/' + TG_BOT_USERNAME)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="3.5"/><path d="M12 8V4.8"/><circle cx="12" cy="3.7" r="1.1"/><circle cx="9" cy="13.5" r="1.3"/><circle cx="15" cy="13.5" r="1.3"/><path d="M9.5 17h5"/></svg><span>বট খুলুন</span></button></div>
+        <div id="pf3" style="display:none"><div class="pf-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M7.8 12.4l3 3 5.6-6.2"/></svg><span>ওটিপি সঠিক! নতুন পাসওয়ার্ড দিন</span></div>
+            <div class="pf-fw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1.2"/></svg><input class="pf-in" id="pwFgNew" type="password" placeholder="নতুন পাসওয়ার্ড" autocomplete="new-password"></div>
+            <div class="pf-fw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1.2"/></svg><input class="pf-in" id="pwFgNew2" type="password" placeholder="নতুন পাসওয়ার্ড আবার লিখুন" autocomplete="new-password"></div>
+            <button class="pf-b" id="pwFgSetBtn" onclick="pwFgSet()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3L21 2M16 7l3 3M14 9l2 2"/></svg><span>পাসওয়ার্ড পরিবর্তন করুন</span></button></div>
+        <div id="pf4" style="display:none"><div class="pf-big"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M7.8 12.4l3 3 5.6-6.2"/></svg></div><p class="pf-d" style="color:#b8f5d0;font-size:15px">পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।<br>এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।</p>
+            <button class="pf-b" onclick="pwFgClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l4-4-4-4M14 12H3"/></svg><span>লগইন করুন</span></button></div>
         <div class="pf-st" id="pwFgSt"></div>
     </div></div>
     <div id="authModal" class="modal-overlay" style="display: flex; align-items: center; justify-content: center; background: var(--bg3);">
@@ -3886,6 +3886,7 @@
 
         /* ===== পাসওয়ার্ড ফরগেট (টেলিগ্রাম ওটিপি) ===== */
         var pwFgU = null, pwFgTok = null, pwFgTimer = null;
+        var PWI = { err: '<svg class="pf-si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9 9l6 6M15 9l-6 6"/></svg>', warn: '<svg class="pf-si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5L2.5 20h19L12 3.5z"/><path d="M12 10v4.5M12 17.4v.1"/></svg>', ok: '<svg class="pf-si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M7.8 12.4l3 3 5.6-6.2"/></svg>', clock: '<svg class="pf-si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v5l3.2 2"/></svg>', head: '<svg class="pf-si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.6"/><rect x="17" y="14" width="4" height="6" rx="1.6"/></svg>' };
         function pwFgShow(n) {
             for (var i = 1; i <= 4; i++) document.getElementById('pf' + i).style.display = (i === n ? 'block' : 'none');
             document.getElementById('pwFgSt').className = 'pf-st';
@@ -3896,17 +3897,26 @@
             if (pwFgTimer) { clearInterval(pwFgTimer); pwFgTimer = null; }
             pwFgTok = null;
         }
-        function pwFgMsg(cls, txt) {
+        function pwFgMsg(cls, txt, ic) {
             var e = document.getElementById('pwFgSt');
-            e.className = 'pf-st show ' + cls; e.innerHTML = txt;
+            e.className = 'pf-st show ' + cls; e.innerHTML = (ic ? PWI[ic] : '') + '<span>' + txt + '</span>';
+        }
+        function pwFgBusy(b, on) {
+            if (on) {
+                b.setAttribute('data-h', b.innerHTML); b.classList.add('ld'); b.disabled = true;
+                b.innerHTML = '<span class="ld-sp"></span><span>Loading</span><span class="ld-dots"><i>.</i><i>.</i><i>.</i><i>.</i></span>';
+            } else {
+                b.classList.remove('ld'); b.disabled = false;
+                if (b.hasAttribute('data-h')) { b.innerHTML = b.getAttribute('data-h'); b.removeAttribute('data-h'); }
+            }
         }
         function pwFgSend() {
             var u = document.getElementById('pwFgUser').value.trim();
-            if (!u) { alert('⚠️ ইউজারনেম/ফোন দিন!'); return; }
-            var b = document.getElementById('pwFgSendBtn'); b.disabled = true;
+            if (!u) { pwFgMsg('w', 'ইউজারনেম/ফোন দিন!', 'warn'); return; }
+            var b = document.getElementById('pwFgSendBtn'); pwFgBusy(b, true);
             pwFgU = sanitizeKey(u);
             tgApi('/api/pwreq', { u: pwFgU }).then(function(r) {
-                b.disabled = false;
+                pwFgBusy(b, false);
                 if (r.ok) {
                     pwFgShow(2);
                     document.getElementById('pwFgOtp').value = '';
@@ -3914,42 +3924,42 @@
                     if (pwFgTimer) clearInterval(pwFgTimer);
                     var tick = function() {
                         var left = Math.max(0, Math.round((end - Date.now()) / 1000)), m = Math.floor(left / 60), sx = left % 60;
-                        document.getElementById('pwFgTm').textContent = '⏱ ওটিপির মেয়াদ বাকি ' + m + ':' + (sx < 10 ? '0' : '') + sx;
-                        if (left <= 0) { clearInterval(pwFgTimer); pwFgTimer = null; pwFgShow(1); pwFgMsg('r', '⌛ ওটিপির মেয়াদ শেষ। আবার ওটিপি পাঠান।'); }
+                        document.getElementById('pwFgTm').innerHTML = PWI.clock + '<span>ওটিপির মেয়াদ বাকি ' + m + ':' + (sx < 10 ? '0' : '') + sx + '</span>';
+                        if (left <= 0) { clearInterval(pwFgTimer); pwFgTimer = null; pwFgShow(1); pwFgMsg('r', 'ওটিপির মেয়াদ শেষ। আবার ওটিপি পাঠান।', 'err'); }
                     };
                     tick(); pwFgTimer = setInterval(tick, 1000);
-                } else if (r.e === 'nouser') pwFgMsg('r', '❌ এই নামে কোনো একাউন্ট পাওয়া যায়নি।');
-                else if (r.e === 'unverified') pwFgMsg('r', '⚠️ এই একাউন্ট কোনো টেলিগ্রামে ভেরিফাই করা নেই, তাই ওটিপি পাঠানো যাবে না।<br>সাপোর্টে যোগাযোগ করুন।<br><a onclick="openTelegramLink(\'https://t.me/megaincome_0/118\')">🛟 সাপোর্টে যোগাযোগ</a>');
-                else if (r.e === 'limit') pwFgMsg('r', '⛔ অনেকবার অনুরোধ করা হয়েছে। ৩০ মিনিট পরে আবার চেষ্টা করুন।');
-                else if (r.e === 'tgfail') pwFgMsg('r', '⚠️ টেলিগ্রামে ওটিপি পাঠানো যায়নি। বটটি ব্লক করা থাকলে আনব্লক করে আবার চেষ্টা করুন।');
-                else pwFgMsg('r', '⚠️ কিছুক্ষণ পরে আবার চেষ্টা করুন।');
+                } else if (r.e === 'nouser') pwFgMsg('r', 'এই নামে কোনো একাউন্ট পাওয়া যায়নি।', 'err');
+                else if (r.e === 'unverified') pwFgMsg('r', 'এই একাউন্ট কোনো টেলিগ্রামে ভেরিফাই করা নেই, তাই ওটিপি পাঠানো যাবে না।<br>সাপোর্টে যোগাযোগ করুন।<br><a onclick="openTelegramLink(\'https://t.me/megaincome_0/118\')">' + PWI.head + 'সাপোর্টে যোগাযোগ</a>', 'warn');
+                else if (r.e === 'limit') pwFgMsg('r', 'অনেকবার অনুরোধ করা হয়েছে। ৩০ মিনিট পরে আবার চেষ্টা করুন।', 'err');
+                else if (r.e === 'tgfail') pwFgMsg('r', 'টেলিগ্রামে ওটিপি পাঠানো যায়নি। বটটি ব্লক করা থাকলে আনব্লক করে আবার চেষ্টা করুন।', 'warn');
+                else pwFgMsg('r', 'কিছুক্ষণ পরে আবার চেষ্টা করুন।', 'warn');
             });
         }
         function pwFgVerify() {
             var o = document.getElementById('pwFgOtp').value.trim();
-            if (!/^\d{6}$/.test(o)) { pwFgMsg('r', '⚠️ ৬ ডিজিটের ওটিপি লিখুন।'); return; }
-            var b = document.getElementById('pwFgVerBtn'); b.disabled = true;
+            if (!/^\d{6}$/.test(o)) { pwFgMsg('r', '৬ ডিজিটের ওটিপি লিখুন।', 'warn'); return; }
+            var b = document.getElementById('pwFgVerBtn'); pwFgBusy(b, true);
             tgApi('/api/pwverify', { u: pwFgU, otp: o }).then(function(r) {
-                b.disabled = false;
+                pwFgBusy(b, false);
                 if (r.ok && r.token) {
                     pwFgTok = r.token;
                     if (pwFgTimer) { clearInterval(pwFgTimer); pwFgTimer = null; }
                     pwFgShow(3);
-                } else if (r.e === 'wrong') pwFgMsg('r', '❌ ভুল ওটিপি। আর ' + r.left + ' বার চেষ্টা করা যাবে।');
-                else if (r.e === 'locked') { pwFgShow(1); pwFgMsg('r', '⛔ অনেকবার ভুল ওটিপি। নতুন ওটিপি নিন।'); }
-                else { pwFgShow(1); pwFgMsg('r', '⌛ ওটিপির মেয়াদ শেষ। আবার ওটিপি পাঠান।'); }
+                } else if (r.e === 'wrong') pwFgMsg('r', 'ভুল ওটিপি। আর ' + r.left + ' বার চেষ্টা করা যাবে।', 'err');
+                else if (r.e === 'locked') { pwFgShow(1); pwFgMsg('r', 'অনেকবার ভুল ওটিপি। নতুন ওটিপি নিন।', 'err'); }
+                else { pwFgShow(1); pwFgMsg('r', 'ওটিপির মেয়াদ শেষ। আবার ওটিপি পাঠান।', 'err'); }
             });
         }
         function pwFgSet() {
             var p1 = document.getElementById('pwFgNew').value.trim(), p2 = document.getElementById('pwFgNew2').value.trim();
-            if (p1.length < 4) { pwFgMsg('r', '⚠️ পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের দিন।'); return; }
-            if (p1 !== p2) { pwFgMsg('r', '❌ দুই ঘরের পাসওয়ার্ড মিলছে না।'); return; }
-            var b = document.getElementById('pwFgSetBtn'); b.disabled = true;
+            if (p1.length < 4) { pwFgMsg('r', 'পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের দিন।', 'warn'); return; }
+            if (p1 !== p2) { pwFgMsg('r', 'দুই ঘরের পাসওয়ার্ড মিলছে না।', 'err'); return; }
+            var b = document.getElementById('pwFgSetBtn'); pwFgBusy(b, true);
             tgApi('/api/pwset', { u: pwFgU, token: pwFgTok, pw: p1 }).then(function(r) {
-                b.disabled = false;
+                pwFgBusy(b, false);
                 if (r.ok) { pwFgTok = null; pwFgShow(4); }
-                else if (r.e === 'token') { pwFgShow(1); pwFgMsg('r', '⌛ সময় শেষ। আবার ওটিপি নিয়ে শুরু করুন।'); }
-                else pwFgMsg('r', '⚠️ কিছুক্ষণ পরে আবার চেষ্টা করুন।');
+                else if (r.e === 'token') { pwFgShow(1); pwFgMsg('r', 'সময় শেষ। আবার ওটিপি নিয়ে শুরু করুন।', 'err'); }
+                else pwFgMsg('r', 'কিছুক্ষণ পরে আবার চেষ্টা করুন।', 'warn');
             });
         }
 
@@ -5100,10 +5110,45 @@
             });
         }
 
+        /* ===== জিমেইল ভল্ট: অ্যাকসেপ্ট করা জিমেইল আলাদা প্রাইভেট বটে (@gmailrequest1_bot) সেভ হয় - শুধু এডমিনের জন্য ===== */
+        const GM_VAULT_API = "https://gmail-vault.hshasan2009.workers.dev";   // <-- নতুন ওয়ার্কার ডিপ্লয়ের পর এখানে ওয়ার্কারের লিংক বসান (শেষে / দেবেন না)
+        function gmVaultOn() { return GM_VAULT_API && GM_VAULT_API.indexOf("YOUR-GMAIL-VAULT") === -1; }
+        function gmVaultPend(id, add) {
+            try {
+                let a = JSON.parse(localStorage.getItem("gmVaultPend") || "[]").filter(function (x) { return x !== id; });
+                if (add) a.push(id);
+                localStorage.setItem("gmVaultPend", JSON.stringify(a.slice(-200)));
+            } catch (e) {}
+        }
+        function gmVaultSave(id, tries) {
+            if (!gmVaultOn()) return;
+            tries = tries || 0;
+            fetch(GM_VAULT_API + "/api/gmsave", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: String(id) }), keepalive: true })
+                .then(function (r) { return r.json(); })
+                .then(function (r) {
+                    if (r && (r.ok || r.e === "nopass" || r.e === "notapproved" || r.e === "id")) { gmVaultPend(id, false); return; }
+                    throw new Error("save");
+                })
+                .catch(function () {
+                    if (tries < 2) { setTimeout(function () { gmVaultSave(id, tries + 1); }, 2500 * (tries + 1)); return; }
+                    gmVaultPend(id, true);
+                    try { copyToast("⚠️ জিমেইল ভল্টে সেভ হয়নি, পরে আবার চেষ্টা হবে"); } catch (e) {}
+                });
+        }
+        setTimeout(function () {
+            try { JSON.parse(localStorage.getItem("gmVaultPend") || "[]").forEach(function (id) { gmVaultSave(id, 2); }); } catch (e) {}
+        }, 8000);
+
         function adminApproveGmail(key, targetUserId) {
             let gmailAmount = parseFloat(dynamicTaskRewards.gmailTask || 15.00);
-            db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount }).then(() => {
+            // অ্যাকসেপ্টের মুহূর্তের পাসওয়ার্ডটি রেকর্ডে রেখে দেওয়া হয়, যাতে পরে পাসওয়ার্ড বদলালেও কার্ডে ঠিক পাসওয়ার্ডটাই যায়
+            db.ref('gmail_admin_credentials').once('value').catch(() => null).then((cs) => {
+                let cv = (cs && cs.val()) || {};
+                let gmPassNow = String(cv.password || dynamicGmailPass || "");
+                return db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount, approvedAt: Date.now(), gmPass: gmPassNow });
+            }).then(() => {
                 window.mpNotify && mpNotify('gm', key);
+                try { gmVaultSave(key); } catch (e) {}
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + gmailAmount);
                 db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
                 
@@ -9550,11 +9595,67 @@ window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNa
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="#ff6b6b" stroke-width="2"/><path d="M10 8.4l6 3.6-6 3.6z" fill="#ff6b6b" stroke="#ff6b6b" stroke-width="1.4" stroke-linejoin="round"/></svg>
         <span class="fb-edit" id="fb-video-edit" onclick="event.stopPropagation(); fbVideoEdit();">✎</span>
     </div>
+    <div class="fb fb-item i4 settings" id="fb-settings" onclick="stOpen()" aria-label="সেটিং">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
     <div class="fb fb-item i2 offer" id="of-fab" onclick="switchTab('offers', null); ofRender(); fbClose();">
         <span class="of-ndot" id="of-ndot"></span>
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><rect x="4.5" y="12.5" width="15" height="8.5" rx="1.6" fill="#ff4d4d"/><rect x="3" y="8.5" width="18" height="4.6" rx="1.4" fill="#ff7675"/><rect x="10.8" y="8.5" width="2.4" height="12.5" fill="#f1c40f"/><path d="M12 8.5C12 8.5 8.6 8.4 7.8 6.5C7.1 4.9 8.7 3.6 10.1 4.4C11.4 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/><path d="M12 8.5C12 8.5 15.4 8.4 16.2 6.5C16.9 4.9 15.3 3.6 13.9 4.4C12.6 5.2 12 8.5 12 8.5Z" fill="#f1c40f"/></svg>
     </div>
 </div>
+
+<!-- সেটিং পেজ -->
+<div class="st-page" id="stPage">
+  <div class="st-wrap">
+    <div class="st-top"><div role="button" tabindex="0" class="st-back" onclick="stClose()" aria-label="ফিরে যান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></div><h2>সেটিং</h2></div>
+
+    <div class="st-prof">
+      <div class="st-av" id="stAv">
+        <div class="st-av-in" id="stAvIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></div>
+        <div class="st-av-ld"><span class="ld-sp"></span></div>
+        <div role="button" tabindex="0" class="st-cam" onclick="document.getElementById('stFile').click()" aria-label="প্রোফাইল ছবি"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.6"/></svg></div>
+      </div>
+      <input type="file" id="stFile" accept="image/*" style="display:none">
+      <div class="st-nm" id="stName">...</div>
+      <div class="st-uid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M6.5 16c.4-1.6 1.5-2.4 2.5-2.4s2.1.8 2.5 2.4M14.5 10h4M14.5 13.5h3"/></svg><span>UID: <b id="stUid">...</b></span></div>
+      <button class="st-chg" id="stChg" onclick="document.getElementById('stFile').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.6"/></svg><span>প্রোফাইল ছবি সেট করুন</span></button>
+      <div class="st-msg" id="stAvMsg"></div>
+    </div>
+
+    <div class="st-sec">অ্যাকাউন্ট সেটিং</div>
+    <div class="st-item" onclick="stPwOpen()">
+      <div class="st-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1.2"/></svg></div>
+      <div class="st-tx"><b>পাসওয়ার্ড পরিবর্তন</b><span>আপনার অ্যাকাউন্টের পাসওয়ার্ড বদলান</span></div>
+      <div class="st-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></div>
+    </div>
+  </div>
+</div>
+
+<!-- পাসওয়ার্ড পরিবর্তন পেজ -->
+<div class="st-page" id="stPw">
+  <div class="st-wrap">
+    <div class="st-top"><div role="button" tabindex="0" class="st-back" onclick="stPwClose()" aria-label="ফিরে যান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></div><h2>পাসওয়ার্ড পরিবর্তন</h2></div>
+
+    <div class="st-hero"><div class="st-hero-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1.2"/></svg></div><p>নিরাপত্তার জন্য আগে বর্তমান পাসওয়ার্ড দিন, তারপর নতুন পাসওয়ার্ড সেট করুন।</p></div>
+
+    <div class="st-form">
+      <div class="st-fld"><svg class="st-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1.2"/></svg><input type="password" id="stPwCur" placeholder="বর্তমান পাসওয়ার্ড দিন" autocomplete="current-password"><div role="button" tabindex="0" class="st-eye" onclick="stPwEye('stPwCur',this)" aria-label="দেখান বা লুকান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg></div></div>
+      <div class="st-fld"><svg class="st-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3L21 2M16 7l3 3M14 9l2 2"/></svg><input type="password" id="stPwNew" placeholder="নতুন পাসওয়ার্ড" autocomplete="new-password"><div role="button" tabindex="0" class="st-eye" onclick="stPwEye('stPwNew',this)" aria-label="দেখান বা লুকান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg></div></div>
+      <div class="st-fld"><svg class="st-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8l7.5 3v5.7c0 4.8-3.2 8.2-7.5 9.7-4.3-1.5-7.5-4.9-7.5-9.7V5.8L12 2.8z"/><path d="M8.6 12l2.5 2.5 4.3-4.8"/></svg><input type="password" id="stPwCon" placeholder="কনফার্ম পাসওয়ার্ড" autocomplete="new-password"><div role="button" tabindex="0" class="st-eye" onclick="stPwEye('stPwCon',this)" aria-label="দেখান বা লুকান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg></div></div>
+
+      <div class="st-pst" id="stPwSt"></div>
+      <button class="st-save" id="stPwBtn" onclick="stPwSave()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>সেভ করুন</span></button>
+    </div>
+
+    <div class="st-or"><i></i><span>অথবা</span><i></i></div>
+    <div class="st-item st-forgot" onclick="stPwForgot()">
+      <div class="st-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3L21 2M16 7l3 3M14 9l2 2"/></svg></div>
+      <div class="st-tx"><b>ফরগেট পাসওয়ার্ড</b><span>টেলিগ্রামে ওটিপি পাঠিয়ে পাসওয়ার্ড রিসেট করুন</span></div>
+      <div class="st-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></div>
+    </div>
+  </div>
+</div>
+
 
 <!-- আমার সব পেমেন্ট হিসাব পেজ -->
 <div class="pay-page" id="payPage">
@@ -9641,7 +9742,7 @@ function fbToggle() {
     if (pe) pe.style.display = (typeof isRegAdmin === 'function' && isRegAdmin()) ? 'flex' : 'none';
     if (!w.classList.contains('open')) {
         var r = w.getBoundingClientRect();
-        w.classList.toggle('down', r.top < 130);   // উপরের দিকে কম জায়গা থাকলে নিচের দিকে খুলবে
+        w.classList.toggle('down', r.top < 290);   // উপরের দিকে কম জায়গা থাকলে নিচের দিকে খুলবে
     }
     w.classList.toggle('open');
 }
@@ -9889,6 +9990,240 @@ function fbVideoRemove() {
     db.ref('fb_video').remove().then(function () { fbVideoEditClose(); alert('✅ ভিডিও লিংক মুছে ফেলা হয়েছে।'); })
         .catch(function () { alert('❌ মুছে ফেলা যায়নি!'); });
 }
+</script>
+<style>
+/* ===== সেটিং বাটন (ভাসমান মেনু) ===== */
+.fb-item.i4{bottom:224px;}
+.fb-wrap.down .fb-item.i4{bottom:auto;top:224px;}
+.fb-item.settings svg{stroke:#cfe9d8;}
+
+/* ===== ফরগেট পাসওয়ার্ড পপআপ: আইকন ও Loading ===== */
+#pwFg .pf-x{display:grid;place-items:center;padding:0}
+#pwFg .pf-x svg{width:17px;height:17px}
+#pwFg .pf-ic{color:#ffcc00;box-shadow:0 0 0 6px rgba(255,204,0,.08),0 10px 24px rgba(0,0,0,.35)}
+#pwFg .pf-ic svg{width:30px;height:30px}
+#pwFg .pf-fw{position:relative}
+#pwFg .pf-fw>svg{position:absolute;left:15px;top:25px;transform:translateY(-50%);width:19px;height:19px;color:#6fcf97;pointer-events:none}
+#pwFg .pf-fw .pf-in{padding-left:46px}
+#pwFg .pf-in:focus{border-color:#2ecc71;box-shadow:0 0 0 3px rgba(46,204,113,.18)}
+#pwFg .pf-b{display:flex;align-items:center;justify-content:center;gap:9px}
+#pwFg .pf-b svg{width:20px;height:20px;flex:none}
+#pwFg .pf-b.ld,#pwFg .pf-b.ld:disabled{opacity:1;pointer-events:none;filter:saturate(.85)}
+#pwFg .pf-tm{display:flex;align-items:center;justify-content:center;gap:7px}
+#pwFg .pf-tm svg{width:16px;height:16px}
+#pwFg .pf-ok{display:flex;align-items:center;justify-content:center;gap:8px}
+#pwFg .pf-ok svg{width:20px;height:20px;flex:none}
+#pwFg .pf-big{display:grid;place-items:center;color:#2ecc71;margin:4px 0 10px}
+#pwFg .pf-big svg{width:64px;height:64px;stroke-width:1.6}
+#pwFg .pf-st .pf-si{display:block;width:24px;height:24px;margin:0 auto 6px}
+#pwFg .pf-st a svg{width:16px;height:16px;vertical-align:-3px;margin-right:6px}
+.ld-sp{width:19px;height:19px;border-radius:50%;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;display:inline-block;flex:none;animation:ldSpin .75s linear infinite}
+.ld-dots{display:inline-flex;margin-left:-5px}
+.ld-dots i{font-style:normal;animation:ldDot 1.2s infinite both}
+.ld-dots i:nth-child(2){animation-delay:.2s}.ld-dots i:nth-child(3){animation-delay:.4s}.ld-dots i:nth-child(4){animation-delay:.6s}
+@keyframes ldSpin{to{transform:rotate(360deg)}}
+@keyframes ldDot{0%,80%,100%{opacity:.15}40%{opacity:1}}
+
+/* ===== সেটিং পেজ ===== */
+.st-page{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:100061;background:var(--bg3);overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:inherit;color:var(--txt);}
+.st-page#stPw{z-index:100062;}
+.st-page.show{display:block;animation:stIn .22s ease both;}
+@keyframes stIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.st-page svg{display:block}
+.st-wrap{max-width:480px;margin:0 auto;padding:0 14px calc(34px + env(safe-area-inset-bottom,0px));}
+.st-top{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top,0px)) 2px 12px;background:var(--bg3);}
+.st-top h2{margin:0;font-size:18px;font-weight:800;color:var(--txt);}
+.st-back{width:42px;height:42px;border-radius:50%;border:1px solid var(--bd2);background:var(--card);color:var(--txt);display:grid;place-items:center;cursor:pointer;padding:0;flex:none;}
+.st-back svg{width:20px;height:20px}
+.st-back:active{transform:scale(.93)}
+
+.st-prof{position:relative;text-align:center;border-radius:24px;padding:26px 16px 20px;margin-top:4px;border:1.5px solid rgba(var(--accrgb),.55);background:radial-gradient(120% 80% at 50% 0%,rgba(var(--accrgb),.16),transparent 62%),linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,0) 55%),var(--card);box-shadow:0 12px 30px rgba(0,0,0,.28);}
+.st-av{position:relative;width:108px;height:108px;margin:0 auto;border-radius:50%;padding:4px;background:conic-gradient(from 200deg,var(--acc),var(--navAct),var(--acc));box-shadow:0 8px 22px rgba(0,0,0,.35);}
+.st-av-in{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--bg);display:grid;place-items:center;color:var(--sub2);}
+.st-av-in svg{width:52px;height:52px;stroke-width:1.6}
+.st-av-in img{width:100%;height:100%;object-fit:cover;display:block}
+.st-av-ld{display:none;position:absolute;inset:4px;border-radius:50%;background:rgba(0,0,0,.55);place-items:center;}
+.st-av.busy .st-av-ld{display:grid}
+.st-cam{position:absolute;right:-3px;bottom:2px;width:36px;height:36px;border-radius:50%;border:3px solid var(--card);background:var(--acc);color:#1b1b1b;display:grid;place-items:center;cursor:pointer;padding:0;box-shadow:0 4px 10px rgba(0,0,0,.4);}
+.st-cam svg{width:17px;height:17px}
+.st-cam:active{transform:scale(.92)}
+.st-nm{margin-top:16px;font-size:21px;font-weight:800;color:var(--txt);word-break:break-word;}
+.st-uid{display:inline-flex;align-items:center;gap:8px;margin-top:9px;padding:7px 15px;border-radius:22px;background:rgba(0,0,0,.24);border:1px solid var(--bd2);color:var(--txt2);font-size:13px;font-weight:600;}
+.st-uid svg{width:17px;height:17px;color:var(--acc)}
+.st-uid b{color:var(--acc);font-weight:800;letter-spacing:.4px}
+.st-chg{display:flex;align-items:center;justify-content:center;gap:8px;margin:16px auto 0;padding:10px 20px;border-radius:14px;border:1.5px solid var(--bd);background:rgba(var(--bdrgb),.12);color:var(--txt);font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer;}
+.st-chg svg{width:17px;height:17px;color:var(--navAct)}
+.st-chg:active{transform:scale(.97)}
+.st-msg{display:none;margin:12px auto 0;max-width:320px;padding:9px 12px;border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.5;}
+.st-msg.show{display:block}
+.st-msg.g{background:rgba(46,204,113,.15);border:1px solid #2ecc71;color:#b8f5d0}
+.st-msg.r{background:rgba(231,76,60,.15);border:1px solid #e74c3c;color:#ffb3aa}
+
+.st-sec{margin:22px 4px 10px;font-size:12.5px;font-weight:800;letter-spacing:.3px;color:var(--sub2);}
+.st-item{display:flex;align-items:center;gap:14px;min-height:78px;padding:14px 14px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0) 60%),var(--card);border:1.5px solid var(--bd2);cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.2);transition:transform .15s ease,border-color .15s ease;}
+.st-item:active{transform:scale(.985);border-color:var(--bd)}
+.st-ico{width:48px;height:48px;border-radius:15px;flex:none;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--navAct),#1e8449);box-shadow:0 6px 14px rgba(46,204,113,.28);}
+.st-ico svg{width:23px;height:23px}
+.st-tx{flex:1;min-width:0;text-align:left}
+.st-tx b{display:block;font-size:15.5px;font-weight:800;color:var(--txt);}
+.st-tx span{display:block;margin-top:4px;font-size:12px;line-height:1.45;color:var(--sub);}
+.st-chev{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;background:rgba(255,255,255,.07);color:var(--txt2);}
+.st-chev svg{width:16px;height:16px}
+
+.st-hero{text-align:center;padding:10px 6px 18px}
+.st-hero-ic{width:70px;height:70px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;color:var(--acc);background:radial-gradient(circle at 30% 25%,rgba(var(--accrgb),.22),var(--card));border:2.5px solid var(--acc);box-shadow:0 0 0 7px rgba(var(--accrgb),.08);}
+.st-hero-ic svg{width:31px;height:31px}
+.st-hero p{margin:0 auto;max-width:300px;font-size:13px;line-height:1.6;color:var(--txt2)}
+.st-form{padding:18px 14px 16px;border-radius:22px;background:var(--card);border:1.5px solid var(--bd2);box-shadow:0 8px 22px rgba(0,0,0,.22);}
+.st-fld{position:relative;margin-bottom:13px}
+.st-fld .st-l{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:19px;height:19px;color:var(--navAct);pointer-events:none}
+.st-fld input{width:100%;height:54px;border-radius:15px;border:1.5px solid var(--bd2);background:var(--bg);color:var(--txt);padding:0 50px 0 46px;font-size:15.5px;font-family:inherit;outline:none;box-sizing:border-box;}
+.st-fld input::placeholder{color:var(--sub2);opacity:.9;font-weight:600}
+.st-fld input:focus{border-color:var(--navAct);box-shadow:0 0 0 3px rgba(var(--bdrgb),.22)}
+.st-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:42px;height:42px;border:none;background:transparent;color:var(--sub2);display:grid;place-items:center;cursor:pointer;padding:0;border-radius:12px;}
+.st-eye svg{width:21px;height:21px}
+.st-eye.on{color:var(--acc)}
+.st-pst{display:none;align-items:flex-start;gap:9px;margin:2px 0 13px;padding:11px 12px;border-radius:14px;font-size:13px;font-weight:700;line-height:1.5;text-align:left}
+.st-pst.show{display:flex}
+.st-pst svg{width:20px;height:20px;flex:none;margin-top:1px}
+.st-pst.g{background:rgba(46,204,113,.15);border:1px solid #2ecc71;color:#b8f5d0}
+.st-pst.r{background:rgba(231,76,60,.15);border:1px solid #e74c3c;color:#ffb3aa}
+.st-save{width:100%;height:54px;border:none;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:9px;color:#fff;font-size:16.5px;font-weight:800;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(0,0,0,.12)),var(--navAct);box-shadow:0 9px 22px rgba(46,204,113,.3);}
+.st-save svg{width:21px;height:21px;stroke-width:2.6}
+.st-save:active{transform:scale(.98)}
+.st-save.ld,.st-save:disabled{pointer-events:none}
+.st-or{display:flex;align-items:center;gap:12px;margin:20px 6px 16px;color:var(--sub2);font-size:12px;font-weight:700}
+.st-or i{flex:1;height:1px;background:var(--bd2)}
+.st-forgot .st-ico{background:linear-gradient(135deg,#f5b82e,#c98a0a);box-shadow:0 6px 14px rgba(245,184,46,.25)}
+
+.st-back,.st-cam,.st-eye{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+
+</style>
+<script>
+/* ===== সেটিং পেজ: প্রোফাইল ছবি + পাসওয়ার্ড পরিবর্তন ===== */
+(function () {
+    var avData = null, avBusy = false, pwBusy = false, msgT = null;
+    var USER_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>';
+    var EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>', EYEOFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/><path d="M3.5 3.5l17 17"/></svg>';
+    var IC_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M7.8 12.4l3 3 5.6-6.2"/></svg>', IC_ERR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9 9l6 6M15 9l-6 6"/></svg>', IC_WARN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5L2.5 20h19L12 3.5z"/><path d="M12 10v4.5M12 17.4v.1"/></svg>';
+    function $(id) { return document.getElementById(id); }
+
+    function paintAv() {
+        $('stAvIn').innerHTML = avData ? '<img alt="" src="' + avData + '">' : USER_SVG;
+        var s = $('stChg').querySelector('span');
+        if (s) s.textContent = avData ? 'প্রোফাইল ছবি পরিবর্তন করুন' : 'প্রোফাইল ছবি সেট করুন';
+    }
+    function loadUser() {
+        if (typeof currentUserKey === 'undefined' || !currentUserKey) return;
+        $('stName').textContent = currentUserKey; $('stUid').textContent = currentUserKey;
+        db.ref('users/' + currentUserKey).once('value').then(function (s) {
+            var v = s.val() || {};
+            $('stName').textContent = v.fullName || v.username || currentUserKey;
+            $('stUid').textContent = v.refCode || currentUserKey;
+            avData = v.avatar || null; paintAv();
+        }).catch(function () {});
+    }
+    window.stOpen = function () {
+        try { fbClose(); } catch (e) {}
+        $('stPage').classList.add('show'); loadUser();
+    };
+    window.stClose = function () { $('stPage').classList.remove('show'); };
+
+    function avMsg(cls, txt) {
+        var m = $('stAvMsg'); m.className = 'st-msg show ' + cls; m.textContent = txt;
+        if (msgT) clearTimeout(msgT);
+        msgT = setTimeout(function () { m.className = 'st-msg'; }, 3500);
+    }
+    function resizeImg(file, cb) {
+        var r = new FileReader();
+        r.onload = function () {
+            var im = new Image();
+            im.onload = function () {
+                var S = 240, c = document.createElement('canvas'); c.width = c.height = S;
+                var x = c.getContext('2d'), m = Math.min(im.width, im.height);
+                x.fillStyle = '#fff'; x.fillRect(0, 0, S, S);
+                x.drawImage(im, (im.width - m) / 2, (im.height - m) / 2, m, m, 0, 0, S, S);
+                cb(c.toDataURL('image/jpeg', 0.82));
+            };
+            im.onerror = function () { cb(null); };
+            im.src = r.result;
+        };
+        r.onerror = function () { cb(null); };
+        r.readAsDataURL(file);
+    }
+    $('stFile').addEventListener('change', function () {
+        var f = this.files && this.files[0]; this.value = '';
+        if (!f || avBusy) return;
+        if (!/^image\//.test(f.type)) { avMsg('r', 'শুধু ছবি বেছে নিন।'); return; }
+        if (typeof currentUserKey === 'undefined' || !currentUserKey) return;
+        avBusy = true; $('stAv').classList.add('busy');
+        resizeImg(f, function (data) {
+            if (!data) { avBusy = false; $('stAv').classList.remove('busy'); avMsg('r', 'ছবিটি পড়া যায়নি, অন্য ছবি দিন।'); return; }
+            db.ref('users/' + currentUserKey + '/avatar').set(data).then(function () {
+                avData = data; paintAv(); avMsg('g', 'প্রোফাইল ছবি সেভ হয়েছে।');
+            }).catch(function () {
+                avMsg('r', 'ছবি সেভ হয়নি, কিছুক্ষণ পরে আবার চেষ্টা করুন।');
+            }).then(function () { avBusy = false; $('stAv').classList.remove('busy'); });
+        });
+    });
+
+    /* ---- পাসওয়ার্ড পরিবর্তন ---- */
+    function pwMsg(cls, txt) {
+        var e = $('stPwSt'); var ic = cls === 'g' ? IC_OK : (cls === 'w' ? IC_WARN : IC_ERR);
+        e.className = 'st-pst show ' + (cls === 'g' ? 'g' : 'r'); e.innerHTML = ic + '<span>' + txt + '</span>';
+    }
+    window.stPwOpen = function () {
+        ['stPwCur', 'stPwNew', 'stPwCon'].forEach(function (i) { var e = $(i); e.value = ''; e.type = 'password'; });
+        document.querySelectorAll('#stPw .st-eye').forEach(function (b) { b.innerHTML = EYE; b.classList.remove('on'); });
+        $('stPwSt').className = 'st-pst';
+        $('stPw').classList.add('show');
+    };
+    window.stPwClose = function () { $('stPw').classList.remove('show'); };
+    window.stPwEye = function (id, btn) {
+        var i = $(id), show = i.type === 'password';
+        i.type = show ? 'text' : 'password';
+        btn.innerHTML = show ? EYEOFF : EYE; btn.classList.toggle('on', show);
+    };
+    window.stPwForgot = function () {
+        pwFgOpen();
+        if (typeof currentUserKey !== 'undefined' && currentUserKey) $('pwFgUser').value = currentUserKey;
+    };
+    function busy(on) {
+        var b = $('stPwBtn');
+        if (on) {
+            b.setAttribute('data-h', b.innerHTML); b.classList.add('ld'); b.disabled = true;
+            b.innerHTML = '<span class="ld-sp"></span><span>Loading</span><span class="ld-dots"><i>.</i><i>.</i><i>.</i><i>.</i></span>';
+        } else {
+            b.classList.remove('ld'); b.disabled = false;
+            if (b.hasAttribute('data-h')) { b.innerHTML = b.getAttribute('data-h'); b.removeAttribute('data-h'); }
+        }
+    }
+    window.stPwSave = function () {
+        if (pwBusy) return;
+        var c = $('stPwCur').value.trim(), n = $('stPwNew').value.trim(), k = $('stPwCon').value.trim();
+        if (!c || !n || !k) { pwMsg('w', 'তিনটি ঘরই পূরণ করুন।'); return; }
+        if (n.length < 4) { pwMsg('w', 'নতুন পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের দিন।'); return; }
+        if (n !== k) { pwMsg('r', 'নতুন পাসওয়ার্ড ও কনফার্ম পাসওয়ার্ড মিলছে না।'); return; }
+        if (n === c) { pwMsg('w', 'নতুন পাসওয়ার্ড বর্তমান পাসওয়ার্ড থেকে আলাদা দিন।'); return; }
+        if (typeof currentUserKey === 'undefined' || !currentUserKey) { pwMsg('r', 'আবার লগইন করে চেষ্টা করুন।'); return; }
+        pwBusy = true; busy(true); $('stPwSt').className = 'st-pst';
+        var key = currentUserKey;
+        db.ref('users/' + key).once('value').then(function (s) {
+            var v = s.val();
+            if (!v) throw 'nouser';
+            if (v.password !== c) throw 'wrong';
+            return db.ref('users/' + key).update({ password: n });
+        }).then(function () {
+            ['stPwCur', 'stPwNew', 'stPwCon'].forEach(function (i) { $(i).value = ''; });
+            pwMsg('g', 'পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে। এখন থেকে নতুন পাসওয়ার্ড দিয়ে লগইন করবেন।');
+        }).catch(function (e) {
+            if (e === 'wrong') pwMsg('r', 'বর্তমান পাসওয়ার্ড সঠিক নয়।');
+            else if (e === 'nouser') pwMsg('r', 'একাউন্ট পাওয়া যায়নি।');
+            else pwMsg('w', 'কিছুক্ষণ পরে আবার চেষ্টা করুন।');
+        }).then(function () { pwBusy = false; busy(false); });
+    };
+})();
+
 </script>
 </body>
         </html>
