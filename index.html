@@ -5100,45 +5100,10 @@
             });
         }
 
-        /* ===== জিমেইল ভল্ট: অ্যাকসেপ্ট করা জিমেইল আলাদা প্রাইভেট বটে (@gmailrequest1_bot) সেভ হয় - শুধু এডমিনের জন্য ===== */
-        const GM_VAULT_API = "https://gmail-vault.hshasan2009.workers.dev";   // <-- নতুন ওয়ার্কার ডিপ্লয়ের পর এখানে ওয়ার্কারের লিংক বসান (শেষে / দেবেন না)
-        function gmVaultOn() { return GM_VAULT_API && GM_VAULT_API.indexOf("YOUR-GMAIL-VAULT") === -1; }
-        function gmVaultPend(id, add) {
-            try {
-                let a = JSON.parse(localStorage.getItem("gmVaultPend") || "[]").filter(function (x) { return x !== id; });
-                if (add) a.push(id);
-                localStorage.setItem("gmVaultPend", JSON.stringify(a.slice(-200)));
-            } catch (e) {}
-        }
-        function gmVaultSave(id, tries) {
-            if (!gmVaultOn()) return;
-            tries = tries || 0;
-            fetch(GM_VAULT_API + "/api/gmsave", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: String(id) }), keepalive: true })
-                .then(function (r) { return r.json(); })
-                .then(function (r) {
-                    if (r && (r.ok || r.e === "nopass" || r.e === "notapproved" || r.e === "id")) { gmVaultPend(id, false); return; }
-                    throw new Error("save");
-                })
-                .catch(function () {
-                    if (tries < 2) { setTimeout(function () { gmVaultSave(id, tries + 1); }, 2500 * (tries + 1)); return; }
-                    gmVaultPend(id, true);
-                    try { copyToast("⚠️ জিমেইল ভল্টে সেভ হয়নি, পরে আবার চেষ্টা হবে"); } catch (e) {}
-                });
-        }
-        setTimeout(function () {
-            try { JSON.parse(localStorage.getItem("gmVaultPend") || "[]").forEach(function (id) { gmVaultSave(id, 2); }); } catch (e) {}
-        }, 8000);
-
         function adminApproveGmail(key, targetUserId) {
             let gmailAmount = parseFloat(dynamicTaskRewards.gmailTask || 15.00);
-            // অ্যাকসেপ্টের মুহূর্তের পাসওয়ার্ডটি রেকর্ডে রেখে দেওয়া হয়, যাতে পরে পাসওয়ার্ড বদলালেও কার্ডে ঠিক পাসওয়ার্ডটাই যায়
-            db.ref('gmail_admin_credentials').once('value').catch(() => null).then((cs) => {
-                let cv = (cs && cs.val()) || {};
-                let gmPassNow = String(cv.password || dynamicGmailPass || "");
-                return db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount, approvedAt: Date.now(), gmPass: gmPassNow });
-            }).then(() => {
+            db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount }).then(() => {
                 window.mpNotify && mpNotify('gm', key);
-                try { gmVaultSave(key); } catch (e) {}
                 db.ref('users/' + targetUserId + '/balance').transaction((bal) => (bal || 0) + gmailAmount);
                 db.ref('users/' + targetUserId + '/completedTasksCount').transaction((count) => (count || 0) + 1);
                 
