@@ -9677,15 +9677,22 @@ window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNa
 
     <div id="sbAct" style="display:none">
       <button class="sb-btn blue" onclick="openTelegramLink('https://t.me/' + TG_BOT_USERNAME)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 3L10.5 14"/><path d="M21.5 3l-7 18-4-7-7-4 18-7z"/></svg><span>বট খুলুন</span></button>
-
-      <div class="st-sec">আনবাইন্ডের অনুরোধ</div>
-      <div class="st-form">
-        <div class="st-fld"><svg class="st-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1.2"/></svg><input type="password" id="sbPw" placeholder="অ্যাকাউন্টের পাসওয়ার্ড দিন" autocomplete="current-password"><div role="button" tabindex="0" class="st-eye" onclick="sbEye(this)" aria-label="দেখান বা লুকান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg></div></div>
-        <div class="st-pst" id="sbMsg"></div>
-        <button class="sb-btn red" id="sbBtn" onclick="sbSend()"><span>আনবাইন্ডের অনুরোধ পাঠান</span></button>
-        <div class="sb-note">পাসওয়ার্ড সঠিক হলে বট আপনার টেলিগ্রামে "কনফার্ম / বাতিল" কার্ড পাঠাবে। কনফার্ম না করা পর্যন্ত কিছুই বদলাবে না। কনফার্ম করলে এই টেলিগ্রাম অ্যাকাউন্ট থেকে আলাদা হবে এবং আবার ভেরিফাই করতে হবে।</div>
-      </div>
+      <button class="sb-btn red" onclick="sbModalOpen()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 7.6-1.7"/><circle cx="12" cy="16" r="1.2"/></svg><span>অ্যাকাউন্ট আনবাইন্ড</span></button>
     </div>
+  </div>
+</div>
+
+<!-- আনবাইন্ডের অনুরোধ পপআপ -->
+<div id="sbModal" onclick="if(event.target===this)sbModalClose()">
+  <div class="sb-box">
+    <div role="button" tabindex="0" class="sb-x" onclick="sbModalClose()" aria-label="বন্ধ করুন"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+    <div class="sb-mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 7.6-1.7"/><circle cx="12" cy="16" r="1.2"/></svg></div>
+    <h3>অ্যাকাউন্ট আনবাইন্ড</h3>
+    <p class="sb-mp">নিরাপত্তার জন্য অ্যাকাউন্টের পাসওয়ার্ড দিন। সঠিক হলে বট আপনার টেলিগ্রামে "কনফার্ম / বাতিল" কার্ড পাঠাবে।</p>
+    <div class="st-fld"><svg class="st-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1.2"/></svg><input type="password" id="sbPw" placeholder="অ্যাকাউন্টের পাসওয়ার্ড দিন" autocomplete="current-password"><div role="button" tabindex="0" class="st-eye" onclick="sbEye(this)" aria-label="দেখান বা লুকান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg></div></div>
+    <div class="st-pst" id="sbMsg"></div>
+    <button class="sb-btn red" id="sbBtn" onclick="sbSend()"><span>আনবাইন্ডের অনুরোধ পাঠান</span></button>
+    <div class="sb-note">কনফার্ম না করা পর্যন্ত কিছুই বদলাবে না। কনফার্ম করলে এই টেলিগ্রাম অ্যাকাউন্ট থেকে আলাদা হবে এবং আবার ভেরিফাই করতে হবে।</div>
   </div>
 </div>
 
@@ -10282,9 +10289,21 @@ body:has(#tgGate.show) .mp-ov{z-index:2147483001 !important}
 .sb-btn{width:100%;height:52px;border:none;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:14px;color:#fff;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;}
 .sb-btn svg{width:20px;height:20px;flex:none}
 .sb-btn.blue{background:linear-gradient(135deg,#3aa0e8,#1c6fb5);box-shadow:0 8px 20px rgba(58,160,232,.28)}
-.sb-btn.red{background:rgba(231,76,60,.10);border:1.5px solid #e74c3c;color:#ff9d92;margin-top:4px}
+.sb-btn.red{background:linear-gradient(135deg,#e74c3c,#b52a1c);box-shadow:0 8px 20px rgba(231,76,60,.35)}
 .sb-btn:active{transform:scale(.98)}
 .sb-btn.ld,.sb-btn:disabled{pointer-events:none;opacity:.8}
+#sbModal{position:fixed;inset:0;z-index:100070;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,8,14,.8);}
+#sbModal.show{display:flex}
+#sbModal svg{display:block}
+.sb-box{position:relative;width:100%;max-width:400px;max-height:92vh;overflow-y:auto;padding:24px 18px 18px;border-radius:24px;background:var(--card);border:1.5px solid var(--bd2);box-shadow:0 22px 54px rgba(0,0,0,.55);text-align:center;color:var(--txt);}
+.sb-box h3{margin:10px 0 6px;font-size:18px;font-weight:800;color:var(--txt)}
+.sb-mp{margin:0 4px 16px;font-size:13px;line-height:1.6;color:var(--txt2)}
+.sb-mic{width:62px;height:62px;margin:0 auto;border-radius:50%;display:grid;place-items:center;color:#ff9d92;background:rgba(231,76,60,.12);border:2.5px solid #e74c3c;box-shadow:0 0 0 7px rgba(231,76,60,.08)}
+.sb-mic svg{width:28px;height:28px}
+.sb-x{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--txt2);background:rgba(255,255,255,.07);cursor:pointer}
+.sb-x svg{width:18px;height:18px}
+.sb-box .st-fld{text-align:left}
+.sb-box .st-pst{text-align:left}
 .sb-note{margin:12px 2px 0;font-size:12.5px;line-height:1.6;color:var(--sub)}
 </style>
 <script>
@@ -10314,13 +10333,18 @@ body:has(#tgGate.show) .mp-ov{z-index:2147483001 !important}
     }
     window.stBindOpen = function () {
         $('sbPw').value = ''; $('sbPw').type = 'password'; $('sbMsg').className = 'st-pst';
-        var eye = document.querySelector('#stBind .st-eye'); if (eye) { eye.innerHTML = EYE; eye.classList.remove('on'); }
-        $('stBind').classList.add('show');
+                $('stBind').classList.add('show');
         $('sbStat').className = 'sb-badge'; $('sbStat').textContent = '...';
         if (typeof currentUserKey === 'undefined' || !currentUserKey) { paint(null); return; }
         db.ref('tg_verified/' + currentUserKey).once('value').then(function (s) { paint(s.val()); }).catch(function () { paint(null); });
     };
-    window.stBindClose = function () { $('stBind').classList.remove('show'); };
+    window.stBindClose = function () { $('sbModal').classList.remove('show'); $('stBind').classList.remove('show'); };
+    window.sbModalOpen = function () {
+        $('sbPw').value = ''; $('sbPw').type = 'password'; $('sbMsg').className = 'st-pst';
+        var eye = document.querySelector('#sbModal .st-eye'); if (eye) { eye.innerHTML = EYE; eye.classList.remove('on'); }
+        $('sbModal').classList.add('show');
+    };
+    window.sbModalClose = function () { $('sbModal').classList.remove('show'); };
     window.sbEye = function (btn) {
         var i = $('sbPw'), show = i.type === 'password';
         i.type = show ? 'text' : 'password'; btn.innerHTML = show ? EYEOFF : EYE; btn.classList.toggle('on', show);
