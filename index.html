@@ -2572,7 +2572,8 @@
                 <div id="rlb-list"><div class="rlb-empty">লোড হচ্ছে...</div></div>
                 <div id="rlb-me-wrap" style="display:none;margin-top:12px;">
                     <div class="rlb-row rlb-me" id="rlb-me">
-                        <div class="rlb-rk" id="rlb-me-rank">—</div>
+                        <div class="rlb-rkc"><div class="rlb-rk" id="rlb-me-rank">—</div></div>
+                        <div class="rlb-av" id="rlb-me-av"></div>
                         <div class="rlb-info"><div class="rlb-nm">আপনি</div><span class="rlb-code" id="rlb-me-code"></span></div>
                         <div class="rlb-cnt"><b id="rlb-me-cnt">0</b><small>একটিভ রেফার</small></div>
                     </div>
@@ -6792,7 +6793,35 @@
                 + '<ellipse cx="37" cy="49" rx="13" ry="5.5" transform="rotate(-32 37 49)" fill="#fff" opacity=".28"/>'
                 + '</svg>';
         }
+        /* লিডারবোর্ডের প্রোফাইল ছবি: ছবি থাকলে ছবি, না থাকলে নামের প্রথম অক্ষর */
+        function rlbAvHtml(name, av, id) {
+            let idA = id ? ' id="' + id + '"' : '';
+            if (av) return '<div class="rlb-av"' + idA + '><img alt="" src="' + av + '"></div>';
+            let ch = Array.from(String(name || '?').trim())[0] || '?';
+            return '<div class="rlb-av"' + idA + '>' + escHtml(ch.toUpperCase()) + '</div>';
+        }
+        let rlbMyAv = '', rlbMyName = '', rlbMyKey = '', rlbMyAvRef = null;
+        function rlbPaintMeAv() {
+            let old = document.getElementById('rlb-me-av');
+            if (!old) return;
+            let tmp = document.createElement('div');
+            tmp.innerHTML = rlbAvHtml(rlbMyName, rlbMyAv, 'rlb-me-av');
+            old.replaceWith(tmp.firstChild);
+        }
+        function rlbListenMyAv() {
+            if (!currentUserKey || rlbMyKey === String(currentUserKey)) return;
+            rlbMyKey = String(currentUserKey);
+            if (rlbMyAvRef) rlbMyAvRef.off();
+            db.ref('users/' + currentUserKey + '/fullName').once('value').then((s) => { rlbMyName = s.val() || ''; rlbPaintMeAv(); }).catch(() => {});
+            rlbMyAvRef = db.ref('users/' + currentUserKey + '/avatar');
+            rlbMyAvRef.on('value', (s) => {
+                let v = s.val();
+                rlbMyAv = (typeof v === 'string' && /^data:image\//.test(v)) ? v : '';
+                rlbPaintMeAv();
+            });
+        }
         function listenReferLeaderboard() {
+            rlbListenMyAv();
             if (rlbRef) rlbRef.off();
             rlbRef = db.ref('users').orderByChild('activeRefScore').startAt(LB_MIN_REFER * REF_SCALE).limitToLast(LB_MAX_SHOW + 5);
             rlbRef.on('value', (snapshot) => {
@@ -6801,7 +6830,7 @@
                     let u = child.val() || {};
                     let cnt = parseInt(u.activeRefCount || 0);
                     if (cnt >= LB_MIN_REFER && u.isBanned !== true) {
-                        arr.push({ key: child.key, name: u.fullName || 'ইউজার', code: u.refCode || '', cnt: cnt, score: Number(u.activeRefScore || 0) });
+                        arr.push({ key: child.key, name: u.fullName || 'ইউজার', code: u.refCode || '', cnt: cnt, score: Number(u.activeRefScore || 0), av: (typeof u.avatar === 'string' && /^data:image\//.test(u.avatar)) ? u.avatar : '' });
                     }
                 });
                 arr.sort((a, b) => b.score - a.score);
@@ -6820,7 +6849,8 @@
                 let mine = (String(d.key) === String(currentUserKey));
                 if (mine) { myInList = true; rlbMyPos = r; }
                 h += '<div class="rlb-row ' + (r < 4 ? 'r' + r : '') + (mine ? ' mine' : '') + '" style="animation-delay:' + (i * 0.06) + 's">'
-                    + (r < 4 ? '<div class="rlb-med">' + rlbMedal(r) + '</div>' : '<div class="rlb-num">' + bnDigits(r) + '</div>')
+                    + '<div class="rlb-rkc">' + (r < 4 ? '<div class="rlb-med">' + rlbMedal(r) + '</div>' : '<div class="rlb-num">' + bnDigits(r) + '</div>') + '</div>'
+                    + rlbAvHtml(d.name, d.av)
                     + '<div class="rlb-info"><div class="rlb-nm"><span class="rlb-nm-t">' + escHtml(d.name) + '</span></div>'
                     + '<span class="rlb-code"><i>ID:</i> ' + escHtml(d.code) + '</span></div>'
                     + '<div class="rlb-cnt"><b>' + bnDigits(d.cnt) + '</b><small>একটিভ রেফার</small></div>'
@@ -10275,6 +10305,21 @@ function fbVideoRemove() {
 #tgGate .tg-lg svg{width:27px;height:27px;display:block;margin-left:-1px}
 #tgGate .tg-b svg{width:22px;height:22px;flex:none}
 body:has(#tgGate.show) .mp-ov{z-index:2147483001 !important}
+</style>
+<style>
+/* ===== লিডারবোর্ড: সবার ছবি ও নাম এক লাইনে সাজানো ===== */
+#rlb-list .rlb-row,#rlb-me.rlb-row{gap:10px;min-height:64px}
+.rlb-rkc{width:46px;flex:none;display:flex;align-items:center;justify-content:center}
+.rlb-rkc .rlb-med,.rlb-row.r1 .rlb-rkc .rlb-med{width:46px;height:52px}
+.rlb-rkc .rlb-med svg{width:100%;height:100%;display:block}
+.rlb-rkc .rlb-num,.rlb-rkc .rlb-rk{margin:0}
+.rlb-av{width:44px;height:44px;border-radius:50%;flex:none;overflow:hidden;display:grid;place-items:center;border:2px solid var(--bd);background:var(--bar);color:var(--txt);font-weight:800;font-size:17px;line-height:1}
+.rlb-av img{width:100%;height:100%;object-fit:cover;display:block}
+.rlb-row.r1 .rlb-av{border-color:var(--acc)}
+.rlb-row.r2 .rlb-av{border-color:#b0bec5}
+.rlb-row.r3 .rlb-av{border-color:#cd7f32}
+.rlb-me .rlb-av{border-color:#2ecc71}
+.rlb-cnt{min-width:62px}
 </style>
 <style>
 /* ===== টেলিগ্রাম বাইন্ড পেজ ===== */
