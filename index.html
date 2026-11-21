@@ -6741,7 +6741,7 @@
         function refScoreMatches(score, cnt) { return score != null && Math.floor(score / REF_SCALE) === parseInt(cnt || 0); }
 
         const LB_MIN_REFER = 20;      // লিডারবোর্ডে ঢুকতে সর্বনিম্ন একটিভ রেফার
-        const ACTIVE_REF_MIN = 2;     // রেফার করা ইউজার কমপক্ষে এত টাকা আর্নিং করলে একটিভ (ইউজারকে দেখানো হয় না)
+        const ACTIVE_REF_MIN = 5;     // রেফার করা ইউজার কমপক্ষে এত টাকা আর্নিং করলে একটিভ (ইউজারকে দেখানো হয় না)
         const LB_MAX_SHOW = 10;
         let rlbRef = null, rlbLast = [], myRefScore = null, rlbMeIn = false;
 
