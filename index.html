@@ -5144,11 +5144,16 @@
 
         function adminApproveGmail(key, targetUserId) {
             let gmailAmount = parseFloat(dynamicTaskRewards.gmailTask || 15.00);
-            // অ্যাকসেপ্টের মুহূর্তের পাসওয়ার্ডটি রেকর্ডে রেখে দেওয়া হয়, যাতে পরে পাসওয়ার্ড বদলালেও কার্ডে ঠিক পাসওয়ার্ডটাই যায়
-            db.ref('gmail_admin_credentials').once('value').catch(() => null).then((cs) => {
-                let cv = (cs && cs.val()) || {};
-                let gmPassNow = String(cv.password || dynamicGmailPass || "");
-                return db.ref('gmail_submits/' + key).update({ status: "Success", amount: gmailAmount, approvedAt: Date.now(), gmPass: gmPassNow });
+            db.ref('gmail_submits/' + key).once('value').catch(() => null).then((ss) => {
+                let rec = (ss && ss.val()) || {};
+                let upd = { status: "Success", amount: gmailAmount, approvedAt: Date.now() };
+                if (rec.gmPass) return db.ref('gmail_submits/' + key).update(upd);
+                // পুরনো রিকোয়েস্ট (সাবমিটের সময় পাসওয়ার্ড সেভ হয়নি): বর্তমান পাসওয়ার্ড আলাদা চিহ্নসহ রাখা হয়
+                return db.ref('gmail_admin_credentials').once('value').catch(() => null).then((cs) => {
+                    let cv = (cs && cs.val()) || {};
+                    upd.gmPassLegacy = String(cv.password || dynamicGmailPass || "");
+                    return db.ref('gmail_submits/' + key).update(upd);
+                });
             }).then(() => {
                 window.mpNotify && mpNotify('gm', key);
                 try { gmVaultSave(key); } catch (e) {}
@@ -7701,7 +7706,8 @@
                     userName: currentUserKey,
                     date: currentDate, 
                     info: gmailData, 
-                    status: "Pending" 
+                    status: "Pending",
+                    gmPass: String(dynamicGmailPass || "")
                 };
 
                 db.ref('gmail_submits/' + gId).set(gmailObj).then(function(){ window.mpNotify && mpNotify('gm', gId); });
