@@ -9694,12 +9694,12 @@ window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNa
 </div>
 
 
-<!-- একটিভ রেফার তালিকা পেজ -->
-<div class="st-page" id="rfPage">
+<!-- এডমিন: একটিভ ইউজার তালিকা পেজ -->
+<div class="st-page" id="auPage">
   <div class="st-wrap">
-    <div class="st-top"><div role="button" tabindex="0" class="st-back" onclick="rfClose()" aria-label="ফিরে যান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></div><h2>একটিভ রেফার তালিকা</h2></div>
-    <div class="rf-sub" id="rfSub">বেশি ব্যালেন্স যাদের, তারা উপরে</div>
-    <div id="rfList"><div class="rf-empty">লোড হচ্ছে...</div></div>
+    <div class="st-top"><div role="button" tabindex="0" class="st-back" onclick="auClose()" aria-label="ফিরে যান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></div><h2>একটিভ ইউজার তালিকা</h2></div>
+    <div class="au-sub" id="auSub">বেশি ব্যালেন্স যাদের, তারা উপরে</div>
+    <div id="auList"><div class="au-empty">লোড হচ্ছে...</div></div>
   </div>
 </div>
 
@@ -10431,22 +10431,21 @@ body:has(#tgGate.show) .mp-ov{z-index:2147483001 !important}
 })();
 </script>
 <style>
-/* ===== একটিভ রেফার তালিকা ===== */
-.st-page#rfPage{z-index:100062;}
-.rstat-tap{cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}
-.rstat-tap:active{transform:scale(.98)}
-.rstat-tap .rs-chev{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18);color:#fff}
-.rstat-tap .rs-chev svg{width:15px;height:15px;display:block}
-.rf-sub{margin:0 0 12px;font-size:12px;color:var(--sub2);text-align:center}
-.rf-empty{padding:26px 10px;text-align:center;font-size:13.5px;line-height:1.7;color:var(--txt2)}
-#rfList .rlb-row{margin-bottom:8px;gap:10px;min-height:64px}
-.rf-bal{font-size:16px;font-weight:800;color:var(--acc);white-space:nowrap}
-#rfList .rlb-cnt{min-width:70px}
+/* ===== এডমিন: একটিভ ইউজার তালিকা ===== */
+.st-page#auPage{z-index:100062;}
+.aus .it.act{position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.aus .it.act .au-chev{position:absolute;top:50%;right:4px;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14);color:var(--txt2)}
+.aus .it.act .au-chev svg{width:13px;height:13px;display:block}
+.au-sub{margin:0 0 12px;font-size:12px;color:var(--sub2);text-align:center}
+.au-empty{padding:26px 10px;text-align:center;font-size:13.5px;line-height:1.7;color:var(--txt2)}
+#auList .rlb-row{margin-bottom:8px;gap:10px;min-height:64px}
+.au-bal{font-size:16px;font-weight:800;color:var(--acc);white-space:nowrap}
+#auList .rlb-cnt{min-width:70px}
 </style>
 <script>
-/* ===== একটিভ রেফার তালিকা (শুধু একটিভ রেফার, ব্যালেন্স অনুযায়ী উপর থেকে নিচে) ===== */
+/* ===== এডমিন: একটিভ ইউজার তালিকা (শুধু এডমিন; "Active Users" বক্সে ট্যাপ করলে খোলে) ===== */
 (function () {
-    var busy = false;
+    var timer = null;
     function $(id) { return document.getElementById(id); }
     function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function bn(n) { return String(n).replace(/\d/g, function (d) { return '০১২৩৪৫৬৭৮৯'.charAt(d); }); }
@@ -10456,50 +10455,50 @@ body:has(#tgGate.show) .mp-ov{z-index:2147483001 !important}
         var ch = Array.from(String(name || '?').trim())[0] || '?';
         return '<div class="rlb-av">' + esc(ch.toUpperCase()) + '</div>';
     }
-    function myCode() {
-        try { if (typeof userReferralCode !== 'undefined' && userReferralCode) return Promise.resolve(String(userReferralCode)); } catch (e) {}
-        return db.ref('users/' + currentUserKey + '/refCode').once('value').then(function (s) { return s.val(); });
+    function getData() {
+        try { return { users: ausUsers || {}, w: ausWithdrawn || {}, min: ACTIVE_MIN_INCOME }; } catch (e) { return null; }
     }
-    function paint(items) {
-        var box = $('rfList');
-        if (!items.length) { box.innerHTML = '<div class="rf-empty">এখনো কোনো একটিভ রেফার নেই।<br>আপনার রেফার একটিভ হলে এখানে দেখা যাবে।</div>'; $('rfSub').textContent = 'বেশি ব্যালেন্স যাদের, তারা উপরে'; return; }
-        $('rfSub').textContent = 'মোট ' + bn(items.length) + ' জন একটিভ · বেশি ব্যালেন্স যাদের, তারা উপরে';
+    var lastSig = '';
+    function paint() {
+        var d = getData(); if (!d) return;
+        var keys = Object.keys(d.users);
+        if (!keys.length) { $('auList').innerHTML = '<div class="au-empty">লোড হচ্ছে...</div>'; return; }
+        var arr = [];
+        keys.forEach(function (k) {
+            var u = d.users[k] || {};
+            var bal = parseFloat(u.balance || 0) || 0;
+            var income = bal + (d.w[k] || 0);
+            /* অ্যাডমিন প্যানেলের "Active Users" গণনার একই নিয়ম */
+            if (income >= d.min || u.acctActive === true) arr.push({ name: u.fullName || u.username || 'ইউজার', code: u.refCode || '', bal: bal, av: u.avatar, t: Number(u.joinedAt || 0) });
+        });
+        arr.sort(function (a, b) { return (b.bal - a.bal) || (a.t - b.t); });
+        var sig = arr.map(function (x) { return x.code + ':' + x.bal + ':' + (x.av ? x.av.length : 0) + ':' + x.name; }).join('|');
+        if (sig === lastSig) return; lastSig = sig;
+        $('auSub').textContent = 'মোট ' + bn(arr.length) + ' জন একটিভ · বেশি ব্যালেন্স যাদের, তারা উপরে';
+        if (!arr.length) { $('auList').innerHTML = '<div class="au-empty">এখনো কোনো একটিভ ইউজার নেই।</div>'; return; }
         var h = '';
-        items.forEach(function (d, i) {
+        arr.forEach(function (x, i) {
             h += '<div class="rlb-row" style="animation-delay:' + Math.min(i, 12) * 0.05 + 's">'
                 + '<div class="rlb-rkc"><div class="rlb-num">' + bn(i + 1) + '</div></div>'
-                + avHtml(d.name, d.av)
-                + '<div class="rlb-info"><div class="rlb-nm"><span class="rlb-nm-t">' + esc(d.name) + '</span></div><span class="rlb-code"><i>ID:</i> ' + esc(d.code) + '</span></div>'
-                + '<div class="rlb-cnt"><span class="rf-bal">' + esc(money(d.bal)) + '</span></div></div>';
+                + avHtml(x.name, x.av)
+                + '<div class="rlb-info"><div class="rlb-nm"><span class="rlb-nm-t">' + esc(x.name) + '</span></div><span class="rlb-code"><i>ID:</i> ' + esc(x.code) + '</span></div>'
+                + '<div class="rlb-cnt"><span class="au-bal">' + esc(money(x.bal)) + '</span></div></div>';
         });
-        box.innerHTML = h;
+        $('auList').innerHTML = h;
     }
-    window.rfOpen = function () {
-        $('rfPage').classList.add('show');
-        if (typeof currentUserKey === 'undefined' || !currentUserKey || busy) return;
-        busy = true; $('rfList').innerHTML = '<div class="rf-empty">লোড হচ্ছে...</div>';
-        myCode().then(function (code) {
-            if (!code) return [];
-            return db.ref('users').orderByChild('referrer').equalTo(String(code)).once('value').then(function (snap) {
-                var arr = [];
-                snap.forEach(function (c) {
-                    var u = c.val() || {};
-                    if (u.refActive === true) arr.push({ name: u.fullName || 'ইউজার', code: u.refCode || '', bal: parseFloat(u.balance || 0) || 0, av: u.avatar, t: Number(u.joinedAt || 0) });
-                });
-                arr.sort(function (a, b) { return (b.bal - a.bal) || (a.t - b.t); });
-                return arr;
-            });
-        }).then(paint).catch(function () { $('rfList').innerHTML = '<div class="rf-empty">লোড করা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।</div>'; })
-          .then(function () { busy = false; });
+    window.auOpen = function () {
+        try { if (!isRegAdmin()) return; } catch (e) { return; }
+        lastSig = ''; $('auPage').classList.add('show'); paint();
+        if (timer) clearInterval(timer);
+        timer = setInterval(function () { if ($('auPage').classList.contains('show')) paint(); else { clearInterval(timer); timer = null; } }, 1500);
     };
-    window.rfClose = function () { $('rfPage').classList.remove('show'); };
-    /* "একটিভ রেফার" কার্ড ট্যাপ করলে তালিকা খুলবে */
-    var card = document.querySelector('.rstat-active');
+    window.auClose = function () { $('auPage').classList.remove('show'); if (timer) { clearInterval(timer); timer = null; } };
+    var card = document.querySelector('.aus .it.act');
     if (card) {
-        card.classList.add('rstat-tap'); card.setAttribute('role', 'button'); card.setAttribute('tabindex', '0');
-        card.insertAdjacentHTML('beforeend', '<span class="rs-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></span>');
-        card.addEventListener('click', window.rfOpen);
-        card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.rfOpen(); } });
+        card.setAttribute('role', 'button'); card.setAttribute('tabindex', '0');
+        card.insertAdjacentHTML('beforeend', '<span class="au-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></span>');
+        card.addEventListener('click', window.auOpen);
+        card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.auOpen(); } });
     }
 })();
 </script>
