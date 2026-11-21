@@ -9628,6 +9628,11 @@ window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNa
       <div class="st-tx"><b>পাসওয়ার্ড পরিবর্তন</b><span>আপনার অ্যাকাউন্টের পাসওয়ার্ড বদলান</span></div>
       <div class="st-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></div>
     </div>
+    <div class="st-item" style="margin-top:12px" onclick="stBindOpen()">
+      <div class="st-ico sb-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 3L10.5 14"/><path d="M21.5 3l-7 18-4-7-7-4 18-7z"/></svg></div>
+      <div class="st-tx"><b>টেলিগ্রাম বাইন্ড</b><span>কোন টেলিগ্রামে যুক্ত তা দেখুন ও আনবাইন্ড করুন</span></div>
+      <div class="st-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></div>
+    </div>
   </div>
 </div>
 
@@ -9656,6 +9661,33 @@ window.addEventListener('load', function () { ofSyncNavBg(); setTimeout(ofSyncNa
   </div>
 </div>
 
+
+<!-- টেলিগ্রাম বাইন্ড পেজ -->
+<div class="st-page" id="stBind">
+  <div class="st-wrap">
+    <div class="st-top"><div role="button" tabindex="0" class="st-back" onclick="stBindClose()" aria-label="ফিরে যান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></div><h2>টেলিগ্রাম বাইন্ড</h2></div>
+
+    <div class="st-hero"><div class="st-hero-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 3L10.5 14"/><path d="M21.5 3l-7 18-4-7-7-4 18-7z"/></svg></div><p id="sbHeroTx">আপনার এই অ্যাকাউন্টটি নিচের টেলিগ্রামের সাথে যুক্ত আছে। এই টেলিগ্রাম শুধু এই অ্যাকাউন্টের সাথেই যুক্ত থাকে।</p></div>
+
+    <div class="sb-card" id="sbInfo">
+      <div class="sb-row"><span>অবস্থা</span><b class="sb-badge" id="sbStat">...</b></div>
+      <div class="sb-row" id="sbRowId"><span>টেলিগ্রাম আইডি</span><b id="sbTgId">...</b></div>
+      <div class="sb-row" id="sbRowT"><span>যুক্ত হয়েছে</span><b id="sbTime">...</b></div>
+    </div>
+
+    <div id="sbAct" style="display:none">
+      <button class="sb-btn blue" onclick="openTelegramLink('https://t.me/' + TG_BOT_USERNAME)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 3L10.5 14"/><path d="M21.5 3l-7 18-4-7-7-4 18-7z"/></svg><span>বট খুলুন</span></button>
+
+      <div class="st-sec">আনবাইন্ডের অনুরোধ</div>
+      <div class="st-form">
+        <div class="st-fld"><svg class="st-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1.2"/></svg><input type="password" id="sbPw" placeholder="অ্যাকাউন্টের পাসওয়ার্ড দিন" autocomplete="current-password"><div role="button" tabindex="0" class="st-eye" onclick="sbEye(this)" aria-label="দেখান বা লুকান"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg></div></div>
+        <div class="st-pst" id="sbMsg"></div>
+        <button class="sb-btn red" id="sbBtn" onclick="sbSend()"><span>আনবাইন্ডের অনুরোধ পাঠান</span></button>
+        <div class="sb-note">পাসওয়ার্ড সঠিক হলে বট আপনার টেলিগ্রামে "কনফার্ম / বাতিল" কার্ড পাঠাবে। কনফার্ম না করা পর্যন্ত কিছুই বদলাবে না। কনফার্ম করলে এই টেলিগ্রাম অ্যাকাউন্ট থেকে আলাদা হবে এবং আবার ভেরিফাই করতে হবে।</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- আমার সব পেমেন্ট হিসাব পেজ -->
 <div class="pay-page" id="payPage">
@@ -10235,5 +10267,88 @@ function fbVideoRemove() {
 #tgGate .tg-b svg{width:22px;height:22px;flex:none}
 body:has(#tgGate.show) .mp-ov{z-index:2147483001 !important}
 </style>
+<style>
+/* ===== টেলিগ্রাম বাইন্ড পেজ ===== */
+.st-page#stBind{z-index:100062;}
+.sb-ico{background:linear-gradient(135deg,#3aa0e8,#1c6fb5)!important;box-shadow:0 6px 14px rgba(58,160,232,.28)!important}
+.sb-card{padding:4px 14px;border-radius:22px;background:var(--card);border:1.5px solid var(--bd2);box-shadow:0 8px 22px rgba(0,0,0,.22);}
+.sb-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;color:var(--txt);}
+.sb-row:last-child{border-bottom:0}
+.sb-row span{color:var(--sub)}
+.sb-row b{font-weight:800;text-align:right;word-break:break-word}
+.sb-badge{padding:4px 11px;border-radius:14px;font-size:12.5px}
+.sb-badge.g{background:rgba(46,204,113,.15);border:1px solid #2ecc71;color:#b8f5d0}
+.sb-badge.r{background:rgba(231,76,60,.15);border:1px solid #e74c3c;color:#ffb3aa}
+.sb-btn{width:100%;height:52px;border:none;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:14px;color:#fff;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;}
+.sb-btn svg{width:20px;height:20px;flex:none}
+.sb-btn.blue{background:linear-gradient(135deg,#3aa0e8,#1c6fb5);box-shadow:0 8px 20px rgba(58,160,232,.28)}
+.sb-btn.red{background:rgba(231,76,60,.10);border:1.5px solid #e74c3c;color:#ff9d92;margin-top:4px}
+.sb-btn:active{transform:scale(.98)}
+.sb-btn.ld,.sb-btn:disabled{pointer-events:none;opacity:.8}
+.sb-note{margin:12px 2px 0;font-size:12.5px;line-height:1.6;color:var(--sub)}
+</style>
+<script>
+/* ===== টেলিগ্রাম বাইন্ড পেজ (দেখা + আনবাইন্ডের অনুরোধ) ===== */
+(function () {
+    var busy = false;
+    var EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+    var EYEOFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10.5 7 10.5 7a17.6 17.6 0 0 1-3.2 3.9M6.6 6.6A17.4 17.4 0 0 0 1.5 12S5.5 19 12 19c1.6 0 3-.4 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+    function $(id) { return document.getElementById(id); }
+    function api() { return (typeof TG_API !== 'undefined') ? TG_API : 'https://megaincome-verify.hshasan2009.workers.dev'; }
+    function maskId(v) { v = String(v || ''); return v.length > 6 ? v.slice(0, 2) + 'XXXX' + v.slice(-4) : v.replace(/.(?=.{2})/g, 'X'); }
+    function fmt(ms) {
+        try { return new Date(ms).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', ''); } catch (e) { return ''; }
+    }
+    function say(cls, txt) {
+        var e = $('sbMsg'); e.className = 'st-pst show ' + cls; e.innerHTML = '<span>' + txt + '</span>';
+    }
+    function paint(v) {
+        var on = !!(v && v.tg && v.ok);
+        var st = $('sbStat'); st.className = 'sb-badge ' + (on ? 'g' : 'r'); st.textContent = on ? '✅ যুক্ত আছে' : '❌ যুক্ত নেই';
+        $('sbRowId').style.display = on ? '' : 'none'; $('sbRowT').style.display = (on && v.t) ? '' : 'none';
+        $('sbAct').style.display = on ? '' : 'none';
+        if (on) { $('sbTgId').textContent = maskId(v.tg); $('sbTime').textContent = fmt(v.t); }
+        $('sbHeroTx').textContent = on
+            ? 'আপনার এই অ্যাকাউন্টটি নিচের টেলিগ্রামের সাথে যুক্ত আছে। এই টেলিগ্রাম শুধু এই অ্যাকাউন্টের সাথেই যুক্ত থাকে।'
+            : 'এই অ্যাকাউন্টে এখনো কোনো টেলিগ্রাম যুক্ত নেই।';
+    }
+    window.stBindOpen = function () {
+        $('sbPw').value = ''; $('sbPw').type = 'password'; $('sbMsg').className = 'st-pst';
+        var eye = document.querySelector('#stBind .st-eye'); if (eye) { eye.innerHTML = EYE; eye.classList.remove('on'); }
+        $('stBind').classList.add('show');
+        $('sbStat').className = 'sb-badge'; $('sbStat').textContent = '...';
+        if (typeof currentUserKey === 'undefined' || !currentUserKey) { paint(null); return; }
+        db.ref('tg_verified/' + currentUserKey).once('value').then(function (s) { paint(s.val()); }).catch(function () { paint(null); });
+    };
+    window.stBindClose = function () { $('stBind').classList.remove('show'); };
+    window.sbEye = function (btn) {
+        var i = $('sbPw'), show = i.type === 'password';
+        i.type = show ? 'text' : 'password'; btn.innerHTML = show ? EYEOFF : EYE; btn.classList.toggle('on', show);
+    };
+    function load(on) {
+        var b = $('sbBtn');
+        if (on) { b.setAttribute('data-h', b.innerHTML); b.classList.add('ld'); b.disabled = true; b.innerHTML = '<span class="ld-sp"></span><span>Loading</span><span class="ld-dots"><i>.</i><i>.</i><i>.</i><i>.</i></span>'; }
+        else { b.classList.remove('ld'); b.disabled = false; if (b.hasAttribute('data-h')) { b.innerHTML = b.getAttribute('data-h'); b.removeAttribute('data-h'); } }
+    }
+    window.sbSend = function () {
+        if (busy) return;
+        var pw = $('sbPw').value.trim();
+        if (!pw) { say('r', 'আগে অ্যাকাউন্টের পাসওয়ার্ড দিন।'); return; }
+        if (typeof currentUserKey === 'undefined' || !currentUserKey) { say('r', 'আবার লগইন করে চেষ্টা করুন।'); return; }
+        busy = true; load(true); $('sbMsg').className = 'st-pst';
+        fetch(api() + '/api/unbindreq', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ u: currentUserKey, pw: pw }) })
+            .then(function (r) { return r.json(); }).catch(function () { return { ok: false, e: 'net' }; })
+            .then(function (o) {
+                $('sbPw').value = '';
+                if (o && o.ok) say('g', 'অনুরোধ পাঠানো হয়েছে। টেলিগ্রামে বট খুলে কনফার্ম করুন।');
+                else if (o && o.e === 'pw') say('r', 'পাসওয়ার্ড সঠিক নয়।');
+                else if (o && o.e === 'rate') say('r', 'অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।');
+                else if (o && o.e === 'notg') say('r', 'এই অ্যাকাউন্টে কোনো টেলিগ্রাম যুক্ত নেই।');
+                else if (o && o.e === 'send') say('r', 'টেলিগ্রামে অনুরোধ পাঠানো যায়নি। বট ব্লক করা থাকলে আনব্লক করে আবার চেষ্টা করুন।');
+                else say('r', 'ইন্টারনেট সমস্যা, আবার চেষ্টা করুন।');
+            }).then(function () { busy = false; load(false); });
+    };
+})();
+</script>
 </body>
         </html>
